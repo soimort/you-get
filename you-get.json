@@ -1,0 +1,19 @@
+{
+    "version": "0.0.1",
+    "date": "2012-08-20",
+    "author": "Mort Yao <mort.yao@gmail.com>",
+    "file_list": [
+        "LICENSE",
+        "README.md",
+        "common.py",
+        "get.py",
+        "get_tudou.py",
+        "get_yinyuetai.py",
+        "get_youku.py",
+        "get_youtube.py",
+        "merge_flv.py",
+        "merge_mp4.py",
+        "you-get",
+        "you-get.json"
+    ]
+}
