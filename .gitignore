@@ -1,6 +1,7 @@
 _*
 *.py[cod]
 
+*.download
 *.flv
 *.mp4
 *.webm

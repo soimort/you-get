@@ -37,25 +37,47 @@ def youku_url(url):
         return url
     raise Exception('Invalid Youku URL: '+url)
 
-def parse_page(url):
-    url = youku_url(url)
-    page = get_html(url)
-    id2 = re.search(r"var\s+videoId2\s*=\s*'(\S+)'", page).group(1)
+def parse_video_title(url, page):
     if re.search(r'v_playlist', url):
-        # if we are playing a video from playlist, the meta title might be incorrect
-        title = re.search(r'<title>([^<>]*)</title>', page).group(1)
+        # if we are playing a viedo from play list, the meta title might be incorrect
+        title = r1_of([r'<div class="show_title" title="([^"]+)">[^<]', r'<title>([^<>]*)</title>'], page)
     else:
-        title = re.search(r'<meta name="title" content="([^"]*)">', page).group(1)
+        title = r1_of([r'<div class="show_title" title="([^"]+)">[^<]', r'<meta name="title" content="([^"]*)"'], page)
+    assert title
     title = trim_title(title)
     if re.search(r'v_playlist', url) and re.search(r'-.*\S+', title):
         title = re.sub(r'^[^-]+-\s*', '', title) # remove the special name from title for playlist video
+    title = re.sub(r'—专辑：.*', '', title) # remove the special name from title for playlist video
     title = unescape_html(title)
+    
     subtitle = re.search(r'<span class="subtitle" id="subtitle">([^<>]*)</span>', page)
     if subtitle:
         subtitle = subtitle.group(1).strip()
     if subtitle == title:
         subtitle = None
-    return id2, title, subtitle
+    if subtitle:
+        title += '-' + subtitle
+    return title
+
+def parse_playlist_title(url, page):
+    if re.search(r'v_playlist', url):
+        # if we are playing a viedo from play list, the meta title might be incorrect
+        title = re.search(r'<title>([^<>]*)</title>', page).group(1)
+    else:
+        title = re.search(r'<meta name="title" content="([^"]*)"', page).group(1)
+    title = trim_title(title)
+    if re.search(r'v_playlist', url) and re.search(r'-.*\S+', title):
+        title = re.sub(r'^[^-]+-\s*', '', title)
+    title = re.sub(r'^.*—专辑：《(.+)》', r'\1', title)
+    title = unescape_html(title)
+    return title
+
+def parse_page(url):
+    url = youku_url(url)
+    page = get_html(url)
+    id2 = re.search(r"var\s+videoId2\s*=\s*'(\S+)'", page).group(1)
+    title = parse_video_title(url, page)
+    return id2, title
 
 def get_info(videoId2):
     return json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/' + videoId2))
@@ -108,9 +130,8 @@ def youku_download_by_id(id2, title, output_dir = '.', stream_type = None, merge
         download_urls(urls, title, file_type_of_url(urls[0]), total_size, output_dir, merge = merge)
 
 def youku_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
-    id2, title, subtitle = parse_page(url)
-    if subtitle:
-        title += '-' + subtitle
+    id2, title = parse_page(url)
+    title = title.replace('?', '-')
     
     youku_download_by_id(id2, title, output_dir, merge = merge, info_only = info_only)
 
@@ -160,6 +181,10 @@ def youku_download_playlist(url, output_dir = '.', merge = True, info_only = Fal
     else:
         assert re.match(r'http://v.youku.com/v_show/id_([\w=]+).html', url), 'URL not supported as playlist'
         ids = parse_playlist(url)
+    
+    title = parse_playlist_title(url, get_html(url))
+    title = title.replace('?', '-')
+    output_dir = os.path.join(output_dir, title)
     
     for i, id in enumerate(ids):
         print('Processing %s of %s videos...' % (i + 1, len(ids)))
