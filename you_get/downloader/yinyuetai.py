@@ -31,6 +31,3 @@ def yinyuetai_download(url, output_dir = '.', merge = True, info_only = False):
 site_info = "YinYueTai.com"
 download = yinyuetai_download
 download_playlist = playlist_not_supported('yinyuetai')
-
-if __name__ == '__main__':
-    script_main('yinyuetai.py', yinyuetai_download)

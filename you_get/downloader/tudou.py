@@ -71,6 +71,3 @@ def tudou_download_playlist(url, output_dir = '.', merge = True, info_only = Fal
 site_info = "Tudou.com"
 download = tudou_download
 download_playlist = tudou_download_playlist
-
-if __name__ == '__main__':
-    script_main('tudou.py', tudou_download, tudou_download_playlist)

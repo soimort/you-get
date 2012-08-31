@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 __all__ = ['concat_flvs', 'concat_mp4s']
 

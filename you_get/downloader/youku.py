@@ -196,6 +196,3 @@ def youku_download_playlist(url, output_dir = '.', merge = True, info_only = Fal
 site_info = "Youku.com"
 download = youku_download
 download_playlist = youku_download_playlist
-
-if __name__ == '__main__':
-    script_main('youku.py', youku_download, youku_download_playlist)

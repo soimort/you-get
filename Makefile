@@ -1,13 +1,10 @@
-default: install sdist bdist
+default: sdist bdist bdist_egg install
 
 clean:
-	rm -fr build/ dist/
+	rm -fr build/ dist/ *.egg-info/
 
 build:
 	python3 setup.py build
-
-install: build
-	sudo python3 setup.py install
 
 sdist:
 	python3 setup.py sdist
@@ -15,4 +12,10 @@ sdist:
 bdist:
 	python3 setup.py bdist
 
-.PHONY: default clean build install sdist bdist
+bdist_egg:
+	python3 setup.py bdist_egg
+
+install: bdist_egg
+	sudo python3 setup.py install
+
+.PHONY: default clean build sdist bdist bdist_egg install

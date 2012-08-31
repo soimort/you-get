@@ -3,4 +3,4 @@
 from you_get import *
 
 if __name__ == "__main__":
-   script_main('you-get', any_download, any_download_playlist)
+   main()

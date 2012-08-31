@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 import getopt
 import json
@@ -361,7 +362,7 @@ def set_http_proxy(proxy):
 
 def script_main(script_name, download, download_playlist = None):
     version = 'You-Get %s, a video downloader.' % proj_info['version']
-    help = 'Usage: [python3] %s [OPTION]... [URL]...\n' % script_name
+    help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
     help += '''\nStartup options:
     -V | --version                           Display the version and exit.
     -h | --help                              Print this help and exit.

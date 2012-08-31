@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__all__ = ['any_download', 'any_download_playlist']
+__all__ = ['main', 'any_download', 'any_download_playlist']
 
 from .downloader import *
 from .common import *
@@ -46,5 +46,5 @@ def any_download_playlist(url, output_dir = '.', merge = True, info_only = False
     m = url_to_module(url)
     m.download_playlist(url, output_dir = output_dir, merge = merge, info_only = info_only)
 
-if __name__ == '__main__':
-    script_main('main.py', any_download, any_download_playlist)
+def main():
+    script_main('you-get', any_download, any_download_playlist)

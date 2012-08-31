@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 from .processor import *
 from .downloader import *

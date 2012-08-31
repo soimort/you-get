@@ -31,6 +31,3 @@ def youtube_download(url, output_dir = '.', merge = True, info_only = False):
 site_info = "YouTube.com"
 download = youtube_download
 download_playlist = playlist_not_supported('youtube')
-
-if __name__ == '__main__':
-    script_main('youtube.py', youtube_download)

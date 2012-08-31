@@ -1,2 +1,20 @@
 Changelog
 =========
+
+0.1
+---
+
+*Date: 2012-09-01*
+
+* First PyPI release.
+* Fix issue `#1 <https://github.com/soimort/you-get/issues/1>`_.
+
+0.0.1
+-----
+
+*Date: 2012-08-21*
+
+* Initial release, forked from `iambus/youku-lixian <https://github.com/iambus/youku-lixian>`_; add:
+    - YouTube support.
+    - Pausing and resuming of downloads.
+    - HTTP proxy settings.

@@ -9,7 +9,7 @@ proj_info = json.loads(open(os.path.join(here, PROJ_METADATA)).read())
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGELOG = open(os.path.join(here, 'CHANGELOG.txt')).read()
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 setup(
     name = proj_info['name'],
     version = proj_info['version'],
@@ -22,9 +22,16 @@ setup(
     
     description = proj_info['description'],
     keywords = proj_info['keywords'],
+    
     long_description = README + '\n\n' + CHANGELOG,
     
-    packages = proj_info['packages'],
+    packages = find_packages(),
     
-    classifiers = proj_info['classifiers']
+    platforms = 'any',
+    zip_safe = False,
+    include_package_data = True,
+    
+    classifiers = proj_info['classifiers'],
+    
+    entry_points = {'console_scripts': proj_info['console_scripts']}
 )
