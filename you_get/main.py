@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-from common import *
-import get_tudou
-import get_yinyuetai
-import get_youku
-import get_youtube
+__all__ = ['any_download', 'any_download_playlist']
+
+from .downloader import *
+from .common import *
 
 def url_to_module(url):
     site = r1(r'http://([^/]+)/', url)
@@ -17,22 +16,22 @@ def url_to_module(url):
     
     k = r1(r'([^.]+)', domain)
     downloads = {
-        'youtube': get_youtube,
-        'youku': get_youku,
-        'yinyuetai': get_yinyuetai,
-        'tudou': get_tudou,
+        'youtube': youtube,
+        'youku': youku,
+        'yinyuetai': yinyuetai,
+        'tudou': tudou,
         #TODO:
-        # 'acfun': get_acfun,
-        # 'bilibili': get_bilibili,
-        # 'kankanews': get_bilibili,
-        # 'iask': get_iask,
-        # 'sina': get_iask,
-        # 'ku6': get_ku6,
-        # 'pptv': get_pptv,
-        # 'iqiyi': get_iqiyi,
-        # 'sohu': get_sohu,
-        # '56': get_w56,
-        # 'cntv': get_cntv,
+        # 'acfun': acfun,
+        # 'bilibili': bilibili,
+        # 'kankanews': bilibili,
+        # 'iask': iask,
+        # 'sina': iask,
+        # 'ku6': ku6,
+        # 'pptv': pptv,
+        # 'iqiyi': iqiyi,
+        # 'sohu': sohu,
+        # '56': w56,
+        # 'cntv': cntv,
     }
     if k in downloads:
         return downloads[k]
@@ -48,4 +47,4 @@ def any_download_playlist(url, output_dir = '.', merge = True, info_only = False
     m.download_playlist(url, output_dir = output_dir, merge = merge, info_only = info_only)
 
 if __name__ == '__main__':
-    main('get.py', any_download, any_download_playlist)
+    script_main('main.py', any_download, any_download_playlist)

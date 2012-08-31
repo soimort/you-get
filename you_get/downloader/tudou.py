@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 __all__ = ['tudou_download', 'tudou_download_playlist', 'tudou_download_by_id', 'tudou_download_by_iid']
 
-from common import *
+from ..common import *
 
 def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only = False):
     xml = get_html('http://v2.tudou.com/v?it=' + iid + '&st=1,2,3,4,99')
@@ -73,4 +73,4 @@ download = tudou_download
 download_playlist = tudou_download_playlist
 
 if __name__ == '__main__':
-    main('tudou', tudou_download, tudou_download_playlist)
+    script_main('tudou.py', tudou_download, tudou_download_playlist)

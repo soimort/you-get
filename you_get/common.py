@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import getopt
 import json
@@ -295,12 +294,12 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
         if not merge:
             return
         if ext == 'flv':
-            from merge_flv import concat_flvs
+            from .processor.merge_flv import concat_flvs
             concat_flvs(flvs, os.path.join(output_dir, title + '.flv'))
             for flv in flvs:
                 os.remove(flv)
         elif ext == 'mp4':
-            from merge_mp4 import concat_mp4s
+            from .processor.merge_mp4 import concat_mp4s
             concat_mp4s(flvs, os.path.join(output_dir, title + '.mp4'))
             for flv in flvs:
                 os.remove(flv)
@@ -360,7 +359,7 @@ def set_http_proxy(proxy):
     opener = request.build_opener(proxy_support)
     request.install_opener(opener)
 
-def main(script_name, download, download_playlist = None):
+def script_main(script_name, download, download_playlist = None):
     version = 'You-Get %s, a video downloader.' % proj_info['version']
     help = 'Usage: [python3] %s [OPTION]... [URL]...\n' % script_name
     help += '''\nStartup options:

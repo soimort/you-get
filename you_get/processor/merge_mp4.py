@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # reference: c041828_ISO_IEC_14496-12_2005(E).pdf
 

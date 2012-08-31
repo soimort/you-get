@@ -1,7 +1,11 @@
-_*
+/build/
+/dist/
+
+_*/
 *.py[cod]
 
 *.download
+*.3gp
 *.flv
 *.mp4
 *.webm

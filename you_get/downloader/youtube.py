@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 __all__ = ['youtube_download', 'youtube_download_by_id']
 
-from common import *
+from ..common import *
 
 def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     try:
@@ -33,4 +33,4 @@ download = youtube_download
 download_playlist = playlist_not_supported('youtube')
 
 if __name__ == '__main__':
-    main('get_youtube.py', youtube_download)
+    script_main('youtube.py', youtube_download)

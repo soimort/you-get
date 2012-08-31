@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from get import *
+from you_get import *
 
-if __name__ == '__main__':
-    main('you-get', any_download, any_download_playlist)
+if __name__ == "__main__":
+   script_main('you-get', any_download, any_download_playlist)

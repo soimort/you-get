@@ -1,19 +1,39 @@
 {
+    "name": "you-get",
     "version": "0.0.1",
     "date": "2012-08-20",
-    "author": "Mort Yao <mort.yao@gmail.com>",
-    "file_list": [
-        "LICENSE",
-        "README.md",
-        "common.py",
-        "get.py",
-        "get_tudou.py",
-        "get_yinyuetai.py",
-        "get_youku.py",
-        "get_youtube.py",
-        "merge_flv.py",
-        "merge_mp4.py",
-        "you-get",
-        "you-get.json"
-    ]
+    
+    "author": "Mort Yao",
+    "author_email": "mort.yao@gmail.com",
+    "url": "http://www.soimort.org/you-get/",
+    "download_url": "https://github.com/soimort/you-get/zipball/master",
+    "license": "MIT",
+    
+    "description": "A YouTube/Youku video downloader written in Python 3.",
+    "keywords": "video download youtube youku",
+    
+    "packages": [
+        "you_get",
+        "you_get.downloader",
+        "you_get.processor"
+        ],
+    
+    "classifiers": [
+        "Development Status :: 1 - Planning",
+        "Environment :: Console",
+        "Environment :: Web Environment",
+        "Intended Audience :: End Users/Desktop",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.2",
+        "Topic :: Internet",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Multimedia",
+        "Topic :: Multimedia :: Video",
+        "Topic :: Utilities"
+        ]
 }

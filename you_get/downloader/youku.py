@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 __all__ = ['youku_download', 'youku_download_playlist', 'youku_download_by_id']
 
-from common import *
+from ..common import *
 
 import json
 from random import randint
@@ -198,4 +198,4 @@ download = youku_download
 download_playlist = youku_download_playlist
 
 if __name__ == '__main__':
-    main('get_youku.py', youku_download, youku_download_playlist)
+    script_main('youku.py', youku_download, youku_download_playlist)

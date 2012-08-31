@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 __all__ = ['yinyuetai_download', 'yinyuetai_download_by_id']
 
-from common import *
+from ..common import *
 
 def yinyuetai_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     assert title
@@ -33,4 +33,4 @@ download = yinyuetai_download
 download_playlist = playlist_not_supported('yinyuetai')
 
 if __name__ == '__main__':
-    main('get_yinyuetai.py', yinyuetai_download)
+    script_main('yinyuetai.py', yinyuetai_download)
