@@ -123,11 +123,14 @@ def file_type_of_url(url):
 def youku_download_by_id(id2, title, output_dir = '.', stream_type = None, merge = True, info_only = False):
     info = get_info(id2)
     urls, sizes = zip(*find_video(info, stream_type))
+    ext = file_type_of_url(urls[0])
     total_size = sum(sizes)
     
-    print_info(site_info, title, file_type_of_url(urls[0]), total_size)
+    urls = url_locations(urls) # Use real (redirected) URLs for resuming of downloads
+    
+    print_info(site_info, title, ext, total_size)
     if not info_only:
-        download_urls(urls, title, file_type_of_url(urls[0]), total_size, output_dir, merge = merge)
+        download_urls(urls, title, ext, total_size, output_dir, merge = merge)
 
 def youku_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
     id2, title = parse_page(url)

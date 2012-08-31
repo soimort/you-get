@@ -109,6 +109,13 @@ def url_info(url):
     
     return type, ext, size
 
+def url_locations(urls):
+    locations = []
+    for url in urls:
+        response = request.urlopen(request.Request(url))
+        locations.append(response.url)
+    return locations
+
 def url_save(url, filepath, bar, refer = None, is_part = False):
     file_size = url_size(url)
     
