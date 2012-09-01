@@ -7,10 +7,13 @@ import re
 import sys
 from urllib import request, parse
 
+__version__ = "0.1.3"
+
 try:
     proj_info = json.loads(open('you-get.json').read())
 except:
-    proj_info = {'version': ''}
+    import you_get
+    proj_info = {'version': __version__}
 
 force = False
 

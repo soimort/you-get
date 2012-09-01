@@ -18,4 +18,8 @@ bdist_egg:
 install: bdist_egg
 	sudo python3 setup.py install
 
-.PHONY: default clean build sdist bdist bdist_egg install
+release:
+	zenity --warning
+	python3 setup.py bdist bdist_egg upload
+
+.PHONY: default clean build sdist bdist bdist_egg install release
