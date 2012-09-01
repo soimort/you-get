@@ -16,6 +16,7 @@ def url_to_module(url):
     
     k = r1(r'([^.]+)', domain)
     downloads = {
+        'cntv': cntv,
         'ku6': ku6,
         'sohu': sohu,
         'tudou': tudou,
@@ -31,7 +32,6 @@ def url_to_module(url):
         # 'pptv': pptv,
         # 'iqiyi': iqiyi,
         # '56': w56,
-        # 'cntv': cntv,
     }
     if k in downloads:
         return downloads[k]
