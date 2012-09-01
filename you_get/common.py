@@ -20,10 +20,11 @@ else:
     default_encoding = locale.getpreferredencoding().lower()
 
 def tr(s):
-    if default_encoding.startswith('utf') or default_encoding in ['cp936', '936', 'ms936', 'gbk']:
+    try:
+        s.encode(default_encoding)
         return s
-    else:
-        return s.encode('utf-8')
+    except:
+        return str(s.encode('utf-8'))[2:-1]
 
 def r1(pattern, text):
     m = re.search(pattern, text)
