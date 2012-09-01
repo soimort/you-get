@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from .cntv import *
+from .iqiyi import *
 from .ku6 import *
 from .pptv import *
 from .sohu import *

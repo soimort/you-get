@@ -18,6 +18,7 @@ def url_to_module(url):
     downloads = {
         '56': w56,
         'cntv': cntv,
+        'iqiyi': iqiyi,
         'ku6': ku6,
         'pptv': pptv,
         'sohu': sohu,
@@ -31,7 +32,6 @@ def url_to_module(url):
         # 'kankanews': bilibili,
         # 'iask': iask,
         # 'sina': iask,
-        # 'iqiyi': iqiyi,
     }
     if k in downloads:
         return downloads[k]
