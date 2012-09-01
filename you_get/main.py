@@ -16,10 +16,11 @@ def url_to_module(url):
     
     k = r1(r'([^.]+)', domain)
     downloads = {
-        'youtube': youtube,
-        'youku': youku,
-        'yinyuetai': yinyuetai,
+        'sohu': sohu,
         'tudou': tudou,
+        'yinyuetai': yinyuetai,
+        'youku': youku,
+        'youtube': youtube,
         #TODO:
         # 'acfun': acfun,
         # 'bilibili': bilibili,
@@ -29,7 +30,6 @@ def url_to_module(url):
         # 'ku6': ku6,
         # 'pptv': pptv,
         # 'iqiyi': iqiyi,
-        # 'sohu': sohu,
         # '56': w56,
         # 'cntv': cntv,
     }
