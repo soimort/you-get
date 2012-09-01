@@ -161,7 +161,10 @@ def url_save(url, filepath, bar, refer = None, is_part = False):
             headers['Referer'] = refer
         
         response = request.urlopen(request.Request(url, headers = headers), None)
-        assert file_size == received + int(response.headers['content-length'])
+        
+        if file_size != received + int(response.headers['content-length']):
+            received = 0
+            open_mode = 'wb'
         
         with open(temp_filepath, open_mode) as output:
             while True:
