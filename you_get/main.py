@@ -16,6 +16,7 @@ def url_to_module(url):
     
     k = r1(r'([^.]+)', domain)
     downloads = {
+        'ku6': ku6,
         'sohu': sohu,
         'tudou': tudou,
         'yinyuetai': yinyuetai,
@@ -27,7 +28,6 @@ def url_to_module(url):
         # 'kankanews': bilibili,
         # 'iask': iask,
         # 'sina': iask,
-        # 'ku6': ku6,
         # 'pptv': pptv,
         # 'iqiyi': iqiyi,
         # '56': w56,
