@@ -7,7 +7,7 @@ from ..common import *
 import json
 
 def w56_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    info = json.loads(get_html('http://vxml.56.com/json/%s/?src=site'%id))['info']
+    info = json.loads(get_html('http://vxml.56.com/json/%s/?src=site' % id))['info']
     title = title or info['Subject']
     assert title
     hd = info['hd']

@@ -2,6 +2,7 @@
 
 from .cntv import *
 from .ku6 import *
+from .pptv import *
 from .sohu import *
 from .tudou import *
 from .w56 import *

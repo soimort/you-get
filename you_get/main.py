@@ -19,6 +19,7 @@ def url_to_module(url):
         '56': w56,
         'cntv': cntv,
         'ku6': ku6,
+        'pptv': pptv,
         'sohu': sohu,
         'tudou': tudou,
         'yinyuetai': yinyuetai,
@@ -30,7 +31,6 @@ def url_to_module(url):
         # 'kankanews': bilibili,
         # 'iask': iask,
         # 'sina': iask,
-        # 'pptv': pptv,
         # 'iqiyi': iqiyi,
     }
     if k in downloads:
