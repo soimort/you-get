@@ -35,7 +35,7 @@ def youku_url(url):
         return find_video_id_from_show_page(url)
     if re.match(r'http://v.youku.com/v_playlist/\w+.html', url):
         return url
-    raise Exception('Invalid Youku URL: '+url)
+    return None
 
 def parse_video_title(url, page):
     if re.search(r'v_playlist', url):
@@ -133,6 +133,10 @@ def youku_download_by_id(id2, title, output_dir = '.', stream_type = None, merge
         download_urls(urls, title, ext, total_size, output_dir, merge = merge)
 
 def youku_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
+    if not youku_url(url):
+        youku_download_playlist(url, output_dir, merge, info_only)
+        return
+    
     id2, title = parse_page(url)
     title = title.replace('?', '-')
     

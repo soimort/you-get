@@ -29,20 +29,17 @@ def tudou_download_by_id(id, title, output_dir = '.', merge = True):
 
 def tudou_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_decoded_html(url)
+    
     iid = r1(r'iid\s*[:=]\s*(\d+)', html)
-    assert iid
+    if not iid:
+        tudou_download_playlist(url, output_dir, merge, info_only)
+        return
+    
     title = r1(r'kw\s*[:=]\s*"([^"]+)"', html)
     assert title
     title = unescape_html(title)
+    
     tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
-
-def parse_playlist(url):
-    #if r1('http://www.tudou.com/playlist/p/a(\d+)\.html', url):
-    #	html = get_html(url)
-    #	print re.search(r'<script>var.*?</script>', html, flags=re.S).group()
-    #else:
-    #	raise NotImplementedError(url)
-    raise NotImplementedError()
 
 def parse_playlist(url):
     aid = r1('http://www.tudou.com/playlist/p/a(\d+)(?:i\d+)?\.html', url)
@@ -65,7 +62,7 @@ def parse_playlist(url):
 def tudou_download_playlist(url, output_dir = '.', merge = True, info_only = False):
     videos = parse_playlist(url)
     for i, (title, id) in enumerate(videos):
-        print('Downloading %s of %s videos...' % (i + 1, len(videos)))
+        print('Processing %s of %s videos...' % (i + 1, len(videos)))
         tudou_download_by_iid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
 site_info = "Tudou.com"

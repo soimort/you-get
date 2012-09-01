@@ -348,6 +348,7 @@ def print_info(site_info, title, type, size):
     print("Title:     ", tr(title))
     print("Type:      ", type_info)
     print("Size:      ", round(size / 1048576, 2), "MB (" + str(size) + " Bytes)")
+    print()
 
 def set_http_proxy(proxy):
     if proxy == None: # Use system default setting
