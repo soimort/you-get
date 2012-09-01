@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.1.1
+---
+
+*Date: 2012-09-01*
+
+* Playlist URLs are now automatically handled. ('--playlist' option is no longer needed)
+* Handle KeyboardInterrupt silently.
+* Fix Unicode character display on code pages.
+
 0.1
 ---
 
