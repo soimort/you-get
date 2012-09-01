@@ -106,8 +106,11 @@ def url_info(url):
         'video/webm': 'webm',
         'video/x-flv': 'flv'
     }
-    assert type in mapping, type
-    ext = mapping[type]
+    #assert type in mapping, type
+    if type in mapping:
+        ext = mapping[type]
+    else:
+        ext = None
     
     size = int(headers['content-length'])
     
