@@ -278,6 +278,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
     if total_size:
         if not force and os.path.exists(filepath) and os.path.getsize(filepath) >= total_size * 0.9:
             print('Skipping %s: file already exists' % tr(filepath))
+            print()
             return
         bar = SimpleProgressBar(total_size, len(urls))
     else:
@@ -300,6 +301,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             url_save(url, filepath, bar, refer = refer, is_part = True)
         bar.done()
         if not merge:
+            print()
             return
         if ext == 'flv':
             from .processor.merge_flv import concat_flvs
@@ -313,6 +315,8 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
                 os.remove(flv)
         else:
             print("Can't merge %s files" % ext)
+    
+    print()
 
 def playlist_not_supported(name):
     def f(*args, **kwargs):
