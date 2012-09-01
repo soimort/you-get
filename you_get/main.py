@@ -18,9 +18,11 @@ def url_to_module(url):
     downloads = {
         '56': w56,
         'acfun': acfun,
+        'bilibili': bilibili,
         'cntv': cntv,
         'iask': sina,
         'iqiyi': iqiyi,
+        'kankanews': bilibili,
         'ku6': ku6,
         'pptv': pptv,
         'sina': sina,
@@ -29,9 +31,7 @@ def url_to_module(url):
         'yinyuetai': yinyuetai,
         'youku': youku,
         'youtube': youtube,
-        #TODO:
-        # 'bilibili': bilibili,
-        # 'kankanews': bilibili,
+        #TODO
     }
     if k in downloads:
         return downloads[k]
