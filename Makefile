@@ -20,6 +20,6 @@ install: bdist_egg
 
 release:
 	zenity --warning
-	python3 setup.py bdist bdist_egg upload
+	python3 setup.py sdist bdist_egg upload
 
 .PHONY: default clean build sdist bdist bdist_egg install release
