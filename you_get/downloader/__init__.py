@@ -9,6 +9,7 @@ from .pptv import *
 from .sina import *
 from .sohu import *
 from .tudou import *
+from .vimeo import *
 from .w56 import *
 from .yinyuetai import *
 from .youku import *

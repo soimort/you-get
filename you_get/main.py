@@ -12,6 +12,8 @@ def url_to_module(url):
     if site.endswith('.com.cn'):
         site = site[:-3]
     domain = r1(r'(\.[^.]+\.[^.]+)$', site)
+    if not domain:
+        domain = site
     assert domain, 'unsupported url: ' + url
     
     k = r1(r'([^.]+)', domain)
@@ -28,6 +30,7 @@ def url_to_module(url):
         'sina': sina,
         'sohu': sohu,
         'tudou': tudou,
+        'vimeo': vimeo,
         'yinyuetai': yinyuetai,
         'youku': youku,
         'youtube': youtube,
