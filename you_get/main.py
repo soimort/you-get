@@ -23,6 +23,7 @@ def url_to_module(url):
         'bilibili': bilibili,
         'cntv': cntv,
         'iask': sina,
+        'ifeng': ifeng,
         'iqiyi': iqiyi,
         'kankanews': bilibili,
         'ku6': ku6,
