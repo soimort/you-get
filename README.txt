@@ -21,7 +21,7 @@ Supported Sites (As of Now)
 * AcFun http://www.acfun.tv
 * bilibili http://www.bilibili.tv
 * CNTV (中国网络电视台) http://www.cntv.cn
-* ifeng (凤凰网) http://www.ifeng.com
+* ifeng (凤凰视频) http://v.ifeng.com
 * iQIYI (爱奇艺) http://www.iqiyi.com
 * Ku6 (酷6网) http://www.ku6.com
 * PPTV http://www.pptv.com
