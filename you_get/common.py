@@ -2,6 +2,7 @@
 
 import getopt
 import json
+import locale
 import os
 import re
 import sys
@@ -16,6 +17,14 @@ except:
     proj_info = {'version': __version__}
 
 force = False
+
+fake_headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Charset': 'UTF-8,*;q=0.5',
+    'Accept-Encoding': 'gzip,deflate,sdc',
+    'Accept-Language': 'en-US,en;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.57 Safari/537.1'
+}
 
 if sys.stdout.isatty():
     default_encoding = sys.stdout.encoding.lower()
@@ -64,8 +73,12 @@ def undeflate(s):
     import zlib
     return zlib.decompress(s, -zlib.MAX_WBITS)
 
-def get_response(url):
-    response = request.urlopen(url)
+def get_response(url, faker = False):
+    if faker:
+        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+    else:
+        response = request.urlopen(url)
+    
     data = response.read()
     if response.info().get('Content-Encoding') == 'gzip':
         data = ungzip(data)
@@ -74,12 +87,12 @@ def get_response(url):
     response.data = data
     return response
 
-def get_html(url, encoding = None):
-    content = get_response(url).data
+def get_html(url, encoding = None, faker = False):
+    content = get_response(url, faker).data
     return str(content, 'utf-8', 'ignore')
 
-def get_decoded_html(url):
-    response = get_response(url)
+def get_decoded_html(url, faker = False):
+    response = get_response(url, faker)
     data = response.data
     charset = r1(r'charset=([\w-]+)', response.headers['content-type'])
     if charset:
@@ -87,15 +100,24 @@ def get_decoded_html(url):
     else:
         return data
 
-def url_size(url):
-    size = int(request.urlopen(url).headers['content-length'])
+def url_size(url, faker = False):
+    if faker:
+        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+    else:
+        response = request.urlopen(url)
+    
+    size = int(response.headers['content-length'])
     return size
 
 def urls_size(urls):
     return sum(map(url_size, urls))
 
-def url_info(url):
-    response = request.urlopen(request.Request(url))
+def url_info(url, faker = False):
+    if faker:
+        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+    else:
+        response = request.urlopen(request.Request(url))
+    
     headers = response.headers
     
     type = headers['content-type']
@@ -115,15 +137,19 @@ def url_info(url):
     
     return type, ext, size
 
-def url_locations(urls):
+def url_locations(urls, faker = False):
     locations = []
     for url in urls:
-        response = request.urlopen(request.Request(url))
+        if faker:
+            response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        else:
+            response = request.urlopen(request.Request(url))
+        
         locations.append(response.url)
     return locations
 
-def url_save(url, filepath, bar, refer = None, is_part = False):
-    file_size = url_size(url)
+def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
+    file_size = url_size(url, faker = faker)
     
     if os.path.exists(filepath):
         if not force and file_size == os.path.getsize(filepath):
@@ -156,7 +182,10 @@ def url_save(url, filepath, bar, refer = None, is_part = False):
         open_mode = 'wb'
     
     if received < file_size:
-        headers = {}
+        if faker:
+            headers = fake_headers
+        else:
+            headers = {}
         if received:
             headers['Range'] = 'bytes=' + str(received) + '-'
         if refer:
@@ -263,7 +292,7 @@ class DummyProgressBar:
     def done(self):
         pass
 
-def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True):
+def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
     assert urls
     assert ext in ('3gp', 'flv', 'mp4', 'webm')
     if not total_size:
@@ -289,7 +318,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
     if len(urls) == 1:
         url = urls[0]
         print('Downloading %s ...' % tr(filename))
-        url_save(url, filepath, bar, refer = refer)
+        url_save(url, filepath, bar, refer = refer, faker = faker)
         bar.done()
     else:
         flvs = []
@@ -300,7 +329,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             flvs.append(filepath)
             #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
-            url_save(url, filepath, bar, refer = refer, is_part = True)
+            url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker)
         bar.done()
         if not merge:
             print()
