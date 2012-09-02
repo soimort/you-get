@@ -18,6 +18,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * AcFun <http://www.acfun.tv>
 * bilibili <http://www.bilibili.tv>
 * CNTV (中国网络电视台) <http://www.cntv.cn>
+* ifeng (凤凰网) <http://www.ifeng.com>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
 * Ku6 (酷6网) <http://www.ku6.com>
 * PPTV <http://www.pptv.com>
@@ -199,6 +200,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * AcFun <http://www.acfun.tv>
 * bilibili <http://www.bilibili.tv>
 * CNTV <http://www.cntv.cn>
+* 凤凰网 <http://www.ifeng.com>
 * 爱奇艺 <http://www.iqiyi.com>
 * 酷6网 <http://www.ku6.com>
 * PPTV <http://www.pptv.com>

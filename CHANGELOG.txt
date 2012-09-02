@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.1
+-----
+
+*Date: 2012-09-02*
+
+* Add support for:
+    - ifeng
+
 0.2
 ---
 
