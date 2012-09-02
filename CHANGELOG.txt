@@ -1,6 +1,23 @@
 Changelog
 =========
 
+0.2
+---
+
+*Date: 2012-09-02*
+
+* Add support for:
+    - Vimeo
+    - AcFun
+    - bilibili
+    - CNTV
+    - iQIYI
+    - Ku6
+    - PPTV
+    - Sina
+    - Sohu
+    - 56
+
 0.1.3
 -----
 

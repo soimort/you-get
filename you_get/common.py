@@ -8,13 +8,7 @@ import re
 import sys
 from urllib import request, parse
 
-__version__ = "0.1.3"
-
-try:
-    proj_info = json.loads(open('you-get.json').read())
-except:
-    import you_get
-    proj_info = {'version': __version__}
+__version__ = "0.2"
 
 force = False
 
@@ -404,7 +398,7 @@ def set_http_proxy(proxy):
     request.install_opener(opener)
 
 def script_main(script_name, download, download_playlist = None):
-    version = 'You-Get %s, a video downloader.' % proj_info['version']
+    version = 'You-Get %s, a video downloader.' % __version__
     help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
     help += '''\nStartup options:
     -V | --version                           Display the version and exit.

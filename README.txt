@@ -1,7 +1,7 @@
 You-Get
 =======
 
-`You-Get <https://github.com/soimort/you-get>`_ is a video downloader runs on Python 3. It aims at easing the download of videos on `YouTube <http://www.youtube.com>`_, `Youku <http://www.youku.com>`_/`Tudou <http://www.tudou.com>`_ (biggest online video providers in China), etc., in one tool.
+`You-Get <https://github.com/soimort/you-get>`_ is a video downloader runs on Python 3. It aims at easing the download of videos on `YouTube <http://www.youtube.com>`_, `Youku <http://www.youku.com>`_/`Tudou <http://www.tudou.com>`_ (biggest online video providers in China), etc., in one script.
 
 See the project homepage http://www.soimort.org/you-get for further documentation.
 
@@ -10,13 +10,23 @@ Fork me on GitHub: https://github.com/soimort/you-get
 Features
 --------
 
-Supported Sites (UPDATING!)
+Supported Sites (As of Now)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * YouTube http://www.youtube.com
-* Youku http://www.youku.com
-* Tudou http://www.tudou.com
-* YinYueTai http://www.yinyuetai.com
+* Vimeo http://vimeo.com
+* Youku (优酷) http://www.youku.com
+* Tudou (土豆) http://www.tudou.com
+* YinYueTai (音悦台) http://www.yinyuetai.com
+* AcFun http://www.acfun.tv
+* bilibili http://www.bilibili.tv
+* CNTV (中国网络电视台) http://www.cntv.cn
+* iQIYI (爱奇艺) http://www.iqiyi.com
+* Ku6 (酷6网) http://www.ku6.com
+* PPTV http://www.pptv.com
+* Sina (新浪视频) http://video.sina.com.cn
+* Sohu (搜狐视频) http://tv.sohu.com
+* 56 (56网) http://www.56.com
 
 Supported Video Formats
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,7 +41,7 @@ Installation
 
 #) Install via `Pip <http://www.pip-installer.org/>`_::
 
-    $ pip install you_get
+    $ pip install you-get
     
    Check if the installation was successful::
     
@@ -39,7 +49,7 @@ Installation
 
 #) Install via `EasyInstall <http://pypi.python.org/pypi/setuptools>`_::
 
-    $ easy_install you_get
+    $ easy_install you-get
     
    Check if the installation was successful::
     
@@ -59,17 +69,15 @@ Installation
     
     $ make install
     
-   Or::
+   Or (on Windows)::
     
     > setup.py install
-    
-   on Windows.
     
    Check if the installation was successful::
     
     $ you-get -V
 
-#) Clone the Git repository (RECOMMENDED!)::
+#) Install from Git::
 
     $ git clone git://github.com/soimort/you-get.git
     
@@ -82,11 +90,9 @@ Installation
     
     $ make install
     
-   Or::
+   Or (on Windows)::
     
     > setup.py install
-    
-   on Windows.
     
    Check if the installation was successful::
     
@@ -107,13 +113,13 @@ Download multiple videos::
 
     $ you-get http://www.youtube.com/watch?v=sGwy8DsUJ4M http://www.youtube.com/watch?v=8bQlxQJEzLk
 
-By default, program will skip any video that already exists in the local directory when downloading. If a temporary file (ends with a filename extension ".download") exists, program will resume this download.
+By default, program will skip any video that already exists in the local directory when downloading. If a temporary file (ends with a ".download" filename extension) is found, program will resume the download from last session.
 
-To enforce the re-downloading of videos, use '-f' option (this will overwrite any existing video or temporary file, rather than skipping or resuming them)::
+To enforce re-downloading of videos, use '-f' option (this will overwrite any existing video or temporary file, rather than skipping or resuming them)::
 
     $ you-get -f http://www.youtube.com/watch?v=sGwy8DsUJ4M
 
-Set the output directory of downloaded files::
+Set the output directory for downloaded files::
 
     $ you-get -o ~/Downloads http://www.youtube.com/watch?v=sGwy8DsUJ4M
 
@@ -135,12 +141,12 @@ For a complete list of all available options, see::
 Examples (For Developers)
 -------------------------
 
-In Python 3.2 (interactive)::
+In Python 3 (interactive)::
 
     >>> import you_get
     
     >>> you_get.__version__
-    '0.1'
+    '0.2'
     
     >>> you_get.youtube_download("http://www.youtube.com/watch?v=8bQlxQJEzLk", info_only = True)
     Video Site: YouTube.com
@@ -153,6 +159,7 @@ In Python 3.2 (interactive)::
     Title:      Mort from Madagascar LIKES
     Type:       WebM video (video/webm)
     Size:       1.78 MB (1867072 Bytes)
+    
     Downloading Mort from Madagascar LIKES.webm ...
     100.0% (  1.8/1.8  MB) [========================================] 1/1
 
