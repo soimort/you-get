@@ -11,7 +11,7 @@ from .youku import youku_download_by_id
 import re
 
 def get_srt_xml(id):
-    url = 'http://comment.bilibili.tv/dm,%s' % id
+    url = 'http://comment.bilibili.tv/%s.xml' % id
     return get_html(url)
 
 def parse_srt_p(p):
@@ -47,6 +47,26 @@ def parse_srt_xml(xml):
         p = parse_srt_p(x)
     raise NotImplementedError()
 
+def parse_cid_playurl(xml):
+    from xml.dom.minidom import parseString
+    doc = parseString(xml.encode('utf-8'))
+    urls = [durl.getElementsByTagName('url')[0].firstChild.nodeValue for durl in doc.getElementsByTagName('durl')]
+    return urls
+
+def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_only = False):
+    url = 'http://interface.bilibili.tv/playurl?cid=' + id
+    urls = parse_cid_playurl(get_html(url, 'utf-8'))
+    assert re.search(r'\.(flv|hlv)\b', urls[0]), urls[0]
+    
+    size = 0
+    for url in urls:
+        _, _, temp = url_info(url)
+        size += temp
+    
+    print_info(site_info, title, 'flv', size)
+    if not info_only:
+        download_urls(urls, title, 'flv', total_size = None, output_dir = output_dir, merge = merge)
+
 def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
     assert re.match(r'http://(www.bilibili.tv|bilibili.kankanews.com)/video/av(\d+)', url)
     html = get_html(url)
@@ -55,10 +75,12 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
     title = unescape_html(title)
     title = escape_file_path(title)
     
-    flashvars = r1(r'flashvars="([^"]+)"', html)
+    flashvars = r1_of([r'flashvars="([^"]+)"', r'"https://secure.bilibili.tv/secure,(cid=\d+)"'], html)
     assert flashvars
     t, id = flashvars.split('=', 1)
-    if t == 'vid':
+    if t == 'cid':
+        bilibili_download_by_cid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+    elif t == 'vid':
         sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'ykid':
         youku_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
@@ -67,9 +89,11 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
     else:
         raise NotImplementedError(flashvars)
     
-    #xml = get_srt_xml(id)
-    #with open(title + '.xml', 'w') as x:
-    #    x.write(xml.encode('utf-8'))
+    if not info_only:
+        print('Downloading %s ...' % (title + '.cmt.xml'))
+        xml = get_srt_xml(id)
+        with open(title + '.cmt.xml', 'w') as x:
+            x.write(xml)
 
 site_info = "bilibili.tv"
 download = bilibili_download

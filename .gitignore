@@ -6,6 +6,7 @@ _*/
 *.py[cod]
 
 *.download
+*.cmt.*
 *.3gp
 *.flv
 *.mp4

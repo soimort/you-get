@@ -221,7 +221,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 
 （以下命令格式均以Linux shell为例）
 
-### 1. 通过[Pip](http://www.pip-installer.org/)安装:
+### 1. 通过[Pip](http://www.pip-installer.org/)安装：
 
     $ pip install you-get
     
@@ -259,7 +259,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
     
     $ you-get -V
 
-### 4. 从Git安装:
+### 4. 从Git安装：
 
     $ git clone git://github.com/soimort/you-get.git
     

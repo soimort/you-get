@@ -38,9 +38,11 @@ def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_
     else:
         raise NotImplementedError(t)
     
-    #srt = get_srt_json(vid)
-    #with open(title + '.json', 'w') as x:
-    #    x.write(srt)
+    if not info_only:
+        print('Downloading %s ...' % (title + '.cmt.json'))
+        cmt = get_srt_json(vid)
+        with open(title + '.cmt.json', 'w') as x:
+            x.write(cmt)
 
 def acfun_download(url, output_dir = '.', merge = True, info_only = False):
     assert re.match(r'http://www.acfun.tv/v/ac(\d+)', url)
