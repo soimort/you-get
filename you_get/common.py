@@ -119,6 +119,7 @@ def url_info(url, faker = False):
         'video/3gpp': '3gp',
         'video/f4v': 'flv',
         'video/mp4': 'mp4',
+        'video/mp2t': 'ts',
         'video/webm': 'webm',
         'video/x-flv': 'flv'
     }
@@ -288,7 +289,7 @@ class DummyProgressBar:
 
 def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
     assert urls
-    assert ext in ('3gp', 'flv', 'mp4', 'webm')
+    assert ext in ('3gp', 'flv', 'mp4', 'ts', 'webm')
     if not total_size:
         try:
             total_size = urls_size(urls)
@@ -315,12 +316,12 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
         url_save(url, filepath, bar, refer = refer, faker = faker)
         bar.done()
     else:
-        flvs = []
+        parts = []
         print('Downloading %s.%s ...' % (tr(title), ext))
         for i, url in enumerate(urls):
             filename = '%s[%02d].%s' % (title, i, ext)
             filepath = os.path.join(output_dir, filename)
-            flvs.append(filepath)
+            parts.append(filepath)
             #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
             url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker)
@@ -329,15 +330,20 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             print()
             return
         if ext == 'flv':
-            from .processor.merge_flv import concat_flvs
-            concat_flvs(flvs, os.path.join(output_dir, title + '.flv'))
-            for flv in flvs:
-                os.remove(flv)
+            from .processor.join_flv import concat_flv
+            concat_flv(parts, os.path.join(output_dir, title + '.flv'))
+            for part in parts:
+                os.remove(part)
         elif ext == 'mp4':
-            from .processor.merge_mp4 import concat_mp4s
-            concat_mp4s(flvs, os.path.join(output_dir, title + '.mp4'))
-            for flv in flvs:
-                os.remove(flv)
+            from .processor.join_mp4 import concat_mp4
+            concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
+            for part in parts:
+                os.remove(part)
+        elif ext == 'ts':
+            from .processor.join_ts import concat_ts
+            concat_ts(parts, os.path.join(output_dir, title + '.ts'))
+            for part in parts:
+                os.remove(part)
         else:
             print("Can't merge %s files" % ext)
     
@@ -355,6 +361,8 @@ def print_info(site_info, title, type, size):
         type = 'video/x-flv'
     elif type in ['mp4']:
         type = 'video/mp4'
+    elif type in ['ts']:
+        type = 'video/mp2t'
     elif type in ['webm']:
         type = 'video/webm'
     
@@ -364,6 +372,8 @@ def print_info(site_info, title, type, size):
         type_info = "Flash video (%s)" % type
     elif type in ['video/mp4', 'video/x-m4v']:
         type_info = "MPEG-4 video (%s)" % type
+    elif type in ['video/mp2t']:
+        type_info = "MPEG-2 transport stream (%s)" % type
     elif type in ['video/webm']:
         type_info = "WebM video (%s)" % type
     #elif type in ['video/ogg']:

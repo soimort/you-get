@@ -292,7 +292,7 @@ def guess_output(inputs):
             return inputs[0][:i] + '.flv'
     return 'output.flv'
 
-def concat_flvs(flvs, output = None):
+def concat_flv(flvs, output = None):
     assert flvs, 'no flv file found'
     import os.path
     if not output:
@@ -336,7 +336,7 @@ def concat_flvs(flvs, output = None):
     return output
 
 def usage():
-    print('Usage: [python3] merge_flv.py --output TARGET.flv flv...')
+    print('Usage: [python3] join_flv.py --output TARGET.flv flv...')
 
 def main():
     import sys, getopt
@@ -359,7 +359,7 @@ def main():
         usage()
         sys.exit(1)
     
-    concat_flvs(args, output)
+    concat_flv(args, output)
 
 if __name__ == '__main__':
     main()

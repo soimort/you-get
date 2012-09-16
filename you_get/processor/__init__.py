@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-__all__ = ['concat_flvs', 'concat_mp4s']
+__all__ = ['concat_flv', 'concat_mp4', 'concat_ts']
 
-from .merge_flv import concat_flvs
-from .merge_mp4 import concat_mp4s
+from .join_flv import concat_flv
+from .join_mp4 import concat_mp4
+from .join_ts import concat_ts

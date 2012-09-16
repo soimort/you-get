@@ -853,7 +853,7 @@ def merge_mp4s(files, output):
 # main
 ##################################################
 
-# TODO: FIXME: duplicate of merge_flv
+# TODO: FIXME: duplicate of join_flv
 
 def guess_output(inputs):
     import os.path
@@ -864,7 +864,7 @@ def guess_output(inputs):
             return inputs[0][:i] + '.mp4'
     return 'output.mp4'
 
-def concat_mp4s(mp4s, output = None):
+def concat_mp4(mp4s, output = None):
     assert mp4s, 'no mp4 file found'
     import os.path
     if not output:
@@ -878,7 +878,7 @@ def concat_mp4s(mp4s, output = None):
     return output
 
 def usage():
-    print('Usage: [python3] merge_mp4.py --output TARGET.mp4 mp4...')
+    print('Usage: [python3] join_mp4.py --output TARGET.mp4 mp4...')
 
 def main():
     import sys, getopt
@@ -901,7 +901,7 @@ def main():
         usage()
         sys.exit(1)
     
-    concat_mp4s(args, output)
+    concat_mp4(args, output)
 
 if __name__ == '__main__':
     main()
