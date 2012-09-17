@@ -43,6 +43,9 @@ def r1_of(patterns, text):
         if x:
             return x
 
+def unicodize(text):
+    return re.sub(r'\\u([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])', lambda x: chr(int(x.group(0)[2:], 16)), text)
+
 def escape_file_path(path):
     path = path.replace('/', '-')
     path = path.replace('\\', '-')
@@ -572,6 +575,8 @@ def script_main(script_name, download, download_playlist = None):
     set_http_proxy(proxy)
     
     for url in args:
+        if url.startswith('https://'):
+            url = url[8:]
         if not url.startswith('http://'):
             url = 'http://' + url
         

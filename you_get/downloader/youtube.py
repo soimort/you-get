@@ -8,7 +8,17 @@ def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, inf
     try:
         url = parse.parse_qs(parse.unquote(request.urlopen('http://www.youtube.com/get_video_info?&video_id=' + id).read().decode('utf-8')))['url_encoded_fmt_stream_map'][0][4:]
     except:
-        url = parse.parse_qs(parse.unquote(request.urlopen('http://www.youtube.com/watch?v=' + id).read().decode('utf-8')))['url_encoded_fmt_stream_map'][0][4:]
+        html = request.urlopen('http://www.youtube.com/watch?v=' + id).read().decode('utf-8')
+        url = parse.parse_qs(parse.unquote(html))['url_encoded_fmt_stream_map'][0][4:]
+        if not url.startswith('http://'):
+            codec = r1(r'yt.preload.start\("http:\\/\\/([^\\]+)\\/crossdomain.xml"\)', html)
+            signature = r1(r'signature=([^\\]+)\\', html)
+            urls = parse.parse_qs(parse.unquote(html))['url']
+            for u in urls:
+                if u.startswith('http://' + codec):
+                    url = "%s&signature=%s" % (u, signature)
+                    break
+    
     type, ext, size = url_info(url)
     
     print_info(site_info, title, type, size)
@@ -23,6 +33,7 @@ def youtube_download(url, output_dir = '.', merge = True, info_only = False):
     except:
         html = get_html(url, 'utf-8')
         title = r1(r'"title": "([^"]+)"', html)
+        title = unicodize(title)
     assert title
     title = parse.unquote(title)
     title = escape_file_path(title)
