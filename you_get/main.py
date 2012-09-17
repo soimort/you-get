@@ -51,8 +51,4 @@ def any_download_playlist(url, output_dir = '.', merge = True, info_only = False
     m.download_playlist(url, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def main():
-    import sys
-    try:
-        script_main('you-get', any_download, any_download_playlist)
-    except KeyboardInterrupt:
-        sys.exit(1)
+    script_main('you-get', any_download, any_download_playlist)

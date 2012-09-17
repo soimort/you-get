@@ -507,6 +507,18 @@ def set_http_proxy(proxy):
     opener = request.build_opener(proxy_support)
     request.install_opener(opener)
 
+def download_main(download, download_playlist, urls, playlist, output_dir, merge, info_only):
+    for url in urls:
+        if url.startswith('https://'):
+            url = url[8:]
+        if not url.startswith('http://'):
+            url = 'http://' + url
+        
+        if playlist:
+            download_playlist(url, output_dir = output_dir, merge = merge, info_only = info_only)
+        else:
+            download(url, output_dir = output_dir, merge = merge, info_only = info_only)
+
 def script_main(script_name, download, download_playlist = None):
     version = 'You-Get %s, a video downloader.' % __version__
     help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
@@ -517,15 +529,15 @@ def script_main(script_name, download, download_playlist = None):
     help += '''\nDownload options (use with URLs):
     -f | --force                             Force overwriting existed files.
     -i | --info                              Display the information of videos without downloading.
-    -l | --playlist                          Download playlists. (only available for some sites)
     -n | --no-merge                          Don't merge video parts.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
     -x | --http-proxy <PROXY-SERVER-IP:PORT> Use specific HTTP proxy for downloading.
          --no-proxy                          Don't use any proxy. (ignore $http_proxy)
+         --debug                             Show traceback on KeyboardInterrupt.
     '''
     
     short_opts = 'Vhfino:x:'
-    opts = ['version', 'help', 'force', 'info', 'no-merge', 'no-proxy', 'output-dir=', 'http-proxy=']
+    opts = ['version', 'help', 'force', 'info', 'no-merge', 'no-proxy', 'debug', 'output-dir=', 'http-proxy=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -542,6 +554,7 @@ def script_main(script_name, download, download_playlist = None):
     merge = True
     output_dir = '.'
     proxy = None
+    traceback = False
     for o, a in opts:
         if o in ('-V', '--version'):
             print(version)
@@ -561,6 +574,8 @@ def script_main(script_name, download, download_playlist = None):
             merge = False
         elif o in ('--no-proxy'):
             proxy = ''
+        elif o in ('--debug'):
+            traceback = True
         elif o in ('-o', '--output-dir'):
             output_dir = a
         elif o in ('-x', '--http-proxy'):
@@ -574,13 +589,10 @@ def script_main(script_name, download, download_playlist = None):
     
     set_http_proxy(proxy)
     
-    for url in args:
-        if url.startswith('https://'):
-            url = url[8:]
-        if not url.startswith('http://'):
-            url = 'http://' + url
-        
-        if playlist:
-            download_playlist(url, output_dir = output_dir, merge = merge, info_only = info_only)
-        else:
-            download(url, output_dir = output_dir, merge = merge, info_only = info_only)
+    if traceback:
+        download_main(download, download_playlist, args, playlist, output_dir, merge, info_only)
+    else:
+        try:
+            download_main(download, download_playlist, args, playlist, output_dir, merge, info_only)
+        except KeyboardInterrupt:
+            sys.exit(1)
