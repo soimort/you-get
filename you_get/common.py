@@ -119,7 +119,7 @@ def url_info(url, faker = False):
         'video/3gpp': '3gp',
         'video/f4v': 'flv',
         'video/mp4': 'mp4',
-        'video/mp2t': 'ts',
+        'video/MP2T': 'ts',
         'video/webm': 'webm',
         'video/x-flv': 'flv'
     }
@@ -212,6 +212,64 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
     os.rename(temp_filepath, filepath)
 
+def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False):
+    if os.path.exists(filepath):
+        if not force:
+            if not is_part:
+                if bar:
+                    bar.done()
+                print('Skipping %s: file already exists' % tr(os.path.basename(filepath)))
+            else:
+                if bar:
+                    bar.update_received(os.path.getsize(filepath))
+            return
+        else:
+            if not is_part:
+                if bar:
+                    bar.done()
+                print('Overwriting %s' % tr(os.path.basename(filepath)), '...')
+    elif not os.path.exists(os.path.dirname(filepath)):
+        os.mkdir(os.path.dirname(filepath))
+    
+    temp_filepath = filepath + '.download'
+    received = 0
+    if not force:
+        open_mode = 'ab'
+        
+        if os.path.exists(temp_filepath):
+            received += os.path.getsize(temp_filepath)
+            if bar:
+                bar.update_received(os.path.getsize(temp_filepath))
+    else:
+        open_mode = 'wb'
+    
+    if faker:
+        headers = fake_headers
+    else:
+        headers = {}
+    if received:
+        headers['Range'] = 'bytes=' + str(received) + '-'
+    if refer:
+        headers['Referer'] = refer
+    
+    response = request.urlopen(request.Request(url, headers = headers), None)
+    
+    with open(temp_filepath, open_mode) as output:
+        while True:
+            buffer = response.read(1024 * 256)
+            if not buffer:
+                break
+            output.write(buffer)
+            received += len(buffer)
+            if bar:
+                bar.update_received(len(buffer))
+    
+    assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (received, os.path.getsize(temp_filepath))
+    
+    if os.access(filepath, os.W_OK):
+        os.remove(filepath) # on Windows rename could fail if destination filepath exists
+    os.rename(temp_filepath, filepath)
+
 class SimpleProgressBar:
     def __init__(self, total_size, total_pieces = 1):
         self.displayed = False
@@ -289,7 +347,7 @@ class DummyProgressBar:
 
 def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
     assert urls
-    assert ext in ('3gp', 'flv', 'mp4', 'ts', 'webm')
+    assert ext in ('3gp', 'flv', 'mp4', 'webm')
     if not total_size:
         try:
             total_size = urls_size(urls)
@@ -339,7 +397,46 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
             for part in parts:
                 os.remove(part)
-        elif ext == 'ts':
+        else:
+            print("Can't merge %s files" % ext)
+    
+    print()
+
+def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
+    assert urls
+    assert ext in ('ts')
+    title = escape_file_path(title)
+    filename = '%s.%s' % (title, ext)
+    filepath = os.path.join(output_dir, filename)
+    if total_size:
+        if not force and os.path.exists(filepath) and os.path.getsize(filepath) >= total_size * 0.9:
+            print('Skipping %s: file already exists' % tr(filepath))
+            print()
+            return
+        bar = SimpleProgressBar(total_size, len(urls))
+    else:
+        bar = PiecesProgressBar(total_size, len(urls))
+    
+    if len(urls) == 1:
+        url = urls[0]
+        print('Downloading %s ...' % tr(filename))
+        url_save_chunked(url, filepath, bar, refer = refer, faker = faker)
+        bar.done()
+    else:
+        parts = []
+        print('Downloading %s.%s ...' % (tr(title), ext))
+        for i, url in enumerate(urls):
+            filename = '%s[%02d].%s' % (title, i, ext)
+            filepath = os.path.join(output_dir, filename)
+            parts.append(filepath)
+            #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
+            bar.update_piece(i + 1)
+            url_save_chunked(url, filepath, bar, refer = refer, is_part = True, faker = faker)
+        bar.done()
+        if not merge:
+            print()
+            return
+        if ext == 'ts':
             from .processor.join_ts import concat_ts
             concat_ts(parts, os.path.join(output_dir, title + '.ts'))
             for part in parts:
@@ -362,7 +459,7 @@ def print_info(site_info, title, type, size):
     elif type in ['mp4']:
         type = 'video/mp4'
     elif type in ['ts']:
-        type = 'video/mp2t'
+        type = 'video/MP2T'
     elif type in ['webm']:
         type = 'video/webm'
     
@@ -372,7 +469,7 @@ def print_info(site_info, title, type, size):
         type_info = "Flash video (%s)" % type
     elif type in ['video/mp4', 'video/x-m4v']:
         type_info = "MPEG-4 video (%s)" % type
-    elif type in ['video/mp2t']:
+    elif type in ['video/MP2T']:
         type_info = "MPEG-2 transport stream (%s)" % type
     elif type in ['video/webm']:
         type_info = "WebM video (%s)" % type
