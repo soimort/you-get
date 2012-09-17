@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.2.2
+-----
+
+*Date: 2012-09-17*
+
+* Add danmaku support for AcFun and bilibili.
+* Fix issue `#2 <https://github.com/soimort/you-get/issues/2>`_ and `#4 <https://github.com/soimort/you-get/issues/4>`_ for YouTube.
+* Temporarily fix issue for iQIYI (use .ts instead of .f4v).
+
 0.2.1
 -----
 

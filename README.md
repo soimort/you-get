@@ -32,6 +32,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * MP4 (*.mp4)
 * FLV (*.flv)
 * 3GP (*.3gp)
+* MPEG-TS (*.ts)
 
 ## Installation
 
@@ -214,8 +215,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * MP4 (*.mp4)
 * FLV (*.flv)
 * 3GP (*.3gp)
-
-对于YouTube，程序将下载画质最高的[编码格式](http://en.wikipedia.org/wiki/Youtube#Quality_and_codecs)。
+* MPEG-TS (*.ts)
 
 ## 安装说明
 

@@ -36,6 +36,7 @@ Supported Video Formats
 * MP4 (\*.mp4)
 * FLV (\*.flv)
 * 3GP (\*.3gp)
+* MPEG-TS (\*.ts)
 
 Installation
 ------------
