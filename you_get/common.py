@@ -10,6 +10,7 @@ from urllib import request, parse
 
 __version__ = "0.2.2"
 
+dry_run = False
 force = False
 
 fake_headers = {
@@ -350,6 +351,10 @@ class DummyProgressBar:
 
 def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
     assert urls
+    if dry_run:
+        print('Real URLs:\n', urls)
+        return
+    
     assert ext in ('3gp', 'flv', 'mp4', 'webm')
     if not total_size:
         try:
@@ -407,6 +412,10 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
 
 def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
     assert urls
+    if dry_run:
+        print('Real URLs:\n', urls)
+        return
+    
     assert ext in ('ts')
     title = escape_file_path(title)
     filename = '%s.%s' % (title, ext)
@@ -529,6 +538,7 @@ def script_main(script_name, download, download_playlist = None):
     help += '''\nDownload options (use with URLs):
     -f | --force                             Force overwriting existed files.
     -i | --info                              Display the information of videos without downloading.
+    -u | --url                               Display the real URLs of videos without downloading.
     -n | --no-merge                          Don't merge video parts.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
     -x | --http-proxy <PROXY-SERVER-IP:PORT> Use specific HTTP proxy for downloading.
@@ -536,8 +546,8 @@ def script_main(script_name, download, download_playlist = None):
          --debug                             Show traceback on KeyboardInterrupt.
     '''
     
-    short_opts = 'Vhfino:x:'
-    opts = ['version', 'help', 'force', 'info', 'no-merge', 'no-proxy', 'debug', 'output-dir=', 'http-proxy=']
+    short_opts = 'Vhfiuno:x:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'no-merge', 'no-proxy', 'debug', 'output-dir=', 'http-proxy=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -568,6 +578,9 @@ def script_main(script_name, download, download_playlist = None):
             force = True
         elif o in ('-i', '--info'):
             info_only = True
+        elif o in ('-u', '--url'):
+            global dry_run
+            dry_run = True
         elif o in ('-l', '--playlist'):
             playlist = True
         elif o in ('-n', '--no-merge'):
