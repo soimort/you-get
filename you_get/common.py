@@ -352,7 +352,7 @@ class DummyProgressBar:
 def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
     assert urls
     if dry_run:
-        print('Real URLs:\n', urls)
+        print('Real URLs:\n', urls, '\n')
         return
     
     assert ext in ('3gp', 'flv', 'mp4', 'webm')
@@ -392,6 +392,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             bar.update_piece(i + 1)
             url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker)
         bar.done()
+        
         if not merge:
             print()
             return
@@ -401,10 +402,20 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             for part in parts:
                 os.remove(part)
         elif ext == 'mp4':
-            from .processor.join_mp4 import concat_mp4
-            concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
-            for part in parts:
-                os.remove(part)
+            try:
+                from .processor.join_mp4 import concat_mp4
+                concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
+                for part in parts:
+                    os.remove(part)
+            except:
+                from .processor.ffmpeg import has_ffmpeg_installed
+                if has_ffmpeg_installed():
+                    from .processor.ffmpeg import ffmpeg_concat_mp4_to_mpg
+                    ffmpeg_concat_mp4_to_mpg(parts, os.path.join(output_dir, title + '.mp4'))
+                    for part in parts:
+                        os.remove(part)
+                else:
+                    print('No ffmpeg is found. Merging aborted.')
         else:
             print("Can't merge %s files" % ext)
     
@@ -413,16 +424,16 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
 def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
     assert urls
     if dry_run:
-        print('Real URLs:\n', urls)
+        print('Real URLs:\n', urls, '\n')
         return
     
     assert ext in ('ts')
     title = escape_file_path(title)
-    filename = '%s.%s' % (title, ext)
+    filename = '%s.%s' % (title, 'ts')
     filepath = os.path.join(output_dir, filename)
     if total_size:
-        if not force and os.path.exists(filepath) and os.path.getsize(filepath) >= total_size * 0.9:
-            print('Skipping %s: file already exists' % tr(filepath))
+        if not force and os.path.exists(filepath[:-3] + '.mkv'):
+            print('Skipping %s: file already exists' % tr(filepath[:-3] + '.mkv'))
             print()
             return
         bar = SimpleProgressBar(total_size, len(urls))
@@ -430,10 +441,28 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
         bar = PiecesProgressBar(total_size, len(urls))
     
     if len(urls) == 1:
+        parts = []
         url = urls[0]
         print('Downloading %s ...' % tr(filename))
+        filepath = os.path.join(output_dir, filename)
+        parts.append(filepath)
         url_save_chunked(url, filepath, bar, refer = refer, faker = faker)
         bar.done()
+        
+        if not merge:
+            print()
+            return
+        if ext == 'ts':
+            from .processor.ffmpeg import has_ffmpeg_installed
+            if has_ffmpeg_installed():
+                from .processor.ffmpeg import ffmpeg_convert_ts_to_mkv
+                ffmpeg_convert_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv'))
+                for part in parts:
+                    os.remove(part)
+            else:
+                print('No ffmpeg is found. Conversion aborted.')
+        else:
+            print("Can't convert %s files" % ext)
     else:
         parts = []
         print('Downloading %s.%s ...' % (tr(title), ext))
@@ -445,14 +474,19 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
             bar.update_piece(i + 1)
             url_save_chunked(url, filepath, bar, refer = refer, is_part = True, faker = faker)
         bar.done()
+        
         if not merge:
             print()
             return
         if ext == 'ts':
-            from .processor.join_ts import concat_ts
-            concat_ts(parts, os.path.join(output_dir, title + '.ts'))
-            for part in parts:
-                os.remove(part)
+            from .processor.ffmpeg import has_ffmpeg_installed
+            if has_ffmpeg_installed():
+                from .processor.ffmpeg import ffmpeg_concat_ts_to_mkv
+                ffmpeg_concat_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv'))
+                for part in parts:
+                    os.remove(part)
+            else:
+                print('No ffmpeg is found. Merging aborted.')
         else:
             print("Can't merge %s files" % ext)
     

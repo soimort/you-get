@@ -9,6 +9,8 @@ _*/
 *.cmt.*
 *.3gp
 *.flv
+*.mkv
 *.mp4
+*.mpg
 *.ts
 *.webm

@@ -25,7 +25,7 @@ def cntv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
     
     print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls(urls, title, ext, size, output_dir = output_dir, merge = False)
+        download_urls(urls, title, ext, size, output_dir = output_dir, merge = merge)
 
 def cntv_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://\w+\.cntv\.cn/(\w+/\w+/classpage/video/)?\d+/\d+\.shtml', url):
