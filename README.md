@@ -26,6 +26,12 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Sohu (搜狐视频) <http://tv.sohu.com>
 * 56 (56网) <http://www.56.com>
 
+## Dependencies
+
+* [Python 3](http://www.python.org/download/releases/)
+* __(Optional)__ [FFmpeg](http://ffmpeg.org)
+    * Used for converting and joining video files.
+
 ## Installation
 
 ### 1. Install via [Pip](http://www.pip-installer.org/):
@@ -87,9 +93,9 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
     
     $ you-get -V
 
-### 5. Install from [AUR](http://aur.archlinux.org/) (Arch User Repository):
-    
-    <https://aur.archlinux.org/packages.php?ID=62576>
+### 5. Install from [AUR (Arch User Repository)](http://aur.archlinux.org/):
+
+   Click [here](https://aur.archlinux.org/packages.php\?ID=62576).
 
 ## Examples (For End-Users)
 
@@ -205,6 +211,12 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * 搜狐视频 <http://tv.sohu.com>
 * 56网 <http://www.56.com>
 
+## 依赖
+
+* [Python 3](http://www.python.org/download/releases/)
+* __（可选）__ [FFmpeg](http://ffmpeg.org)
+    * 用于转换与合并视频文件。
+
 ## 安装说明
 
 （以下命令格式均以Linux shell为例）
@@ -268,9 +280,9 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
     
     $ you-get -V
 
-### 5. 从[AUR](http://aur.archlinux.org/)（Arch User Repository）安装：
-    
-    <https://aur.archlinux.org/packages.php?ID=62576>
+### 5. 从[AUR (Arch User Repository)](http://aur.archlinux.org/)安装：
+
+   点击[这里](https://aur.archlinux.org/packages.php\?ID=62576)。
 
 ## 使用方法示例
 

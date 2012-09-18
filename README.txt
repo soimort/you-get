@@ -29,6 +29,13 @@ Supported Sites (As of Now)
 * Sohu (搜狐视频) http://tv.sohu.com
 * 56 (56网) http://www.56.com
 
+Dependencies
+------------
+
+* `Python 3 <http://www.python.org/download/releases/>`_
+* (Optional) `FFmpeg <http://ffmpeg.org>`_
+    * Used for converting and joining video files.
+
 Installation
 ------------
 
@@ -91,9 +98,9 @@ Installation
     
     $ you-get -V
 
-#) Install from `AUR <http://aur.archlinux.org/>`_ (Arch User Repository)::
+#) Install from `AUR (Arch User Repository) <http://aur.archlinux.org/>`_:
 
-   https://aur.archlinux.org/packages.php?ID=62576
+    Click `here <https://aur.archlinux.org/packages.php?ID=62576>`_.
 
 Examples (For End-Users)
 ------------------------
