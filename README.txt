@@ -29,15 +29,6 @@ Supported Sites (As of Now)
 * Sohu (搜狐视频) http://tv.sohu.com
 * 56 (56网) http://www.56.com
 
-Supported Video Formats
-~~~~~~~~~~~~~~~~~~~~~~~
-
-* WebM (\*.webm)
-* MP4 (\*.mp4)
-* FLV (\*.flv)
-* 3GP (\*.3gp)
-* MPEG-TS (\*.ts)
-
 Installation
 ------------
 
@@ -52,6 +43,27 @@ Installation
 #) Install via `EasyInstall <http://pypi.python.org/pypi/setuptools>`_::
 
     $ easy_install you-get
+    
+   Check if the installation was successful::
+    
+    $ you-get -V
+
+#) Install from Git::
+
+    $ git clone git://github.com/soimort/you-get.git
+    
+   Use the raw script without installation::
+    
+    $ cd you-get/
+    $ ./you-get -V
+    
+   To install the package into the system path, execute::
+    
+    $ make install
+    
+   Or (on Windows)::
+    
+    > setup.py install
     
    Check if the installation was successful::
     
@@ -79,26 +91,9 @@ Installation
     
     $ you-get -V
 
-#) Install from Git::
+#) Install from `AUR <http://aur.archlinux.org/>`_ (Arch User Repository)::
 
-    $ git clone git://github.com/soimort/you-get.git
-    
-   Use the raw script without installation::
-    
-    $ cd you-get/
-    $ ./you-get -V
-    
-   To install the package into the system path, execute::
-    
-    $ make install
-    
-   Or (on Windows)::
-    
-    > setup.py install
-    
-   Check if the installation was successful::
-    
-    $ you-get -V
+   https://aur.archlinux.org/packages.php?ID=62576
 
 Examples (For End-Users)
 ------------------------

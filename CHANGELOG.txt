@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.3
+-----
+
+*Date: 2012-09-18*
+
+* Use FFmpeg for converting and joining of videos.
+* Add '--url' and '--debug' options.
+
 0.2.2
 -----
 

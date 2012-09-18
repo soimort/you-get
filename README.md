@@ -26,14 +26,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Sohu (搜狐视频) <http://tv.sohu.com>
 * 56 (56网) <http://www.56.com>
 
-### Supported Video Formats
-
-* WebM (*.webm)
-* MP4 (*.mp4)
-* FLV (*.flv)
-* 3GP (*.3gp)
-* MPEG-TS (*.ts)
-
 ## Installation
 
 ### 1. Install via [Pip](http://www.pip-installer.org/):
@@ -52,7 +44,28 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
     
     $ you-get -V
 
-### 3. Direct download (from <https://github.com/soimort/you-get/zipball/master>):
+### 3. Install from Git:
+
+    $ git clone git://github.com/soimort/you-get.git
+    
+   Use the raw script without installation:
+    
+    $ cd you-get/
+    $ ./you-get -V
+    
+   To install the package into the system path, execute:
+    
+    $ make install
+    
+   Or (on Windows):
+    
+    > setup.py install
+    
+   Check if the installation was successful:
+    
+    $ you-get -V
+
+### 4. Direct download (from <https://github.com/soimort/you-get/zipball/master>):
     
     $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
     $ unzip you-get.zip
@@ -74,26 +87,9 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
     
     $ you-get -V
 
-### 4. Install from Git:
-
-    $ git clone git://github.com/soimort/you-get.git
+### 5. Install from [AUR](http://aur.archlinux.org/) (Arch User Repository):
     
-   Use the raw script without installation:
-    
-    $ cd you-get/
-    $ ./you-get -V
-    
-   To install the package into the system path, execute:
-    
-    $ make install
-    
-   Or (on Windows):
-    
-    > setup.py install
-    
-   Check if the installation was successful:
-    
-    $ you-get -V
+    <https://aur.archlinux.org/packages.php?ID=62576>
 
 ## Examples (For End-Users)
 
@@ -209,14 +205,6 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * 搜狐视频 <http://tv.sohu.com>
 * 56网 <http://www.56.com>
 
-### 输出视频格式
-
-* WebM (*.webm)
-* MP4 (*.mp4)
-* FLV (*.flv)
-* 3GP (*.3gp)
-* MPEG-TS (*.ts)
-
 ## 安装说明
 
 （以下命令格式均以Linux shell为例）
@@ -237,7 +225,28 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
     
     $ you-get -V
 
-### 3. 直接下载（从<https://github.com/soimort/you-get/zipball/master>）：
+### 3. 从Git安装：
+
+    $ git clone git://github.com/soimort/you-get.git
+    
+   在不安装的情况下直接使用脚本：
+    
+    $ cd you-get/
+    $ ./you-get -V
+    
+   若要将Python package安装到系统默认路径，执行：
+    
+    $ make install
+    
+   或：（适用于Windows）
+    
+    > setup.py install
+    
+   检查安装是否成功：
+    
+    $ you-get -V
+
+### 4. 直接下载（从<https://github.com/soimort/you-get/zipball/master>）：
     
     $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
     $ unzip you-get.zip
@@ -259,26 +268,9 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
     
     $ you-get -V
 
-### 4. 从Git安装：
-
-    $ git clone git://github.com/soimort/you-get.git
+### 5. 从[AUR](http://aur.archlinux.org/)（Arch User Repository）安装：
     
-   在不安装的情况下直接使用脚本：
-    
-    $ cd you-get/
-    $ ./you-get -V
-    
-   若要将Python package安装到系统默认路径，执行：
-    
-    $ make install
-    
-   或：（适用于Windows）
-    
-    > setup.py install
-    
-   检查安装是否成功：
-    
-    $ you-get -V
+    <https://aur.archlinux.org/packages.php?ID=62576>
 
 ## 使用方法示例
 
