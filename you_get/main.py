@@ -22,6 +22,7 @@ def url_to_module(url):
         'acfun': acfun,
         'bilibili': bilibili,
         'cntv': cntv,
+        'dailymotion': dailymotion,
         'iask': sina,
         'ifeng': ifeng,
         'iqiyi': iqiyi,
