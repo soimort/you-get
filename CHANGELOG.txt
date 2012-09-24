@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.5
+-----
+
+*Date: 2012-09-25*
+
+* Add support for:
+    - Dailymotion
+
 0.2.4
 -----
 

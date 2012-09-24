@@ -15,6 +15,7 @@ Supported Sites (As of Now)
 
 * YouTube http://www.youtube.com
 * Vimeo http://vimeo.com
+* Dailymotion http://dailymotion.com
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
 * YinYueTai (音悦台) http://www.yinyuetai.com

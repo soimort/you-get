@@ -12,6 +12,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 
 * YouTube <http://www.youtube.com>
 * Vimeo <http://vimeo.com>
+* Dailymotion <http://dailymotion.com>
 * Youku (优酷) <http://www.youku.com>
 * Tudou (土豆) <http://www.tudou.com>
 * YinYueTai (音悦台) <http://www.yinyuetai.com>
@@ -197,6 +198,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 
 * YouTube <http://www.youtube.com>
 * Vimeo <http://vimeo.com>
+* Dailymotion <http://dailymotion.com>
 * 优酷 <http://www.youku.com>
 * 土豆 <http://www.tudou.com>
 * 音悦台 <http://www.yinyuetai.com>

@@ -8,7 +8,7 @@ import re
 import sys
 from urllib import request, parse
 
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 
 dry_run = False
 force = False
