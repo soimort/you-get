@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.6
+-----
+
+*Date: 2012-09-26*
+
+* Fix issue `#5 <https://github.com/soimort/you-get/issues/5>`_ for YinYueTai.
+
 0.2.5
 -----
 
