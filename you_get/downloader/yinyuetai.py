@@ -10,7 +10,7 @@ def yinyuetai_download_by_id(id, title = None, output_dir = '.', merge = True, i
     #TODO: run a fully parse instead of text search
     # url = r1(r'(http://flv.yinyuetai.com/uploads/videos/common/\w+\.flv\?t=[a-f0-9]{16})', html)
     # url = r1(r'http://hc.yinyuetai.com/uploads/videos/common/[A-F0-9]{32}\.mp4\?v=\d{12}', html)
-    url = r1(r'(http://\w+\.yinyuetai\.com/uploads/videos/common/\w+\.(?:flv|mp4)\?(?:t=[a-f0-9]{16}|v=\d{12}))', html)
+    url = r1(r'(http://\w+\.yinyuetai\.com/uploads/videos/common/\w+\.(?:flv|mp4)\?(?:sc=[a-f0-9]{16}|v=\d{12}))', html)
     assert url
     type, ext, size = url_info(url)
     
