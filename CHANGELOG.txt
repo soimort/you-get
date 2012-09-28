@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.7
+-----
+
+*Date: 2012-09-28*
+
+* Fix issue `#6 <https://github.com/soimort/you-get/issues/6>`_ for YouTube.
+
 0.2.6
 -----
 
