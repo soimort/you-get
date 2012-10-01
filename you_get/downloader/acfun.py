@@ -48,14 +48,19 @@ def acfun_download(url, output_dir = '.', merge = True, info_only = False):
     assert re.match(r'http://www.acfun.tv/v/ac(\d+)', url)
     html = get_html(url)
     
-    title = r1(r'<span id="title-article" class="title"[^<>]*>([^<>]+)</span>', html)
+    title = r1(r'<h1 id="title-article" class="title"[^<>]*>([^<>]+)<span', html)
     assert title
     title = unescape_html(title)
     title = escape_file_path(title)
     title = title.replace(' - AcFun.tv', '')
     
-    id = r1(r"flashvars = {'id':'(\d+)'", html)
-    acfun_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+    id = r1(r"\[Video\](\d+)\[/Video\]", html) or r1(r"\[video\](\d+)\[/video\]", html)
+    if not id:
+        id = r1(r"src=\"/newflvplayer/player.swf\?id=(\d+)", html)
+        
+        sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+    else:
+        acfun_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
 site_info = "AcFun.tv"
 download = acfun_download
