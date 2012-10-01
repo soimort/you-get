@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.8
+-----
+
+*Date: 2012-10-02*
+
+* Fix issue `#15 <https://github.com/soimort/you-get/issues/15>`_ for AcFun.
+
 0.2.7
 -----
 
