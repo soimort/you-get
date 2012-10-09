@@ -456,9 +456,11 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
             from .processor.ffmpeg import has_ffmpeg_installed
             if has_ffmpeg_installed():
                 from .processor.ffmpeg import ffmpeg_convert_ts_to_mkv
-                ffmpeg_convert_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv'))
-                for part in parts:
-                    os.remove(part)
+                if ffmpeg_convert_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv')):
+                    for part in parts:
+                        os.remove(part)
+                else:
+                    os.remove(os.path.join(output_dir, title + '.mkv'))
             else:
                 print('No ffmpeg is found. Conversion aborted.')
         else:
@@ -482,9 +484,11 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
             from .processor.ffmpeg import has_ffmpeg_installed
             if has_ffmpeg_installed():
                 from .processor.ffmpeg import ffmpeg_concat_ts_to_mkv
-                ffmpeg_concat_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv'))
-                for part in parts:
-                    os.remove(part)
+                if ffmpeg_concat_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv')):
+                    for part in parts:
+                        os.remove(part)
+                else:
+                    os.remove(os.path.join(output_dir, title + '.mkv'))
             else:
                 print('No ffmpeg is found. Merging aborted.')
         else:

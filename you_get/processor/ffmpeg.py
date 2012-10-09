@@ -54,7 +54,9 @@ def ffmpeg_concat_ts_to_mkv(files, output = 'output.mkv'):
     params += ['-f', 'matroska', '-c', 'copy', output]
     
     try:
-        subprocess.call(params)
-        return True
+        if subprocess.call(params) == 0:
+            return True
+        else:
+            return False
     except:
         return False
