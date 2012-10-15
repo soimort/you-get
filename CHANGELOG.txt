@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.2.10
+------
+
+*Date: 2012-10-16*
+
+* Add support for:
+    - Google+
+
 0.2.9
 -----
 
