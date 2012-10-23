@@ -6,7 +6,6 @@
     "author": "Mort Yao",
     "author_email": "mort.yao@gmail.com",
     "url": "http://www.soimort.org/you-get/",
-    "download_url": "https://github.com/soimort/you-get/zipball/master",
     "license": "MIT",
     
     "description": "A YouTube/Youku video downloader written in Python 3.",

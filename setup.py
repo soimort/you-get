@@ -17,7 +17,6 @@ setup(
     author = proj_info['author'],
     author_email = proj_info['author_email'],
     url = proj_info['url'],
-    download_url = proj_info['download_url'],
     license = proj_info['license'],
     
     description = proj_info['description'],
