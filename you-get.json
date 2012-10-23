@@ -1,7 +1,7 @@
 {
     "name": "you-get",
-    "version": "0.2.10",
-    "date": "2012-10-16",
+    "version": "0.2.11",
+    "date": "2012-10-23",
     
     "author": "Mort Yao",
     "author_email": "mort.yao@gmail.com",
@@ -22,7 +22,10 @@
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.0",
+        "Programming Language :: Python :: 3.1",
         "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
         "Topic :: Internet",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Multimedia",

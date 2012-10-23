@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.2.11
+------
+
+*Date: 2012-10-23*
+
+* Move on to Python 3.3!
+* Fix issues:
+    - `#17 <https://github.com/soimort/you-get/issues/17>`_
+    - `#18 <https://github.com/soimort/you-get/issues/18>`_
+    - `#19 <https://github.com/soimort/you-get/issues/19>`_
+
 0.2.10
 ------
 
