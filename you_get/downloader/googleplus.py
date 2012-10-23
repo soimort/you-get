@@ -5,6 +5,9 @@ __all__ = ['googleplus_download']
 from ..common import *
 
 def googleplus_download(url, output_dir = '.', merge = True, info_only = False):
+    # Percent-encoding Unicode URL
+    url = parse.quote(url, safe = ':/')
+    
     html = get_html(url)
     html = parse.unquote(html).replace('\/', '/')
     
