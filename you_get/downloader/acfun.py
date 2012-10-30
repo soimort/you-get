@@ -56,8 +56,7 @@ def acfun_download(url, output_dir = '.', merge = True, info_only = False):
     
     id = r1(r"\[Video\](\d+)\[/Video\]", html) or r1(r"\[video\](\d+)\[/video\]", html)
     if not id:
-        id = r1(r"src=\"/newflvplayer/player.swf\?id=(\d+)", html)
-        
+        id = r1(r"src=\"/newflvplayer/player.*id=(\d+)", html)
         sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     else:
         acfun_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
