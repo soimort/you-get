@@ -1,12 +1,19 @@
 Changelog
 =========
 
+0.2.13
+------
+
+*Date: 2012-10-30*
+
+* Nothing new. Last version of You-Get 0.2.x.
+
 0.2.12
 ------
 
 *Date: 2012-10-30*
 
-* Fix issue `#20 <https://github.com/soimort/you-get/issues/20>`_.
+* Fix issue `#20 <https://github.com/soimort/you-get/issues/20>`_ for AcFun.
 
 0.2.11
 ------

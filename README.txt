@@ -78,7 +78,7 @@ Installation
     
     $ you-get -V
 
-#) Direct download (from https://github.com/soimort/you-get/zipball/master)::
+#) Direct download::
     
     $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
     $ unzip you-get.zip
