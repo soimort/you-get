@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.12
+------
+
+*Date: 2012-10-30*
+
+* Fix issue `#20 <https://github.com/soimort/you-get/issues/20>`_.
+
 0.2.11
 ------
 
