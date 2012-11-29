@@ -35,7 +35,7 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False):
         tudou_download_playlist(url, output_dir, merge, info_only)
         return
     
-    title = r1(r'kw\s*[:=]\s*"([^"]+)"', html)
+    title = r1(r'kw\s*[:=]\s*\'([^\']+)\'', html)
     assert title
     title = unescape_html(title)
     
