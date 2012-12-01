@@ -9,6 +9,7 @@ from .ifeng import *
 from .iqiyi import *
 from .ku6 import *
 from .pptv import *
+from .qq import *
 from .sina import *
 from .sohu import *
 from .tudou import *

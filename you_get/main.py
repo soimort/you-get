@@ -30,6 +30,7 @@ def url_to_module(url):
         'kankanews': bilibili,
         'ku6': ku6,
         'pptv': pptv,
+        'qq': qq,
         'sina': sina,
         'sohu': sohu,
         'tudou': tudou,

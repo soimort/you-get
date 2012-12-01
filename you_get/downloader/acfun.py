@@ -4,6 +4,7 @@ __all__ = ['acfun_download']
 
 from ..common import *
 
+from .qq import qq_download_by_id
 from .sina import sina_download_by_id
 from .tudou import tudou_download_by_iid
 from .youku import youku_download_by_id
@@ -13,15 +14,6 @@ import json, re
 def get_srt_json(id):
     url = 'http://comment.acfun.tv/%s.json' % id
     return get_html(url)
-
-def qq_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    url = 'http://vsrc.store.qq.com/%s.flv' % id
-    assert title
-    _, _, size = url_info(url)
-    
-    print_info(site_info, title, 'flv', size)
-    if not info_only:
-        download_urls([url], title, 'flv', size, output_dir = output_dir, merge = merge)
 
 def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     info = json.loads(get_html('http://www.acfun.tv/api/getVideoByID.aspx?vid=' + id))
