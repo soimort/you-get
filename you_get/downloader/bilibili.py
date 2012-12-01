@@ -56,26 +56,32 @@ def parse_cid_playurl(xml):
 def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_only = False):
     url = 'http://interface.bilibili.tv/playurl?cid=' + id
     urls = parse_cid_playurl(get_html(url, 'utf-8'))
-    assert re.search(r'\.(flv|hlv)\b', urls[0]), urls[0]
+    
+    if re.search(r'\.(flv|hlv)\b', urls[0]):
+        type = 'flv'
+    elif re.search(r'/mp4/', urls[0]):
+        type = 'mp4'
+    else:
+        raise NotImplementedError(urls[0])
     
     size = 0
     for url in urls:
         _, _, temp = url_info(url)
         size += temp
     
-    print_info(site_info, title, 'flv', size)
+    print_info(site_info, title, type, size)
     if not info_only:
-        download_urls(urls, title, 'flv', total_size = None, output_dir = output_dir, merge = merge)
+        download_urls(urls, title, type, total_size = None, output_dir = output_dir, merge = merge)
 
 def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
-    assert re.match(r'http://(www.bilibili.tv|bilibili.kankanews.com)/video/av(\d+)', url)
+    assert re.match(r'http://(www.bilibili.tv|bilibili.kankanews.com|bilibili.smgbb.cn)/video/av(\d+)', url)
     html = get_html(url)
     
     title = r1(r'<h2>([^<>]+)</h2>', html)
     title = unescape_html(title)
     title = escape_file_path(title)
     
-    flashvars = r1_of([r'flashvars="([^"]+)"', r'"https://secure.bilibili.tv/secure,(cid=\d+)"'], html)
+    flashvars = r1_of([r'flashvars="([^"]+)"', r'"https://secure.bilibili.tv/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
     assert flashvars
     t, id = flashvars.split('=', 1)
     id = id.split('&')[0]

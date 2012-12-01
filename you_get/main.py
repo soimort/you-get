@@ -32,6 +32,7 @@ def url_to_module(url):
         'pptv': pptv,
         'qq': qq,
         'sina': sina,
+        'smgbb': bilibili,
         'sohu': sohu,
         'tudou': tudou,
         'vimeo': vimeo,
