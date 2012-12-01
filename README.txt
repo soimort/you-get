@@ -27,6 +27,7 @@ Supported Sites (As of Now)
 * iQIYI (爱奇艺) http://www.iqiyi.com
 * Ku6 (酷6网) http://www.ku6.com
 * PPTV http://www.pptv.com
+* QQ (腾讯视频) http://v.qq.com
 * Sina (新浪视频) http://video.sina.com.cn
 * Sohu (搜狐视频) http://tv.sohu.com
 * 56 (56网) http://www.56.com

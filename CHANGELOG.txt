@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.2.16
+------
+
+*Date: 2012-12-01*
+
+* Add support for:
+    - QQ
+* Small fixes merged from youku-lixian.
+
 0.2.15
 ------
 
