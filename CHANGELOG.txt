@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3dev-20121209
+---------------
+
+*Date: 2012-12-09*
+
+* YouTube: downloading the highest available quality now
+
 0.2.16
 ------
 

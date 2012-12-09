@@ -12,10 +12,35 @@ def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, inf
     title = parse.unquote(title)
     title = escape_file_path(title)
     
-    url = r1(r'crossdomain.xml"\);yt.preload.start\("([^"]+)"\)', html)
-    url = unicodize(url)
-    url = re.sub(r'\\/', '/', url)
-    url = re.sub(r'generate_204', 'videoplayback', url)
+    for itag in [
+        '38',
+        '46', '37',
+        '102', '45', '22',
+        '84',
+        '120',
+        '85',
+        '44', '35',
+        '101', '100', '43', '34', '82', '18',
+        '6',
+        '83', '5', '36',
+        '17',
+        '13',
+    ]:
+        fmt = r1(r'itag=' + itag + r'\\u0026([^,]+),', html)
+        if fmt:
+            url = r1(r'url=([^\\]+)\\u0026', fmt)
+            url = unicodize(url)
+            url = parse.unquote(url)
+            sig = r1(r'sig=([^\\]+)\\u0026', fmt)
+            url = url + '&signature=' + sig
+            break
+    try:
+        url
+    except NameError:
+        url = r1(r'crossdomain.xml"\);yt.preload.start\("([^"]+)"\)', html)
+        url = unicodize(url)
+        url = re.sub(r'\\/', '/', url)
+        url = re.sub(r'generate_204', 'videoplayback', url)
     
     type, ext, size = url_info(url)
     
