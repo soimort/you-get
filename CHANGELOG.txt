@@ -1,12 +1,14 @@
 Changelog
 =========
 
-0.3dev-20121209
+0.3dev-20121210
 ---------------
 
-*Date: 2012-12-09*
+*Date: 2012-12-10*
 
-* YouTube: downloading the highest available quality now
+* YouTube: downloading the highest available quality now.
+* Add support for:
+    - SoundCloud
 
 0.2.16
 ------

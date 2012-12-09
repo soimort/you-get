@@ -125,7 +125,9 @@ def url_info(url, faker = False):
         'video/mp4': 'mp4',
         'video/MP2T': 'ts',
         'video/webm': 'webm',
-        'video/x-flv': 'flv'
+        'video/x-flv': 'flv',
+        'video/x-ms-asf': 'asf',
+        'audio/mpeg': 'mp3'
     }
     if type in mapping:
         ext = mapping[type]
@@ -355,7 +357,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
         print('Real URLs:\n', urls, '\n')
         return
     
-    assert ext in ('3gp', 'flv', 'mp4', 'webm')
+    #assert ext in ('3gp', 'flv', 'mp4', 'webm')
     if not total_size:
         try:
             total_size = urls_size(urls)
@@ -504,8 +506,12 @@ def playlist_not_supported(name):
 def print_info(site_info, title, type, size):
     if type in ['3gp']:
         type = 'video/3gpp'
+    elif type in ['asf']:
+        type = 'video/x-ms-asf'
     elif type in ['flv', 'f4v']:
         type = 'video/x-flv'
+    elif type in ['mp3']:
+        type = 'audio/mpeg'
     elif type in ['mp4']:
         type = 'video/mp4'
     elif type in ['ts']:
@@ -531,8 +537,12 @@ def print_info(site_info, title, type, size):
     #    type_info = "Matroska video (%s)" % type
     #elif type in ['video/x-ms-wmv']:
     #    type_info = "Windows Media video (%s)" % type
+    elif type in ['video/x-ms-asf']:
+        type_info = "Advanced Systems Format (%s)" % type
     #elif type in ['video/mpeg']:
     #    type_info = "MPEG video (%s)" % type
+    elif type in ['audio/mpeg']:
+        type_info = "MP3 (%s)" % type
     else:
         type_info = "Unknown type (%s)" % type
     

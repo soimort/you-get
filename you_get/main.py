@@ -34,6 +34,7 @@ def url_to_module(url):
         'sina': sina,
         'smgbb': bilibili,
         'sohu': sohu,
+        'soundcloud': soundcloud,
         'tudou': tudou,
         'vimeo': vimeo,
         'yinyuetai': yinyuetai,

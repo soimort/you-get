@@ -8,8 +8,10 @@ _*/
 *.download
 *.cmt.*
 *.3gp
+*.asf
 *.flv
 *.mkv
+*.mp3
 *.mp4
 *.mpg
 *.ts
