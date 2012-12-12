@@ -17,7 +17,7 @@ def w56_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
     assert len(files) == 1
     size = int(files[0]['filesize'])
     url = files[0]['url']
-    ext = r1(r'\.([^.]+)$', url)
+    ext = r1(r'\.([^.]+)\?', url)
     assert ext in ('flv', 'mp4')
     
     print_info(site_info, title, ext, size)

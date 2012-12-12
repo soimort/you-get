@@ -27,8 +27,11 @@ def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
         download_urls(urls, title, ext, size, output_dir, merge = merge)
 
 def ku6_download(url, output_dir = '.', merge = True, info_only = False):
-    id = r1(r'http://v.ku6.com/[a-z]+/show_\d+/(.*)\.\.\.html', url)
-    
+    patterns = [r'http://v.ku6.com/special/show_\d+/(.*)\.\.\.html',
+            r'http://v.ku6.com/show/(.*)\.\.\.html',
+            r'http://my.ku6.com/watch\?.*v=(.*)\.\..*']
+    id = r1_of(patterns, url)
+
     ku6_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 
 site_info = "Ku6.com"
