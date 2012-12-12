@@ -4,10 +4,14 @@ __all__ = ['youtube_download', 'youtube_download_by_id']
 
 from ..common import *
 
+import json
+
 def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     html = request.urlopen('http://www.youtube.com/watch?v=' + id).read().decode('utf-8')
     
-    title = r1(r'"title": "([^"]+)"', html)
+    html = unescape_html(html)
+    yt_player_config = json.loads(r1(r'yt.playerConfig = ([^\n]+);\n', html))
+    title = yt_player_config['args']['title']
     title = unicodize(title)
     title = parse.unquote(title)
     title = escape_file_path(title)

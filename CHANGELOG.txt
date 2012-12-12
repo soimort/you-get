@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3dev-20121212
+---------------
+
+*Date: 2012-12-12*
+
+* YouTube: fix some major issues on parsing video titles.
+
 0.3dev-20121210
 ---------------
 
