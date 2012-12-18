@@ -36,6 +36,7 @@ def url_to_module(url):
         'sohu': sohu,
         'soundcloud': soundcloud,
         'tudou': tudou,
+        'tumblr': tumblr,
         'vimeo': vimeo,
         'yinyuetai': yinyuetai,
         'youku': youku,

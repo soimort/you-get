@@ -14,6 +14,7 @@ from .sina import *
 from .sohu import *
 from .soundcloud import *
 from .tudou import *
+from .tumblr import *
 from .vimeo import *
 from .w56 import *
 from .yinyuetai import *

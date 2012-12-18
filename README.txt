@@ -17,6 +17,7 @@ Supported Sites (As of Now)
 * Vimeo http://vimeo.com
 * Dailymotion http://dailymotion.com
 * Google+ http://plus.google.com
+* Tumblr http://www.tumblr.com
 * SoundCloud http://soundcloud.com
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
