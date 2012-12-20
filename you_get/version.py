@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 
-__version__ = '0.3dev-20121220'
-__date__ = '2012-12-20'
+__version__ = '0.3dev-20121221'
+__date__ = '2012-12-21'

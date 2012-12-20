@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3dev-20121221
+---------------
+
+*Date: 2012-12-21*
+
+* YouTube: fix `#45 <https://github.com/soimort/you-get/issues/45>`_.
+* Merge pull request `#46 <https://github.com/soimort/you-get/pull/46>`_; fix title parsing issue on Tudou.
+
 0.3dev-20121220
 ---------------
 
