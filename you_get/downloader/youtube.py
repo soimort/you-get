@@ -30,12 +30,19 @@ def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, inf
         '17',
         '13',
     ]:
-        fmt = r1(r'itag=' + itag + r'\\u0026([^,]+),', html)
+        fmt = r1(r'url=([^,]+)\\u0026itag=' + itag + ",", html)
         if fmt:
-            url = r1(r'url=([^\\]+)\\u0026', fmt)
+            url = r1(r'([^\\]+)\\u0026', fmt)
+            if not url:
+                continue
+            
             url = unicodize(url)
             url = parse.unquote(url)
+            
             sig = r1(r'sig=([^\\]+)\\u0026', fmt)
+            if not sig:
+                continue
+            
             url = url + '&signature=' + sig
             break
     try:
