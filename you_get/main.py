@@ -39,6 +39,7 @@ def url_to_module(url):
         'xtube': xtube,
         'tumblr': tumblr,
         'vimeo': vimeo,
+        'xiami': xiami,
         'yinyuetai': yinyuetai,
         'youku': youku,
         'youtube': youtube,
