@@ -33,6 +33,7 @@ Supported Sites (As of Now)
 * Sina (新浪视频) http://video.sina.com.cn
 * Sohu (搜狐视频) http://tv.sohu.com
 * 56 (56网) http://www.56.com
+* Xiam (虾米) http://www.xiami.com
 
 Dependencies
 ------------

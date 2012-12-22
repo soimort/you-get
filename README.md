@@ -30,6 +30,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Sina (新浪视频) <http://video.sina.com.cn>
 * Sohu (搜狐视频) <http://tv.sohu.com>
 * 56 (56网) <http://www.56.com>
+* Xiam (虾米) <http://www.xiami.com>
 
 ## Dependencies
 
@@ -220,6 +221,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * 新浪视频 <http://video.sina.com.cn>
 * 搜狐视频 <http://tv.sohu.com>
 * 56网 <http://www.56.com>
+* 虾米 <http://www.xiami.com>
 
 ## 依赖
 
