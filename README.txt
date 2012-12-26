@@ -18,6 +18,7 @@ Supported Sites (As of Now)
 * Dailymotion http://dailymotion.com
 * Google+ http://plus.google.com
 * Tumblr http://www.tumblr.com
+* Xtube http://www.xtube.com
 * SoundCloud http://soundcloud.com
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
@@ -33,6 +34,7 @@ Supported Sites (As of Now)
 * Sina (新浪视频) http://video.sina.com.cn
 * Sohu (搜狐视频) http://tv.sohu.com
 * 56 (56网) http://www.56.com
+* Xiam (虾米) http://www.xiami.com
 
 Dependencies
 ------------
