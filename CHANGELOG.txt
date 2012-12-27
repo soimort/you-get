@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3dev-20121228
+---------------
+
+*Date: 2012-12-28*
+
+* Add support for:
+    - Xiami
+    - Tumblr audios
+
 0.3dev-20121221
 ---------------
 

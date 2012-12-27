@@ -10,8 +10,10 @@ def tumblr_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
     html = parse.unquote(html).replace('\/', '/')
     
-    title = r1(r'<title>(.*)</title>', html) or r1(r'<title>(.*)\n', html)
+    title = unescape_html(r1(r'<meta property="og:title" content="([^"]*)" />', html))
     real_url = r1(r'source src=\\x22([^\\]+)\\', html)
+    if not real_url:
+        real_url = r1(r'audio_file=([^&]+)&', html) + '?plead=please-dont-download-this-or-our-lawyers-wont-let-us-host-audio'
     
     type, ext, size = url_info(real_url)
     
