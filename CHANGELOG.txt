@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3dev-20130104
+---------------
+
+*Date: 2013-01-04*
+
+* Sohu:
+    - fix `#53 <https://github.com/soimort/you-get/issues/53>`_.
+    - merge pull request `#54 <https://github.com/soimort/you-get/pull/54>`_; downloading the highest available quality now.
+
 0.3dev-20121228
 ---------------
 
