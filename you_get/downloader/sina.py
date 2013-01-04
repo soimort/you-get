@@ -27,7 +27,7 @@ def sina_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
         download_urls(urls, title, 'flv', size, output_dir = output_dir, merge = merge)
 
 def sina_download(url, output_dir = '.', merge = True, info_only = False):
-    id = r1(r'vid :\'(\d+)\',', get_html(url))
+    id = r1(r'vid:\'(\d+)\',', get_html(url))
     sina_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 
 site_info = "Sina.com"
