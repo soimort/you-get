@@ -9,11 +9,14 @@ def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_
     
     signature = r1(r'"signature":"([^"]+)"', html)
     timestamp = r1(r'"timestamp":([^,]+)', html)
+    hd = r1(r',"hd":(\d+),', html)
     
     title = r1(r'"title":"([^"]+)"', html)
     title = escape_file_path(title)
     
     url = 'http://player.vimeo.com/play_redirect?clip_id=%s&sig=%s&time=%s' % (id, signature, timestamp)
+    if hd == "1":
+        url += '&quality=hd'
     type, ext, size = url_info(url, faker = True)
     
     print_info(site_info, title, type, size)
