@@ -30,6 +30,6 @@ def qq_download(url, output_dir = '.', merge = True, info_only = False):
     
     qq_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
-site_info = "V.QQ.com"
+site_info = "QQ.com"
 download = qq_download
 download_playlist = playlist_not_supported('qq')

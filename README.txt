@@ -28,6 +28,7 @@ Supported Sites (As of Now)
 * ifeng (凤凰视频) http://v.ifeng.com
 * iQIYI (爱奇艺) http://www.iqiyi.com
 * Ku6 (酷6网) http://www.ku6.com
+* NetEase (网易) http://v.163.com
 * PPTV http://www.pptv.com
 * QQ (腾讯视频) http://v.qq.com
 * Sina (新浪视频) http://video.sina.com.cn
