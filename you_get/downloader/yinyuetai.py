@@ -7,10 +7,11 @@ from ..common import *
 def yinyuetai_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     assert title
     html = get_html('http://www.yinyuetai.com/insite/get-video-info?flex=true&videoId=' + id)
-    #TODO: run a fully parse instead of text search
-    # url = r1(r'(http://flv.yinyuetai.com/uploads/videos/common/\w+\.flv\?t=[a-f0-9]{16})', html)
-    # url = r1(r'http://hc.yinyuetai.com/uploads/videos/common/[A-F0-9]{32}\.mp4\?v=\d{12}', html)
-    url = r1(r'(http://\w+\.yinyuetai\.com/uploads/videos/common/\w+\.(?:flv|mp4)\?(?:sc=[a-f0-9]{16}|v=\d{12}))', html)
+    
+    for quality in ['he\w*', 'hd\w*', 'hc\w*', '\w+']:
+        url = r1(r'(http://' + quality + '\.yinyuetai\.com/uploads/videos/common/\w+\.(?:flv|mp4)\?(?:sc=[a-f0-9]{16}|v=\d{12}))', html)
+        if url:
+            break
     assert url
     type, ext, size = url_info(url)
     
