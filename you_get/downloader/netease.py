@@ -25,6 +25,8 @@ def netease_download(url, output_dir = '.', merge = True, info_only = False):
         
     else:
         title = r1('<title>(.+)</title>', html)
+        if title[0] == ' ':
+            title = title[1:]
         url = r1(r'(.+)-list.m3u8', src) + ".mp4"
         _, _, size = url_info(url)
         ext = 'mp4'
