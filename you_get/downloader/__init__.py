@@ -8,6 +8,7 @@ from .googleplus import *
 from .ifeng import *
 from .iqiyi import *
 from .ku6 import *
+from .netease import *
 from .pptv import *
 from .qq import *
 from .sina import *

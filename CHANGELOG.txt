@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3dev-20130111
+---------------
+
+*Date: 2013-01-11*
+
+* Add support for:
+    - NetEase (v.163.com)
+    - YouTube short URLs
+* Vimeo: downloading the highest available quality now.
+
 0.3dev-20130104
 ---------------
 

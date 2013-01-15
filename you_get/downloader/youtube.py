@@ -53,7 +53,9 @@ def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, inf
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
 def youtube_download(url, output_dir = '.', merge = True, info_only = False):
-    id = parse.parse_qs(parse.urlparse(url).query)['v'][0]
+    id = r1(r'youtu.be/(.*)', url)
+    if not id:
+        id = parse.parse_qs(parse.urlparse(url).query)['v'][0]
     assert id
     
     youtube_download_by_id(id, None, output_dir, merge = merge, info_only = info_only)

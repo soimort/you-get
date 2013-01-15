@@ -14,12 +14,11 @@ def ifeng_download_by_id(id, title = None, output_dir = '.', merge = True, info_
     from random import randint
     r = randint(10, 19)
     url = url.replace('http://video.ifeng.com/', 'http://video%s.ifeng.com/' % r)
-    assert url.endswith('.mp4')
     type, ext, size = url_info(url)
     
-    print_info(site_info, title, 'mp4', size)
+    print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls([url], title, 'mp4', size, output_dir, merge = merge)
+        download_urls([url], title, ext, size, output_dir, merge = merge)
 
 def ifeng_download(url, output_dir = '.', merge = True, info_only = False):
     id = r1(r'/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.shtml$', url)

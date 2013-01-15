@@ -25,6 +25,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * ifeng (凤凰视频) <http://v.ifeng.com>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
 * Ku6 (酷6网) <http://www.ku6.com>
+* NetEase (网易视频) <http://v.163.com>
 * PPTV <http://www.pptv.com>
 * QQ (腾讯视频) <http://v.qq.com>
 * Sina (新浪视频) <http://video.sina.com.cn>
@@ -216,6 +217,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * 凤凰视频 <http://v.ifeng.com>
 * 爱奇艺 <http://www.iqiyi.com>
 * 酷6网 <http://www.ku6.com>
+* 网易视频 <http://v.163.com>
 * PPTV <http://www.pptv.com>
 * 腾讯视频 <http://v.qq.com>
 * 新浪视频 <http://video.sina.com.cn>
