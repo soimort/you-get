@@ -12,7 +12,7 @@ def real_url(host, prot, file, new):
     return '%s%s?key=%s' % (start[:-1], new, key)
 
 def sohu_download(url, output_dir = '.', merge = True, info_only = False):
-    vid = r1('vid="(\d+)"', get_html(url))
+    vid = r1('vid\s*=\s*"(\d+)"', get_html(url))
     
     if vid:
         data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
@@ -33,7 +33,7 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         assert data['clipsURL'][0].endswith('.mp4')
         
     else:
-        vid = r1('vid=\'(\d+)\'', get_html(url))
+        vid = r1('vid\s*=\s*\'(\d+)\'', get_html(url))
         data = json.loads(get_decoded_html('http://my.tv.sohu.com/videinfo.jhtml?m=viewnew&vid=%s' % vid))
         host = data['allot']
         prot = data['prot']
