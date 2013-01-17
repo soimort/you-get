@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3dev-20130118
+---------------
+
+*Date: 2013-01-18*
+
+* YinYueTai: downloading best quality available now.
+* Sohu: fix `#69 <https://github.com/soimort/you-get/issues/69>`_.
+
 0.3dev-20130111
 ---------------
 
@@ -9,7 +17,7 @@ Changelog
 * Add support for:
     - NetEase (v.163.com)
     - YouTube short URLs
-* Vimeo: downloading the highest available quality now.
+* Vimeo: downloading best quality available now.
 
 0.3dev-20130104
 ---------------
@@ -18,7 +26,7 @@ Changelog
 
 * Sohu:
     - fix `#53 <https://github.com/soimort/you-get/issues/53>`_.
-    - merge pull request `#54 <https://github.com/soimort/you-get/pull/54>`_; downloading the highest available quality now.
+    - merge pull request `#54 <https://github.com/soimort/you-get/pull/54>`_; downloading best quality available now.
 
 0.3dev-20121228
 ---------------
@@ -57,7 +65,7 @@ Changelog
 
 *Date: 2012-12-17*
 
-* Google+: downloading the highest available quality now.
+* Google+: downloading best quality available now.
 * Fix issues `#42 <https://github.com/soimort/you-get/issues/42>`_, `#43 <https://github.com/soimort/you-get/issues/43>`_ for Google+.
 * Merge pull request `#40 <https://github.com/soimort/you-get/pull/40>`_; fix some issues for Ku6, Sina and 56.
 
@@ -73,7 +81,7 @@ Changelog
 
 *Date: 2012-12-10*
 
-* YouTube: downloading the highest available quality now.
+* YouTube: downloading best quality available now.
 * Add support for:
     - SoundCloud
 
