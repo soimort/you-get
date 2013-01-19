@@ -11,7 +11,10 @@ def dailymotion_download(url, output_dir = '.', merge = True, info_only = False)
     title = r1(r'meta property="og:title" content="([^"]+)"', html)
     title = escape_file_path(title)
     
-    real_url = r1(r',\"sdURL\"\:\"([^\"]+?)\",', html)
+    for quality in ['hd720URL', 'hqURL', 'sdURL']:
+        real_url = r1(r',\"' + quality + '\"\:\"([^\"]+?)\",', html)
+        if real_url:
+            break
     type, ext, size = url_info(real_url)
     
     print_info(site_info, title, type, size)
