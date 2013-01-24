@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3dev-20130125
+---------------
+
+*Date: 2013-01-25*
+
+* Dailymotion: downloading best quality available now.
+* iQIYI: fix `#77 <https://github.com/soimort/you-get/issues/77>`_.
+
 0.3dev-20130118
 ---------------
 

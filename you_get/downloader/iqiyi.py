@@ -14,6 +14,7 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     #info_url = 'http://cache.video.qiyi.com/v/%s/%s/%s/' % (videoId, pid, ptype)
     videoId = r1(r'''["']videoId["'][:=]["']([^"']+)["']''', html)
     assert videoId
+    
     info_url = 'http://cache.video.qiyi.com/v/%s' % videoId
     info_xml = get_html(info_url)
     
@@ -23,12 +24,19 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     size = int(doc.getElementsByTagName('totalBytes')[0].firstChild.nodeValue)
     urls = [n.firstChild.nodeValue for n in doc.getElementsByTagName('file')]
     assert urls[0].endswith('.f4v'), urls[0]
-    tss = ["http://61.155.192.31/videos2" + url[33:-4] + ".ts" for url in urls] # use MPEG-TS .ts files temporarily
-    # FIXME: find the key to access .f4v files
     
-    print_info(site_info, title, 'ts', size)
+    for i in range(len(urls)):
+        temp_url = "http://data.video.qiyi.com/%s" % urls[i].split("/")[-1].split(".")[0] + ".ts"
+        try:
+            response = request.urlopen(temp_url)
+        except request.HTTPError as e:
+            key = r1(r'key=(.*)', e.geturl())
+        assert key
+        urls[i] += "?key=%s" % key
+    
+    print_info(site_info, title, 'flv', size)
     if not info_only:
-        download_urls_chunked(tss, title, 'ts', size, output_dir = output_dir, merge = merge) # use MPEG-TS .ts files temporarily
+        download_urls(urls, title, 'flv', size, output_dir = output_dir, merge = merge)
 
 site_info = "iQIYI.com"
 download = iqiyi_download
