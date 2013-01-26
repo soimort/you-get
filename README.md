@@ -13,6 +13,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * YouTube <http://www.youtube.com>
 * Vimeo <http://vimeo.com>
 * Dailymotion <http://dailymotion.com>
+* Facebook <http://facebook.com>
 * Google+ <http://plus.google.com>
 * Tumblr <http://www.tumblr.com>
 * SoundCloud <http://soundcloud.com>
@@ -205,6 +206,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * YouTube <http://www.youtube.com>
 * Vimeo <http://vimeo.com>
 * Dailymotion <http://dailymotion.com>
+* Facebook <http://facebook.com>
 * Google+ <http://plus.google.com>
 * Tumblr <http://www.tumblr.com>
 * SoundCloud <http://soundcloud.com>

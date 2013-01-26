@@ -16,6 +16,7 @@ Supported Sites (As of Now)
 * YouTube http://www.youtube.com
 * Vimeo http://vimeo.com
 * Dailymotion http://dailymotion.com
+* Facebook http://facebook.com
 * Google+ http://plus.google.com
 * Tumblr http://www.tumblr.com
 * SoundCloud http://soundcloud.com

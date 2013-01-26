@@ -4,6 +4,7 @@ from .acfun import *
 from .bilibili import *
 from .cntv import *
 from .dailymotion import *
+from .facebook import *
 from .googleplus import *
 from .ifeng import *
 from .iqiyi import *
