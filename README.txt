@@ -16,6 +16,7 @@ Supported Sites (As of Now)
 * YouTube http://www.youtube.com
 * Vimeo http://vimeo.com
 * Dailymotion http://dailymotion.com
+* Facebook http://facebook.com
 * Google+ http://plus.google.com
 * Tumblr http://www.tumblr.com
 * SoundCloud http://soundcloud.com
@@ -27,6 +28,7 @@ Supported Sites (As of Now)
 * CNTV (中国网络电视台) http://www.cntv.cn
 * ifeng (凤凰视频) http://v.ifeng.com
 * iQIYI (爱奇艺) http://www.iqiyi.com
+* Joy.cn (激动网) http://www.joy.cn
 * Ku6 (酷6网) http://www.ku6.com
 * NetEase (网易视频) http://v.163.com
 * PPTV http://www.pptv.com
