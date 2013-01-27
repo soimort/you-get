@@ -28,6 +28,7 @@ Supported Sites (As of Now)
 * CNTV (中国网络电视台) http://www.cntv.cn
 * ifeng (凤凰视频) http://v.ifeng.com
 * iQIYI (爱奇艺) http://www.iqiyi.com
+* Joy.cn (激动网) http://www.joy.cn
 * Ku6 (酷6网) http://www.ku6.com
 * NetEase (网易视频) http://v.163.com
 * PPTV http://www.pptv.com

@@ -29,6 +29,7 @@ def url_to_module(url):
         'iask': sina,
         'ifeng': ifeng,
         'iqiyi': iqiyi,
+        'joy': joy,
         'kankanews': bilibili,
         'ku6': ku6,
         'pptv': pptv,
