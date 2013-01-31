@@ -10,6 +10,7 @@ from .ifeng import *
 from .iqiyi import *
 from .joy import *
 from .ku6 import *
+from .mixcloud import *
 from .netease import *
 from .pptv import *
 from .qq import *

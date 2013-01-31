@@ -20,6 +20,7 @@ Supported Sites (As of Now)
 * Google+ http://plus.google.com
 * Tumblr http://www.tumblr.com
 * SoundCloud http://soundcloud.com
+* Mixcloud http://www.mixcloud.com
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
 * YinYueTai (音悦台) http://www.yinyuetai.com

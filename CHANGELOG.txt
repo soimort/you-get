@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3dev-20130201
+---------------
+
+*Date: 2013-02-01*
+
+* Add support for:
+    - Mixcloud
+    - Facebook
+    - Joy.cn
+
 0.3dev-20130125
 ---------------
 

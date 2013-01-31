@@ -32,6 +32,7 @@ def url_to_module(url):
         'joy': joy,
         'kankanews': bilibili,
         'ku6': ku6,
+        'mixcloud': mixcloud,
         'pptv': pptv,
         'qq': qq,
         'sina': sina,
