@@ -20,32 +20,34 @@ def googleplus_download(url, output_dir = '.', merge = True, info_only = False):
         html = get_html(url2)
         html = parse.unquote(html.replace('\/', '/'))
     
-    url_data = re.findall(r'(\[[^\[\"]+\"http://redirector.googlevideo.com/.*\"\])', html)
-    
-    for itag in [
-        '38',
-        '46', '37',
-        '102', '45', '22',
-        '84',
-        '120',
-        '85',
-        '44', '35',
-        '101', '100', '43', '34', '82', '18',
-        '6',
-        '83', '5', '36',
-        '17',
-        '13',
-    ]:
-        real_url = None
-        for url_item in url_data:
-            if itag == str(eval(url_item)[0]):
-                real_url = eval(url_item)[3]
+    real_url = unicodize(r1(r'"(https://video.googleusercontent.com/[^"]*)"', html).replace('\/', '/'))
+    if not real_url:
+        url_data = re.findall(r'(\[[^\[\"]+\"http://redirector.googlevideo.com/.*\"\])', html)
+        for itag in [
+            '38',
+            '46', '37',
+            '102', '45', '22',
+            '84',
+            '120',
+            '85',
+            '44', '35',
+            '101', '100', '43', '34', '82', '18',
+            '6',
+            '83', '5', '36',
+            '17',
+            '13',
+        ]:
+            real_url = None
+            for url_item in url_data:
+                if itag == str(eval(url_item)[0]):
+                    real_url = eval(url_item)[3]
+                    break
+            if real_url:
                 break
-        if real_url:
-            break
-    real_url = unicodize(real_url)
+        real_url = unicodize(real_url)
     
-    type, ext, size = url_info(real_url)
+    _, _, size = url_info(real_url)
+    type, ext = 'video/mp4', 'mp4'
     
     print_info(site_info, title, type, size)
     if not info_only:
