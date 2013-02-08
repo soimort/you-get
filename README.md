@@ -1,6 +1,6 @@
 # You-Get
 
-[You-Get](https://github.com/soimort/you-get) is a video downloader runs on Python 3. It aims at easing the download of videos on [YouTube](http://www.youtube.com), [Youku](http://www.youku.com)/[Tudou](http://www.tudou.com) (biggest online video providers in China), etc., in one script.
+[You-Get](https://github.com/soimort/you-get) is a video downloader runs on Python 3. It aims at easing the download of videos on [YouTube](http://www.youtube.com), [Youku](http://www.youku.com)/[Tudou](http://www.tudou.com) (biggest online video providers in China), [ Niconico](http://www.nicovideo.jp), etc., in one script.
 
 See the project homepage <http://www.soimort.org/you-get> for further documentation.
 
@@ -18,6 +18,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Tumblr <http://www.tumblr.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
+* Niconico (ニコニコ動画) <http://www.nicovideo.jp>
 * Youku (优酷) <http://www.youku.com>
 * Tudou (土豆) <http://www.tudou.com>
 * YinYueTai (音悦台) <http://www.yinyuetai.com>
@@ -213,6 +214,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * Tumblr <http://www.tumblr.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
+* NICONICO动画 <http://www.nicovideo.jp>
 * 优酷 <http://www.youku.com>
 * 土豆 <http://www.tudou.com>
 * 音悦台 <http://www.yinyuetai.com>

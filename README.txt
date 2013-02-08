@@ -1,7 +1,7 @@
 You-Get
 =======
 
-`You-Get <https://github.com/soimort/you-get>`_ is a video downloader runs on Python 3. It aims at easing the download of videos on `YouTube <http://www.youtube.com>`_, `Youku <http://www.youku.com>`_/`Tudou <http://www.tudou.com>`_ (biggest online video providers in China), etc., in one script.
+`You-Get <https://github.com/soimort/you-get>`_ is a video downloader runs on Python 3. It aims at easing the download of videos on `YouTube <http://www.youtube.com>`_, `Youku <http://www.youku.com>`_/`Tudou <http://www.tudou.com>`_ (biggest online video providers in China), `Niconico <http://www.nicovideo.jp>`_, etc., in one script.
 
 See the project homepage http://www.soimort.org/you-get for further documentation.
 
@@ -21,6 +21,7 @@ Supported Sites (As of Now)
 * Tumblr http://www.tumblr.com
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
+* Niconico (ニコニコ動画) http://www.nicovideo.jp
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
 * YinYueTai (音悦台) http://www.yinyuetai.com

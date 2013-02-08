@@ -33,6 +33,7 @@ def url_to_module(url):
         'kankanews': bilibili,
         'ku6': ku6,
         'mixcloud': mixcloud,
+        'nicovideo': nicovideo,
         'pptv': pptv,
         'qq': qq,
         'sina': sina,

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.0
+-----
+
+*Date: 2013-02-08*
+
+* Add support for:
+    - Niconico
+
 0.3dev-20130201
 ---------------
 
