@@ -5,8 +5,8 @@
     "url": "http://www.soimort.org/you-get/",
     "license": "MIT",
     
-    "description": "A YouTube/Youku video downloader written in Python 3.",
-    "keywords": "video download youtube youku",
+    "description": "A YouTube/Youku/Niconico video downloader written in Python 3.",
+    "keywords": "video download youtube youku niconico",
     
     "classifiers": [
         "Development Status :: 2 - Pre-Alpha",
