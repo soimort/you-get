@@ -21,7 +21,7 @@ def mixcloud_download(url, output_dir = '.', merge = True, info_only = False):
     
     print_info(site_info, title, type, size)
     if not info_only:
-        download_urls([url], title, type, size, output_dir, merge = merge)
+        download_urls([url], title, ext, size, output_dir, merge = merge)
 
 site_info = "Mixcloud.com"
 download = mixcloud_download
