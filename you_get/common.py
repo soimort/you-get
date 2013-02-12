@@ -132,9 +132,17 @@ def url_info(url, faker = False):
     if type in mapping:
         ext = mapping[type]
     else:
-        ext = None
+        type = None
+        filename = parse.unquote(r1(r'filename="?(.+)"?', headers['content-disposition']))
+        if len(filename.split('.')) > 1:
+            ext = filename.split('.')[-1]
+        else:
+            ext = None
     
-    size = int(headers['content-length'])
+    if headers['transfer-encoding'] != 'chunked':
+        size = int(headers['content-length'])
+    else:
+        size = None
     
     return type, ext, size
 
@@ -357,7 +365,6 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
         print('Real URLs:\n', urls, '\n')
         return
     
-    #assert ext in ('3gp', 'flv', 'mp4', 'webm')
     if not total_size:
         try:
             total_size = urls_size(urls)
@@ -506,7 +513,7 @@ def playlist_not_supported(name):
 def print_info(site_info, title, type, size):
     if type in ['3gp']:
         type = 'video/3gpp'
-    elif type in ['asf']:
+    elif type in ['asf', 'wmv']:
         type = 'video/x-ms-asf'
     elif type in ['flv', 'f4v']:
         type = 'video/x-flv'
