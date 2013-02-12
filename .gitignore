@@ -1,9 +1,10 @@
 /build/
 /dist/
-/*.egg-info/
+/MANIFEST
+*.egg-info/
+*.py[cod]
 
 _*/
-*.py[cod]
 
 *.download
 *.cmt.*

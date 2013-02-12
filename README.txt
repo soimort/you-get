@@ -160,8 +160,8 @@ In Python 3 (interactive)::
 
     >>> import you_get
     
-    >>> you_get.__version__
-    '0.2'
+    >>> you_get.version.__version__
+    '0.3'
     
     >>> you_get.youtube_download("http://www.youtube.com/watch?v=8bQlxQJEzLk", info_only = True)
     Video Site: YouTube.com

@@ -4,9 +4,12 @@ SETUP = python3 setup.py
 
 default: build sdist bdist bdist_egg
 
+test:
+	$(SETUP) test
+
 clean:
 	zenity --question
-	rm -fr build/ dist/ *.egg-info/
+	rm -fr build/ dist/ src/*.egg-info/
 	find . | grep __pycache__ | xargs rm -fr
 
 build:
