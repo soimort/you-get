@@ -31,6 +31,6 @@
         ],
     
     "console_scripts": [
-        "you-get = you_get.main:main"
+        "you-get = you_get.__main__:main"
         ]
 }

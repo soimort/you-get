@@ -65,3 +65,6 @@ def any_download_playlist(url, output_dir = '.', merge = True, info_only = False
 
 def main():
     script_main('you-get', any_download, any_download_playlist)
+
+if __name__ == "__main__":
+    main()

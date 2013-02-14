@@ -158,18 +158,15 @@ Examples (For Developers)
 
 In Python 3 (interactive)::
 
-    >>> import you_get
-    
-    >>> you_get.version.__version__
-    '0.3'
-    
-    >>> you_get.youtube_download("http://www.youtube.com/watch?v=8bQlxQJEzLk", info_only = True)
+    >>> from you_get.downloader import *
+    >>> youtube.download("http://www.youtube.com/watch?v=8bQlxQJEzLk", info_only = True)
     Video Site: YouTube.com
     Title:      If you're good at something, never do it for free!
     Type:       WebM video (video/webm)
     Size:       0.13 MB (133176 Bytes)
     
-    >>> you_get.any_download("http://www.youtube.com/watch?v=sGwy8DsUJ4M") 
+    >>> import you_get
+    >>> you_get.any_download("http://www.youtube.com/watch?v=sGwy8DsUJ4M")
     Video Site: YouTube.com
     Title:      Mort from Madagascar LIKES
     Type:       WebM video (video/webm)

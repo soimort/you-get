@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-from src.you_get import *
+import os, sys
+sys.path.insert(0, os.path.join((os.path.dirname(os.path.abspath(__file__))), "src"))
+
+from you_get import *
 
 if __name__ == "__main__":
     main()
