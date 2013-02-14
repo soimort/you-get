@@ -4,7 +4,7 @@
 import unittest
 
 from you_get import *
-from you_get.main import url_to_module
+from you_get.__main__ import url_to_module
 
 class YouGetTests(unittest.TestCase):
     
