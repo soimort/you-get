@@ -656,7 +656,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
     if not args:
         print(help)
-        sys.exit(1)
+        sys.exit()
     
     set_http_proxy(proxy)
     
