@@ -6,6 +6,8 @@ See the project homepage <http://www.soimort.org/you-get> for further documentat
 
 Fork me on GitHub: <https://github.com/soimort/you-get>
 
+[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
+
 ## Features
 
 ### Supported Sites (As of Now)

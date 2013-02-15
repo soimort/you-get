@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.1
+-----
+
+*Date: 2013-02-15*
+
+* Fix issues for Google+ and Mixcloud.
+* API changed.
+
 0.3.0
 -----
 
