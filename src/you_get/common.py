@@ -18,7 +18,7 @@ fake_headers = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.57 Safari/537.1'
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0'
 }
 
 if sys.stdout.isatty():
@@ -132,9 +132,20 @@ def url_info(url, faker = False):
     if type in mapping:
         ext = mapping[type]
     else:
-        ext = None
+        type = None
+        if headers['content-disposition']:
+            filename = parse.unquote(r1(r'filename="?(.+)"?', headers['content-disposition']))
+            if len(filename.split('.')) > 1:
+                ext = filename.split('.')[-1]
+            else:
+                ext = None
+        else:
+            ext = None
     
-    size = int(headers['content-length'])
+    if headers['transfer-encoding'] != 'chunked':
+        size = int(headers['content-length'])
+    else:
+        size = None
     
     return type, ext, size
 
@@ -357,7 +368,6 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
         print('Real URLs:\n', urls, '\n')
         return
     
-    #assert ext in ('3gp', 'flv', 'mp4', 'webm')
     if not total_size:
         try:
             total_size = urls_size(urls)
@@ -506,7 +516,7 @@ def playlist_not_supported(name):
 def print_info(site_info, title, type, size):
     if type in ['3gp']:
         type = 'video/3gpp'
-    elif type in ['asf']:
+    elif type in ['asf', 'wmv']:
         type = 'video/x-ms-asf'
     elif type in ['flv', 'f4v']:
         type = 'video/x-flv'
@@ -646,7 +656,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
     if not args:
         print(help)
-        sys.exit(1)
+        sys.exit()
     
     set_http_proxy(proxy)
     

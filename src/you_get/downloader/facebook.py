@@ -10,7 +10,7 @@ def facebook_download(url, output_dir = '.', merge = True, info_only = False):
     title = r1(r'<title id="pageTitle">(.+) \| Facebook</title>', html)
     
     for fmt in ["hd_src", "sd_src"]:
-        src = parse.unquote(unicodize(r1(r'\["' + fmt + '","([^"]*)', html)))
+        src= re.sub(r'\\/', r'/', r1(r'"' + fmt + '":"([^"]*)"', parse.unquote(unicodize(r1(r'\["params","([^"]*)"\]', html)))))
         if src:
             break
     

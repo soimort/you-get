@@ -1,6 +1,32 @@
 Changelog
 =========
 
+0.3.1
+-----
+
+*Date: 2013-02-15*
+
+* Fix issues for Google+ and Mixcloud.
+* API changed.
+
+0.3.0
+-----
+
+*Date: 2013-02-08*
+
+* Add support for:
+    - Niconico
+
+0.3dev-20130201
+---------------
+
+*Date: 2013-02-01*
+
+* Add support for:
+    - Mixcloud
+    - Facebook
+    - Joy.cn
+
 0.3dev-20130125
 ---------------
 

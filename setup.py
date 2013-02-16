@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
-PROJ_METADATA = 'you-get.json'
+PROJ_NAME = 'you-get'
+PACKAGE_NAME = 'you_get'
+
+PROJ_METADATA = '%s.json' % PROJ_NAME
 
 import os, json, imp
 here = os.path.abspath(os.path.dirname(__file__))
 proj_info = json.loads(open(os.path.join(here, PROJ_METADATA)).read())
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGELOG = open(os.path.join(here, 'CHANGELOG.txt')).read()
-VERSION = imp.load_source('version', os.path.join(here, 'you_get/version.py')).__version__
+VERSION = imp.load_source('version', os.path.join(here, 'src/%s/version.py' % PACKAGE_NAME)).__version__
 
 from setuptools import setup, find_packages
 setup(
@@ -24,7 +27,10 @@ setup(
     
     long_description = README + '\n\n' + CHANGELOG,
     
-    packages = find_packages(),
+    packages = find_packages('src'),
+    package_dir = {'' : 'src'},
+    
+    test_suite = 'tests',
     
     platforms = 'any',
     zip_safe = False,

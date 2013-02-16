@@ -1,7 +1,7 @@
 You-Get
 =======
 
-`You-Get <https://github.com/soimort/you-get>`_ is a video downloader runs on Python 3. It aims at easing the download of videos on `YouTube <http://www.youtube.com>`_, `Youku <http://www.youku.com>`_/`Tudou <http://www.tudou.com>`_ (biggest online video providers in China), etc., in one script.
+`You-Get <https://github.com/soimort/you-get>`_ is a video downloader runs on Python 3. It aims at easing the download of videos on `YouTube <http://www.youtube.com>`_, `Youku <http://www.youku.com>`_/`Tudou <http://www.tudou.com>`_ (biggest online video providers in China), `Niconico <http://www.nicovideo.jp>`_, etc., in one script.
 
 See the project homepage http://www.soimort.org/you-get for further documentation.
 
@@ -20,6 +20,8 @@ Supported Sites (As of Now)
 * Google+ http://plus.google.com
 * Tumblr http://www.tumblr.com
 * SoundCloud http://soundcloud.com
+* Mixcloud http://www.mixcloud.com
+* Niconico (ニコニコ動画) http://www.nicovideo.jp
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
 * YinYueTai (音悦台) http://www.yinyuetai.com
@@ -156,18 +158,15 @@ Examples (For Developers)
 
 In Python 3 (interactive)::
 
-    >>> import you_get
-    
-    >>> you_get.__version__
-    '0.2'
-    
-    >>> you_get.youtube_download("http://www.youtube.com/watch?v=8bQlxQJEzLk", info_only = True)
+    >>> from you_get.downloader import *
+    >>> youtube.download("http://www.youtube.com/watch?v=8bQlxQJEzLk", info_only = True)
     Video Site: YouTube.com
     Title:      If you're good at something, never do it for free!
     Type:       WebM video (video/webm)
     Size:       0.13 MB (133176 Bytes)
     
-    >>> you_get.any_download("http://www.youtube.com/watch?v=sGwy8DsUJ4M") 
+    >>> import you_get
+    >>> you_get.any_download("http://www.youtube.com/watch?v=sGwy8DsUJ4M")
     Video Site: YouTube.com
     Title:      Mort from Madagascar LIKES
     Type:       WebM video (video/webm)
