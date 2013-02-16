@@ -20,6 +20,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Tumblr <http://www.tumblr.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
+* JPopsuki <http://jpopsuki.tv>
 * Niconico (ニコニコ動画) <http://www.nicovideo.jp>
 * Youku (优酷) <http://www.youku.com>
 * Tudou (土豆) <http://www.tudou.com>
@@ -213,6 +214,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * Tumblr <http://www.tumblr.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
+* JPopsuki <http://jpopsuki.tv>
 * NICONICO动画 <http://www.nicovideo.jp>
 * 优酷 <http://www.youku.com>
 * 土豆 <http://www.tudou.com>

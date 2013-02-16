@@ -21,6 +21,7 @@ Supported Sites (As of Now)
 * Tumblr http://www.tumblr.com
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
+* JPopsuki http://jpopsuki.tv
 * Niconico (ニコニコ動画) http://www.nicovideo.jp
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
