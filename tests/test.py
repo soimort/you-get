@@ -32,3 +32,9 @@ class YouGetTests(unittest.TestCase):
             "http://jpopsuki.tv/video/Dragon-Ash---Run-to-the-Sun/8ad7aec604badd0b0798cd999b63ae17",
         ]:
             url_to_module(url).download(url, info_only = True)
+    
+    def test_xiami(self):
+        for url in [
+            "http://www.xiami.com/song/1769835121",
+        ]:
+            url_to_module(url).download(url, info_only = True)
