@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3.2
+-----
+
+*Date: 2013-02-22*
+
+* Add support for:
+    - JPopsuki
+* Fix issue for Xiami.
+
 0.3.1
 -----
 

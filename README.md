@@ -1,12 +1,10 @@
-# You-Get
+# You-Get [![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
 
 [You-Get](https://github.com/soimort/you-get) is a video downloader runs on Python 3. It aims at easing the download of videos on [YouTube](http://www.youtube.com), [Youku](http://www.youku.com)/[Tudou](http://www.tudou.com) (biggest online video providers in China), [ Niconico](http://www.nicovideo.jp), etc., in one script.
 
 See the project homepage <http://www.soimort.org/you-get> for further documentation.
 
 Fork me on GitHub: <https://github.com/soimort/you-get>
-
-[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
 
 ## Features
 
