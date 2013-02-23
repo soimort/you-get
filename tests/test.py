@@ -33,6 +33,12 @@ class YouGetTests(unittest.TestCase):
         ]:
             url_to_module(url).download(url, info_only = True)
     
+    def test_douban(self):
+        for url in [
+            "http://site.douban.com/caofang/",
+        ]:
+            url_to_module(url).download(url, info_only = True)
+    
     def test_xiami(self):
         for url in [
             "http://www.xiami.com/song/1769835121",

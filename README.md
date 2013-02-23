@@ -26,6 +26,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * AcFun <http://www.acfun.tv>
 * bilibili <http://www.bilibili.tv>
 * CNTV (中国网络电视台) <http://www.cntv.cn>
+* Douban (豆瓣) <http://douban.com>
 * ifeng (凤凰视频) <http://v.ifeng.com>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
 * Joy.cn (激动网) <http://www.joy.cn>
@@ -203,7 +204,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 
 ### 支持的站点（截至目前）
 
-已实现对以下视频站点的支持，以后会陆续增加（・∀・）
+已实现对以下站点的支持，以后会陆续增加（・∀・）
 
 * YouTube <http://www.youtube.com>
 * Vimeo <http://vimeo.com>
@@ -221,6 +222,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * AcFun <http://www.acfun.tv>
 * bilibili <http://www.bilibili.tv>
 * CNTV <http://www.cntv.cn>
+* 豆瓣 <http://douban.com>
 * 凤凰视频 <http://v.ifeng.com>
 * 爱奇艺 <http://www.iqiyi.com>
 * 激动网 <http://www.joy.cn>
