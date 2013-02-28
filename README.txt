@@ -187,3 +187,8 @@ License
 -------
 
 You-Get is licensed under the `MIT license <https://raw.github.com/soimort/you-get/master/LICENSE.txt>`_.
+
+Contributing
+------------
+
+Please see `CONTRIBUTING.md <https://github.com/soimort/you-get/blob/master/CONTRIBUTING.md>`_.

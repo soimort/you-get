@@ -180,7 +180,7 @@ You-Get is licensed under the [MIT license](https://raw.github.com/soimort/you-g
 
 ## Contributing
 
-Please see [CONTRIBUTING.md](https://raw.github.com/soimort/you-get/master/CONTRIBUTING.md).
+Please see [CONTRIBUTING.md](https://github.com/soimort/you-get/blob/master/CONTRIBUTING.md).
 
 
 
@@ -382,4 +382,4 @@ You-Get在[MIT License](https://raw.github.com/soimort/you-get/master/LICENSE.tx
 
 ## 如何参与贡献 / 报告issue
 
-请阅读 [CONTRIBUTING.md](https://raw.github.com/soimort/you-get/master/CONTRIBUTING.md)。
+请阅读 [CONTRIBUTING.md](https://github.com/soimort/you-get/blob/master/CONTRIBUTING.md)。
