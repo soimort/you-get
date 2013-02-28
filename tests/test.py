@@ -8,6 +8,12 @@ from you_get.__main__ import url_to_module
 
 class YouGetTests(unittest.TestCase):
     
+    def test_vimeo(self):
+        for url in [
+            "http://vimeo.com/56810854",
+        ]:
+            url_to_module(url).download(url, info_only = True)
+    
     def test_googleplus(self):
         for url in [
             "http://plus.google.com/102663035987142737445/posts/jJRu43KQFT5",
