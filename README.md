@@ -178,6 +178,10 @@ See source code.
 
 You-Get is licensed under the [MIT license](https://raw.github.com/soimort/you-get/master/LICENSE.txt).
 
+## Contributing
+
+Please see [CONTRIBUTING.md](https://raw.github.com/soimort/you-get/master/CONTRIBUTING.md).
+
 
 
 ***
@@ -375,3 +379,7 @@ YouTube等国外视频网站的下载，请移步：[rg3/youtube-dl](https://git
 ## 许可证
 
 You-Get在[MIT License](https://raw.github.com/soimort/you-get/master/LICENSE.txt)下发布。
+
+## 如何参与贡献 / 报告issue
+
+请阅读 [CONTRIBUTING.md](https://raw.github.com/soimort/you-get/master/CONTRIBUTING.md)。
