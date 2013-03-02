@@ -77,10 +77,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
     
     $ make install
     
-   Or (on Windows):
-    
-    > setup.py install
-    
    Check if the installation was successful:
     
     $ you-get -V
@@ -98,10 +94,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
    To install the package into the system path, execute:
     
     $ make install
-    
-   Or (on Windows):
-    
-    > setup.py install
     
    Check if the installation was successful:
     
@@ -279,10 +271,6 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
     
     $ make install
     
-   或：（适用于Windows）
-    
-    > setup.py install
-    
    检查安装是否成功：
     
     $ you-get -V
@@ -300,10 +288,6 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
    若要将Python package安装到系统默认路径，执行：
     
     $ make install
-    
-   或：（适用于Windows）
-    
-    > setup.py install
     
    检查安装是否成功：
     

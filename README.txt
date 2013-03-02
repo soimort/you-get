@@ -82,10 +82,6 @@ Installation
     
     $ make install
     
-   Or (on Windows)::
-    
-    > setup.py install
-    
    Check if the installation was successful::
     
     $ you-get -V
@@ -103,10 +99,6 @@ Installation
    To install the package into the system path, execute::
     
     $ make install
-    
-   Or (on Windows)::
-    
-    > setup.py install
     
    Check if the installation was successful::
     
