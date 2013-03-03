@@ -30,14 +30,18 @@ def tudou_download_by_id(id, title, output_dir = '.', merge = True):
 def tudou_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_decoded_html(url)
     
-    iid = r1(r'iid\s*[:=]\s*(\d+)', html)
-    if not iid:
-        tudou_download_playlist(url, output_dir, merge, info_only)
-        return
-    
     title = r1(r'kw\s*[:=]\s*[\'\"]([^\']+?)[\'\"]', html)
     assert title
     title = unescape_html(title)
+    
+    vcode = r1(r'vcode\s*[:=]\s*\'([^\']+)\'', html)
+    if vcode:
+        from .youku import youku_download_by_id
+        return youku_download_by_id(vcode, title, output_dir = output_dir, merge = merge, info_only = info_only)
+    
+    iid = r1(r'iid\s*[:=]\s*(\d+)', html)
+    if not iid:
+        return tudou_download_playlist(url, output_dir, merge, info_only)
     
     tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
 

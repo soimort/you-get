@@ -21,6 +21,7 @@ Supported Sites (As of Now)
 * Tumblr http://www.tumblr.com
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
+* JPopsuki http://jpopsuki.tv
 * Niconico (ニコニコ動画) http://www.nicovideo.jp
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
@@ -28,10 +29,12 @@ Supported Sites (As of Now)
 * AcFun http://www.acfun.tv
 * bilibili http://www.bilibili.tv
 * CNTV (中国网络电视台) http://www.cntv.cn
+* Douban (豆瓣) http://douban.com
 * ifeng (凤凰视频) http://v.ifeng.com
 * iQIYI (爱奇艺) http://www.iqiyi.com
 * Joy.cn (激动网) http://www.joy.cn
 * Ku6 (酷6网) http://www.ku6.com
+* MioMio http://www.miomio.tv
 * NetEase (网易视频) http://v.163.com
 * PPTV http://www.pptv.com
 * QQ (腾讯视频) http://v.qq.com
@@ -79,10 +82,6 @@ Installation
     
     $ make install
     
-   Or (on Windows)::
-    
-    > setup.py install
-    
    Check if the installation was successful::
     
     $ you-get -V
@@ -100,10 +99,6 @@ Installation
    To install the package into the system path, execute::
     
     $ make install
-    
-   Or (on Windows)::
-    
-    > setup.py install
     
    Check if the installation was successful::
     
@@ -184,3 +179,8 @@ License
 -------
 
 You-Get is licensed under the `MIT license <https://raw.github.com/soimort/you-get/master/LICENSE.txt>`_.
+
+Contributing
+------------
+
+Please see `CONTRIBUTING.md <https://github.com/soimort/you-get/blob/master/CONTRIBUTING.md>`_.

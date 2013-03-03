@@ -1,12 +1,10 @@
-# You-Get
+# You-Get [![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
 
 [You-Get](https://github.com/soimort/you-get) is a video downloader runs on Python 3. It aims at easing the download of videos on [YouTube](http://www.youtube.com), [Youku](http://www.youku.com)/[Tudou](http://www.tudou.com) (biggest online video providers in China), [ Niconico](http://www.nicovideo.jp), etc., in one script.
 
 See the project homepage <http://www.soimort.org/you-get> for further documentation.
 
 Fork me on GitHub: <https://github.com/soimort/you-get>
-
-[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
 
 ## Features
 
@@ -20,6 +18,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Tumblr <http://www.tumblr.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
+* JPopsuki <http://jpopsuki.tv>
 * Niconico (ニコニコ動画) <http://www.nicovideo.jp>
 * Youku (优酷) <http://www.youku.com>
 * Tudou (土豆) <http://www.tudou.com>
@@ -27,10 +26,12 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * AcFun <http://www.acfun.tv>
 * bilibili <http://www.bilibili.tv>
 * CNTV (中国网络电视台) <http://www.cntv.cn>
+* Douban (豆瓣) <http://douban.com>
 * ifeng (凤凰视频) <http://v.ifeng.com>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
 * Joy.cn (激动网) <http://www.joy.cn>
 * Ku6 (酷6网) <http://www.ku6.com>
+* MioMio <http://www.miomio.tv>
 * NetEase (网易视频) <http://v.163.com>
 * PPTV <http://www.pptv.com>
 * QQ (腾讯视频) <http://v.qq.com>
@@ -76,10 +77,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
     
     $ make install
     
-   Or (on Windows):
-    
-    > setup.py install
-    
    Check if the installation was successful:
     
     $ you-get -V
@@ -98,10 +95,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
     
     $ make install
     
-   Or (on Windows):
-    
-    > setup.py install
-    
    Check if the installation was successful:
     
     $ you-get -V
@@ -109,6 +102,36 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 ### 5. Install from [AUR (Arch User Repository)](http://aur.archlinux.org/):
 
    Click [here](https://aur.archlinux.org/packages.php\?ID=62576).
+
+### FAQ (For Windows Users)
+
+* Q: I don't know how to install it on Windows.
+
+* A: Then don't do it. Just put your `you-get` folder into system `%PATH%`.
+
+* Q: I got something like `UnicodeDecodeError: 'gbk' codec can't decode byte 0xb0 in position 1012: illegal multibyte sequence`.
+
+* A: Run `set PYTHONIOENCODING=utf-8`.
+
+## Upgrading
+
+Using Pip:
+
+    $ pip install --upgrade you-get
+
+### Error When Upgrading from Pip
+
+If you see this error:
+
+```
+  File "/usr/lib/python3.3/site-packages/pip-1.2.1-py3.3.egg/pip/backwardcompat.py", line 44, in u
+    return s.decode('utf-8')
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xae in position 68: invalid start byte
+```
+
+This is an existing bug in Pip 1.2.1. However, this does not affect your upgrading.
+
+In Pip 1.3+, this should be already fixed.
 
 ## Examples (For End-Users)
 
@@ -177,6 +200,10 @@ See source code.
 
 You-Get is licensed under the [MIT license](https://raw.github.com/soimort/you-get/master/LICENSE.txt).
 
+## Contributing
+
+Please see [CONTRIBUTING.md](https://github.com/soimort/you-get/blob/master/CONTRIBUTING.md).
+
 
 
 ***
@@ -203,7 +230,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 
 ### 支持的站点（截至目前）
 
-已实现对以下视频站点的支持，以后会陆续增加（・∀・）
+已实现对以下站点的支持，以后会陆续增加（・∀・）
 
 * YouTube <http://www.youtube.com>
 * Vimeo <http://vimeo.com>
@@ -213,6 +240,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * Tumblr <http://www.tumblr.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
+* JPopsuki <http://jpopsuki.tv>
 * NICONICO动画 <http://www.nicovideo.jp>
 * 优酷 <http://www.youku.com>
 * 土豆 <http://www.tudou.com>
@@ -220,10 +248,12 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * AcFun <http://www.acfun.tv>
 * bilibili <http://www.bilibili.tv>
 * CNTV <http://www.cntv.cn>
+* 豆瓣 <http://douban.com>
 * 凤凰视频 <http://v.ifeng.com>
 * 爱奇艺 <http://www.iqiyi.com>
 * 激动网 <http://www.joy.cn>
 * 酷6网 <http://www.ku6.com>
+* MioMio <http://www.miomio.tv>
 * 网易视频 <http://v.163.com>
 * PPTV <http://www.pptv.com>
 * 腾讯视频 <http://v.qq.com>
@@ -271,10 +301,6 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
     
     $ make install
     
-   或：（适用于Windows）
-    
-    > setup.py install
-    
    检查安装是否成功：
     
     $ you-get -V
@@ -293,10 +319,6 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
     
     $ make install
     
-   或：（适用于Windows）
-    
-    > setup.py install
-    
    检查安装是否成功：
     
     $ you-get -V
@@ -304,6 +326,36 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 ### 5. 从[AUR (Arch User Repository)](http://aur.archlinux.org/)安装：
 
    点击[这里](https://aur.archlinux.org/packages.php\?ID=62576)。
+
+### FAQ（针对Windows用户)
+
+* Q：我不知道该如何在Windows下安装。
+
+* A：不需要安装。直接把`you-get`目录放到系统`%PATH%`中。
+
+* Q：出现错误提示`UnicodeDecodeError: 'gbk' codec can't decode byte 0xb0 in position 1012: illegal multibyte sequence`。
+
+* A：执行`set PYTHONIOENCODING=utf-8`。
+
+## 升级
+
+使用Pip：
+
+    $ pip install --upgrade you-get
+
+### 从Pip升级时可能的错误
+
+若出现以下错误提示：
+
+```
+  File "/usr/lib/python3.3/site-packages/pip-1.2.1-py3.3.egg/pip/backwardcompat.py", line 44, in u
+    return s.decode('utf-8')
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xae in position 68: invalid start byte
+```
+
+这被证实是Pip 1.2.1的一个bug。不过，它并不影响到正常的升级。
+
+这在Pip 1.3+中应当已经被修复。
 
 ## 使用方法示例
 
@@ -371,3 +423,7 @@ YouTube等国外视频网站的下载，请移步：[rg3/youtube-dl](https://git
 ## 许可证
 
 You-Get在[MIT License](https://raw.github.com/soimort/you-get/master/LICENSE.txt)下发布。
+
+## 如何参与贡献 / 报告issue
+
+请阅读 [CONTRIBUTING.md](https://github.com/soimort/you-get/blob/master/CONTRIBUTING.md)。

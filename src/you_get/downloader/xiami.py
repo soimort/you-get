@@ -28,7 +28,7 @@ def location_dec(str):
     return parse.unquote(out).replace("^", "0")
 
 def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
-    xml = get_html('http://www.xiami.com/song/playlist/id/%s/object_name/default/object_id/0' % sid)
+    xml = get_html('http://www.xiami.com/song/playlist/id/%s/object_name/default/object_id/0' % sid, faker = True)
     doc = parseString(xml)
     i = doc.getElementsByTagName("track")[0]
     artist = i.getElementsByTagName("artist")[0].firstChild.nodeValue

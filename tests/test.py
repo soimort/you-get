@@ -6,27 +6,51 @@ import unittest
 from you_get import *
 from you_get.__main__ import url_to_module
 
+def test_urls(urls):
+    for url in urls:
+        url_to_module(url).download(url, info_only = True)
+
 class YouGetTests(unittest.TestCase):
     
+    def test_douban(self):
+        test_urls([
+            "http://site.douban.com/caofang/",
+        ])
+        
     def test_googleplus(self):
-        for url in [ 
-            "http://plus.google.com/111438309227794971277/posts/So6bW37WWtp",
-            "http://plus.google.com/114038303885145553998/posts/7Jkwa35HZu8",
-            "http://plus.google.com/109544372058574620997/posts/Hn9P3Mbuyud",
-            "http://plus.google.com/photos/109544372058574620997/albums/5835145047890484737/5835145057636064194",
+        test_urls([
             "http://plus.google.com/102663035987142737445/posts/jJRu43KQFT5",
             "http://plus.google.com/+%E5%B9%B3%E7%94%B0%E6%A2%A8%E5%A5%88/posts/jJRu43KQFT5",
             "http://plus.google.com/+平田梨奈/posts/jJRu43KQFT5",
             "http://plus.google.com/photos/102663035987142737445/albums/5844078581209509505/5844078587839097874",
             "http://plus.google.com/photos/+%E5%B9%B3%E7%94%B0%E6%A2%A8%E5%A5%88/albums/5844078581209509505/5844078587839097874",
             "http://plus.google.com/photos/+平田梨奈/albums/5844078581209509505/5844078587839097874",
-        ]:
-            url_to_module(url).download(url, info_only = True)
+        ])
+        
+    def test_jpopsuki(self):
+        test_urls([
+            "http://jpopsuki.tv/video/Dragon-Ash---Run-to-the-Sun/8ad7aec604badd0b0798cd999b63ae17",
+        ])
         
     def test_mixcloud(self):
-        for url in [ 
+        test_urls([
             "http://www.mixcloud.com/beatbopz/beat-bopz-disco-mix/",
             "http://www.mixcloud.com/beatbopz/tokyo-taste-vol4/",
             "http://www.mixcloud.com/DJVadim/north-america-are-you-ready/",
-        ]:
-            url_to_module(url).download(url, info_only = True)
+        ])
+        
+    def test_vimeo(self):
+        test_urls([
+            "http://vimeo.com/56810854",
+        ])
+        
+    def test_xiami(self):
+        test_urls([
+            "http://www.xiami.com/song/1769835121",
+        ])
+        
+    def test_youtube(self):
+        test_urls([
+            "http://www.youtube.com/watch?v=pzKerr0JIPA",
+            "http://youtu.be/pzKerr0JIPA",
+        ])

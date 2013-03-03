@@ -1,6 +1,27 @@
 Changelog
 =========
 
+0.3.3
+-----
+
+*Date: 2013-03-01*
+
+* Add support for:
+    - Douban
+    - MioMio
+* Fix issue for:
+    - Tudou
+    - Vimeo
+
+0.3.2
+-----
+
+*Date: 2013-02-22*
+
+* Add support for:
+    - JPopsuki
+* Fix issue for Xiami.
+
 0.3.1
 -----
 
