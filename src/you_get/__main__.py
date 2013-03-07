@@ -45,6 +45,7 @@ def url_to_module(url):
         'soundcloud': soundcloud,
         'tudou': tudou,
         'tumblr': tumblr,
+        'vid48': vid48,
         'vimeo': vimeo,
         'xiami': xiami,
         'yinyuetai': yinyuetai,
