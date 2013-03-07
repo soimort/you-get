@@ -12,11 +12,6 @@ def test_urls(urls):
 
 class YouGetTests(unittest.TestCase):
     
-    def test_douban(self):
-        test_urls([
-            "http://site.douban.com/caofang/",
-        ])
-        
     def test_googleplus(self):
         test_urls([
             "http://plus.google.com/102663035987142737445/posts/jJRu43KQFT5",
