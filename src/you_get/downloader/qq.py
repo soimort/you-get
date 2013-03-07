@@ -17,7 +17,14 @@ def qq_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://v.qq.com/([^\?]+)\?vid', url):
         aid = r1(r'(.*)\.html', url)
         vid = r1(r'http://v.qq.com/[^\?]+\?vid=(\w+)', url)
-        url = aid + ".html?vid=" + vid
+        url = "%s/%s.html" % (aid, vid)
+    
+    if re.match(r'http://y.qq.com/([^\?]+)\?vid', url):
+        vid = r1(r'http://y.qq.com/[^\?]+\?vid=(\w+)', url)
+        url_1 = "http://v.qq.com/page/%s.html" % vid
+        url_2 = r1(r'url=([^"]*)', get_html(url_1))
+        aid = r1(r'(.*)\.html', url_2)
+        url = "%s/%s.html" % (aid, vid)
     
     html = get_html(url)
     
