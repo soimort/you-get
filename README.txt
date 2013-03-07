@@ -15,6 +15,7 @@ Supported Sites (As of Now)
 
 * YouTube http://www.youtube.com
 * Vimeo http://vimeo.com
+* Blip http://blip.tv
 * Dailymotion http://dailymotion.com
 * Facebook http://facebook.com
 * Google+ http://plus.google.com
