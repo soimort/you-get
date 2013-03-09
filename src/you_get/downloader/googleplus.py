@@ -13,7 +13,7 @@ def googleplus_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
     html = parse.unquote(html).replace('\/', '/')
     
-    title = r1(r'<meta property="og:title" content="([^"]*)"', html) or r1(r'<title>(.*)</title>', html) or r1(r'<title>(.*)\n', html)
+    title = r1(r'<title>(.*)</title>', html) or r1(r'<title>(.*)\n', html) or r1(r'<meta property="og:title" content="([^"]*)"', html)
     
     url2 = r1(r'<a href="([^"]+)" target="_blank" class="Mn" >', html)
     if url2:

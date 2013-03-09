@@ -194,8 +194,11 @@ def youku_download_playlist(url, output_dir = '.', merge = True, info_only = Fal
     output_dir = os.path.join(output_dir, title)
     
     for i, id in enumerate(ids):
-        print('Processing %s of %s videos...' % (i + 1, len(ids)))
-        youku_download(id, output_dir, merge = merge, info_only = info_only)
+        try:
+            print('Processing %s of %s videos...' % (i + 1, len(ids)))
+            youku_download(id, output_dir, merge = merge, info_only = info_only)
+        except:
+            continue
 
 site_info = "Youku.com"
 download = youku_download

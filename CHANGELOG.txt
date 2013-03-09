@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3.4
+-----
+
+*Date: 2013-03-08*
+
+* Add support for:
+    - Blip
+    - VID48
+
 0.3.3
 -----
 

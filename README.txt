@@ -15,6 +15,7 @@ Supported Sites (As of Now)
 
 * YouTube http://www.youtube.com
 * Vimeo http://vimeo.com
+* Blip http://blip.tv
 * Dailymotion http://dailymotion.com
 * Facebook http://facebook.com
 * Google+ http://plus.google.com
@@ -22,6 +23,7 @@ Supported Sites (As of Now)
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
 * JPopsuki http://jpopsuki.tv
+* VID48 http://vid48.com
 * Niconico (ニコニコ動画) http://www.nicovideo.jp
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
