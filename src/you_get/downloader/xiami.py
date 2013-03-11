@@ -42,7 +42,7 @@ def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
         download_urls([url], "%s - %s - %s" % (song_title, artist, album_name), ext, size, output_dir, merge = merge, faker = True)
 
 def xiami_download_showcollect(sid, output_dir = '.', merge = True, info_only = False):
-    xml = get_html('http://www.xiami.com/song/playlist/id/%s/type/3' % sid)
+    xml = get_html('http://www.xiami.com/song/playlist/id/%s/type/3' % sid, faker = True)
     doc = parseString(xml)
     tracks = doc.getElementsByTagName("track")
     track_nr = 1
@@ -60,7 +60,7 @@ def xiami_download_showcollect(sid, output_dir = '.', merge = True, info_only = 
         track_nr += 1
 
 def xiami_download_album(sid, output_dir = '.', merge = True, info_only = False):
-    xml = get_html('http://www.xiami.com/song/playlist/id/%s/type/1' % sid)
+    xml = get_html('http://www.xiami.com/song/playlist/id/%s/type/1' % sid, faker = True)
     album_name = r1(r'<album_name><!\[CDATA\[(.*)\]\]>', xml)
     doc = parseString(xml)
     tracks = doc.getElementsByTagName("track")
