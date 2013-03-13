@@ -7,6 +7,8 @@ See the project homepage http://www.soimort.org/you-get for further documentatio
 
 Fork me on GitHub: https://github.com/soimort/you-get
 
+.. image:: https://api.travis-ci.org/soimort/you-get.png
+
 Features
 --------
 
