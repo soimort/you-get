@@ -409,10 +409,20 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             print()
             return
         if ext == 'flv':
-            from .processor.join_flv import concat_flv
-            concat_flv(parts, os.path.join(output_dir, title + '.flv'))
-            for part in parts:
-                os.remove(part)
+            try:
+                from .processor.ffmpeg import has_ffmpeg_installed
+                if has_ffmpeg_installed():
+                    from .processor.ffmpeg import ffmpeg_concat_flv_to_mp4
+                    ffmpeg_concat_flv_to_mp4(parts, os.path.join(output_dir, title + '.mp4'))
+                else:
+                    from .processor.join_flv import concat_flv
+                    concat_flv(parts, os.path.join(output_dir, title + '.flv'))
+            except:
+                raise
+            else:
+                for part in parts:
+                    os.remove(part)
+            
         elif ext == 'mp4':
             try:
                 from .processor.join_mp4 import concat_mp4
@@ -428,6 +438,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
                         os.remove(part)
                 else:
                     print('No ffmpeg is found. Merging aborted.')
+            
         else:
             print("Can't merge %s files" % ext)
     
