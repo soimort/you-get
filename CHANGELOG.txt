@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3.5
+-----
+
+*Date: 2013-03-15*
+
+* Default to use FFmpeg for merging .flv files.
+
 0.3.4
 -----
 
