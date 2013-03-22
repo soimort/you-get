@@ -34,12 +34,13 @@ youtube_codecs = [
 
 def parse_video_info(raw_info):
     """Parser for YouTube's get_video_info data.
-    Returns a map, with 'url_encoded_fmt_stream_map' field being a sorted list.
+    Returns a dict, where 'url_encoded_fmt_stream_map' maps to a sorted list.
     """
     
     # Percent-encoding reserved characters, used as separators.
-    separator = {
+    sepr = {
         '&': '%26',
+        ',': '%2C',
         '=': '%3D',
     }
     
@@ -53,17 +54,20 @@ def parse_video_info(raw_info):
                     youtube_codecs],
             range(len(youtube_codecs))))
     
+    # {key1: value1, key2: value2, ...,
+    #   'url_encoded_fmt_stream_map': [{'itag': '38', ...}, ...]
+    # }
     return dict(
         [(lambda metadata:
             ['url_encoded_fmt_stream_map', (
-                lambda url_encoded_fmt_stream_map:
+                lambda stream_map:
                     sorted(
                         [dict(
-                            [sub_item.split(separator['='])
-                                for sub_item in
-                                    item.split(separator['&'])])
+                            [subitem.split(sepr['='])
+                                for subitem in
+                                    item.split(sepr['&'])])
                             for item in
-                                url_encoded_fmt_stream_map.split('%2C')],
+                                stream_map.split(sepr[','])],
                         key =
                             lambda stream:
                                 fmt_level[stream['itag']]))
