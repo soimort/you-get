@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3.6
+-----
+
+*Date: 2013-03-22*
+
+* Add support for:
+    - Vine
+* Fix issue for:
+    - YouTube
+
 0.3.5
 -----
 
