@@ -48,6 +48,7 @@ def url_to_module(url):
         'tumblr': tumblr,
         'vid48': vid48,
         'vimeo': vimeo,
+        'vine': vine,
         'xiami': xiami,
         'yinyuetai': yinyuetai,
         'youku': youku,
