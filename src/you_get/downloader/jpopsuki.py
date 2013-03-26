@@ -7,7 +7,10 @@ from ..common import *
 def jpopsuki_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
     
-    title = r1(r'<meta name="title" content="([^"]*)"', html)[:-14]
+    title = r1(r'<meta name="title" content="([^"]*)"', html)
+    if title.endswith(' - JPopsuki TV'):
+        title = title[:-14]
+    
     url = "http://jpopsuki.tv%s" % r1(r'<source src="([^"]*)"', html)
     type, ext, size = url_info(url)
     
