@@ -26,6 +26,7 @@ from .tudou import *
 from .tumblr import *
 from .vid48 import *
 from .vimeo import *
+from .vine import *
 from .w56 import *
 from .xiami import *
 from .yinyuetai import *

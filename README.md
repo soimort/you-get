@@ -19,6 +19,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Facebook <http://facebook.com>
 * Google+ <http://plus.google.com>
 * Tumblr <http://www.tumblr.com>
+* Vine <http://vine.co>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
 * JPopsuki <http://jpopsuki.tv>
@@ -107,7 +108,13 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 
    Click [here](https://aur.archlinux.org/packages.php\?ID=62576).
 
-### FAQ (For Windows Users)
+### Upgrading:
+
+Using Pip:
+
+    $ pip install --upgrade you-get
+
+### FAQ (For Windows Users):
 
 * Q: I don't know how to install it on Windows.
 
@@ -116,26 +123,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Q: I got something like `UnicodeDecodeError: 'gbk' codec can't decode byte 0xb0 in position 1012: illegal multibyte sequence`.
 
 * A: Run `set PYTHONIOENCODING=utf-8`.
-
-## Upgrading
-
-Using Pip:
-
-    $ pip install --upgrade you-get
-
-### Error When Upgrading from Pip
-
-If you see this error:
-
-```
-  File "/usr/lib/python3.3/site-packages/pip-1.2.1-py3.3.egg/pip/backwardcompat.py", line 44, in u
-    return s.decode('utf-8')
-UnicodeDecodeError: 'utf-8' codec can't decode byte 0xae in position 68: invalid start byte
-```
-
-This is an existing bug in Pip 1.2.1. However, this does not affect your upgrading.
-
-In Pip 1.3+, this should be already fixed.
 
 ## Examples (For End-Users)
 
@@ -243,6 +230,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * Facebook <http://facebook.com>
 * Google+ <http://plus.google.com>
 * Tumblr <http://www.tumblr.com>
+* Vine <http://vine.co>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
 * JPopsuki <http://jpopsuki.tv>
@@ -333,7 +321,13 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 
    点击[这里](https://aur.archlinux.org/packages.php\?ID=62576)。
 
-### FAQ（针对Windows用户)
+### 升级：
+
+使用Pip：
+
+    $ pip install --upgrade you-get
+
+### FAQ（针对Windows用户)：
 
 * Q：我不知道该如何在Windows下安装。
 
@@ -342,26 +336,6 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * Q：出现错误提示`UnicodeDecodeError: 'gbk' codec can't decode byte 0xb0 in position 1012: illegal multibyte sequence`。
 
 * A：执行`set PYTHONIOENCODING=utf-8`。
-
-## 升级
-
-使用Pip：
-
-    $ pip install --upgrade you-get
-
-### 从Pip升级时可能的错误
-
-若出现以下错误提示：
-
-```
-  File "/usr/lib/python3.3/site-packages/pip-1.2.1-py3.3.egg/pip/backwardcompat.py", line 44, in u
-    return s.decode('utf-8')
-UnicodeDecodeError: 'utf-8' codec can't decode byte 0xae in position 68: invalid start byte
-```
-
-这被证实是Pip 1.2.1的一个bug。不过，它并不影响到正常的升级。
-
-这在Pip 1.3+中应当已经被修复。
 
 ## 使用方法示例
 

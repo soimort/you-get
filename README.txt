@@ -22,6 +22,7 @@ Supported Sites (As of Now)
 * Facebook http://facebook.com
 * Google+ http://plus.google.com
 * Tumblr http://www.tumblr.com
+* Vine http://vine.co
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
 * JPopsuki http://jpopsuki.tv
