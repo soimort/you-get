@@ -29,6 +29,7 @@ from .vimeo import *
 from .vine import *
 from .w56 import *
 from .xiami import *
+from .baidu import *
 from .yinyuetai import *
 from .youku import *
 from .youtube import *
