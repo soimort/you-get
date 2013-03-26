@@ -50,6 +50,7 @@ def url_to_module(url):
         'vimeo': vimeo,
         'vine': vine,
         'xiami': xiami,
+        'baidu': baidu,
         'yinyuetai': yinyuetai,
         'youku': youku,
         'youtu': youtube,

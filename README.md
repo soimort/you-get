@@ -44,6 +44,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Sohu (搜狐视频) <http://tv.sohu.com>
 * 56 (56网) <http://www.56.com>
 * Xiami (虾米) <http://www.xiami.com>
+* Baidu (百度音乐) <http://music.baidu.com>
 
 ## Dependencies
 
@@ -255,6 +256,8 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * 搜狐视频 <http://tv.sohu.com>
 * 56网 <http://www.56.com>
 * 虾米 <http://www.xiami.com>
+* 百度音乐 <http://music.baidu.com>
+
 
 ## 依赖
 
