@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.7
+-----
+
+*Date: 2013-03-29*
+
+* Add support for:
+    - Baidu
+
 0.3.6
 -----
 
