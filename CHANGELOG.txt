@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.8
+-----
+
+*Date: 2013-04-05*
+
+* Add support for:
+    - Coursera
+
 0.3.7
 -----
 
