@@ -24,6 +24,7 @@ def url_to_module(url):
         'bilibili': bilibili,
         'blip': blip,
         'cntv': cntv,
+        'coursera': coursera,
         'dailymotion': dailymotion,
         'douban': douban,
         'facebook': facebook,

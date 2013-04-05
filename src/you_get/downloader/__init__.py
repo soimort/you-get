@@ -4,6 +4,7 @@ from .acfun import *
 from .bilibili import *
 from .blip import *
 from .cntv import *
+from .coursera import *
 from .dailymotion import *
 from .douban import *
 from .facebook import *
