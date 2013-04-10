@@ -8,6 +8,7 @@ from .coursera import *
 from .dailymotion import *
 from .douban import *
 from .facebook import *
+from .freesound import *
 from .googleplus import *
 from .ifeng import *
 from .iqiyi import *

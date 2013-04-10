@@ -28,6 +28,7 @@ def url_to_module(url):
         'dailymotion': dailymotion,
         'douban': douban,
         'facebook': facebook,
+        'freesound': freesound,
         'google': googleplus,
         'iask': sina,
         'ifeng': ifeng,
