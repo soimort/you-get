@@ -12,6 +12,11 @@ def test_urls(urls):
 
 class YouGetTests(unittest.TestCase):
     
+    def test_freesound(self):
+        test_urls([
+            "http://www.freesound.org/people/Corsica_S/sounds/184419/",
+        ])
+        
     def test_googleplus(self):
         test_urls([
             "http://plus.google.com/102663035987142737445/posts/jJRu43KQFT5",
