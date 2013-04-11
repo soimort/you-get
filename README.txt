@@ -17,6 +17,7 @@ Supported Sites (As of Now)
 
 * YouTube http://www.youtube.com
 * Vimeo http://vimeo.com
+* Coursera https://www.coursera.org
 * Blip http://blip.tv
 * Dailymotion http://dailymotion.com
 * Facebook http://facebook.com
@@ -25,6 +26,7 @@ Supported Sites (As of Now)
 * Vine http://vine.co
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
+* Freesound http://www.freesound.org
 * JPopsuki http://jpopsuki.tv
 * VID48 http://vid48.com
 * Niconico (ニコニコ動画) http://www.nicovideo.jp
@@ -47,7 +49,7 @@ Supported Sites (As of Now)
 * Sohu (搜狐视频) http://tv.sohu.com
 * 56 (56网) http://www.56.com
 * Xiami (虾米) http://www.xiami.com
-* Baidu (百度音乐) <http://music.baidu.com>
+* Baidu (百度音乐) http://music.baidu.com
 
 Dependencies
 ------------

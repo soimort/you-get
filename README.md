@@ -14,6 +14,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 
 * YouTube <http://www.youtube.com>
 * Vimeo <http://vimeo.com>
+* Coursera <https://www.coursera.org>
 * Blip <http://blip.tv>
 * Dailymotion <http://dailymotion.com>
 * Facebook <http://facebook.com>
@@ -22,6 +23,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Vine <http://vine.co>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
+* Freesound <http://www.freesound.org>
 * JPopsuki <http://jpopsuki.tv>
 * VID48 <http://vid48.com>
 * Niconico (ニコニコ動画) <http://www.nicovideo.jp>
@@ -226,6 +228,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 
 * YouTube <http://www.youtube.com>
 * Vimeo <http://vimeo.com>
+* Coursera <https://www.coursera.org>
 * Blip <http://blip.tv>
 * Dailymotion <http://dailymotion.com>
 * Facebook <http://facebook.com>
@@ -234,6 +237,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * Vine <http://vine.co>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
+* Freesound <http://www.freesound.org>
 * JPopsuki <http://jpopsuki.tv>
 * VID48 <http://vid48.com>
 * NICONICO动画 <http://www.nicovideo.jp>

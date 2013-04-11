@@ -12,9 +12,9 @@ def test_urls(urls):
 
 class YouGetTests(unittest.TestCase):
     
-    def test_blip(self):
+    def test_freesound(self):
         test_urls([
-            "http://blip.tv/clojure/sam-aaron-programming-music-with-overtone-5970273",
+            "http://www.freesound.org/people/Corsica_S/sounds/184419/",
         ])
         
     def test_googleplus(self):
