@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.9
+-----
+
+*Date: 2013-04-12*
+
+* Add support for:
+    - Freesound
+
 0.3.8
 -----
 
