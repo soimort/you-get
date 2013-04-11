@@ -35,3 +35,4 @@ from .baidu import *
 from .yinyuetai import *
 from .youku import *
 from .youtube import *
+from .songtaste import *
