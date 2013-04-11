@@ -39,11 +39,6 @@ class YouGetTests(unittest.TestCase):
             "http://www.mixcloud.com/DJVadim/north-america-are-you-ready/",
         ])
         
-    def test_vid48(self):
-        test_urls([
-            "http://vid48.com/watch_video.php?v=KXUSG8169U41",
-        ])
-        
     def test_vimeo(self):
         test_urls([
             "http://vimeo.com/56810854",
