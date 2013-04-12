@@ -43,6 +43,8 @@ def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
     url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
     lrc_url = i.getElementsByTagName("lyric")[0].firstChild.nodeValue
     type, ext, size = url_info(url, faker = True)
+    if not ext:
+        ext = 'mp3'
     
     print_info(site_info, song_title, type, size)
     if not info_only:
@@ -66,6 +68,8 @@ def xiami_download_showcollect(cid, output_dir = '.', merge = True, info_only = 
         url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
         lrc_url = i.getElementsByTagName("lyric")[0].firstChild.nodeValue
         type, ext, size = url_info(url, faker = True)
+        if not ext:
+            ext = 'mp3'
         
         print_info(site_info, song_title, type, size)
         if not info_only:
@@ -88,7 +92,9 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
         url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
         lrc_url = i.getElementsByTagName("lyric")[0].firstChild.nodeValue
         type, ext, size = url_info(url, faker = True)
-        
+        if not ext:
+            ext = 'mp3'
+
         print_info(site_info, song_title, type, size)
         if not info_only:
             file_name = "%02d.%s" % (track_nr, song_title)
