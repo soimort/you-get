@@ -134,10 +134,13 @@ def url_info(url, faker = False):
     else:
         type = None
         if headers['content-disposition']:
-            filename = parse.unquote(r1(r'filename="?(.+)"?', headers['content-disposition']))
-            if len(filename.split('.')) > 1:
-                ext = filename.split('.')[-1]
-            else:
+            try:
+                filename = parse.unquote(r1(r'filename="?(.+)"?', headers['content-disposition']))
+                if len(filename.split('.')) > 1:
+                    ext = filename.split('.')[-1]
+                else:
+                    ext = None
+            except:
                 ext = None
         else:
             ext = None
