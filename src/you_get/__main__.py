@@ -21,6 +21,7 @@ def url_to_module(url):
         '163': netease,
         '56': w56,
         'acfun': acfun,
+        'baidu': baidu,
         'bilibili': bilibili,
         'blip': blip,
         'cntv': cntv,
@@ -45,6 +46,7 @@ def url_to_module(url):
         'sina': sina,
         'smgbb': bilibili,
         'sohu': sohu,
+        'songtaste':songtaste,
         'soundcloud': soundcloud,
         'tudou': tudou,
         'tumblr': tumblr,
@@ -52,12 +54,10 @@ def url_to_module(url):
         'vimeo': vimeo,
         'vine': vine,
         'xiami': xiami,
-        'baidu': baidu,
         'yinyuetai': yinyuetai,
         'youku': youku,
         'youtu': youtube,
         'youtube': youtube,
-        'songtaste':songtaste,
         #TODO
     }
     if k in downloads:

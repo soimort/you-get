@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from .acfun import *
+from .baidu import *
 from .bilibili import *
 from .blip import *
 from .cntv import *
@@ -23,6 +24,7 @@ from .pptv import *
 from .qq import *
 from .sina import *
 from .sohu import *
+from .songtaste import *
 from .soundcloud import *
 from .tudou import *
 from .tumblr import *
@@ -31,8 +33,6 @@ from .vimeo import *
 from .vine import *
 from .w56 import *
 from .xiami import *
-from .baidu import *
 from .yinyuetai import *
 from .youku import *
 from .youtube import *
-from .songtaste import *
