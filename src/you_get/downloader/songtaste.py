@@ -4,8 +4,8 @@ __all__ = ['songtaste_download']
 
 from ..common import *
 import urllib.error
-def songtaste_download(url, output_dir = '.', merge = True, info_only = False):
 
+def songtaste_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://www.songtaste.com/song/\d+', url):
         old_fake_headers = fake_headers
         id = r1(r'http://www.songtaste.com/song/(\d+)', url)
@@ -13,12 +13,12 @@ def songtaste_download(url, output_dir = '.', merge = True, info_only = False):
         fake_headers['Referer'] = player_url
         html = get_response(player_url).data
         r = '''^WrtSongLine\((.*)\)'''
-    
+        
         reg = re.compile(r , re.M)
-
+        
         m = reg.findall(html.decode('gbk'))
         l = m[0].replace('"', '').replace(' ', '').split(',')
-
+        
         title = l[2] + '-' + l[1]
         
         for i in range(0, 10):
@@ -33,11 +33,10 @@ def songtaste_download(url, output_dir = '.', merge = True, info_only = False):
             break
         
         print_info(site_info, title, type, size)
-
+        
         if not info_only:
             download_urls([real_url], title, ext, size, output_dir, refer = url, merge = merge, faker = True)
         fake_hreaders = old_fake_headers
-
 
 site_info = "www.songtaste.com"
 download = songtaste_download
