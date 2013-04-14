@@ -54,7 +54,3 @@ class YouGetTests(unittest.TestCase):
             "http://www.youtube.com/watch?v=pzKerr0JIPA",
             "http://youtu.be/pzKerr0JIPA",
         ])
-    def test_songtaste(self):
-        test_urls([
-           "http://www.songtaste.com/song/3255328/",
-        ])
