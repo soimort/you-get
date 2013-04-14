@@ -38,6 +38,6 @@ def songtaste_download(url, output_dir = '.', merge = True, info_only = False):
             download_urls([real_url], title, ext, size, output_dir, refer = url, merge = merge, faker = True)
         fake_hreaders = old_fake_headers
 
-site_info = "www.songtaste.com"
+site_info = "SongTaste.com"
 download = songtaste_download
 download_playlist = playlist_not_supported('songtaste')
