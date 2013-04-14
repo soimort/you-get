@@ -17,3 +17,7 @@ _*/
 *.mpg
 *.ts
 *.webm
+
+*.DS_Store
+*.swp
+*~
