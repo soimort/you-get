@@ -55,7 +55,7 @@ def parse_cid_playurl(xml):
 
 def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_only = False):
     url = 'http://interface.bilibili.tv/playurl?cid=' + id
-    urls = parse_cid_playurl(get_html(url, 'utf-8'))
+    urls = [i if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i) else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i) for i in parse_cid_playurl(get_html(url, 'utf-8'))] # dirty fix for QQ
     
     if re.search(r'\.(flv|hlv)\b', urls[0]):
         type = 'flv'
@@ -101,7 +101,7 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
     if not info_only:
         print('Downloading %s ...' % (title + '.cmt.xml'))
         xml = get_srt_xml(id)
-        with open(title + '.cmt.xml', 'w') as x:
+        with open(os.path.join(output_dir, title + '.cmt.xml'), 'w') as x:
             x.write(xml)
 
 site_info = "bilibili.tv"
