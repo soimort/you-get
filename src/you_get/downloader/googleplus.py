@@ -47,11 +47,16 @@ def googleplus_download(url, output_dir = '.', merge = True, info_only = False):
             if real_url:
                 break
         real_url = unicodize(real_url)
-    
+        
         type, ext, size = url_info(real_url)
     
     if not ext:
         ext = 'mp4'
+    
+    response = request.urlopen(request.Request(real_url))
+    if response.headers['content-disposition']:
+        filename = parse.unquote(r1(r'filename="?(.+)"?', response.headers['content-disposition'])).split('.')
+        title = ''.join(filename[:-1])
     
     print_info(site_info, title, ext, size)
     if not info_only:
