@@ -17,16 +17,6 @@ class YouGetTests(unittest.TestCase):
             "http://www.freesound.org/people/Corsica_S/sounds/184419/",
         ])
         
-    def test_googleplus(self):
-        test_urls([
-            "http://plus.google.com/102663035987142737445/posts/jJRu43KQFT5",
-            "http://plus.google.com/+%E5%B9%B3%E7%94%B0%E6%A2%A8%E5%A5%88/posts/jJRu43KQFT5",
-            "http://plus.google.com/+平田梨奈/posts/jJRu43KQFT5",
-            "http://plus.google.com/photos/102663035987142737445/albums/5844078581209509505/5844078587839097874",
-            "http://plus.google.com/photos/+%E5%B9%B3%E7%94%B0%E6%A2%A8%E5%A5%88/albums/5844078581209509505/5844078587839097874",
-            "http://plus.google.com/photos/+平田梨奈/albums/5844078581209509505/5844078587839097874",
-        ])
-        
     def test_jpopsuki(self):
         test_urls([
             "http://jpopsuki.tv/video/Dragon-Ash---Run-to-the-Sun/8ad7aec604badd0b0798cd999b63ae17",
