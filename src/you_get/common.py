@@ -207,9 +207,17 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
             headers['Referer'] = refer
         
         response = request.urlopen(request.Request(url, headers = headers), None)
+        try:
+            range_start = int(response.headers['content-range'][6:].split('/')[0].split('-')[0])
+            end_length = end = int(response.headers['content-range'][6:].split('/')[1])
+            range_length = end_length - range_start
+        except:
+            range_length = int(response.headers['content-length'])
         
-        if file_size != received + int(response.headers['content-length']):
+        if file_size != received + range_length:
             received = 0
+            if bar:
+                bar.received = 0
             open_mode = 'wb'
         
         with open(temp_filepath, open_mode) as output:
