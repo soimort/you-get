@@ -5,10 +5,14 @@ import subprocess
 
 def has_ffmpeg_installed():
     try:
-        subprocess.call(['ffmpeg', '-loglevel', '0'])
-        return True
+        p = subprocess.Popen(['ffmpeg', '-version'], stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        import re
+        assert re.search('Libav', str(out, 'utf-8').split('\n')[0]) is None
     except:
         return False
+    else:
+        return True
 
 def ffmpeg_convert_ts_to_mkv(files, output = 'output.mkv'):
     for file in files:
