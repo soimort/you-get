@@ -124,6 +124,7 @@ def url_info(url, faker = False):
         'video/f4v': 'flv',
         'video/mp4': 'mp4',
         'video/MP2T': 'ts',
+        'video/quicktime': 'mov',
         'video/webm': 'webm',
         'video/x-flv': 'flv',
         'video/x-ms-asf': 'asf',
@@ -536,6 +537,7 @@ def playlist_not_supported(name):
     return f
 
 def print_info(site_info, title, type, size):
+    type = type.lower()
     if type in ['3gp']:
         type = 'video/3gpp'
     elif type in ['asf', 'wmv']:
@@ -546,6 +548,8 @@ def print_info(site_info, title, type, size):
         type = 'audio/mpeg'
     elif type in ['mp4']:
         type = 'video/mp4'
+    elif type in ['mov']:
+        type = 'video/quicktime'
     elif type in ['ts']:
         type = 'video/MP2T'
     elif type in ['webm']:
@@ -563,8 +567,8 @@ def print_info(site_info, title, type, size):
         type_info = "WebM video (%s)" % type
     #elif type in ['video/ogg']:
     #    type_info = "Ogg video (%s)" % type
-    #elif type in ['video/quicktime']:
-    #    type_info = "QuickTime video (%s)" % type
+    elif type in ['video/quicktime']:
+        type_info = "QuickTime video (%s)" % type
     #elif type in ['video/x-matroska']:
     #    type_info = "Matroska video (%s)" % type
     #elif type in ['video/x-ms-wmv']:
