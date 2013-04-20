@@ -20,7 +20,7 @@ def googleplus_download(url, output_dir = '.', merge = True, info_only = False):
         html = get_html(url2)
         html = parse.unquote(html.replace('\/', '/'))
     
-    real_url = unicodize(r1(r'"(https://video.googleusercontent.com/[^"]*)",1\]', html).replace('\/', '/'))
+    real_url = unicodize(r1(r'"(https://video.googleusercontent.com/[^"]*)",\d\]', html).replace('\/', '/'))
     if real_url:
         type, ext, size = url_info(real_url)
     if not real_url or not size:
