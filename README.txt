@@ -22,6 +22,7 @@ Supported Sites (As of Now)
 * Dailymotion http://dailymotion.com
 * Facebook http://facebook.com
 * Google+ http://plus.google.com
+* Google Drive http://docs.google.com
 * Tumblr http://www.tumblr.com
 * Vine http://vine.co
 * SoundCloud http://soundcloud.com
