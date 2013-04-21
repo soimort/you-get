@@ -27,7 +27,11 @@ def coursera_download(url, output_dir = '.', merge = True, info_only = False):
     
     request.install_opener(request.build_opener(request.HTTPCookieProcessor()))
     
-    response = request.urlopen(request.Request(url))
+    import http.client
+    conn = http.client.HTTPConnection('class.coursera.org')
+    conn.request('GET', "/%s/lecture/index" % course_code)
+    response = conn.getresponse()
+    
     csrf_token = r1(r'csrf_token=([^;]+);', response.headers['Set-Cookie'])
     
     import netrc, getpass
