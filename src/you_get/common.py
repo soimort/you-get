@@ -544,6 +544,8 @@ def print_info(site_info, title, type, size):
         type = 'video/x-ms-asf'
     elif type in ['flv', 'f4v']:
         type = 'video/x-flv'
+    elif type in ['mkv']:
+        type = 'video/x-matroska'
     elif type in ['mp3']:
         type = 'audio/mpeg'
     elif type in ['mp4']:
@@ -569,8 +571,8 @@ def print_info(site_info, title, type, size):
     #    type_info = "Ogg video (%s)" % type
     elif type in ['video/quicktime']:
         type_info = "QuickTime video (%s)" % type
-    #elif type in ['video/x-matroska']:
-    #    type_info = "Matroska video (%s)" % type
+    elif type in ['video/x-matroska']:
+        type_info = "Matroska video (%s)" % type
     #elif type in ['video/x-ms-wmv']:
     #    type_info = "Windows Media video (%s)" % type
     elif type in ['video/x-ms-asf']:
