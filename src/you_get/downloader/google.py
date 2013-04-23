@@ -19,7 +19,7 @@ def google_download(url, output_dir = '.', merge = True, info_only = False):
         
         title = r1(r'<title>(.*)</title>', html) or r1(r'<title>(.*)\n', html) or r1(r'<meta property="og:title" content="([^"]*)"', html)
         
-        url2 = r1(r'<a href="([^"]+)" target="_blank" class="Mn" >', html)
+        url2 = r1(r'<a href="(https://plus.google.com/photos/[^"]+)" target="_blank" class', html)
         if url2:
             html = get_html(url2)
             html = parse.unquote(html.replace('\/', '/'))
