@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.11
+------
+
+*Date: 2013-04-26*
+
+* Add support for:
+    - Google Drive (Google Docs)
+
 0.3.10
 ------
 
