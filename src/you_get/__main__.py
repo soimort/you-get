@@ -30,7 +30,7 @@ def url_to_module(url):
         'douban': douban,
         'facebook': facebook,
         'freesound': freesound,
-        'google': googleplus,
+        'google': google,
         'iask': sina,
         'ifeng': ifeng,
         'iqiyi': iqiyi,

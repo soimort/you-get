@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3.10
+------
+
+*Date: 2013-04-19*
+
+* Add support for:
+    - SongTaste
+* Support Libav as well as FFmpeg.
+
 0.3.9
 -----
 

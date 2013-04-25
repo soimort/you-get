@@ -124,6 +124,7 @@ def url_info(url, faker = False):
         'video/f4v': 'flv',
         'video/mp4': 'mp4',
         'video/MP2T': 'ts',
+        'video/quicktime': 'mov',
         'video/webm': 'webm',
         'video/x-flv': 'flv',
         'video/x-ms-asf': 'asf',
@@ -207,9 +208,17 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
             headers['Referer'] = refer
         
         response = request.urlopen(request.Request(url, headers = headers), None)
+        try:
+            range_start = int(response.headers['content-range'][6:].split('/')[0].split('-')[0])
+            end_length = end = int(response.headers['content-range'][6:].split('/')[1])
+            range_length = end_length - range_start
+        except:
+            range_length = int(response.headers['content-length'])
         
-        if file_size != received + int(response.headers['content-length']):
+        if file_size != received + range_length:
             received = 0
+            if bar:
+                bar.received = 0
             open_mode = 'wb'
         
         with open(temp_filepath, open_mode) as output:
@@ -528,16 +537,21 @@ def playlist_not_supported(name):
     return f
 
 def print_info(site_info, title, type, size):
+    type = type.lower()
     if type in ['3gp']:
         type = 'video/3gpp'
     elif type in ['asf', 'wmv']:
         type = 'video/x-ms-asf'
     elif type in ['flv', 'f4v']:
         type = 'video/x-flv'
+    elif type in ['mkv']:
+        type = 'video/x-matroska'
     elif type in ['mp3']:
         type = 'audio/mpeg'
     elif type in ['mp4']:
         type = 'video/mp4'
+    elif type in ['mov']:
+        type = 'video/quicktime'
     elif type in ['ts']:
         type = 'video/MP2T'
     elif type in ['webm']:
@@ -555,10 +569,10 @@ def print_info(site_info, title, type, size):
         type_info = "WebM video (%s)" % type
     #elif type in ['video/ogg']:
     #    type_info = "Ogg video (%s)" % type
-    #elif type in ['video/quicktime']:
-    #    type_info = "QuickTime video (%s)" % type
-    #elif type in ['video/x-matroska']:
-    #    type_info = "Matroska video (%s)" % type
+    elif type in ['video/quicktime']:
+        type_info = "QuickTime video (%s)" % type
+    elif type in ['video/x-matroska']:
+        type_info = "Matroska video (%s)" % type
     #elif type in ['video/x-ms-wmv']:
     #    type_info = "Windows Media video (%s)" % type
     elif type in ['video/x-ms-asf']:

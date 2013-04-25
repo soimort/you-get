@@ -29,6 +29,10 @@ def qq_download(url, output_dir = '.', merge = True, info_only = False):
             aid = r1(r'(.*)\.html', r_url)
             url = "%s/%s.html" % (aid, vid)
     
+    if re.match(r'http://static.video.qq.com/.*vid=', url):
+        vid = r1(r'http://static.video.qq.com/.*vid=(\w+)', url)
+        url = "http://v.qq.com/page/%s.html" % vid
+    
     html = get_html(url)
     
     title = r1(r'title:"([^"]+)"', html)

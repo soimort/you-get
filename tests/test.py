@@ -25,7 +25,6 @@ class YouGetTests(unittest.TestCase):
     def test_mixcloud(self):
         test_urls([
             "http://www.mixcloud.com/beatbopz/beat-bopz-disco-mix/",
-            "http://www.mixcloud.com/beatbopz/tokyo-taste-vol4/",
             "http://www.mixcloud.com/DJVadim/north-america-are-you-ready/",
         ])
         
