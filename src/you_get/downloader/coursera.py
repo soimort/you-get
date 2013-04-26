@@ -24,10 +24,15 @@ def coursera_login(user, password, csrf_token):
 
 def coursera_download(url, output_dir = '.', merge = True, info_only = False):
     course_code = r1(r'coursera.org/([^/]+)', url)
+    url = "http://class.coursera.org/%s/lecture/index" % course_code
     
     request.install_opener(request.build_opener(request.HTTPCookieProcessor()))
     
-    response = request.urlopen(request.Request(url))
+    import http.client
+    conn = http.client.HTTPConnection('class.coursera.org')
+    conn.request('GET', "/%s/lecture/index" % course_code)
+    response = conn.getresponse()
+    
     csrf_token = r1(r'csrf_token=([^;]+);', response.headers['Set-Cookie'])
     
     import netrc, getpass
@@ -78,10 +83,14 @@ def coursera_download(url, output_dir = '.', merge = True, info_only = False):
         ext = r1(r'format=(.+)', resource_url) or r1(r'\.(\w\w\w\w|\w\w\w|\w\w|\w)$', resource_url) or r1(r'download.(mp4)', resource_url)
         _, _, size = url_info(resource_url)
         
-        if ext == 'mp4':
-            download_urls([resource_url], title, ext, size, output_dir, merge = merge)
-        else:
-            download_url_chunked(resource_url, title, ext, size, output_dir, merge = merge)
+        try:
+            if ext == 'mp4':
+                download_urls([resource_url], title, ext, size, output_dir, merge = merge)
+            else:
+                download_url_chunked(resource_url, title, ext, size, output_dir, merge = merge)
+        except Exception as err:
+            print('Skipping %s: %s\n' % (resource_url, err))
+            continue
     
     return
 

@@ -1,6 +1,23 @@
 Changelog
 =========
 
+0.3.11
+------
+
+*Date: 2013-04-26*
+
+* Add support for:
+    - Google Drive (Google Docs)
+
+0.3.10
+------
+
+*Date: 2013-04-19*
+
+* Add support for:
+    - SongTaste
+* Support Libav as well as FFmpeg.
+
 0.3.9
 -----
 
