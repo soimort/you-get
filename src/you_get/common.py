@@ -537,7 +537,7 @@ def playlist_not_supported(name):
     return f
 
 def print_info(site_info, title, type, size):
-    type = type.lower()
+    type = str(type).lower()
     if type in ['3gp']:
         type = 'video/3gpp'
     elif type in ['asf', 'wmv']:
