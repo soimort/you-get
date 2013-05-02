@@ -235,7 +235,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
                 if bar:
                     bar.update_received(len(buffer))
     
-    assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (received, os.path.getsize(temp_filepath))
+    assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (received, os.path.getsize(temp_filepath), temp_filepath)
     
     if os.access(filepath, os.W_OK):
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
