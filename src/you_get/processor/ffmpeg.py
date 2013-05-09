@@ -96,3 +96,31 @@ def ffmpeg_concat_flv_to_mp4(files, output = 'output.mp4'):
         return True
     else:
         raise
+
+def ffmpeg_concat_mp4_to_mp4(files, output = 'output.mp4'):
+    for file in files:
+        if os.path.isfile(file):
+            params = [FFMPEG, '-i']
+            params.append(file)
+            params += ['-c', 'copy', '-f', 'mpegts', '-bsf:v', 'h264_mp4toannexb']
+            params.append(file + '.ts')
+            
+            subprocess.call(params)
+    
+    params = [FFMPEG, '-i']
+    params.append('concat:')
+    for file in files:
+        f = file + '.ts'
+        if os.path.isfile(f):
+            params[-1] += f + '|'
+    if FFMPEG == 'avconv':
+        params += ['-c', 'copy', output]
+    else:
+        params += ['-c', 'copy', '-absf', 'aac_adtstoasc', output]
+    
+    if subprocess.call(params) == 0:
+        for file in files:
+            os.remove(file + '.ts')
+        return True
+    else:
+        raise

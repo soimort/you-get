@@ -7,9 +7,9 @@ from ..common import *
 def mixcloud_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
     title = r1(r'<meta property="og:title" content="([^"]*)"', html)
-    url = r1("data-preview-url=\"([^\"]+)\"", html)
+    preview_url = r1("data-preview-url=\"([^\"]+)\"", html)
     
-    url = re.sub(r'previews', r'cloudcasts/originals', url)
+    url = re.sub(r'previews', r'cloudcasts/originals', preview_url)
     for i in range(10, 30):
         url = re.sub(r'stream[^.]*', r'stream' + str(i), url)
         
@@ -18,6 +18,20 @@ def mixcloud_download(url, output_dir = '.', merge = True, info_only = False):
             break
         except:
             continue
+    
+    try:
+        type
+    except:
+        url = re.sub('cloudcasts/originals', r'cloudcasts/m4a/64', url)
+        url = re.sub('.mp3', '.m4a', url)
+        for i in range(10, 30):
+            url = re.sub(r'stream[^.]*', r'stream' + str(i), url)
+            
+            try:
+                type, ext, size = url_info(url)
+                break
+            except:
+                continue
     
     print_info(site_info, title, type, size)
     if not info_only:

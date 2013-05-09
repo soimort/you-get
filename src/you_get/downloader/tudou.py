@@ -22,12 +22,17 @@ def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only 
         #url_save(url, filepath, bar):
         download_urls([url], title, ext, total_size = None, output_dir = output_dir, merge = merge)
 
-def tudou_download_by_id(id, title, output_dir = '.', merge = True):
+def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = False):
     html = get_html('http://www.tudou.com/programs/view/%s/' % id)
-    iid = r1(r'iid\s*=\s*(\S+)', html)
-    tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge)
+    iid = r1(r'iid\s*[:=]\s*(\S+)', html)
+    tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def tudou_download(url, output_dir = '.', merge = True, info_only = False):
+    # Embedded player
+    id = r1(r'http://www.tudou.com/v/([^/]+)/', url)
+    if id:
+        return tudou_download_by_id(id, title="", info_only=info_only)
+    
     html = get_decoded_html(url)
     
     title = r1(r'kw\s*[:=]\s*[\'\"]([^\']+?)[\'\"]', html)

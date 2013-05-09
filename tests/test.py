@@ -19,7 +19,7 @@ class YouGetTests(unittest.TestCase):
         
     def test_jpopsuki(self):
         test_urls([
-            "http://jpopsuki.tv/video/Dragon-Ash---Run-to-the-Sun/8ad7aec604badd0b0798cd999b63ae17",
+            #"http://jpopsuki.tv/video/Dragon-Ash---Run-to-the-Sun/8ad7aec604badd0b0798cd999b63ae17",
         ])
         
     def test_mixcloud(self):
