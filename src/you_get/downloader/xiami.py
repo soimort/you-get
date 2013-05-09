@@ -7,6 +7,7 @@ from ..common import *
 
 from xml.dom.minidom import parseString
 from urllib import parse
+from urllib.error import HTTPError
 
 def location_dec(str):
     head = int(str[0])
@@ -28,7 +29,18 @@ def location_dec(str):
     return parse.unquote(out).replace("^", "0")
 
 def xiami_download_lyric(lrc_url, file_name, output_dir):
-    lrc = get_html(lrc_url, faker = True)
+    lrc = ''
+    for i in range(10):
+        try:
+            lrc = get_html(lrc_url, faker = True)
+        except HTTPError as e:
+            if e.code == 404 or e.code == 416:
+                print(e.msg)
+                break
+            else:
+                raise e
+        break
+
     if len(lrc) > 0:
         with open(output_dir + "/" + file_name.replace('/', '-') + '.lrc', 'w', encoding='utf-8') as x:
             x.write(lrc)
