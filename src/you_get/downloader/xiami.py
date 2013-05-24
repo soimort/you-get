@@ -33,6 +33,15 @@ def xiami_download_lyric(lrc_url, file_name, output_dir):
         with open(output_dir + "/" + file_name.replace('/', '-') + '.lrc', 'w', encoding='utf-8') as x:
             x.write(lrc)
 
+def xiami_download_pic(pic_url, file_name, output_dir):
+    pic_url = pic_url.replace('_1', '')
+    pos = pic_url.rfind('.')
+    ext = pic_url[pos:]
+    pic = get_response(pic_url, faker = True).data
+    if len(pic) > 0:
+        with open(output_dir + "/" + file_name.replace('/', '-') + ext, 'wb') as x:
+            x.write(pic)
+
 def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
     xml = get_html('http://www.xiami.com/song/playlist/id/%s/object_name/default/object_id/0' % sid, faker = True)
     doc = parseString(xml)
@@ -87,10 +96,13 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
     output_dir = output_dir + "/%s - %s" % (artist, album_name)
     tracks = doc.getElementsByTagName("track")
     track_nr = 1
+    pic_exist = False
     for i in tracks:
         song_title = i.getElementsByTagName("title")[0].firstChild.nodeValue
         url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
         lrc_url = i.getElementsByTagName("lyric")[0].firstChild.nodeValue
+        if not pic_exist:
+            pic_url = i.getElementsByTagName("pic")[0].firstChild.nodeValue
         type, ext, size = url_info(url, faker = True)
         if not ext:
             ext = 'mp3'
@@ -100,6 +112,9 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
             file_name = "%02d.%s" % (track_nr, song_title)
             download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
             xiami_download_lyric(lrc_url, file_name, output_dir)
+            if not pic_exist:
+                xiami_download_pic(pic_url, 'cover', output_dir)
+                pic_exist = True
         
         track_nr += 1
 
