@@ -30,7 +30,7 @@ def location_dec(str):
 def xiami_download_lyric(lrc_url, file_name, output_dir):
     lrc = get_html(lrc_url, faker = True)
     if len(lrc) > 0:
-        with open(output_dir + "/" + file_name.replace('/', '-') + '.lrc', 'w', encoding='utf-8') as x:
+        with open(output_dir + "/" + file_name.replace('/', '-').replace('?', '-') + '.lrc', 'w', encoding='utf-8') as x:
             x.write(lrc)
 
 def xiami_download_pic(pic_url, file_name, output_dir):
