@@ -34,7 +34,7 @@ def xiami_download_lyric(lrc_url, file_name, output_dir):
         try:
             lrc = get_html(lrc_url, faker = True)
         except HTTPError as e:
-            if e.code == 404 or e.code == 416:
+            if e.code == 404 or e.code == 416 or e.code == 504:
                 print(e.msg)
                 break
             else:
