@@ -14,54 +14,35 @@ def google_download(url, output_dir = '.', merge = True, info_only = False):
     
     if service == 'plus': # Google Plus
         
-        html = get_html(url)
-        html = parse.unquote(html).replace('\/', '/')
-        
-        title = r1(r'<title>(.*)</title>', html) or r1(r'<title>(.*)\n', html) or r1(r'<meta property="og:title" content="([^"]*)"', html)
-        
-        url2 = r1(r'<a href="(https://plus.google.com/photos/[^"]+)" target="_blank" class', html)
-        if url2:
-            html = get_html(url2)
-            html = parse.unquote(html.replace('\/', '/'))
-        
-        real_url = unicodize(r1(r'"(https://video.googleusercontent.com/[^"]*)",\d\]', html).replace('\/', '/'))
-        if real_url:
-            type, ext, size = url_info(real_url)
-        if not real_url or not size:
-            url_data = re.findall(r'(\[[^\[\"]+\"http://redirector.googlevideo.com/.*\"\])', html)
-            for itag in [
-                '38',
-                '46', '37',
-                '102', '45', '22',
-                '84',
-                '120',
-                '85',
-                '44', '35',
-                '101', '100', '43', '34', '82', '18',
-                '6',
-                '83', '5', '36',
-                '17',
-                '13',
-            ]:
-                real_url = None
-                for url_item in url_data:
-                    if itag == str(eval(url_item)[0]):
-                        real_url = eval(url_item)[3]
-                        break
-                if real_url:
-                    break
-            real_url = unicodize(real_url)
+        if re.search(r'plus.google.com/photos/\d+/albums/\d+/\d+', url):
+            oid = r1(r'plus.google.com/photos/(\d+)/albums/\d+/\d+', url)
+            pid = r1(r'plus.google.com/photos/\d+/albums/\d+/(\d+)', url)
             
-            type, ext, size = url_info(real_url)
+        elif re.search(r'plus.google.com/photos/\d+/albums/posts/\d+', url):
+            oid = r1(r'plus.google.com/photos/(\d+)/albums/posts/\d+', url)
+            pid = r1(r'plus.google.com/photos/\d+/albums/posts/(\d+)', url)
+            
+        else:
+            html = get_html(url)
+            oid = r1(r'"https://plus.google.com/photos/(\d+)/albums/\d+/\d+', html)
+            pid = r1(r'"https://plus.google.com/photos/\d+/albums/\d+/(\d+)', html)
         
-        if not ext:
+        url = "http://plus.google.com/photos/%s/albums/posts/%s?oid=%s&pid=%s" % (oid, pid, oid, pid)
+        
+        html = get_html(url)
+        real_url = unicodize(r1(r'"(https://video.googleusercontent.com/[^"]*)",\d\]', html).replace('\/', '/'))
+        
+        title = r1(r"\"([^\"]+)\",\"%s\"" % pid, html)
+        if title is None:
+            response = request.urlopen(request.Request(real_url))
+            if response.headers['content-disposition']:
+                filename = parse.unquote(r1(r'filename="?(.+)"?', response.headers['content-disposition'])).split('.')
+                title = ''.join(filename[:-1])
+        
+        type, ext, size = url_info(real_url)
+        if ext is None:
             ext = 'mp4'
         
-        response = request.urlopen(request.Request(real_url))
-        if response.headers['content-disposition']:
-            filename = parse.unquote(r1(r'filename="?(.+)"?', response.headers['content-disposition'])).split('.')
-            title = ''.join(filename[:-1])
-    
     elif service in ['docs', 'drive'] : # Google Docs
         
         html = get_html(url)

@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3.12
+------
+
+*Date: 2013-05-19*
+
+* Fix issues for:
+    - Google+
+    - Mixcloud
+    - Tudou
+
 0.3.11
 ------
 
