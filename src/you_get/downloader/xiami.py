@@ -67,6 +67,7 @@ def xiami_download_showcollect(cid, output_dir = '.', merge = True, info_only = 
 
     xml = get_html('http://www.xiami.com/song/playlist/id/%s/type/3' % cid, faker = True)
     doc = parseString(xml)
+    album_name = album_name.replace(':', ' ')
     output_dir =  output_dir + "/" + "[" + collect_name + "]"
     tracks = doc.getElementsByTagName("track")
     track_nr = 1
