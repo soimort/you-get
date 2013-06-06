@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3.13
+------
+
+*Date: 2013-06-07*
+
+* Add support for:
+    - Baidu Wangpan (video only)
+* Fix issue for:
+    - Google+
+
 0.3.12
 ------
 
@@ -86,7 +96,7 @@ Changelog
 * Add support for:
     - Douban
     - MioMio
-* Fix issue for:
+* Fix issues for:
     - Tudou
     - Vimeo
 
