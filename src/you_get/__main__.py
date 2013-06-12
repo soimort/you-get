@@ -33,6 +33,7 @@ def url_to_module(url):
         'google': google,
         'iask': sina,
         'ifeng': ifeng,
+        'in': alive,
         'iqiyi': iqiyi,
         'joy': joy,
         'jpopsuki': jpopsuki,

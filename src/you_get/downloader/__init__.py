@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from .acfun import *
+from .alive import *
 from .baidu import *
 from .bilibili import *
 from .blip import *

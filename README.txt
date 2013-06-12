@@ -53,6 +53,7 @@ Supported Sites (As of Now)
 * Baidu Music (百度音乐) http://music.baidu.com
 * Baidu Wangpan (百度网盘) http://pan.baidu.com
 * SongTaste http://www.songtaste.com
+* Alive.in.th http://alive.in.th
 
 Dependencies
 ------------

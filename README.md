@@ -50,6 +50,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Baidu Music (百度音乐) <http://music.baidu.com>
 * Baidu Wangpan (百度网盘) <http://pan.baidu.com>
 * SongTaste <http://www.songtaste.com>
+* Alive.in.th <http://alive.in.th>
 
 ## Dependencies
 
@@ -267,6 +268,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * 百度音乐 <http://music.baidu.com>
 * 百度网盘 <http://pan.baidu.com>
 * SongTaste <http://www.songtaste.com>
+* Alive.in.th <http://alive.in.th>
 
 ## 依赖
 
