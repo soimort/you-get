@@ -16,7 +16,7 @@ def get_srt_json(id):
     return get_html(url)
 
 def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    info = json.loads(get_html('http://www.acfun.tv/api/getVideoByID.aspx?vid=' + id))
+    info = json.loads(get_html('http://wenzhou.acfun.tv/api/getVideoByID.aspx?vid=' + id))
     t = info['vtype']
     vid = info['vid']
     if t == 'sina':
@@ -37,7 +37,7 @@ def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_
             x.write(cmt)
 
 def acfun_download(url, output_dir = '.', merge = True, info_only = False):
-    assert re.match(r'http://www.acfun.tv/v/ac(\d+)', url)
+    assert re.match(r'http://[^\.]+.acfun.tv/v/ac(\d+)', url)
     html = get_html(url)
     
     title = r1(r'<h1 id="title-article" class="title"[^<>]*>([^<>]+)<', html)
