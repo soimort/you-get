@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.3.14
+------
+
+*Date: 2013-06-14*
+
+* Add support for:
+    - Alive.in.th
+* Remove support of:
+    - JPopsuki
+* Fix issues for:
+    - AcFun
+    - iQIYI
+
 0.3.13
 ------
 
