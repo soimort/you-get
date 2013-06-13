@@ -36,7 +36,6 @@ def url_to_module(url):
         'in': alive,
         'iqiyi': iqiyi,
         'joy': joy,
-        'jpopsuki': jpopsuki,
         'kankanews': bilibili,
         'ku6': ku6,
         'miomio': miomio,

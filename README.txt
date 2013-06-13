@@ -28,7 +28,6 @@ Supported Sites (As of Now)
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
 * Freesound http://www.freesound.org
-* JPopsuki http://jpopsuki.tv
 * VID48 http://vid48.com
 * Niconico (ニコニコ動画) http://www.nicovideo.jp
 * Youku (优酷) http://www.youku.com
