@@ -34,6 +34,7 @@ def url_to_module(url):
         'iask': sina,
         'ifeng': ifeng,
         'in': alive,
+        'instagram': instagram,
         'iqiyi': iqiyi,
         'joy': joy,
         'kankanews': bilibili,

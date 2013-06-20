@@ -25,6 +25,7 @@ Supported Sites (As of Now)
 * Google Drive http://docs.google.com
 * Tumblr http://www.tumblr.com
 * Vine http://vine.co
+* Instagram http://instagram.com
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
 * Freesound http://www.freesound.org

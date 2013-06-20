@@ -22,6 +22,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Google Drive <http://docs.google.com>
 * Tumblr <http://www.tumblr.com>
 * Vine <http://vine.co>
+* Instagram <http://instagram.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
 * Freesound <http://www.freesound.org>
@@ -239,6 +240,7 @@ You-Get基于优酷下载脚本[iambus/youku-lixian](https://github.com/iambus/y
 * Google Drive <http://docs.google.com>
 * Tumblr <http://www.tumblr.com>
 * Vine <http://vine.co>
+* Instagram <http://instagram.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
 * Freesound <http://www.freesound.org>
