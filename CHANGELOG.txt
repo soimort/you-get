@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.15
+------
+
+*Date: 2013-06-21*
+
+* Add support for:
+    - Instagram
+
 0.3.14
 ------
 
