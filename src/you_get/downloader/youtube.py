@@ -78,13 +78,24 @@ def parse_video_info(raw_info):
             for item in
                 raw_info.split('&')])
 
+# Imported from youtube-dl
+def _decrypt_signature(s):
+    """Decrypt the key the two subkeys must have a length of 43"""
+    (a, b) = s.split('.')
+    if len(a) != 43 or len(b) != 43:
+        raise Exception('Unable to decrypt signature, subkeys lengths not valid')
+    b = ''.join([b[:8], a[0], b[9:18], b[-4], b[19:39], b[18]])[0:40]
+    a = a[-40:]
+    s_dec = '.'.join((a, b))[::-1]
+    return s_dec
+
 def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     
     raw_info = request.urlopen('http://www.youtube.com/get_video_info?video_id=%s' % id).read().decode('utf-8')
     
     video_info = parse_video_info(raw_info)
     
-    if video_info['status'] == 'ok': # use get_video_info data
+    if video_info['status'] == 'ok' and not video_info['use_cipher_signature'] == 'True': # use get_video_info data
         
         title = parse.unquote(video_info['title'].replace('+', ' '))
         
@@ -118,7 +129,7 @@ def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, inf
                 url = r1(r'url=([^\\]+)', fmt)
                 url = unicodize(url)
                 url = parse.unquote(url)
-                sig = r1(r'sig=([^\\]+)', fmt)
+                sig = r1(r'sig=([^\\]+)', fmt) or _decrypt_signature(r1(r's=([^\\]+)', fmt))
                 url = url + '&signature=' + sig
                 break
         try:
