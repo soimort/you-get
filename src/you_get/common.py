@@ -597,9 +597,7 @@ def set_http_proxy(proxy):
     elif proxy == '': # Don't use any proxy
         proxy_support = request.ProxyHandler({})
     else: # Use proxy
-        if not proxy.startswith('http://'):
-            proxy = 'http://' + proxy
-        proxy_support = request.ProxyHandler({'http': '%s' % proxy})
+        proxy_support = request.ProxyHandler({'http': '%s' % proxy, 'https': '%s' % proxy})
     opener = request.build_opener(proxy_support)
     request.install_opener(opener)
 
