@@ -95,7 +95,7 @@ def decrypt_signature(s):
     elif len(s) == 82:
         return s[36] + s[79:67:-1] + s[81] + s[66:40:-1] + s[33] + s[39:36:-1] + s[40] + s[35] + s[0] + s[67] + s[32:0:-1] + s[34]
     else:
-        raise Exception(u'Unable to decrypt signature, key length %d not supported; retrying might work' % (len(s)))
+        raise Exception('Unable to decrypt signature, key length %d not supported; retrying might work' % (len(s)))
 
 def youtube_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     
