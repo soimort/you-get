@@ -64,7 +64,7 @@ def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_onl
     elif re.search(r'/mp4/', urls[0]):
         type = 'mp4'
     else:
-        raise NotImplementedError(urls[0])
+        type = 'flv'
     
     size = 0
     for url in urls:
