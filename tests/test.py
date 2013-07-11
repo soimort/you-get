@@ -17,11 +17,6 @@ class YouGetTests(unittest.TestCase):
             "http://www.freesound.org/people/Corsica_S/sounds/184419/",
         ])
         
-    def test_jpopsuki(self):
-        test_urls([
-            #"http://jpopsuki.tv/video/Dragon-Ash---Run-to-the-Sun/8ad7aec604badd0b0798cd999b63ae17",
-        ])
-        
     def test_mixcloud(self):
         test_urls([
             "http://www.mixcloud.com/beatbopz/beat-bopz-disco-mix/",
