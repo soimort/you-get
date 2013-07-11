@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.3.17
+------
+
+*Date: 2013-07-12*
+
+* Fix issues for:
+    - YouTube
+    - 163
+    - bilibili
+* Code cleanup.
+
 0.3.16
 ------
 
