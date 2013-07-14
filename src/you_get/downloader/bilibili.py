@@ -4,7 +4,7 @@ __all__ = ['bilibili_download']
 
 from ..common import *
 
-from .sina import sina_download_by_id
+from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_id
 from .youku import youku_download_by_id
 
