@@ -25,7 +25,7 @@ def find_video_id_from_url(url):
     return r1_of(patterns, url)
 
 def find_video_id_from_show_page(url):
-    return re.search(r'<div class="btnplay">.*href="([^"]+)"', get_html(url)).group(1)
+    return re.search(r'<a class="btnShow btnplay.*href="([^"]+)"', get_html(url)).group(1)
 
 def youku_url(url):
     id = find_video_id_from_url(url)
@@ -61,7 +61,7 @@ def parse_video_title(url, page):
 
 def parse_playlist_title(url, page):
     if re.search(r'v_playlist', url):
-        # if we are playing a viedo from play list, the meta title might be incorrect
+        # if we are playing a video from play list, the meta title might be incorrect
         title = re.search(r'<title>([^<>]*)</title>', page).group(1)
     else:
         title = re.search(r'<meta name="title" content="([^"]*)"', page).group(1)
@@ -120,27 +120,15 @@ def find_video(info, stream_type = None):
 def file_type_of_url(url):
     return str(re.search(r'/st/([^/]+)/', url).group(1))
 
-def youku_download_by_id(id2, title, output_dir = '.', stream_type = None, merge = True, info_only = False):
-    info = get_info(id2)
+def youku_download_by_id(id, title, output_dir = '.', stream_type = None, merge = True, info_only = False):
+    info = get_info(id)
     urls, sizes = zip(*find_video(info, stream_type))
     ext = file_type_of_url(urls[0])
     total_size = sum(sizes)
     
-    urls = url_locations(urls) # Use real (redirected) URLs for resuming of downloads
-    
     print_info(site_info, title, ext, total_size)
     if not info_only:
         download_urls(urls, title, ext, total_size, output_dir, merge = merge)
-
-def youku_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
-    if not youku_url(url):
-        youku_download_playlist(url, output_dir, merge, info_only)
-        return
-    
-    id2, title = parse_page(url)
-    title = title.replace('?', '-')
-    
-    youku_download_by_id(id2, title, output_dir, merge = merge, info_only = info_only)
 
 def parse_playlist_videos(html):
     return re.findall(r'id="A_(\w+)"', html)
@@ -175,9 +163,9 @@ def parse_vplaylist(url):
     n = int(re.search(r'<span class="num">(\d+)</span>', get_html(url)).group(1))
     return ['http://v.youku.com/v_playlist/f%so0p%s.html' % (id, i) for i in range(n)]
 
-def youku_download_playlist(url, output_dir = '.', merge = True, info_only = False):
-    if re.match(r'http://www.youku.com/show_page/id_\w+.html', url):
-        url = find_video_id_from_show_page(url)
+def youku_download_playlist(url, output_dir='.', merge=True, info_only=False):
+    """Downloads a Youku playlist.
+    """
     
     if re.match(r'http://www.youku.com/playlist_show/id_\d+(?:_ascending_\d_mode_pic(?:_page_\d+)?)?.html', url):
         ids = parse_vplaylist(url)
@@ -185,20 +173,35 @@ def youku_download_playlist(url, output_dir = '.', merge = True, info_only = Fal
         ids = parse_vplaylist(url)
     elif re.match(r'http://u.youku.com/user_playlist/pid_(\d+)_id_[\w=]+(?:_page_\d+)?.html', url):
         ids = parse_vplaylist(url)
-    else:
+    elif re.match(r'http://www.youku.com/show_page/id_\w+.html', url):
+        url = find_video_id_from_show_page(url)
         assert re.match(r'http://v.youku.com/v_show/id_([\w=]+).html', url), 'URL not supported as playlist'
         ids = parse_playlist(url)
+    else:
+        ids = []
+    assert ids != []
     
     title = parse_playlist_title(url, get_html(url))
-    title = title.replace('?', '-')
+    title = filenameable(title)
     output_dir = os.path.join(output_dir, title)
     
     for i, id in enumerate(ids):
+        print('Processing %s of %s videos...' % (i + 1, len(ids)))
         try:
-            print('Processing %s of %s videos...' % (i + 1, len(ids)))
-            youku_download(id, output_dir, merge = merge, info_only = info_only)
+            id, title = parse_page(youku_url(id))
+            youku_download_by_id(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
         except:
             continue
+
+def youku_download(url, output_dir='.', merge=True, info_only=False):
+    """Downloads Youku videos by URL.
+    """
+    
+    try:
+        youku_download_playlist(url, output_dir=output_dir, merge=merge, info_only=info_only)
+    except:
+        id, title = parse_page(url)
+        youku_download_by_id(id, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
 site_info = "Youku.com"
 download = youku_download
