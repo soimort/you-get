@@ -20,7 +20,7 @@ def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_
     t = info['vtype']
     vid = info['vid']
     if t == 'sina':
-        sina_download_by_id(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        sina_download_by_vid(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'youku':
         youku_download_by_id(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'tudou':
@@ -49,7 +49,7 @@ def acfun_download(url, output_dir = '.', merge = True, info_only = False):
     id = r1(r"\[Video\](\d+)\[/Video\]", html) or r1(r"\[video\](\d+)\[/video\]", html)
     if not id:
         id = r1(r"src=\"/newflvplayer/player.*id=(\d+)", html)
-        sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        sina_download_by_vid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     else:
         acfun_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
