@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.3.18
+------
+
+*Date: 2013-07-19*
+
+* Fix issues for:
+    - Dailymotion
+    - Youku
+    - Sina
+    - AcFun
+    - bilibili
+
 0.3.17
 ------
 
