@@ -729,8 +729,18 @@ def download_main(download, download_playlist, urls, playlist, output_dir, merge
         else:
             download(url, output_dir = output_dir, merge = merge, info_only = info_only)
 
+def get_version():
+    try:
+        import subprocess
+        real_dir = os.path.dirname(os.path.realpath(__file__))
+        git_hash = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'], cwd=real_dir, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.read().decode('utf-8').strip()
+        assert git_hash
+        return '%s-%s' % (__version__, git_hash)
+    except:
+        return __version__
+
 def script_main(script_name, download, download_playlist = None):
-    version = 'You-Get %s, a video downloader.' % __version__
+    version = 'You-Get %s, a video downloader.' % get_version()
     help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
     help += '''\nStartup options:
     -V | --version                           Display the version and exit.
