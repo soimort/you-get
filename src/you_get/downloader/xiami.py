@@ -52,10 +52,10 @@ def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
     url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
     lrc_url = i.getElementsByTagName("lyric")[0].firstChild.nodeValue
     type, ext, size = url_info(url, faker = True)
-    if not type:
-        type = 'mp3'
+    if not ext:
+        ext = 'mp3'
     
-    print_info(site_info, song_title, type, size)
+    print_info(site_info, song_title, ext, size)
     if not info_only:
         file_name = "%s - %s - %s" % (song_title, album_name, artist)
         download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
