@@ -130,6 +130,10 @@ def xiami_download(url, output_dir = '.', stream_type = None, merge = True, info
     if re.match('http://www.xiami.com/song/\d+', url):
         id = r1(r'http://www.xiami.com/song/(\d+)', url)
         xiami_download_song(id, output_dir, merge, info_only)
+    
+    if re.match('http://www.xiami.com/song/detail/id/\d+', url):
+        id = r1(r'http://www.xiami.com/song/detail/id/(\d+)', url)
+        xiami_download_song(id, output_dir, merge, info_only)
 
 site_info = "Xiami.com"
 download = xiami_download
