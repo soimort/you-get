@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from .__main__ import *
 from .acfun import *
 from .alive import *
 from .baidu import *
@@ -38,3 +37,5 @@ from .xiami import *
 from .yinyuetai import *
 from .youku import *
 from .youtube import *
+
+from .__main__ import *
