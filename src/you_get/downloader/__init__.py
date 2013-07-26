@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from .__main__ import *
 from .acfun import *
 from .alive import *
 from .baidu import *
