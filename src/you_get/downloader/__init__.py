@@ -10,6 +10,7 @@ from .coursera import *
 from .dailymotion import *
 from .douban import *
 from .facebook import *
+from .fivesing import *
 from .freesound import *
 from .google import *
 from .ifeng import *
