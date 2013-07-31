@@ -20,6 +20,7 @@ def url_to_module(url):
     downloads = {
         '163': netease,
         '56': w56,
+        '5sing':fivesing,
         'acfun': acfun,
         'baidu': baidu,
         'bilibili': bilibili,
