@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import os, sys
-sys.path.insert(0, os.path.join((os.path.dirname(os.path.realpath(__file__))), "src"))
+__path__ = os.path.dirname(os.path.realpath(__file__))
+__srcdir__ = 'src'
+sys.path.insert(1, os.path.join(__path__, __srcdir__))
+from you_get.downloader import main
 
-from you_get import *
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

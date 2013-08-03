@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-
 __all__ = ['main', 'any_download', 'any_download_playlist']
 
-from .downloader import *
-from .common import *
+from ..downloader import *
+from ..common import *
 
 def url_to_module(url):
     site = r1(r'http://([^/]+)/', url)

@@ -5,26 +5,31 @@ __all__ = ['tudou_download', 'tudou_download_playlist', 'tudou_download_by_id', 
 from ..common import *
 
 def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only = False):
-    xml = get_html('http://v2.tudou.com/v?it=' + iid + '&st=1,2,3,4,99')
-    
+    data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?iid=%s' % iid))
+    vids = []
+    for k in data:
+        if len(data[k]) == 1:
+            vids.append({"k": data[k][0]["k"], "size": data[k][0]["size"]})
+
+    temp = max(vids, key=lambda x:x["size"])
+    vid, size = temp["k"], temp["size"]
+
+    xml = get_html('http://ct.v2.tudou.com/f?id=%s' % vid)
     from xml.dom.minidom import parseString
     doc = parseString(xml)
-    title = title or doc.firstChild.getAttribute('tt') or doc.firstChild.getAttribute('title')
-    urls = [(int(n.getAttribute('brt')), n.firstChild.nodeValue.strip()) for n in doc.getElementsByTagName('f')]
-    
-    url = max(urls, key = lambda x:x[0])[1]
-    assert 'f4v' in url
-    
-    type, ext, size = url_info(url)
-    
-    print_info(site_info, title, type, size)
-    if not info_only:
-        #url_save(url, filepath, bar):
-        download_urls([url], title, ext, total_size = None, output_dir = output_dir, merge = merge)
+    url = [n.firstChild.nodeValue.strip() for n in doc.getElementsByTagName('f')][0]
 
-def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = False):
+    ext = r1(r'http://[\w.]*/(\w+)/[\w.]*', url)
+
+    print_info(site_info, title, ext, size)
+    if not info_only:
+        download_urls([url], title, ext, size, output_dir = output_dir, merge = merge)
+
+def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = False):     
     html = get_html('http://www.tudou.com/programs/view/%s/' % id)
-    iid = r1(r'iid\s*[:=]\s*(\S+)', html)
+    
+    iid = r1(r'iid\s*[:=]\s*(\S+)', html)    
+    title = r1(r'kw\s*[:=]\s*[\'\"]([^\']+?)[\'\"]', html)
     tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def tudou_download(url, output_dir = '.', merge = True, info_only = False):

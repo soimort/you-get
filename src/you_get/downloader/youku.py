@@ -80,8 +80,8 @@ def parse_page(url):
     return id2, title
 
 def get_info(videoId2):
-    return json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/' + videoId2))
-
+    return json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/' + videoId2 + '/timezone/+08/version/5/source/out/Sc/2'))
+    
 def find_video(info, stream_type = None):
     #key = '%s%x' % (info['data'][0]['key2'], int(info['data'][0]['key1'], 16) ^ 0xA55AA5A5)
     segs = info['data'][0]['segs']
