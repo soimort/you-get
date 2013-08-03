@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
- __all__ = ['fivesing_download']
+__all__ = ['fivesing_download']
 
 from ..common import *
 
