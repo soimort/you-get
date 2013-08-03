@@ -34,20 +34,28 @@ yt_codecs = [
 
 # Signature decryption algorithm, reused code from youtube-dl
 def decrypt_signature(s):
-    if len(s) == 88:
+    if len(s) == 92:
+        return s[25] + s[3:25] + s[0] + s[26:42] + s[79] + s[43:79] + s[91] + s[80:83]
+    elif len(s) == 90:
+        return s[25] + s[3:25] + s[2] + s[26:40] + s[77] + s[41:77] + s[89] + s[78:81]
+    elif len(s) == 88:
         return s[48] + s[81:67:-1] + s[82] + s[66:62:-1] + s[85] + s[61:48:-1] + s[67] + s[47:12:-1] + s[3] + s[11:3:-1] + s[2] + s[12]
     elif len(s) == 87:
-        return s[62] + s[82:62:-1] + s[83] + s[61:52:-1] + s[0] + s[51:2:-1]
+        return s[4:23] + s[86] + s[24:85]
     elif len(s) == 86:
-        return s[2:63] + s[82] + s[64:82] + s[63]
+        return s[83:85] + s[26] + s[79:46:-1] + s[85] + s[45:36:-1] + s[30] + s[35:30:-1] + s[46] + s[29:26:-1] + s[82] + s[25:1:-1]
     elif len(s) == 85:
-        return s[76] + s[82:76:-1] + s[83] + s[75:60:-1] + s[0] + s[59:50:-1] + s[1] + s[49:2:-1]
+        return s[2:8] + s[0] + s[9:21] + s[65] + s[22:65] + s[84] + s[66:82] + s[21]
     elif len(s) == 84:
         return s[83:36:-1] + s[2] + s[35:26:-1] + s[3] + s[25:3:-1] + s[26]
     elif len(s) == 83:
-        return s[:81]
+        return s[:15] + s[80] + s[16:80] + s[15]
     elif len(s) == 82:
         return s[36] + s[79:67:-1] + s[81] + s[66:40:-1] + s[33] + s[39:36:-1] + s[40] + s[35] + s[0] + s[67] + s[32:0:-1] + s[34]
+    elif len(s) == 81:
+        return s[56] + s[79:56:-1] + s[41] + s[55:41:-1] + s[80] + s[40:34:-1] + s[0] + s[33:29:-1] + s[34] + s[28:9:-1] + s[29] + s[8:0:-1] + s[9]
+    elif len(s) == 79:
+        return s[54] + s[77:54:-1] + s[39] + s[53:39:-1] + s[78] + s[38:34:-1] + s[0] + s[33:29:-1] + s[34] + s[28:9:-1] + s[29] + s[8:0:-1] + s[9]
     else:
         raise Exception('Unable to decrypt signature, key length %d not supported; retrying might work' % (len(s)))
 
