@@ -551,19 +551,18 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             
         elif ext == 'mp4':
             try:
-                from .processor.join_mp4 import concat_mp4
-                concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
-                for part in parts:
-                    os.remove(part)
-            except:
                 from .processor.ffmpeg import has_ffmpeg_installed
                 if has_ffmpeg_installed():
                     from .processor.ffmpeg import ffmpeg_concat_mp4_to_mp4
                     ffmpeg_concat_mp4_to_mp4(parts, os.path.join(output_dir, title + '.mp4'))
-                    for part in parts:
-                        os.remove(part)
                 else:
-                    print('No ffmpeg is found. Merging aborted.')
+                    from .processor.join_mp4 import concat_mp4
+                    concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
+            except:
+                raise
+            else:
+                for part in parts:
+                    os.remove(part)
             
         else:
             print("Can't merge %s files" % ext)
