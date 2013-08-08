@@ -59,6 +59,7 @@ def url_to_module(url):
         'youku': youku,
         'youtu': youtube,
         'youtube': youtube,
+        'khanacademy': khan,
         #TODO
     }
     if k in downloads:
