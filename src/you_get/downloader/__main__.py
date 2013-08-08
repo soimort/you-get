@@ -60,6 +60,7 @@ def url_to_module(url):
         'youtu': youtube,
         'youtube': youtube,
         'ted': ted,
+        'khanacademy': khan,
         #TODO
     }
     if k in downloads:
