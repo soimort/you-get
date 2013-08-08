@@ -14,7 +14,7 @@ def url_to_module(url):
     if not domain:
         domain = site
     assert domain, 'unsupported url: ' + url
-    
+
     k = r1(r'([^.]+)', domain)
     downloads = {
         '163': netease,
@@ -59,6 +59,8 @@ def url_to_module(url):
         'youku': youku,
         'youtu': youtube,
         'youtube': youtube,
+        'ted': ted,
+        'khanacademy': khan,
         #TODO
     }
     if k in downloads:
