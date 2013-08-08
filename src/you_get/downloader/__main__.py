@@ -28,6 +28,7 @@ def url_to_module(url):
         'coursera': coursera,
         'dailymotion': dailymotion,
         'douban': douban,
+        'ehow': ehow,
         'facebook': facebook,
         'freesound': freesound,
         'google': google,
