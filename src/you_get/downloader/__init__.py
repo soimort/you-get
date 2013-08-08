@@ -38,5 +38,6 @@ from .xiami import *
 from .yinyuetai import *
 from .youku import *
 from .youtube import *
+from .ted import *
 
 from .__main__ import *
