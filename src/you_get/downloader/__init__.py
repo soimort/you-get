@@ -9,6 +9,7 @@ from .cntv import *
 from .coursera import *
 from .dailymotion import *
 from .douban import *
+from .ehow import *
 from .facebook import *
 from .fivesing import *
 from .freesound import *
