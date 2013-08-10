@@ -49,6 +49,7 @@ def url_to_module(url):
         'sohu': sohu,
         'songtaste':songtaste,
         'soundcloud': soundcloud,
+        'ted': ted,
         'tudou': tudou,
         'tumblr': tumblr,
         'vid48': vid48,
