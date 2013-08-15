@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.3.20
+------
+
+*Date: 2013-08-16*
+
+* Add support for:
+    - eHow
+    - Khan Academy
+    - TED
+    - 5sing
+* Fix issues for:
+    - Tudou
+
 0.3.18
 ------
 

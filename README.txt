@@ -20,9 +20,12 @@ Supported Sites (As of Now)
 * Coursera https://www.coursera.org
 * Blip http://blip.tv
 * Dailymotion http://dailymotion.com
+* eHow http://www.ehow.com
 * Facebook http://facebook.com
 * Google+ http://plus.google.com
 * Google Drive http://docs.google.com
+* Khan Academy http://www.khanacademy.org
+* TED http://www.ted.com
 * Tumblr http://www.tumblr.com
 * Vine http://vine.co
 * Instagram http://instagram.com
@@ -50,6 +53,7 @@ Supported Sites (As of Now)
 * Sohu (搜狐视频) http://tv.sohu.com
 * 56 (56网) http://www.56.com
 * Xiami (虾米) http://www.xiami.com
+* 5sing http://www.5sing.com
 * Baidu Music (百度音乐) http://music.baidu.com
 * Baidu Wangpan (百度网盘) http://pan.baidu.com
 * SongTaste http://www.songtaste.com
