@@ -75,7 +75,7 @@ def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info
         if len(title.split('.')) > 1:
             title = ".".join(title.split('.')[:-1])
         
-        real_url = r1(r'href="([^"]+)" id="downFileButtom"', html).replace('&amp;', '&')
+        real_url = r1(r'\\"dlink\\":\\"([^"]*)\\"', html).replace('\\\\/', '/')
         type, ext, size = url_info(real_url, faker = True)
         
         print_info(site_info, title, ext, size)
