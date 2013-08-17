@@ -32,34 +32,30 @@ yt_codecs = [
     {'itag': 17, 'container': '3GP', 'video_resolution': '144p', 'video_encoding': 'MPEG-4 Visual', 'video_profile': 'Simple', 'video_bitrate': '0.05', 'audio_encoding': 'AAC', 'audio_bitrate': '24'},
 ]
 
-# Signature decryption algorithm, reused code from youtube-dl
-def decrypt_signature(s):
-    if len(s) == 92:
-        return s[25] + s[3:25] + s[0] + s[26:42] + s[79] + s[43:79] + s[91] + s[80:83]
-    elif len(s) == 90:
-        return s[25] + s[3:25] + s[2] + s[26:40] + s[77] + s[41:77] + s[89] + s[78:81]
-    elif len(s) == 89:
-        return s[84:78:-1] + s[87] + s[77:60:-1] + s[0] + s[59:3:-1]
-    elif len(s) == 88:
-        return s[48] + s[81:67:-1] + s[82] + s[66:62:-1] + s[85] + s[61:48:-1] + s[67] + s[47:12:-1] + s[3] + s[11:3:-1] + s[2] + s[12]
-    elif len(s) == 87:
-        return s[83:53:-1] + s[3] + s[52:40:-1] + s[86] + s[39:10:-1] + s[0] + s[9:3:-1] + s[53]
-    elif len(s) == 86:
-        return s[5:20] + s[2] + s[21:]
-    elif len(s) == 85:
-        return s[2:8] + s[0] + s[9:21] + s[65] + s[22:65] + s[84] + s[66:82] + s[21]
-    elif len(s) == 84:
-        return s[83:27:-1] + s[0] + s[26:5:-1] + s[2:0:-1] + s[27]
-    elif len(s) == 83:
-        return s[81:64:-1] + s[82] + s[63:52:-1] + s[45] + s[51:45:-1] + s[1] + s[44:1:-1] + s[0]
-    elif len(s) == 82:
-        return s[36] + s[79:67:-1] + s[81] + s[66:40:-1] + s[33] + s[39:36:-1] + s[40] + s[35] + s[0] + s[67] + s[32:0:-1] + s[34]
-    elif len(s) == 81:
-        return s[56] + s[79:56:-1] + s[41] + s[55:41:-1] + s[80] + s[40:34:-1] + s[0] + s[33:29:-1] + s[34] + s[28:9:-1] + s[29] + s[8:0:-1] + s[9]
-    elif len(s) == 79:
-        return s[54] + s[77:54:-1] + s[39] + s[53:39:-1] + s[78] + s[38:34:-1] + s[0] + s[33:29:-1] + s[34] + s[28:9:-1] + s[29] + s[8:0:-1] + s[9]
-    else:
-        raise Exception('Unable to decrypt signature, key length %d not supported; retrying might work' % (len(s)))
+def decipher(js, s):
+    def tr_js(code):
+        code = re.sub(r'function', r'def', code)
+        code = re.sub(r'\{', r':\n\t', code)
+        code = re.sub(r'\}', r'\n', code)
+        code = re.sub(r'var\s+', r'', code)
+        code = re.sub(r'(\w+).join\(""\)', r'"".join(\1)', code)
+        code = re.sub(r'(\w+).length', r'len(\1)', code)
+        code = re.sub(r'(\w+).reverse\(\)', r'\1[::-1]', code)
+        code = re.sub(r'(\w+).slice\((\d+)\)', r'\1[\2:]', code)
+        code = re.sub(r'(\w+).split\(""\)', r'list(\1)', code)
+        return code
+    
+    f1 = match1(js, r'g.sig\|\|(\w+)\(g.s\)')
+    f1def = match1(js, r'(function %s\(\w+\)\{[^\{]+\})' % f1)
+    code = tr_js(f1def)
+    f2 = match1(f1def, r'(\w+)\(\w+,\d+\)')
+    if f2 is not None:
+        f2def = match1(js, r'(function %s\(\w+,\w+\)\{[^\{]+\})' % f2)
+        code = code + 'global %s\n' % f2 + tr_js(f2def)
+    
+    code = code + 'sig=%s(s)' % f1
+    exec(code, globals(), locals())
+    return locals()['sig']
 
 def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False):
     """Downloads a YouTube video by its unique id.
@@ -79,6 +75,8 @@ def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only
         
         title = ytplayer_config['args']['title']
         stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
+        
+        html5player = ytplayer_config['assets']['js']
     
     streams = {
         parse.parse_qs(stream)['itag'][0] : parse.parse_qs(stream)
@@ -95,7 +93,8 @@ def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only
     if 'sig' in download_stream:
         sig = download_stream['sig'][0]
     else:
-        sig = decrypt_signature(download_stream['s'][0])
+        js = get_content(html5player)
+        sig = decipher(js, download_stream['s'][0])
     url = '%s&signature=%s' % (url, sig)
     
     type, ext, size = url_info(url)
