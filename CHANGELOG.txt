@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3.21
+------
+
+*Date: 2013-08-17*
+
+* Fix issues for:
+    - YouTube
+    - YinYueTai
+    - pan.baidu.com
+
 0.3.20
 ------
 
