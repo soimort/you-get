@@ -7,6 +7,7 @@ import os
 import re
 import sys
 from urllib import request, parse
+import platform
 
 from .version import __version__
 
@@ -33,20 +34,63 @@ def tr(s):
     except:
         return str(s.encode('utf-8'))[2:-1]
 
+# DEPRECATED in favor of match1()
 def r1(pattern, text):
     m = re.search(pattern, text)
     if m:
         return m.group(1)
 
+# DEPRECATED in favor of match1()
 def r1_of(patterns, text):
     for p in patterns:
         x = r1(p, text)
         if x:
             return x
 
+def match1(text, *patterns):
+    """Scans through a string for substrings matched some patterns (first-subgroups only).
+    
+    Args:
+        text: A string to be scanned.
+        patterns: Arbitrary number of regex patterns.
+        
+    Returns:
+        When only one pattern is given, returns a string (None if no match found).
+        When more than one pattern are given, returns a list of strings ([] if no match found).
+    """
+    
+    if len(patterns) == 1:
+        pattern = patterns[0]
+        match = re.search(pattern, text)
+        if match:
+            return match.group(1)
+        else:
+            return None
+    else:
+        ret = []
+        for pattern in patterns:
+            match = re.search(pattern, text)
+            if match:
+                ret.append(match.group(1))
+        return ret
+
+def parse_query_param(url, param):
+    """Parses the query string of a URL and returns the value of a parameter.
+    
+    Args:
+        url: A URL.
+        param: A string representing the name of the parameter.
+        
+    Returns:
+        The value of the parameter.
+    """
+    
+    return parse.parse_qs(parse.urlparse(url).query)[param][0]
+
 def unicodize(text):
     return re.sub(r'\\u([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])', lambda x: chr(int(x.group(0)[2:], 16)), text)
 
+# DEPRECATED in favor of filenameable()
 def escape_file_path(path):
     path = path.replace('/', '-')
     path = path.replace('\\', '-')
@@ -54,23 +98,57 @@ def escape_file_path(path):
     path = path.replace('?', '-')
     return path
 
+def filenameable(text):
+    """Converts a string to a legal filename through various OSes.
+    """
+    # All POSIX systems
+    text = text.translate({
+        0: None,
+        ord('/'): '-',
+    })
+    if platform.system() == 'Darwin': # For Mac OS
+        text = text.translate({
+            ord(':'): '-',
+        })
+    elif platform.system() == 'Windows': # For Windows
+        text = text.translate({
+            ord(':'): '-',
+            ord('*'): '-',
+            ord('?'): '-',
+            ord('\\'): '-',
+            ord('\"'): '\'',
+            ord('<'): '-',
+            ord('>'): '-',
+            ord('|'): '-',
+            ord('+'): '-',
+            ord('['): '(',
+            ord(']'): ')',
+        })
+    return text
+
 def unescape_html(html):
     from html import parser
     html = parser.HTMLParser().unescape(html)
     html = re.sub(r'&#(\d+);', lambda x: chr(int(x.group(1))), html)
     return html
 
-def ungzip(s):
+def ungzip(data):
+    """Decompresses data for Content-Encoding: gzip.
+    """
     from io import BytesIO
     import gzip
-    buffer = BytesIO(s)
-    f = gzip.GzipFile(fileobj = buffer)
+    buffer = BytesIO(data)
+    f = gzip.GzipFile(fileobj=buffer)
     return f.read()
 
-def undeflate(s):
+def undeflate(data):
+    """Decompresses data for Content-Encoding: deflate.
+    (the zlib compression is used.)
+    """
     import zlib
-    return zlib.decompress(s, -zlib.MAX_WBITS)
+    return zlib.decompress(data, -zlib.MAX_WBITS)
 
+# DEPRECATED in favor of get_content()
 def get_response(url, faker = False):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
@@ -85,10 +163,12 @@ def get_response(url, faker = False):
     response.data = data
     return response
 
+# DEPRECATED in favor of get_content()
 def get_html(url, encoding = None, faker = False):
     content = get_response(url, faker).data
     return str(content, 'utf-8', 'ignore')
 
+# DEPRECATED in favor of get_content()
 def get_decoded_html(url, faker = False):
     response = get_response(url, faker)
     data = response.data
@@ -97,6 +177,38 @@ def get_decoded_html(url, faker = False):
         return data.decode(charset)
     else:
         return data
+
+def get_content(url, headers={}, decoded=True):
+    """Gets the content of a URL via sending a HTTP GET request.
+    
+    Args:
+        url: A URL.
+        headers: Request headers used by the client.
+        decoded: Whether decode the response body using UTF-8 or the charset specified in Content-Type.
+        
+    Returns:
+        The content as a string.
+    """
+    
+    response = request.urlopen(request.Request(url, headers=headers))
+    data = response.read()
+    
+    # Handle HTTP compression for gzip and deflate (zlib)
+    content_encoding = response.getheader('Content-Encoding')
+    if content_encoding == 'gzip':
+        data = ungzip(data)
+    elif content_encoding == 'deflate':
+        data = undeflate(data)
+    
+    # Decode the response body
+    if decoded:
+        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
+        if charset is not None:
+            data = data.decode(charset)
+        else:
+            data = data.decode('utf-8')
+    
+    return data
 
 def url_size(url, faker = False):
     if faker:
@@ -136,7 +248,7 @@ def url_info(url, faker = False):
         type = None
         if headers['content-disposition']:
             try:
-                filename = parse.unquote(r1(r'filename="?(.+)"?', headers['content-disposition']))
+                filename = parse.unquote(r1(r'filename="?([^"]+)"?', headers['content-disposition']))
                 if len(filename.split('.')) > 1:
                     ext = filename.split('.')[-1]
                 else:
@@ -388,7 +500,9 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             import sys
             traceback.print_exc(file = sys.stdout)
             pass
-    title = escape_file_path(title)
+    
+    title = filenameable(title)
+    
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
     if total_size:
@@ -437,19 +551,18 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             
         elif ext == 'mp4':
             try:
-                from .processor.join_mp4 import concat_mp4
-                concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
-                for part in parts:
-                    os.remove(part)
-            except:
                 from .processor.ffmpeg import has_ffmpeg_installed
                 if has_ffmpeg_installed():
                     from .processor.ffmpeg import ffmpeg_concat_mp4_to_mp4
                     ffmpeg_concat_mp4_to_mp4(parts, os.path.join(output_dir, title + '.mp4'))
-                    for part in parts:
-                        os.remove(part)
                 else:
-                    print('No ffmpeg is found. Merging aborted.')
+                    from .processor.join_mp4 import concat_mp4
+                    concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
+            except:
+                raise
+            else:
+                for part in parts:
+                    os.remove(part)
             
         else:
             print("Can't merge %s files" % ext)
@@ -463,7 +576,9 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
         return
     
     assert ext in ('ts')
-    title = escape_file_path(title)
+    
+    title = filenameable(title)
+    
     filename = '%s.%s' % (title, 'ts')
     filepath = os.path.join(output_dir, filename)
     if total_size:
@@ -597,9 +712,7 @@ def set_http_proxy(proxy):
     elif proxy == '': # Don't use any proxy
         proxy_support = request.ProxyHandler({})
     else: # Use proxy
-        if not proxy.startswith('http://'):
-            proxy = 'http://' + proxy
-        proxy_support = request.ProxyHandler({'http': '%s' % proxy})
+        proxy_support = request.ProxyHandler({'http': '%s' % proxy, 'https': '%s' % proxy})
     opener = request.build_opener(proxy_support)
     request.install_opener(opener)
 
@@ -615,8 +728,18 @@ def download_main(download, download_playlist, urls, playlist, output_dir, merge
         else:
             download(url, output_dir = output_dir, merge = merge, info_only = info_only)
 
+def get_version():
+    try:
+        import subprocess
+        real_dir = os.path.dirname(os.path.realpath(__file__))
+        git_hash = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'], cwd=real_dir, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.read().decode('utf-8').strip()
+        assert git_hash
+        return '%s-%s' % (__version__, git_hash)
+    except:
+        return __version__
+
 def script_main(script_name, download, download_playlist = None):
-    version = 'You-Get %s, a video downloader.' % __version__
+    version = 'You-Get %s, a video downloader.' % get_version()
     help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
     help += '''\nStartup options:
     -V | --version                           Display the version and exit.

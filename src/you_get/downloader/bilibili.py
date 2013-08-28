@@ -4,7 +4,7 @@ __all__ = ['bilibili_download']
 
 from ..common import *
 
-from .sina import sina_download_by_id
+from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_id
 from .youku import youku_download_by_id
 
@@ -64,7 +64,7 @@ def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_onl
     elif re.search(r'/mp4/', urls[0]):
         type = 'mp4'
     else:
-        raise NotImplementedError(urls[0])
+        type = 'flv'
     
     size = 0
     for url in urls:
@@ -83,7 +83,7 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
     title = unescape_html(title)
     title = escape_file_path(title)
     
-    flashvars = r1_of([r'flashvars="([^"]+)"', r'"https://secure.bilibili.tv/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+    flashvars = r1_of([r'player_params=\'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://secure.bilibili.tv/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
     assert flashvars
     t, id = flashvars.split('=', 1)
     id = id.split('&')[0]

@@ -6,6 +6,40 @@ from ..common import *
 
 import re
 
+# YouTube media encoding options, in descending quality order.
+# taken from http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs, 3/22/2013.
+youtube_codecs = [
+    {'itag': 38, 'container': 'MP4', 'video_resolution': '3072p', 'video_encoding': 'H.264', 'video_profile': 'High', 'video_bitrate': '3.5-5', 'audio_encoding': 'AAC', 'audio_bitrate': '192'},
+    {'itag': 46, 'container': 'WebM', 'video_resolution': '1080p', 'video_encoding': 'VP8', 'video_profile': '', 'video_bitrate': '', 'audio_encoding': 'Vorbis', 'audio_bitrate': '192'},
+    {'itag': 37, 'container': 'MP4', 'video_resolution': '1080p', 'video_encoding': 'H.264', 'video_profile': 'High', 'video_bitrate': '3-4.3', 'audio_encoding': 'AAC', 'audio_bitrate': '192'},
+    {'itag': 102, 'container': '', 'video_resolution': '', 'video_encoding': 'VP8', 'video_profile': '', 'video_bitrate': '2', 'audio_encoding': 'Vorbis', 'audio_bitrate': '192'},
+    {'itag': 45, 'container': 'WebM', 'video_resolution': '720p', 'video_encoding': '', 'video_profile': '', 'video_bitrate': '', 'audio_encoding': '', 'audio_bitrate': ''},
+    {'itag': 22, 'container': 'MP4', 'video_resolution': '720p', 'video_encoding': 'H.264', 'video_profile': 'High', 'video_bitrate': '2-2.9', 'audio_encoding': 'AAC', 'audio_bitrate': '192'},
+    {'itag': 84, 'container': 'MP4', 'video_resolution': '720p', 'video_encoding': 'H.264', 'video_profile': '3D', 'video_bitrate': '2-2.9', 'audio_encoding': 'AAC', 'audio_bitrate': '152'},
+    {'itag': 120, 'container': 'FLV', 'video_resolution': '720p', 'video_encoding': 'AVC', 'video_profile': 'Main@L3.1', 'video_bitrate': '2', 'audio_encoding': 'AAC', 'audio_bitrate': '128'},
+    {'itag': 85, 'container': 'MP4', 'video_resolution': '520p', 'video_encoding': 'H.264', 'video_profile': '3D', 'video_bitrate': '2-2.9', 'audio_encoding': 'AAC', 'audio_bitrate': '152'},
+    {'itag': 44, 'container': 'WebM', 'video_resolution': '480p', 'video_encoding': 'VP8', 'video_profile': '', 'video_bitrate': '1', 'audio_encoding': 'Vorbis', 'audio_bitrate': '128'},
+    {'itag': 35, 'container': 'FLV', 'video_resolution': '480p', 'video_encoding': 'H.264', 'video_profile': 'Main', 'video_bitrate': '0.8-1', 'audio_encoding': 'AAC', 'audio_bitrate': '128'},
+    {'itag': 101, 'container': 'WebM', 'video_resolution': '360p', 'video_encoding': 'VP8', 'video_profile': '3D', 'video_bitrate': '', 'audio_encoding': 'Vorbis', 'audio_bitrate': '192'},
+    {'itag': 100, 'container': 'WebM', 'video_resolution': '360p', 'video_encoding': 'VP8', 'video_profile': '3D', 'video_bitrate': '', 'audio_encoding': 'Vorbis', 'audio_bitrate': '128'},
+    {'itag': 43, 'container': 'WebM', 'video_resolution': '360p', 'video_encoding': 'VP8', 'video_profile': '', 'video_bitrate': '0.5', 'audio_encoding': 'Vorbis', 'audio_bitrate': '128'},
+    {'itag': 34, 'container': 'FLV', 'video_resolution': '360p', 'video_encoding': 'H.264', 'video_profile': 'Main', 'video_bitrate': '0.5', 'audio_encoding': 'AAC', 'audio_bitrate': '128'},
+    {'itag': 82, 'container': 'MP4', 'video_resolution': '360p', 'video_encoding': 'H.264', 'video_profile': '3D', 'video_bitrate': '0.5', 'audio_encoding': 'AAC', 'audio_bitrate': '96'},
+    {'itag': 18, 'container': 'MP4', 'video_resolution': '270p/360p', 'video_encoding': 'H.264', 'video_profile': 'Baseline', 'video_bitrate': '0.5', 'audio_encoding': 'AAC', 'audio_bitrate': '96'},
+    {'itag': 6, 'container': 'FLV', 'video_resolution': '270p', 'video_encoding': 'Sorenson H.263', 'video_profile': '', 'video_bitrate': '0.8', 'audio_encoding': 'MP3', 'audio_bitrate': '64'},
+    {'itag': 83, 'container': 'MP4', 'video_resolution': '240p', 'video_encoding': 'H.264', 'video_profile': '3D', 'video_bitrate': '0.5', 'audio_encoding': 'AAC', 'audio_bitrate': '96'},
+    {'itag': 13, 'container': '3GP', 'video_resolution': '', 'video_encoding': 'MPEG-4 Visual', 'video_profile': '', 'video_bitrate': '0.5', 'audio_encoding': 'AAC', 'audio_bitrate': ''},
+    {'itag': 5, 'container': 'FLV', 'video_resolution': '240p', 'video_encoding': 'Sorenson H.263', 'video_profile': '', 'video_bitrate': '0.25', 'audio_encoding': 'MP3', 'audio_bitrate': '64'},
+    {'itag': 36, 'container': '3GP', 'video_resolution': '240p', 'video_encoding': 'MPEG-4 Visual', 'video_profile': 'Simple', 'video_bitrate': '0.17', 'audio_encoding': 'AAC', 'audio_bitrate': '38'},
+    {'itag': 17, 'container': '3GP', 'video_resolution': '144p', 'video_encoding': 'MPEG-4 Visual', 'video_profile': 'Simple', 'video_bitrate': '0.05', 'audio_encoding': 'AAC', 'audio_bitrate': '24'},
+]
+fmt_level = dict(
+    zip(
+        [str(codec['itag'])
+            for codec in
+                youtube_codecs],
+        range(len(youtube_codecs))))
+
 def google_download(url, output_dir = '.', merge = True, info_only = False):
     # Percent-encoding Unicode URL
     url = parse.quote(url, safe = ':/+%')
@@ -14,25 +48,22 @@ def google_download(url, output_dir = '.', merge = True, info_only = False):
     
     if service == 'plus': # Google Plus
         
-        if re.search(r'plus.google.com/photos/\d+/albums/\d+/\d+', url):
-            oid = r1(r'plus.google.com/photos/(\d+)/albums/\d+/\d+', url)
-            pid = r1(r'plus.google.com/photos/\d+/albums/\d+/(\d+)', url)
-            
-        elif re.search(r'plus.google.com/photos/\d+/albums/posts/\d+', url):
-            oid = r1(r'plus.google.com/photos/(\d+)/albums/posts/\d+', url)
-            pid = r1(r'plus.google.com/photos/\d+/albums/posts/(\d+)', url)
-            
-        else:
+        if not re.search(r'plus.google.com/photos/[^/]*/albums/\d+/\d+', url):
             html = get_html(url)
-            oid = r1(r'"https://plus.google.com/photos/(\d+)/albums/\d+/\d+', html)
-            pid = r1(r'"https://plus.google.com/photos/\d+/albums/\d+/(\d+)', html)
-        
-        url = "http://plus.google.com/photos/%s/albums/posts/%s?oid=%s&pid=%s" % (oid, pid, oid, pid)
+            url = r1(r'"(https://plus.google.com/photos/\d+/albums/\d+/\d+)', html)
+            title = r1(r'<title>([^<\n]+)', html)
+        else:
+            title = None
         
         html = get_html(url)
-        real_url = unicodize(r1(r'"(https://video.googleusercontent.com/[^"]*)",\d\]', html).replace('\/', '/'))
+        real_urls = re.findall(r'\[(\d+),\d+,\d+,"([^"]+)"\]', html)
+        real_url = unicodize(sorted(real_urls, key = lambda x : fmt_level[x[0]])[0][1])
         
-        title = r1(r"\"([^\"]+)\",\"%s\"" % pid, html)
+        if title is None:
+            post_url = r1(r'"(https://plus.google.com/\d+/posts/[^"]*)"', html)
+            post_html = get_html(post_url)
+            title = r1(r'<title>([^<\n]+)', post_html)
+        
         if title is None:
             response = request.urlopen(request.Request(real_url))
             if response.headers['content-disposition']:
