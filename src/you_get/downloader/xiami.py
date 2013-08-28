@@ -99,6 +99,7 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
     album_name = r1(r'<album_name><!\[CDATA\[(.*)\]\]>', xml)
     artist = r1(r'<artist><!\[CDATA\[(.*)\]\]>', xml)
     doc = parseString(xml)
+    album_name = album_name.replace(':', ' ')
     output_dir = output_dir + "/%s - %s" % (artist, album_name)
     tracks = doc.getElementsByTagName("track")
     track_nr = 1
