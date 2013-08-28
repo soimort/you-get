@@ -20,10 +20,10 @@ def yinyuetai_download_by_id(id, title = None, output_dir = '.', merge = True, i
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
 def yinyuetai_download(url, output_dir = '.', merge = True, info_only = False):
-    id = r1(r'http://www.yinyuetai.com/video/(\d+)$', url)
+    id = r1(r'http://\w+.yinyuetai.com/video/(\d+)$', url)
     assert id
     html = get_html(url, 'utf-8')
-    title = r1(r'<meta property="og:title" content="([^"]+)"/>', html)
+    title = r1(r'<meta property="og:title"\s+content="([^"]+)"/>', html)
     assert title
     title = parse.unquote(title)
     title = escape_file_path(title)

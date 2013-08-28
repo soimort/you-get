@@ -68,12 +68,25 @@ def baidu_download_album(aid, output_dir = '.', merge = True, info_only = False)
         track_nr += 1
 
 def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
-
-    if re.match(r'http://music.baidu.com/album/\d+', url):
+    if re.match(r'http://pan.baidu.com', url):
+        html = get_html(url)
+        
+        title = r1(r'server_filename="([^"]+)"', html)
+        if len(title.split('.')) > 1:
+            title = ".".join(title.split('.')[:-1])
+        
+        real_url = r1(r'\\"dlink\\":\\"([^"]*)\\"', html).replace('\\\\/', '/')
+        type, ext, size = url_info(real_url, faker = True)
+        
+        print_info(site_info, title, ext, size)
+        if not info_only:
+            download_urls([real_url], title, ext, size, output_dir, merge = merge)
+    
+    elif re.match(r'http://music.baidu.com/album/\d+', url):
         id = r1(r'http://music.baidu.com/album/(\d+)', url)
         baidu_download_album(id, output_dir, merge, info_only)
 
-    if re.match('http://music.baidu.com/song/\d+', url):
+    elif re.match('http://music.baidu.com/song/\d+', url):
         id = r1(r'http://music.baidu.com/song/(\d+)', url)
         baidu_download_song(id, output_dir, merge, info_only)
 

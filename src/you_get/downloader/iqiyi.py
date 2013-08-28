@@ -6,13 +6,8 @@ from ..common import *
 
 def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
-    #title = r1(r'title\s*:\s*"([^"]+)"', html)
-    #title = unescape_html(title).decode('utf-8')
-    #videoId = r1(r'videoId\s*:\s*"([^"]+)"', html)
-    #pid = r1(r'pid\s*:\s*"([^"]+)"', html)
-    #ptype = r1(r'ptype\s*:\s*"([^"]+)"', html)
-    #info_url = 'http://cache.video.qiyi.com/v/%s/%s/%s/' % (videoId, pid, ptype)
-    videoId = r1(r'''["']videoId["'][:=]["']([^"']+)["']''', html)
+    
+    videoId = r1(r'data-player-videoid="([^"]+)"', html)
     assert videoId
     
     info_url = 'http://cache.video.qiyi.com/v/%s' % videoId

@@ -1,6 +1,93 @@
 Changelog
 =========
 
+0.3.21
+------
+
+*Date: 2013-08-17*
+
+* Fix issues for:
+    - YouTube
+    - YinYueTai
+    - pan.baidu.com
+
+0.3.20
+------
+
+*Date: 2013-08-16*
+
+* Add support for:
+    - eHow
+    - Khan Academy
+    - TED
+    - 5sing
+* Fix issues for:
+    - Tudou
+
+0.3.18
+------
+
+*Date: 2013-07-19*
+
+* Fix issues for:
+    - Dailymotion
+    - Youku
+    - Sina
+    - AcFun
+    - bilibili
+
+0.3.17
+------
+
+*Date: 2013-07-12*
+
+* Fix issues for:
+    - YouTube
+    - 163
+    - bilibili
+* Code cleanup.
+
+0.3.16
+------
+
+*Date: 2013-06-28*
+
+* Fix issues for:
+    - YouTube
+    - Sohu
+    - Google+ (enable HTTPS proxy)
+
+0.3.15
+------
+
+*Date: 2013-06-21*
+
+* Add support for:
+    - Instagram
+
+0.3.14
+------
+
+*Date: 2013-06-14*
+
+* Add support for:
+    - Alive.in.th
+* Remove support of:
+    - JPopsuki
+* Fix issues for:
+    - AcFun
+    - iQIYI
+
+0.3.13
+------
+
+*Date: 2013-06-07*
+
+* Add support for:
+    - Baidu Wangpan (video only)
+* Fix issue for:
+    - Google+
+
 0.3.12
 ------
 
@@ -86,7 +173,7 @@ Changelog
 * Add support for:
     - Douban
     - MioMio
-* Fix issue for:
+* Fix issues for:
     - Tudou
     - Vimeo
 

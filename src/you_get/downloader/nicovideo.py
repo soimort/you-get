@@ -23,7 +23,7 @@ def nicovideo_download(url, output_dir = '.', merge = True, info_only = False):
     nicovideo_login(user, password)
     
     html = get_html(url) # necessary!
-    title = unicodize(r1(r'title:\s*\'(.*)\',', html))
+    title = unicodize(r1(r'<span class="videoHeaderTitle">([^<]+)</span>', html))
     
     api_html = get_html('http://www.nicovideo.jp/api/getflv?v=%s' % url.split('/')[-1])
     real_url = parse.unquote(r1(r'url=([^&]+)&', api_html))

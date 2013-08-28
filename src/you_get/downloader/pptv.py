@@ -9,18 +9,14 @@ import urllib
 import hashlib
 
 def pptv_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    xml = get_html('http://web-play.pptv.com/webplay3-151-%s.xml' % id)
+    xml = get_html('http://web-play.pptv.com/webplay3-0-%s.xml?type=web.fpp' % id)
     host = r1(r'<sh>([^<>]+)</sh>', xml)
-    port = 8080
-    st = r1(r'<st>([^<>]+)</st>', xml).encode('utf-8')
-    key = hashlib.md5(st).hexdigest() # FIXME: incorrect key
-    rids = re.findall(r'rid="([^"]+)"', xml)
+    key = r1(r'<key expire=[^<>]+>([^<>]+)</key>', xml)
     rid = r1(r'rid="([^"]+)"', xml)
     title = r1(r'nm="([^"]+)"', xml)
     pieces = re.findall('<sgm no="(\d+)".*fs="(\d+)"', xml)
     numbers, fs = zip(*pieces)
-    urls = ['http://%s:%s/%s/%s?key=%s' % (host, port, i, rid, key) for i in numbers]
-    urls = ['http://pptv.vod.lxdns.com/%s/%s?key=%s' % (i, rid, key) for i in numbers]
+    urls = ['http://%s/%s/%s?k=%s' % (host, i, rid, key) for i in numbers]
     total_size = sum(map(int, fs))
     assert rid.endswith('.mp4')
     

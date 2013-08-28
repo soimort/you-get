@@ -4,7 +4,7 @@
 import unittest
 
 from you_get import *
-from you_get.__main__ import url_to_module
+from you_get.downloader.__main__ import url_to_module
 
 def test_urls(urls):
     for url in urls:
@@ -15,11 +15,6 @@ class YouGetTests(unittest.TestCase):
     def test_freesound(self):
         test_urls([
             "http://www.freesound.org/people/Corsica_S/sounds/184419/",
-        ])
-        
-    def test_jpopsuki(self):
-        test_urls([
-            #"http://jpopsuki.tv/video/Dragon-Ash---Run-to-the-Sun/8ad7aec604badd0b0798cd999b63ae17",
         ])
         
     def test_mixcloud(self):
