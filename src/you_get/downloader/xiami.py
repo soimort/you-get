@@ -105,7 +105,7 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
     album_name = r1(r'<album_name><!\[CDATA\[(.*)\]\]>', xml)
     artist = r1(r'<artist><!\[CDATA\[(.*)\]\]>', xml)
     doc = parseString(xml)
-    album_name = album_name.replace(':', ' ')
+    album_name = album_name.replace(':', ' ').replace('/', '-')
     output_dir = output_dir + "/%s - %s" % (artist, album_name)
     tracks = doc.getElementsByTagName("track")
     track_nr = 1
@@ -122,7 +122,7 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
 
         print_info(site_info, song_title, type, size)
         if not info_only:
-            file_name = "%02d.%s" % (track_nr, song_title)
+            file_name = "%02d.%s" % (track_nr, song_title.replace(':', '-'))
             download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
             xiami_download_lyric(lrc_url, file_name, output_dir)
             if not pic_exist:
