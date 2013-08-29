@@ -5,7 +5,7 @@ __all__ = ['acfun_download']
 from ..common import *
 
 from .qq import qq_download_by_id
-from .sina import sina_download_by_id
+from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_iid
 from .youku import youku_download_by_id
 
@@ -16,11 +16,11 @@ def get_srt_json(id):
     return get_html(url)
 
 def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    info = json.loads(get_html('http://www.acfun.tv/api/getVideoByID.aspx?vid=' + id))
+    info = json.loads(get_html('http://wenzhou.acfun.tv/api/getVideoByID.aspx?vid=' + id))
     t = info['vtype']
     vid = info['vid']
     if t == 'sina':
-        sina_download_by_id(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        sina_download_by_vid(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'youku':
         youku_download_by_id(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'tudou':
@@ -37,7 +37,7 @@ def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_
             x.write(cmt)
 
 def acfun_download(url, output_dir = '.', merge = True, info_only = False):
-    assert re.match(r'http://www.acfun.tv/v/ac(\d+)', url)
+    assert re.match(r'http://[^\.]+.acfun.tv/v/ac(\d+)', url)
     html = get_html(url)
     
     title = r1(r'<h1 id="title-article" class="title"[^<>]*>([^<>]+)<', html)
@@ -49,7 +49,7 @@ def acfun_download(url, output_dir = '.', merge = True, info_only = False):
     id = r1(r"\[Video\](\d+)\[/Video\]", html) or r1(r"\[video\](\d+)\[/video\]", html)
     if not id:
         id = r1(r"src=\"/newflvplayer/player.*id=(\d+)", html)
-        sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        sina_download_by_vid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     else:
         acfun_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
 

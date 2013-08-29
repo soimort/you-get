@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-
 __all__ = ['main', 'any_download', 'any_download_playlist']
 
-from .downloader import *
-from .common import *
+from ..downloader import *
+from ..common import *
 
 def url_to_module(url):
     site = r1(r'http://([^/]+)/', url)
@@ -20,6 +19,7 @@ def url_to_module(url):
     downloads = {
         '163': netease,
         '56': w56,
+        '5sing': fivesing,
         'acfun': acfun,
         'baidu': baidu,
         'bilibili': bilibili,
@@ -28,14 +28,16 @@ def url_to_module(url):
         'coursera': coursera,
         'dailymotion': dailymotion,
         'douban': douban,
+        'ehow': ehow,
         'facebook': facebook,
         'freesound': freesound,
         'google': google,
         'iask': sina,
         'ifeng': ifeng,
+        'in': alive,
+        'instagram': instagram,
         'iqiyi': iqiyi,
         'joy': joy,
-        'jpopsuki': jpopsuki,
         'kankanews': bilibili,
         'ku6': ku6,
         'miomio': miomio,
@@ -48,6 +50,7 @@ def url_to_module(url):
         'sohu': sohu,
         'songtaste':songtaste,
         'soundcloud': soundcloud,
+        'ted': ted,
         'tudou': tudou,
         'tumblr': tumblr,
         'vid48': vid48,
@@ -58,6 +61,7 @@ def url_to_module(url):
         'youku': youku,
         'youtu': youtube,
         'youtube': youtube,
+        'khanacademy': khan,
         #TODO
     }
     if k in downloads:

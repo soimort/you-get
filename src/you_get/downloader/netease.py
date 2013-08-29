@@ -7,10 +7,13 @@ from ..common import *
 def netease_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_decoded_html(url)
     
-    src = r1(r'<source src="([^"]+)"', html)
-    title = r1('movieDescription=\'([^\']+)\'', html)
+    title = r1('movieDescription=\'([^\']+)\'', html) or r1('<title>(.+)</title>', html)
+    if title[0] == ' ':
+        title = title[1:]
     
-    if title:
+    src = r1(r'<source src="([^"]+)"', html) or r1(r'<source type="[^"]+" src="([^"]+)"', html)
+    
+    if src:
         sd_url = r1(r'(.+)-mobile.mp4', src) + ".flv"
         _, _, sd_size = url_info(sd_url)
         
@@ -24,10 +27,7 @@ def netease_download(url, output_dir = '.', merge = True, info_only = False):
         ext = 'flv'
         
     else:
-        title = r1('<title>(.+)</title>', html)
-        if title[0] == ' ':
-            title = title[1:]
-        url = r1(r'(.+)-list.m3u8', src) + ".mp4"
+        url = r1(r'["\'](.+)-list.m3u8["\']', html) + ".mp4"
         _, _, size = url_info(url)
         ext = 'mp4'
     

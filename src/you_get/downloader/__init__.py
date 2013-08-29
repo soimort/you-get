@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from .acfun import *
+from .alive import *
 from .baidu import *
 from .bilibili import *
 from .blip import *
@@ -8,13 +9,15 @@ from .cntv import *
 from .coursera import *
 from .dailymotion import *
 from .douban import *
+from .ehow import *
 from .facebook import *
+from .fivesing import *
 from .freesound import *
 from .google import *
 from .ifeng import *
+from .instagram import *
 from .iqiyi import *
 from .joy import *
-from .jpopsuki import *
 from .ku6 import *
 from .miomio import *
 from .mixcloud import *
@@ -36,3 +39,7 @@ from .xiami import *
 from .yinyuetai import *
 from .youku import *
 from .youtube import *
+from .ted import *
+from .khan import *
+
+from .__main__ import *

@@ -5,16 +5,22 @@ __all__ = ['dailymotion_download']
 from ..common import *
 
 def dailymotion_download(url, output_dir = '.', merge = True, info_only = False):
-    html = get_html(url)
-    html = parse.unquote(html).replace('\/', '/')
+    """Downloads Dailymotion videos by URL.
+    """
     
-    title = r1(r'meta property="og:title" content="([^"]+)"', html)
-    title = escape_file_path(title)
+    id = match1(url, r'/video/([^\?]+)')
+    embed_url = 'http://www.dailymotion.com/embed/video/%s' % id
+    html = get_content(embed_url)
     
-    for quality in ['hd720URL', 'hqURL', 'sdURL']:
-        real_url = r1(r',\"' + quality + '\"\:\"([^\"]+?)\",', html)
+    info = json.loads(match1(html, r'var\s*info\s*=\s*({.+}),\n'))
+    
+    title = info['title']
+    
+    for quality in ['stream_h264_hd1080_url', 'stream_h264_hd_url', 'stream_h264_hq_url', 'stream_h264_url', 'stream_h264_ld_url']:
+        real_url = info[quality]
         if real_url:
             break
+    
     type, ext, size = url_info(real_url)
     
     print_info(site_info, title, type, size)

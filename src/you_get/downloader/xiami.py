@@ -67,11 +67,14 @@ def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
     if not ext:
         ext = 'mp3'
     
-    print_info(site_info, song_title, type, size)
+    print_info(site_info, song_title, ext, size)
     if not info_only:
         file_name = "%s - %s - %s" % (song_title, album_name, artist)
         download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
-        xiami_download_lyric(lrc_url, file_name, output_dir)
+        try:
+            xiami_download_lyric(lrc_url, file_name, output_dir)
+        except:
+            pass
 
 def xiami_download_showcollect(cid, output_dir = '.', merge = True, info_only = False):
     html = get_html('http://www.xiami.com/song/showcollect/id/' + cid, faker = True)
@@ -96,7 +99,10 @@ def xiami_download_showcollect(cid, output_dir = '.', merge = True, info_only = 
         if not info_only:
             file_name = "%02d.%s - %s - %s" % (track_nr, song_title, artist, album_name)
             download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
-            xiami_download_lyric(lrc_url, file_name, output_dir)
+            try:
+                xiami_download_lyric(lrc_url, file_name, output_dir)
+            except:
+                pass
         
         track_nr += 1
 
@@ -124,7 +130,10 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
         if not info_only:
             file_name = "%02d.%s" % (track_nr, song_title.replace(':', '-'))
             download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
-            xiami_download_lyric(lrc_url, file_name, output_dir)
+            try:
+                xiami_download_lyric(lrc_url, file_name, output_dir)
+            except:
+                pass
             if not pic_exist:
                 xiami_download_pic(pic_url, 'cover', output_dir)
                 pic_exist = True
@@ -142,6 +151,10 @@ def xiami_download(url, output_dir = '.', stream_type = None, merge = True, info
     
     if re.match('http://www.xiami.com/song/\d+', url):
         id = r1(r'http://www.xiami.com/song/(\d+)', url)
+        xiami_download_song(id, output_dir, merge, info_only)
+    
+    if re.match('http://www.xiami.com/song/detail/id/\d+', url):
+        id = r1(r'http://www.xiami.com/song/detail/id/(\d+)', url)
         xiami_download_song(id, output_dir, merge, info_only)
 
 site_info = "Xiami.com"
