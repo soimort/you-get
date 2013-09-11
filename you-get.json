@@ -31,6 +31,6 @@
         ],
     
     "console_scripts": [
-        "you-get = you_get.downloader.__main__:main"
+        "you-get = you_get.extractor.__main__:main"
         ]
 }

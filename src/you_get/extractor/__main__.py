@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 __all__ = ['main', 'any_download', 'any_download_playlist']
 
-from ..downloader import *
+from ..extractor import *
 from ..common import *
 
 def url_to_module(url):
