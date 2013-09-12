@@ -18,6 +18,7 @@ from .ifeng import *
 from .instagram import *
 from .iqiyi import *
 from .joy import *
+from .jpopsuki import *
 from .ku6 import *
 from .miomio import *
 from .mixcloud import *
