@@ -12,8 +12,11 @@ def real_url(host, prot, file, new):
     return '%s%s?key=%s' % (start[:-1], new, key)
 
 def sohu_download(url, output_dir = '.', merge = True, info_only = False):
-    vid = r1('vid\s*=\s*"(\d+)"', get_html(url))
-    
+    html = get_html(url)
+    vid = r1('vid\s*=\s*"(\d+)"', html)
+    if not vid:
+        vid = r1('vid\s*:\s*"(\d+)"', html)
+
     if vid:
         data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
         for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
@@ -31,8 +34,9 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         for file, new in zip(data['clipsURL'], data['su']):
             urls.append(real_url(host, prot, file, new))
         assert data['clipsURL'][0].endswith('.mp4')
-        
+
     else:
+        # my.tv link doesn't include clip info anymore, below block is useless
         vid = r1('vid\s*=\s*\'(\d+)\'', get_html(url))
         data = json.loads(get_decoded_html('http://my.tv.sohu.com/videinfo.jhtml?m=viewnew&vid=%s' % vid))
         host = data['allot']
@@ -45,7 +49,7 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         for file, new in zip(data['clipsURL'], data['su']):
             urls.append(real_url(host, prot, file, new))
         assert data['clipsURL'][0].endswith('.mp4')
-    
+
     print_info(site_info, title, 'mp4', size)
     if not info_only:
         download_urls(urls, title, 'mp4', size, output_dir, refer = url, merge = merge)
