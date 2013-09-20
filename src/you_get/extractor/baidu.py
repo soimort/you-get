@@ -12,16 +12,16 @@ def baidu_get_song_html(sid):
     return get_html('http://music.baidu.com/song/%s/download?__o=%%2Fsong%%2F%s' % (sid, sid), faker = True)
 
 def baidu_get_song_url(html):
-    return r1(r'downlink="/data/music/file\?link=(.+?)"', html)
+    return r1(r'href="/data/music/file\?link=(http.+?)"', html)
 
 def baidu_get_song_artist(html):
-    return r1(r'singer_name:"(.+?)"', html)
+    return r1(r'singer_name\s*:\s*"(.+?)"', html)
 
 def baidu_get_song_album(html):
-    return r1(r'ablum_name:"(.+?)"', html)
+    return r1(r'album_name\s*:\s*"(.+?)"', html)
 
 def baidu_get_song_title(html):
-    return r1(r'song_title:"(.+?)"', html)
+    return r1(r'song_title\s*:\s*"(.+?)"', html)
 
 def baidu_download_lyric(sid, file_name, output_dir):
     if common.dry_run:
@@ -41,6 +41,8 @@ def baidu_download_song(sid, output_dir = '.', merge = True, info_only = False):
     title = baidu_get_song_title(html)
     artist = baidu_get_song_artist(html)
     album = baidu_get_song_album(html)
+    assert url
+
     type, ext, size = url_info(url, faker = True)
     print_info(site_info, title, type, size)
     if not info_only:
