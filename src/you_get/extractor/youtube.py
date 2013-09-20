@@ -45,7 +45,7 @@ def decipher(js, s):
         code = re.sub(r'(\w+).split\(""\)', r'list(\1)', code)
         return code
     
-    f1 = match1(js, r'g.sig\|\|(\w+)\(g.s\)')
+    f1 = match1(js, r'\w+\.sig\|\|(\w+)\(\w+\.\w+\)')
     f1def = match1(js, r'(function %s\(\w+\)\{[^\{]+\})' % f1)
     code = tr_js(f1def)
     f2 = match1(f1def, r'(\w+)\(\w+,\d+\)')
