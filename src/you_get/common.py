@@ -146,7 +146,8 @@ def undeflate(data):
     (the zlib compression is used.)
     """
     import zlib
-    return zlib.decompress(data, -zlib.MAX_WBITS)
+    decompressobj = zlib.decompressobj(-zlib.MAX_WBITS)
+    return decompressobj.decompress(data)+decompressobj.flush()
 
 # DEPRECATED in favor of get_content()
 def get_response(url, faker = False):
