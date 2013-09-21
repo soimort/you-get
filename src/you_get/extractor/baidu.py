@@ -36,13 +36,18 @@ def baidu_download_lyric(sid, file_name, output_dir):
                 x.write(lrc)
 
 def baidu_download_song(sid, output_dir = '.', merge = True, info_only = False):
-    html = baidu_get_song_html(sid)
-    url = baidu_get_song_url(html)
-    title = baidu_get_song_title(html)
-    artist = baidu_get_song_artist(html)
-    album = baidu_get_song_album(html)
-    assert url
-
+    try:
+        html = baidu_get_song_html(sid)
+        url = baidu_get_song_url(html)
+        title = baidu_get_song_title(html)
+        artist = baidu_get_song_artist(html)
+        album = baidu_get_song_album(html)
+        assert url
+    except:
+        html = get_html("http://music.baidu.com/song/%s" % sid)
+        url = r1(r'download_url="([^"]+)"', html)
+        title = r1(r'sname="([^"]+)"', html)
+    
     type, ext, size = url_info(url, faker = True)
     print_info(site_info, title, type, size)
     if not info_only:
