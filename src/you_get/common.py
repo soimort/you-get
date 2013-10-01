@@ -106,11 +106,7 @@ def filenameable(text):
         0: None,
         ord('/'): '-',
     })
-    if platform.system() == 'Darwin': # For Mac OS
-        text = text.translate({
-            ord(':'): '-',
-        })
-    elif platform.system() == 'Windows': # For Windows
+    if platform.system() == 'Windows': # For Windows
         text = text.translate({
             ord(':'): '-',
             ord('*'): '-',
@@ -124,6 +120,13 @@ def filenameable(text):
             ord('['): '(',
             ord(']'): ')',
         })
+    else:
+        if text.startswith("."):
+            text = text[1:] 
+        if platform.system() == 'Darwin': # For Mac OS
+            text = text.translate({ 
+                ord(':'): '-',
+            })
     return text
 
 def unescape_html(html):
