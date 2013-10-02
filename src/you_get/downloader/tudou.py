@@ -8,6 +8,7 @@ def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only 
     data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?iid=%s' % iid))
     vids = []
     for k in data:
+        if len(data[k]) > 0:
             vids.append({"k": data[k][0]["k"], "size": data[k][0]["size"]})
 
     temp = max(vids, key=lambda x:x["size"])
