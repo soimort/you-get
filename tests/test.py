@@ -28,11 +28,6 @@ class YouGetTests(unittest.TestCase):
             "http://vimeo.com/56810854",
         ])
         
-    def test_xiami(self):
-        test_urls([
-            "http://www.xiami.com/song/1769835121",
-        ])
-        
     def test_youtube(self):
         test_urls([
             "http://www.youtube.com/watch?v=pzKerr0JIPA",
