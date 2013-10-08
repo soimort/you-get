@@ -36,9 +36,11 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         assert data['clipsURL'][0].endswith('.mp4')
 
     else:
-        # my.tv link doesn't include clip info anymore, below block is useless
-        vid = r1('vid\s*=\s*\'(\d+)\'', get_html(url))
-        data = json.loads(get_decoded_html('http://my.tv.sohu.com/videinfo.jhtml?m=viewnew&vid=%s' % vid))
+        if re.match(r'http://share.vrs.sohu.com', url):
+            vid = r1('id=(\d+)', url)
+        else:
+            vid = r1('vid\s*=\s*\'(\d+)\'', get_html(url))
+        data = json.loads(get_decoded_html('http://my.tv.sohu.com/play/videonew.do?vid=%s&referer=http://my.tv.sohu.com' % vid))
         host = data['allot']
         prot = data['prot']
         urls = []
