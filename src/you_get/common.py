@@ -124,7 +124,18 @@ def filenameable(text):
             ord('['): '(',
             ord(']'): ')',
         })
+    # check for non-ascii characters in the videoname
+    text_asciiOnly = ''
+    for char in text:
+        if ord(char) < 128:
+            text_asciiOnly += char
+    # if the videoname has no ascii characters at all, set to 'unnamed'
+    if text_asciiOnly == '':
+        text = 'unnamed'
+    else:
+        text = text_asciiOnly
     return text
+    
 
 def unescape_html(html):
     from html import parser
