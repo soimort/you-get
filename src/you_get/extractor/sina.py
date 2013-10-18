@@ -5,7 +5,7 @@ __all__ = ['sina_download', 'sina_download_by_vid', 'sina_download_by_vkey']
 from ..common import *
 
 def video_info(id):
-    xml = get_content('http://v.iask.com/v_play.php?vid=%s' % id, decoded=True)
+    xml = get_content('http://www.tucao.cc/api/sina.php?vid=%s' % id, decoded=True)
     urls = re.findall(r'<url>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</url>', xml)
     name = match1(xml, r'<vname>(?:<!\[CDATA\[)?(.+?)(?:\]\]>)?</vname>')
     vstr = match1(xml, r'<vstr>(?:<!\[CDATA\[)?(.+?)(?:\]\]>)?</vstr>')
