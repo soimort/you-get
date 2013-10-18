@@ -23,6 +23,12 @@ class YouGetTests(unittest.TestCase):
             "http://www.mixcloud.com/DJVadim/north-america-are-you-ready/",
         ])
         
+    def test_ted(self):
+        test_urls([
+            "http://www.ted.com/talks/jennifer_lin_improvs_piano_magic.html",
+            "http://www.ted.com/talks/derek_paravicini_and_adam_ockelford_in_the_key_of_genius.html",
+        ])
+        
     def test_vimeo(self):
         test_urls([
             "http://vimeo.com/56810854",
