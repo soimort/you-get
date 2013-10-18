@@ -1,6 +1,23 @@
 Changelog
 =========
 
+0.3.22
+------
+
+*Date: 2013-10-18*
+
+* Fix issues for:
+    - Baidu
+    - Bilibili
+    - JPopsuki TV
+    - Niconico
+    - PPTV
+    - TED
+    - Tumblr
+    - YinYueTai
+    - YouTube
+    - ...
+
 0.3.21
 ------
 
