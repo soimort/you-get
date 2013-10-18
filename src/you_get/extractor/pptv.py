@@ -14,7 +14,7 @@ def pptv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
     key = r1(r'<key expire=[^<>]+>([^<>]+)</key>', xml)
     rid = r1(r'rid="([^"]+)"', xml)
     title = r1(r'nm="([^"]+)"', xml)
-    pieces = re.findall('<sgm no="(\d+)".*fs="(\d+)"', xml)
+    pieces = re.findall('<sgm no="(\d+)"[^<>]+fs="(\d+)"', xml)
     numbers, fs = zip(*pieces)
     urls = ['http://%s/%s/%s?k=%s' % (host, i, rid, key) for i in numbers]
     total_size = sum(map(int, fs))
