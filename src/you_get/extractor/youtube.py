@@ -107,7 +107,9 @@ def youtube_download(url, output_dir='.', merge=True, info_only=False):
     """Downloads YouTube videos by URL.
     """
     
-    id = match1(url, r'youtu.be/([^/]+)') or parse_query_param(url, 'v')
+    id = match1(url, r'youtu.be/([^/]+)') or \
+        parse_query_param(url, 'v') or \
+        parse_query_param(parse_query_param(url, 'u'), 'v')
     assert id
     
     youtube_download_by_id(id, title=None, output_dir=output_dir, merge=merge, info_only=info_only)

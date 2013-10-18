@@ -85,7 +85,10 @@ def parse_query_param(url, param):
         The value of the parameter.
     """
     
-    return parse.parse_qs(parse.urlparse(url).query)[param][0]
+    try:
+        return parse.parse_qs(parse.urlparse(url).query)[param][0]
+    except:
+        return None
 
 def unicodize(text):
     return re.sub(r'\\u([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])', lambda x: chr(int(x.group(0)[2:], 16)), text)

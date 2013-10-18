@@ -38,4 +38,5 @@ class YouGetTests(unittest.TestCase):
         test_urls([
             "http://www.youtube.com/watch?v=pzKerr0JIPA",
             "http://youtu.be/pzKerr0JIPA",
+            "http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare"
         ])
