@@ -5,19 +5,16 @@ __all__ = ['vimeo_download', 'vimeo_download_by_id']
 from ..common import *
 
 def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    html = get_html('http://vimeo.com/%s' % id, faker = True)
+    video_page = get_content('http://player.vimeo.com/video/%s' % id, headers=fake_headers)
+    title = r1(r'<title>([^<]+)</title>', video_page)
+    info = dict(re.findall(r'"([^"]+)":\{[^{]+"url":"([^"]+)"', video_page))
+    for quality in ['hd', 'sd', 'mobile']:
+        if quality in info:
+            url = info[quality]
+            break
+    assert url
     
-    signature = r1(r'"signature":"([^"]+)"', html)
-    timestamp = r1(r'"timestamp":([^,]+)', html)
-    hd = r1(r',"hd":(\d+),', html)
-    
-    title = r1(r'"title":"([^"]+)"', html)
-    title = escape_file_path(title)
-    
-    url = 'http://player.vimeo.com/play_redirect?clip_id=%s&sig=%s&time=%s' % (id, signature, timestamp)
-    if hd == "1":
-        url += '&quality=hd'
-    type, ext, size = url_info(url, faker = True)
+    type, ext, size = url_info(url, faker=True)
     
     print_info(site_info, title, type, size)
     if not info_only:
