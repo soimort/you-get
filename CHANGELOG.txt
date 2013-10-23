@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3.23
+------
+
+*Date: 2013-10-23*
+
+* Support YouTube playlists
+* Support general short URLs
+* Fix issues for:
+    - Sina
+
 0.3.22
 ------
 
