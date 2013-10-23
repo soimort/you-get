@@ -5,14 +5,13 @@ from ..extractor import *
 from ..common import *
 
 def url_to_module(url):
-    site = r1(r'http://([^/]+)/', url)
-    assert site, 'invalid url: ' + url
+    video_host = r1(r'http://([^/]+)/', url)
+    video_url = r1(r'http://[^/]+(.*)', url)
+    assert video_host and video_url, 'invalid url: ' + url
     
-    if site.endswith('.com.cn'):
-        site = site[:-3]
-    domain = r1(r'(\.[^.]+\.[^.]+)$', site)
-    if not domain:
-        domain = site
+    if video_host.endswith('.com.cn'):
+        video_host = video_host[:-3]
+    domain = r1(r'(\.[^.]+\.[^.]+)$', video_host) or video_host
     assert domain, 'unsupported url: ' + url
     
     k = r1(r'([^.]+)', domain)
@@ -68,14 +67,28 @@ def url_to_module(url):
     if k in downloads:
         return downloads[k]
     else:
-        raise NotImplementedError(url)
+        import http.client
+        conn = http.client.HTTPConnection(video_host)
+        conn.request("HEAD", video_url)
+        res = conn.getresponse()
+        location = res.getheader('location')
+        if location is None:
+            raise NotImplementedError(url)
+        else:
+            return url_to_module(location), location
 
 def any_download(url, output_dir = '.', merge = True, info_only = False):
-    m = url_to_module(url)
+    try:
+        m, url = url_to_module(url)
+    except:
+        m = url_to_module(url)
     m.download(url, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def any_download_playlist(url, output_dir = '.', merge = True, info_only = False):
-    m = url_to_module(url)
+    try:
+        m, url = url_to_module(url)
+    except:
+        m = url_to_module(url)
     m.download_playlist(url, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def main():
