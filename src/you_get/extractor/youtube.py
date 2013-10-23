@@ -103,6 +103,15 @@ def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
+def youtube_list_download_by_id(list_id, title=None, output_dir='.', merge=True, info_only=False):
+    """Downloads a YouTube video list by its unique id.
+    """
+
+    video_page = get_content('http://www.youtube.com/playlist?list=%s' % list_id)
+    ids = set(re.findall(r'<a href="\/watch\?v=(\w+)', video_page))
+    for id in ids:
+        youtube_download_by_id(id, title, output_dir, merge, info_only)
+
 def youtube_download(url, output_dir='.', merge=True, info_only=False):
     """Downloads YouTube videos by URL.
     """
@@ -110,9 +119,14 @@ def youtube_download(url, output_dir='.', merge=True, info_only=False):
     id = match1(url, r'youtu.be/([^/]+)') or \
         parse_query_param(url, 'v') or \
         parse_query_param(parse_query_param(url, 'u'), 'v')
-    assert id
+    if id is None:
+        list_id = parse_query_param(url, 'list')
+    assert id or list_id
     
-    youtube_download_by_id(id, title=None, output_dir=output_dir, merge=merge, info_only=info_only)
+    if id:
+        youtube_download_by_id(id, title=None, output_dir=output_dir, merge=merge, info_only=info_only)
+    else:
+        youtube_list_download_by_id(list_id, title=None, output_dir=output_dir, merge=merge, info_only=info_only)
 
 site_info = "YouTube.com"
 download = youtube_download
