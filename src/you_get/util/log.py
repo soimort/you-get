@@ -14,6 +14,7 @@ if os.getenv('TERM') in (
     has_colors = True
 else:
     try:
+        # Eshell
         ppid = os.getppid()
         has_colors = (os.popen('ps -p %d -ocomm=' % ppid).read().strip()
                       == 'emacs')
@@ -67,55 +68,53 @@ colors = {
     'bold-white': '\033[97;1m',
 }
 
-def println(message):
-    """Prints a log message.
-    """
-    sys.stderr.write("{0}: {1}\n".format(__name__, message))
-
-def writeln(color, message):
-    """Prints a colorful log message.
+def println(text, color=None, ostream=sys.stdout):
+    """Prints a text line to stream.
     """
     if color in colors:
-        sys.stderr.write("{0}{1}: {2}{3}\n".format(colors[color], __name__, message, colors['reset']))
+        ostream.write("{0}{1}{2}\n".format(colors[color], text, colors['reset']))
     else:
-        sys.stderr.write("{0}: {1}\n".format(__name__, message))
+        ostream.write("{0}\n".format(text))
 
-def i(message):
+def printlog(message, color=None, ostream=sys.stderr):
+    """Prints a log message to stream.
+    """
+    if color in colors:
+        ostream.write("{0}{1}: {2}{3}\n".format(colors[color], __name__, message, colors['reset']))
+    else:
+        ostream.write("{0}: {1}\n".format(__name__, message))
+
+def i(message, ostream=sys.stderr):
     """Sends an info log message.
     """
-    if has_colors:
-        writeln('white', message)
-    else:
-        println(message)
+    printlog(message,
+             'white' if has_colors else None,
+             ostream=ostream)
 
-def d(message):
+def d(message, ostream=sys.stderr):
     """Sends a debug log message.
     """
-    if has_colors:
-        writeln('blue', message)
-    else:
-        println(message)
+    printlog(message,
+             'blue' if has_colors else None,
+             ostream=ostream)
 
-def w(message):
+def w(message, ostream=sys.stderr):
     """Sends a warning log message.
     """
-    if has_colors:
-        writeln('yellow', message)
-    else:
-        println(message)
+    printlog(message,
+             'yellow' if has_colors else None,
+             ostream=ostream)
 
-def e(message):
+def e(message, ostream=sys.stderr):
     """Sends an error log message.
     """
-    if has_colors:
-        writeln('light-red', message)
-    else:
-        println(message)
+    printlog(message,
+             'bold-yellow' if has_colors else None,
+             ostream=ostream)
 
-def wtf(message):
+def wtf(message, ostream=sys.stderr):
     """What a Terrible Failure.
     """
-    if has_colors:
-        writeln('bold-red', message)
-    else:
-        println(message)
+    printlog(message,
+             'bold-red' if has_colors else None,
+             ostream=ostream)
