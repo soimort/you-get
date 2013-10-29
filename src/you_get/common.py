@@ -10,6 +10,7 @@ from urllib import request, parse
 import platform
 
 from .version import __version__
+from .util import log
 
 dry_run = False
 force = False
@@ -772,8 +773,8 @@ def script_main(script_name, download, download_playlist = None):
     try:
         opts, args = getopt.getopt(sys.argv[1:], short_opts, opts)
     except getopt.GetoptError as err:
-        print(err)
-        print(help)
+        log.e(err)
+        log.e("try 'you-get --help' for more options")
         sys.exit(2)
     
     info_only = False
@@ -811,8 +812,8 @@ def script_main(script_name, download, download_playlist = None):
         elif o in ('-x', '--http-proxy'):
             proxy = a
         else:
-            print(help)
-            sys.exit(1)
+            log.e("try 'you-get --help' for more options")
+            sys.exit(2)
     if not args:
         print(help)
         sys.exit()
