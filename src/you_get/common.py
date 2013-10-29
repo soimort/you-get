@@ -10,7 +10,7 @@ from urllib import request, parse
 import platform
 
 from .version import __version__
-from .util import log
+from .util import log, legitimize
 
 dry_run = False
 force = False
@@ -94,7 +94,7 @@ def parse_query_param(url, param):
 def unicodize(text):
     return re.sub(r'\\u([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])', lambda x: chr(int(x.group(0)[2:], 16)), text)
 
-# DEPRECATED in favor of filenameable()
+# DEPRECATED in favor of util.legitimize()
 def escape_file_path(path):
     path = path.replace('/', '-')
     path = path.replace('\\', '-')
@@ -102,6 +102,7 @@ def escape_file_path(path):
     path = path.replace('?', '-')
     return path
 
+# DEPRECATED in favor of util.legitimize()
 def filenameable(text):
     """Converts a string to a legal filename through various OSes.
     """
@@ -509,7 +510,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             traceback.print_exc(file = sys.stdout)
             pass
     
-    title = filenameable(title)
+    title = legitimize(title)
     
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
@@ -585,7 +586,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
     
     assert ext in ('ts')
     
-    title = filenameable(title)
+    title = legitimize(title)
     
     filename = '%s.%s' % (title, 'ts')
     filepath = os.path.join(output_dir, filename)
