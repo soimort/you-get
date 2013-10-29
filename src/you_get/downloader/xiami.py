@@ -46,6 +46,7 @@ def xiami_download_lyric(lrc_url, file_name, output_dir):
             x.write(lrc)
 
 def xiami_download_pic(pic_url, file_name, output_dir):
+    output_dir = output_dir.strip(' ')
     pic_url = pic_url.replace('_1', '')
     pos = pic_url.rfind('.')
     ext = pic_url[pos:]
@@ -129,6 +130,7 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
         print_info(site_info, song_title, type, size)
         if not info_only:
             file_name = "%02d.%s" % (track_nr, song_title.replace(':', '-'))
+            output_dir = output_dir.strip(' ')
             download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
             try:
                 xiami_download_lyric(lrc_url, file_name, output_dir)
