@@ -67,23 +67,15 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 
 ## Installation
 
-### 1. Install via [Pip](http://www.pip-installer.org/):
+### 1. Install via Pip:
 
-    $ pip install you-get
+    $ [sudo] pip install you-get
     
    Check if the installation was successful:
     
     $ you-get -V
 
-### 2. Install via [EasyInstall](http://pypi.python.org/pypi/setuptools):
-
-    $ easy_install you-get
-    
-   Check if the installation was successful:
-    
-    $ you-get -V
-
-### 3. Install from Git:
+### 2. Install from Git:
 
     $ git clone git://github.com/soimort/you-get.git
     
@@ -100,7 +92,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
     
     $ you-get -V
 
-### 4. Direct download (from <https://github.com/soimort/you-get/zipball/master>):
+### 3. Direct download (from <https://github.com/soimort/you-get/zipball/master>):
     
     $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
     $ unzip you-get.zip
@@ -118,27 +110,19 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
     
     $ you-get -V
 
-### 5. Install from [AUR (Arch User Repository)](http://aur.archlinux.org/):
+### 4. Install from your distro's repo:
 
-   Click [here](https://aur.archlinux.org/packages.php\?ID=62576).
+* __AUR (Arch)__: <https://aur.archlinux.org/packages/?O=0&K=you-get>
 
-### Upgrading:
+* __Overlay (Gentoo)__: <http://gpo.zugaina.org/net-misc/you-get>
+
+## Upgrading
 
 Using Pip:
 
-    $ pip install --upgrade you-get
+    $ [sudo] pip install --upgrade you-get
 
-### FAQ (For Windows Users):
-
-* Q: I don't know how to install it on Windows.
-
-* A: Then don't do it. Just put your `you-get` folder into system `%PATH%`.
-
-* Q: I got something like `UnicodeDecodeError: 'gbk' codec can't decode byte 0xb0 in position 1012: illegal multibyte sequence`.
-
-* A: Run `set PYTHONIOENCODING=utf-8`.
-
-## Examples (For End-Users)
+## Examples
 
 Display the information of the video without downloading:
 
