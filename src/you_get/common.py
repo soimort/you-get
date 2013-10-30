@@ -715,7 +715,7 @@ def print_info(site_info, title, type, size):
     print("Video Site:", site_info)
     print("Title:     ", tr(title))
     print("Type:      ", type_info)
-    print("Size:      ", round(size / 1048576, 2), "MB (" + str(size) + " Bytes)")
+    print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     print()
 
 def parse_host(host):
