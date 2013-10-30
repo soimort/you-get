@@ -72,17 +72,9 @@ Dependencies
 Installation
 ------------
 
-#) Install via `Pip <http://www.pip-installer.org/>`_::
+#) Install via Pip::
 
-    $ pip install you-get
-    
-   Check if the installation was successful::
-    
-    $ you-get -V
-
-#) Install via `EasyInstall <http://pypi.python.org/pypi/setuptools>`_::
-
-    $ easy_install you-get
+    $ [sudo] pip install you-get
     
    Check if the installation was successful::
     
@@ -123,12 +115,21 @@ Installation
     
     $ you-get -V
 
-#) Install from `AUR (Arch User Repository) <http://aur.archlinux.org/>`_:
+#) Install from your distro's repo:
 
-    Click `here <https://aur.archlinux.org/packages.php?ID=62576>`_.
+* `AUR (Arch) <https://aur.archlinux.org/packages/?O=0&K=you-get>`_
 
-Examples (For End-Users)
-------------------------
+* `Overlay (Gentoo) <http://gpo.zugaina.org/net-misc/you-get>`_
+
+Upgrading
+---------
+
+Using Pip::
+
+    $ [sudo] pip install --upgrade you-get
+
+Examples
+--------
 
 Display the information of the video without downloading::
 
