@@ -68,10 +68,15 @@ colors = {
     'bold-white': '\033[97;1m',
 }
 
+def underlined(text):
+    """Returns an underlined text.
+    """
+    return "\33[4m%s\33[24m" % text if has_colors else text
+
 def println(text, color=None, ostream=sys.stdout):
     """Prints a text line to stream.
     """
-    if color in colors:
+    if has_colors and color in colors:
         ostream.write("{0}{1}{2}\n".format(colors[color], text, colors['reset']))
     else:
         ostream.write("{0}\n".format(text))
@@ -79,7 +84,7 @@ def println(text, color=None, ostream=sys.stdout):
 def printlog(message, color=None, ostream=sys.stderr):
     """Prints a log message to stream.
     """
-    if color in colors:
+    if has_colors and color in colors:
         ostream.write("{0}{1}: {2}{3}\n".format(colors[color], __name__, message, colors['reset']))
     else:
         ostream.write("{0}: {1}\n".format(__name__, message))
