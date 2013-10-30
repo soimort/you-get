@@ -15,7 +15,7 @@ def sogou_proxy_server(
     host=("0.0.0.0", 0),
     network_env='CERNET',
     ostream=sys.stderr):
-    """
+    """Returns a Sogou proxy server object.
     """
 
     x_sogou_auth = '9CD285F1E7ADB0BD403C22AD1D545F40/30/853edc6d49ba4e27'
