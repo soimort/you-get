@@ -88,7 +88,7 @@ def i(message, ostream=sys.stderr):
     """Sends an info log message.
     """
     printlog(message,
-             'white' if has_colors else None,
+             None,
              ostream=ostream)
 
 def d(message, ostream=sys.stderr):
