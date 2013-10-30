@@ -6,9 +6,9 @@
 
 See the project homepage <http://www.soimort.org/you-get> for further documentation.
 
-中文说明：请参见[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E)。
-
 Fork me on GitHub: <https://github.com/soimort/you-get>
+
+__中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%AD%E6%96%87%E8%AF%B4%E6%98%8E)。
 
 ## Features
 
