@@ -10,6 +10,7 @@ if os.getenv('TERM') in (
         'vt100',
         'linux',
         'eterm-color',
+        'screen',
     ):
     has_colors = True
 else:
