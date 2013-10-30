@@ -792,12 +792,14 @@ def script_main(script_name, download, download_playlist = None):
     -u | --url                               Display the real URLs of videos without downloading.
     -n | --no-merge                          Don't merge video parts.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
-    -x | --http-proxy <PROXY-SERVER-IP:PORT> Use specific HTTP proxy for downloading.
+    -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
          --no-proxy                          Don't use any proxy. (ignore $http_proxy)
+    -S | --sogou                             Use a Sogou proxy server for downloading.
+         --sogou-proxy <HOST:PORT>           Run a standalone Sogou proxy server.
          --debug                             Show traceback on KeyboardInterrupt.
     '''
     
-    short_opts = 'Vhfiuno:x:'
+    short_opts = 'VhfiunSo:x:'
     opts = ['version', 'help', 'force', 'info', 'url', 'no-merge', 'no-proxy', 'debug', 'sogou', 'output-dir=', 'http-proxy=', 'sogou-proxy=', 'sogou-env=']
     if download_playlist:
         short_opts = 'l' + short_opts
@@ -847,7 +849,7 @@ def script_main(script_name, download, download_playlist = None):
             output_dir = a
         elif o in ('-x', '--http-proxy'):
             proxy = a
-        elif o in ('--sogou'):
+        elif o in ('-S', '--sogou'):
             sogou_proxy = ("0.0.0.0", 0)
         elif o in ('--sogou-proxy'):
             sogou_proxy = parse_host(a)
