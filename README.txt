@@ -72,17 +72,9 @@ Dependencies
 Installation
 ------------
 
-#) Install via `Pip <http://www.pip-installer.org/>`_::
+#) Install via Pip::
 
-    $ pip install you-get
-    
-   Check if the installation was successful::
-    
-    $ you-get -V
-
-#) Install via `EasyInstall <http://pypi.python.org/pypi/setuptools>`_::
-
-    $ easy_install you-get
+    $ [sudo] pip install you-get
     
    Check if the installation was successful::
     
@@ -123,12 +115,21 @@ Installation
     
     $ you-get -V
 
-#) Install from `AUR (Arch User Repository) <http://aur.archlinux.org/>`_:
+#) Install from your distro's repo:
 
-    Click `here <https://aur.archlinux.org/packages.php?ID=62576>`_.
+* `AUR (Arch) <https://aur.archlinux.org/packages/?O=0&K=you-get>`_
 
-Examples (For End-Users)
-------------------------
+* `Overlay (Gentoo) <http://gpo.zugaina.org/net-misc/you-get>`_
+
+Upgrading
+---------
+
+Using Pip::
+
+    $ [sudo] pip install --upgrade you-get
+
+Examples
+--------
 
 Display the information of the video without downloading::
 
@@ -166,33 +167,23 @@ Command-Line Options
 For a complete list of all available options, see::
 
     $ you-get --help
-
-Examples (For Developers)
--------------------------
-
-In Python 3 (interactive)::
-
-    >>> from you_get.downloader import *
-    >>> youtube.download("http://www.youtube.com/watch?v=8bQlxQJEzLk", info_only = True)
-    Video Site: YouTube.com
-    Title:      If you're good at something, never do it for free!
-    Type:       WebM video (video/webm)
-    Size:       0.13 MB (133176 Bytes)
+    Usage: you-get [OPTION]... [URL]...
     
-    >>> import you_get
-    >>> you_get.any_download("http://www.youtube.com/watch?v=sGwy8DsUJ4M")
-    Video Site: YouTube.com
-    Title:      Mort from Madagascar LIKES
-    Type:       WebM video (video/webm)
-    Size:       1.78 MB (1867072 Bytes)
+    Startup options:
+        -V | --version                           Display the version and exit.
+        -h | --help                              Print this help and exit.
     
-    Downloading Mort from Madagascar LIKES.webm ...
-    100.0% (  1.8/1.8  MB) [========================================] 1/1
-
-API Reference
--------------
-
-See source code.
+    Download options (use with URLs):
+        -f | --force                             Force overwriting existed files.
+        -i | --info                              Display the information of videos without downloading.
+        -u | --url                               Display the real URLs of videos without downloading.
+        -n | --no-merge                          Don't merge video parts.
+        -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
+        -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
+             --no-proxy                          Don't use any proxy. (ignore $http_proxy)
+        -S | --sogou                             Use a Sogou proxy server for downloading.
+             --sogou-proxy <HOST:PORT>           Run a standalone Sogou proxy server.
+             --debug                             Show traceback on KeyboardInterrupt.
 
 License
 -------

@@ -121,7 +121,21 @@ def file_type_of_url(url):
     return str(re.search(r'/st/([^/]+)/', url).group(1))
 
 def youku_download_by_id(id, title, output_dir = '.', stream_type = None, merge = True, info_only = False):
+    # Open Sogou proxy if required
+    if get_sogou_proxy() is not None:
+        server = sogou_proxy_server(get_sogou_proxy(), ostream=open(os.devnull, 'w'))
+        server_thread = threading.Thread(target=server.serve_forever)
+        server_thread.daemon = True
+        server_thread.start()
+        set_proxy(server.server_address)
+    
     info = get_info(id)
+    
+    # Close Sogou proxy if required
+    if get_sogou_proxy() is not None:
+        server.shutdown()
+        unset_proxy()
+    
     urls, sizes = zip(*find_video(info, stream_type))
     ext = file_type_of_url(urls[0])
     total_size = sum(sizes)
