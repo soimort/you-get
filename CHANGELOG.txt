@@ -1,6 +1,42 @@
 Changelog
 =========
 
+0.3.24
+------
+
+*Date: 2013-10-30*
+
+* Experimental: Sogou proxy server
+* Fix issues for:
+    - Vimeo
+
+0.3.23
+------
+
+*Date: 2013-10-23*
+
+* Support YouTube playlists
+* Support general short URLs
+* Fix issues for:
+    - Sina
+
+0.3.22
+------
+
+*Date: 2013-10-18*
+
+* Fix issues for:
+    - Baidu
+    - Bilibili
+    - JPopsuki TV
+    - Niconico
+    - PPTV
+    - TED
+    - Tumblr
+    - YinYueTai
+    - YouTube
+    - ...
+
 0.3.21
 ------
 

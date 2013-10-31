@@ -12,8 +12,19 @@ def real_url(host, prot, file, new):
     return '%s%s?key=%s' % (start[:-1], new, key)
 
 def sohu_download(url, output_dir = '.', merge = True, info_only = False):
-    vid = r1('vid\s*=\s*"(\d+)"', get_html(url))
-    
+    html = get_html(url)
+    vid = r1('vid\s*=\s*"(\d+)"', html)
+    if not vid:
+        vid = r1('vid\s*:\s*"(\d+)"', html)
+
+    # Open Sogou proxy if required
+    if get_sogou_proxy() is not None:
+        server = sogou_proxy_server(get_sogou_proxy(), ostream=open(os.devnull, 'w'))
+        server_thread = threading.Thread(target=server.serve_forever)
+        server_thread.daemon = True
+        server_thread.start()
+        set_proxy(server.server_address)
+
     if vid:
         data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
         for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
@@ -31,10 +42,13 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         for file, new in zip(data['clipsURL'], data['su']):
             urls.append(real_url(host, prot, file, new))
         assert data['clipsURL'][0].endswith('.mp4')
-        
+
     else:
-        vid = r1('vid\s*=\s*\'(\d+)\'', get_html(url))
-        data = json.loads(get_decoded_html('http://my.tv.sohu.com/videinfo.jhtml?m=viewnew&vid=%s' % vid))
+        if re.match(r'http://share.vrs.sohu.com', url):
+            vid = r1('id=(\d+)', url)
+        else:
+            vid = r1('vid\s*=\s*\'(\d+)\'', get_html(url))
+        data = json.loads(get_decoded_html('http://my.tv.sohu.com/play/videonew.do?vid=%s&referer=http://my.tv.sohu.com' % vid))
         host = data['allot']
         prot = data['prot']
         urls = []
@@ -45,7 +59,12 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         for file, new in zip(data['clipsURL'], data['su']):
             urls.append(real_url(host, prot, file, new))
         assert data['clipsURL'][0].endswith('.mp4')
-    
+
+    # Close Sogou proxy if required
+    if get_sogou_proxy() is not None:
+        server.shutdown()
+        unset_proxy()
+
     print_info(site_info, title, 'mp4', size)
     if not info_only:
         download_urls(urls, title, 'mp4', size, output_dir, refer = url, merge = merge)
