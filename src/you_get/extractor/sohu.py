@@ -12,10 +12,12 @@ def real_url(host, prot, file, new):
     return '%s%s?key=%s' % (start[:-1], new, key)
 
 def sohu_download(url, output_dir = '.', merge = True, info_only = False):
-    html = get_html(url)
-    vid = r1('vid\s*=\s*"(\d+)"', html)
-    if not vid:
-        vid = r1('vid\s*:\s*"(\d+)"', html)
+    if re.match(r'http://share.vrs.sohu.com', url):
+        vid = r1('id=(\d+)', url)
+    else:
+        html = get_html(url)
+        vid = r1(r'\Wvid\s*[\:=]\s*[\'"]?(\d+)[\'"]?', html)
+    assert vid
 
     # Open Sogou proxy if required
     if get_sogou_proxy() is not None:
@@ -25,7 +27,7 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         server_thread.start()
         set_proxy(server.server_address)
 
-    if vid:
+    if re.match(r'http://tv.sohu.com/', url):
         data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
         for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
             hqvid = data['data'][qtyp]
@@ -44,10 +46,6 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         assert data['clipsURL'][0].endswith('.mp4')
 
     else:
-        if re.match(r'http://share.vrs.sohu.com', url):
-            vid = r1('id=(\d+)', url)
-        else:
-            vid = r1('vid\s*=\s*\'(\d+)\'', get_html(url))
         data = json.loads(get_decoded_html('http://my.tv.sohu.com/play/videonew.do?vid=%s&referer=http://my.tv.sohu.com' % vid))
         host = data['allot']
         prot = data['prot']
