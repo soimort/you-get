@@ -2,7 +2,7 @@
 
 from ..version import __name__
 
-import os, sys
+import os, sys, subprocess
 
 # Is terminal ANSI/VT100 compatible
 if os.getenv('TERM') in (
@@ -17,7 +17,7 @@ else:
     try:
         # Eshell
         ppid = os.getppid()
-        has_colors = (os.popen('ps -p %d -ocomm=' % ppid).read().strip()
+        has_colors = (subprocess.getoutput('ps -p %d -ocomm=' % ppid)
                       == 'emacs')
     except:
         has_colors = False
