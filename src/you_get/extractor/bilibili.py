@@ -79,7 +79,7 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
     assert re.match(r'http://(www.bilibili.tv|bilibili.kankanews.com|bilibili.smgbb.cn)/video/av(\d+)', url)
     html = get_html(url)
     
-    title = r1(r'<h2>([^<>]+)</h2>', html)
+    title = r1(r'<h2[^>]*>([^<>]+)</h2>', html)
     title = unescape_html(title)
     title = escape_file_path(title)
     
