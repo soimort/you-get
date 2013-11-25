@@ -108,7 +108,7 @@ def youtube_list_download_by_id(list_id, title=None, output_dir='.', merge=True,
     """
 
     video_page = get_content('http://www.youtube.com/playlist?list=%s' % list_id)
-    ids = set(re.findall(r'<a href="\/watch\?v=(\w+)', video_page))
+    ids = set(re.findall(r'<a href="\/watch\?v=([\w-]+)', video_page))
     for id in ids:
         youtube_download_by_id(id, title, output_dir, merge, info_only)
 
