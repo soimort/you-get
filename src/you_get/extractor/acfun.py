@@ -15,6 +15,10 @@ def get_srt_json(id):
     url = 'http://comment.acfun.tv/%s.json' % id
     return get_html(url)
 
+def get_srt_lock_json(id):
+    url = 'http://comment.acfun.tv/%s_lock.json' % id
+    return get_html(url)
+
 def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     info = json.loads(get_html('http://wenzhou.acfun.tv/api/getVideoByID.aspx?vid=' + id))
     t = info['vtype']
@@ -34,6 +38,10 @@ def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_
         print('Downloading %s ...' % (title + '.cmt.json'))
         cmt = get_srt_json(vid)
         with open(os.path.join(output_dir, title + '.cmt.json'), 'w') as x:
+            x.write(cmt)
+        print('Downloading %s ...' % (title + '.cmt_lock.json'))
+        cmt = get_srt_lock_json(vid)
+        with open(os.path.join(output_dir, title + '.cmt_lock.json'), 'w') as x:
             x.write(cmt)
 
 def acfun_download(url, output_dir = '.', merge = True, info_only = False):
