@@ -77,6 +77,8 @@ def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only
         stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
         
         html5player = ytplayer_config['assets']['js']
+        if html5player[0:2] == '//':
+            html5player = 'http:' + html5player
     
     streams = {
         parse.parse_qs(stream)['itag'][0] : parse.parse_qs(stream)
