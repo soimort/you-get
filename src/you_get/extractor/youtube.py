@@ -122,7 +122,8 @@ def youtube_download(url, output_dir='.', merge=True, info_only=False):
         parse_query_param(url, 'v') or \
         parse_query_param(parse_query_param(url, 'u'), 'v')
     if id is None:
-        list_id = parse_query_param(url, 'list')
+        list_id = parse_query_param(url, 'list') or \
+          parse_query_param(url, 'p')
     assert id or list_id
     
     if id:
