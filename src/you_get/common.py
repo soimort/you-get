@@ -15,6 +15,7 @@ from .util import log, legitimize, sogou_proxy_server
 
 dry_run = False
 force = False
+player = None
 sogou_proxy = None
 sogou_env = None
 
@@ -77,6 +78,11 @@ def match1(text, *patterns):
             if match:
                 ret.append(match.group(1))
         return ret
+
+def launch_player(player, urls):
+    import subprocess
+    import shlex
+    subprocess.call(shlex.split(player) + list(urls))
 
 def parse_query_param(url, param):
     """Parses the query string of a URL and returns the value of a parameter.
@@ -504,6 +510,10 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
         print('Real URLs:\n', urls, '\n')
         return
     
+    if player:
+        launch_player(player, urls)
+        return
+
     if not total_size:
         try:
             total_size = urls_size(urls)
@@ -587,6 +597,10 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
         print('Real URLs:\n', urls, '\n')
         return
     
+    if player:
+        launch_player(player, urls)
+        return
+
     assert ext in ('ts')
     
     title = legitimize(title)
@@ -792,6 +806,7 @@ def script_main(script_name, download, download_playlist = None):
     -u | --url                               Display the real URLs of videos without downloading.
     -n | --no-merge                          Don't merge video parts.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
+    -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer
     -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
          --no-proxy                          Don't use any proxy. (ignore $http_proxy)
     -S | --sogou                             Use a Sogou proxy server for downloading.
@@ -799,8 +814,8 @@ def script_main(script_name, download, download_playlist = None):
          --debug                             Show traceback on KeyboardInterrupt.
     '''
     
-    short_opts = 'VhfiunSo:x:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'no-merge', 'no-proxy', 'debug', 'sogou', 'output-dir=', 'http-proxy=', 'sogou-proxy=', 'sogou-env=']
+    short_opts = 'VhfiunSo:p:x:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'no-merge', 'no-proxy', 'debug', 'sogou', 'output-dir=', 'player=', 'http-proxy=', 'sogou-proxy=', 'sogou-env=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -814,6 +829,7 @@ def script_main(script_name, download, download_playlist = None):
     
     global force
     global dry_run
+    global player
     global sogou_proxy
     global sogou_env
     
@@ -841,19 +857,21 @@ def script_main(script_name, download, download_playlist = None):
             playlist = True
         elif o in ('-n', '--no-merge'):
             merge = False
-        elif o in ('--no-proxy'):
+        elif o in ('--no-proxy',):
             proxy = ''
-        elif o in ('--debug'):
+        elif o in ('--debug',):
             traceback = True
         elif o in ('-o', '--output-dir'):
             output_dir = a
+        elif o in ('-p', '--player'):
+            player = a
         elif o in ('-x', '--http-proxy'):
             proxy = a
         elif o in ('-S', '--sogou'):
             sogou_proxy = ("0.0.0.0", 0)
-        elif o in ('--sogou-proxy'):
+        elif o in ('--sogou-proxy',):
             sogou_proxy = parse_host(a)
-        elif o in ('--sogou-env'):
+        elif o in ('--sogou-env',):
             sogou_env = a
         else:
             log.e("try 'you-get --help' for more options")
