@@ -192,7 +192,7 @@ def get_decoded_html(url, faker = False):
     data = response.data
     charset = r1(r'charset=([\w-]+)', response.headers['content-type'])
     if charset:
-        return data.decode(charset)
+        return data.decode(charset, 'ignore')
     else:
         return data
 
