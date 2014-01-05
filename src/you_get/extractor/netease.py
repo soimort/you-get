@@ -28,7 +28,7 @@ def netease_download(url, output_dir = '.', merge = True, info_only = False):
         ext = 'flv'
         
     else:
-        url = r1(r'["\'](.+)-list.m3u8["\']', html) or r1(r'["\'](.+).m3u8["\']', html) + ".mp4"
+        url = (r1(r'["\'](.+)-list.m3u8["\']', html) or r1(r'["\'](.+).m3u8["\']', html)) + ".mp4"
         _, _, size = url_info(url)
         ext = 'mp4'
     
