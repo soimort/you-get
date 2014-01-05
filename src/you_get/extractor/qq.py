@@ -33,6 +33,11 @@ def qq_download(url, output_dir = '.', merge = True, info_only = False):
         vid = r1(r'http://static.video.qq.com/.*vid=(\w+)', url)
         url = "http://v.qq.com/page/%s.html" % vid
 
+    if re.match(r'http://v.qq.com/cover/.*\.html', url):
+        html = get_html(url)
+        vid = r1(r'vid:"([^"]+)"', html)
+        url = 'http://sns.video.qq.com/tvideo/fcgi-bin/video?vid=%s' % vid
+
     html = get_html(url)
 
     title = match1(html, r'<title>(.+?)</title>', r'title:"([^"]+)"')[0].strip()
@@ -40,7 +45,10 @@ def qq_download(url, output_dir = '.', merge = True, info_only = False):
     title = unescape_html(title)
     title = escape_file_path(title)
 
-    id = vid
+    try:
+        id = vid
+    except:
+        id = r1(r'vid:"([^"]+)"', html)
 
     qq_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
