@@ -87,14 +87,14 @@ def find_video(info, stream_type = None):
     segs = info['data'][0]['segs']
     types = segs.keys()
     if not stream_type:
-        for x in ['hd2', 'mp4', 'flv']:
+        for x in ['hd3', 'hd2', 'mp4', 'flv']:
             if x in types:
                 stream_type = x
                 break
         else:
             raise NotImplementedError()
-    assert stream_type in ('hd2', 'mp4', 'flv')
-    file_type = {'hd2': 'flv', 'mp4': 'mp4', 'flv': 'flv'}[stream_type]
+    assert stream_type in ('hd3', 'hd2', 'mp4', 'flv')
+    file_type = {'hd3': 'flv', 'hd2': 'flv', 'mp4': 'mp4', 'flv': 'flv'}[stream_type]
     
     seed = info['data'][0]['seed']
     source = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/\\:._-1234567890")
