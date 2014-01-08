@@ -14,7 +14,6 @@ def legitimize(text, os=platform.system()):
 
     if os == 'Windows':
         # Windows (non-POSIX namespace)
-        text = text[:255] # Trim to 255 Unicode characters long
         text = text.translate({
             # Reserved in Windows VFAT and NTFS
             ord(':'): '-',
@@ -42,4 +41,5 @@ def legitimize(text, os=platform.system()):
         if text.startswith("."):
             text = text[1:]
 
+    text = text[:82] # Trim to 82 Unicode characters long
     return text

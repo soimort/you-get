@@ -50,7 +50,7 @@ def google_download(url, output_dir = '.', merge = True, info_only = False):
         
         if not re.search(r'plus.google.com/photos/[^/]*/albums/\d+/\d+', url):
             html = get_html(url)
-            url = r1(r'"(https://plus.google.com/photos/\d+/albums/\d+/\d+)', html)
+            url = "https://plus.google.com/" + r1(r'"(photos/\d+/albums/\d+/\d+)', html)
             title = r1(r'<title>([^<\n]+)', html)
         else:
             title = None

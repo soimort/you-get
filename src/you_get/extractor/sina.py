@@ -5,7 +5,8 @@ __all__ = ['sina_download', 'sina_download_by_vid', 'sina_download_by_vkey']
 from ..common import *
 
 def video_info(id):
-    xml = get_content('http://www.tucao.cc/api/sina.php?vid=%s' % id, decoded=True)
+    xml = get_content('http://interface.bilibili.tv/playurl?vid=%s' % id, headers=fake_headers, decoded=True)
+    #xml = get_content('http://www.tucao.cc/api/sina.php?vid=%s' % id, headers=fake_headers, decoded=True)
     urls = re.findall(r'<url>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</url>', xml)
     name = match1(xml, r'<vname>(?:<!\[CDATA\[)?(.+?)(?:\]\]>)?</vname>')
     vstr = match1(xml, r'<vstr>(?:<!\[CDATA\[)?(.+?)(?:\]\]>)?</vstr>')
@@ -53,7 +54,8 @@ def sina_download(url, output_dir='.', merge=True, info_only=False):
             vid = vids[-1]
     
     if vid:
-        sina_download_by_vid(vid, output_dir=output_dir, merge=merge, info_only=info_only)
+        title = match1(video_page, r'title\s*:\s*\'([^\']+)\'')
+        sina_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
         vkey = match1(video_page, r'vkey\s*:\s*"([^"]+)"')
         title = match1(video_page, r'title\s*:\s*"([^"]+)"')

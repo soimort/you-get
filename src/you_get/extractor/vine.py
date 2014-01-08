@@ -8,7 +8,7 @@ def vine_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
     
     title = r1(r'<meta property="og:title" content="([^"]*)"', html)
-    url = r1(r'<source src="([^"]*)"', html)
+    url = "http:" + r1(r'<source src="([^"]*)"', html)
     type, ext, size = url_info(url)
     
     print_info(site_info, title, type, size)

@@ -77,6 +77,8 @@ def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only
         stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
         
         html5player = ytplayer_config['assets']['js']
+        if html5player[0:2] == '//':
+            html5player = 'http:' + html5player
     
     streams = {
         parse.parse_qs(stream)['itag'][0] : parse.parse_qs(stream)
@@ -120,7 +122,8 @@ def youtube_download(url, output_dir='.', merge=True, info_only=False):
         parse_query_param(url, 'v') or \
         parse_query_param(parse_query_param(url, 'u'), 'v')
     if id is None:
-        list_id = parse_query_param(url, 'list')
+        list_id = parse_query_param(url, 'list') or \
+          parse_query_param(url, 'p')
     assert id or list_id
     
     if id:
