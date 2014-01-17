@@ -40,6 +40,7 @@ def url_to_module(url):
         'jpopsuki': jpopsuki,
         'kankanews': bilibili,
         'ku6': ku6,
+        'letv': letv,
         'miomio': miomio,
         'mixcloud': mixcloud,
         'nicovideo': nicovideo,

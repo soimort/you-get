@@ -20,6 +20,7 @@ from .iqiyi import *
 from .joy import *
 from .jpopsuki import *
 from .ku6 import *
+from .letv import *
 from .miomio import *
 from .mixcloud import *
 from .netease import *
