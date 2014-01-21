@@ -7,7 +7,7 @@ from ..common import *
 def mixcloud_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
     title = r1(r'<meta property="og:title" content="([^"]*)"', html)
-    preview_url = r1("data-preview-url=\"([^\"]+)\"", html)
+    preview_url = r1("m-preview=\"([^\"]+)\"", html)
     
     url = re.sub(r'previews', r'c/originals', preview_url)
     for i in range(10, 30):
