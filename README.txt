@@ -48,6 +48,7 @@ Supported Sites (As of Now)
 * iQIYI (爱奇艺) http://www.iqiyi.com
 * Joy.cn (激动网) http://www.joy.cn
 * Ku6 (酷6网) http://www.ku6.com
+* LeTV (乐视网) http://www.letv.com
 * MioMio http://www.miomio.tv
 * NetEase (网易视频) http://v.163.com
 * PPTV http://www.pptv.com
