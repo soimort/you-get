@@ -22,3 +22,5 @@ _*/
 *.DS_Store
 *.swp
 *~
+cscope.files
+tags
