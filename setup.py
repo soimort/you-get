@@ -6,10 +6,19 @@ PACKAGE_NAME = 'you_get'
 PROJ_METADATA = '%s.json' % PROJ_NAME
 
 import os, json, imp
+import codecs
+
 here = os.path.abspath(os.path.dirname(__file__))
-proj_info = json.loads(open(os.path.join(here, PROJ_METADATA), encoding='utf-8').read())
-README = open(os.path.join(here, 'README.txt'), encoding='utf-8').read()
-CHANGELOG = open(os.path.join(here, 'CHANGELOG.txt'), encoding='utf-8').read()
+
+with codecs.open(os.path.join(here, PROJ_METADATA), encoding='utf-8') as f:
+    proj_info = json.loads(f.read())
+
+with codecs.open(os.path.join(here, 'README.txt'), encoding='utf-8') as f:
+    README = f.read()
+    
+with codecs.open(os.path.join(here, 'CHANGELOG.txt'), encoding='utf-8') as f:
+    CHANGELOG = f.read()
+    
 VERSION = imp.load_source('version', os.path.join(here, 'src/%s/version.py' % PACKAGE_NAME)).__version__
 
 from setuptools import setup, find_packages
