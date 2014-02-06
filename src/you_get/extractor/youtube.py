@@ -35,6 +35,7 @@ yt_codecs = [
 def decipher(js, s):
     def tr_js(code):
         code = re.sub(r'function', r'def', code)
+        code = re.sub(r'\$', '_', code)
         code = re.sub(r'\{', r':\n\t', code)
         code = re.sub(r'\}', r'\n', code)
         code = re.sub(r'var\s+', r'', code)
@@ -44,15 +45,17 @@ def decipher(js, s):
         code = re.sub(r'(\w+).slice\((\d+)\)', r'\1[\2:]', code)
         code = re.sub(r'(\w+).split\(""\)', r'list(\1)', code)
         return code
-    
+
     f1 = match1(js, r'\w+\.sig\|\|(\w+)\(\w+\.\w+\)')
     f1def = match1(js, r'(function %s\(\w+\)\{[^\{]+\})' % f1)
     code = tr_js(f1def)
-    f2 = match1(f1def, r'(\w+)\(\w+,\d+\)')
+    f2 = match1(f1def, r'([$\w]+)\(\w+,\d+\)')
     if f2 is not None:
-        f2def = match1(js, r'(function %s\(\w+,\w+\)\{[^\{]+\})' % f2)
+        f2e = re.escape(f2)
+        f2def = match1(js, r'(function %s\(\w+,\w+\)\{[^\{]+\})' % f2e)
+        f2 = re.sub(r'\$', r'_', f2)
         code = code + 'global %s\n' % f2 + tr_js(f2def)
-    
+
     code = code + 'sig=%s(s)' % f1
     exec(code, globals(), locals())
     return locals()['sig']
@@ -60,37 +63,37 @@ def decipher(js, s):
 def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False):
     """Downloads a YouTube video by its unique id.
     """
-    
+
     raw_video_info = get_content('http://www.youtube.com/get_video_info?video_id=%s' % id)
     video_info = parse.parse_qs(raw_video_info)
-    
+
     if video_info['status'] == ['ok'] and ('use_cipher_signature' not in video_info or video_info['use_cipher_signature'] == ['False']):
         title = parse.unquote_plus(video_info['title'][0])
         stream_list = parse.parse_qs(raw_video_info)['url_encoded_fmt_stream_map'][0].split(',')
-        
+
     else:
         # Parse video page when video_info is not usable.
         video_page = get_content('http://www.youtube.com/watch?v=%s' % id)
         ytplayer_config = json.loads(match1(video_page, r'ytplayer.config\s*=\s*([^\n]+);'))
-        
+
         title = ytplayer_config['args']['title']
         stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
-        
+
         html5player = ytplayer_config['assets']['js']
         if html5player[0:2] == '//':
             html5player = 'http:' + html5player
-    
+
     streams = {
         parse.parse_qs(stream)['itag'][0] : parse.parse_qs(stream)
             for stream in stream_list
     }
-    
+
     for codec in yt_codecs:
         itag = str(codec['itag'])
         if itag in streams:
             download_stream = streams[itag]
             break
-    
+
     url = download_stream['url'][0]
     if 'sig' in download_stream:
         sig = download_stream['sig'][0]
@@ -98,9 +101,9 @@ def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only
         js = get_content(html5player)
         sig = decipher(js, download_stream['s'][0])
     url = '%s&signature=%s' % (url, sig)
-    
+
     type, ext, size = url_info(url)
-    
+
     print_info(site_info, title, type, size)
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge)
@@ -117,7 +120,7 @@ def youtube_list_download_by_id(list_id, title=None, output_dir='.', merge=True,
 def youtube_download(url, output_dir='.', merge=True, info_only=False):
     """Downloads YouTube videos by URL.
     """
-    
+
     id = match1(url, r'youtu.be/([^/]+)') or \
         parse_query_param(url, 'v') or \
         parse_query_param(parse_query_param(url, 'u'), 'v')
@@ -125,7 +128,7 @@ def youtube_download(url, output_dir='.', merge=True, info_only=False):
         list_id = parse_query_param(url, 'list') or \
           parse_query_param(url, 'p')
     assert id or list_id
-    
+
     if id:
         youtube_download_by_id(id, title=None, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
