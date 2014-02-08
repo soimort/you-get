@@ -806,7 +806,7 @@ def script_main(script_name, download, download_playlist = None):
     -u | --url                               Display the real URLs of videos without downloading.
     -n | --no-merge                          Don't merge video parts.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
-    -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer
+    -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer.
     -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
          --no-proxy                          Don't use any proxy. (ignore $http_proxy)
     -S | --sogou                             Use a Sogou proxy server for downloading.
