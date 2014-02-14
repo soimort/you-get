@@ -41,6 +41,7 @@ def url_to_module(url):
         'kankanews': bilibili,
         'ku6': ku6,
         'letv': letv,
+        'magisto': magisto,
         'miomio': miomio,
         'mixcloud': mixcloud,
         'nicovideo': nicovideo,
