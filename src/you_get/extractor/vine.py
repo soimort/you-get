@@ -4,15 +4,17 @@ __all__ = ['vine_download']
 
 from ..common import *
 
-def vine_download(url, output_dir = '.', merge = True, info_only = False):
+def vine_download(url, output_dir='.', merge=True, info_only=False):
     html = get_html(url)
-    
-    title = r1(r'<meta property="og:title" content="([^"]*)"', html)
+
+    title1 = r1(r'<meta property="twitter:title" content="([^"]*)"', html)
+    title2 = r1(r'<meta property="og:title" content="([^"]*)"', html)
+    title = "%s - %s" % (title1, title2)
     url = r1(r'<source src="([^"]*)"', html)
     if url[0:2] == "//":
         url = "http:" + url
     type, ext, size = url_info(url)
-    
+
     print_info(site_info, title, type, size)
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge)
