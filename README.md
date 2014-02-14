@@ -28,6 +28,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * Tumblr <http://www.tumblr.com>
 * Vine <http://vine.co>
 * Instagram <http://instagram.com>
+* Magisto <http://www.magisto.com>
 * SoundCloud <http://soundcloud.com>
 * Mixcloud <http://www.mixcloud.com>
 * Freesound <http://www.freesound.org>
@@ -71,44 +72,44 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 ### 1. Install via Pip:
 
     $ [sudo] pip install you-get
-    
+
    Check if the installation was successful:
-    
+
     $ you-get -V
 
 ### 2. Install from Git:
 
     $ git clone git://github.com/soimort/you-get.git
-    
+
    Use the raw script without installation:
-    
+
     $ cd you-get/
     $ ./you-get -V
-    
+
    To install the package into the system path, execute:
-    
+
     $ make install
-    
+
    Check if the installation was successful:
-    
+
     $ you-get -V
 
 ### 3. Direct download (from <https://github.com/soimort/you-get/zipball/master>):
-    
+
     $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
     $ unzip you-get.zip
-    
+
    Use the raw script without installation:
-    
+
     $ cd soimort-you-get-*/
     $ ./you-get -V
-    
+
    To install the package into the system path, execute:
-    
+
     $ make install
-    
+
    Check if the installation was successful:
-    
+
     $ you-get -V
 
 ### 4. Install from your distro's repo:
@@ -161,11 +162,11 @@ For a complete list of all available options, see:
 
     $ you-get --help
     Usage: you-get [OPTION]... [URL]...
-    
+
     Startup options:
         -V | --version                           Display the version and exit.
         -h | --help                              Print this help and exit.
-    
+
     Download options (use with URLs):
         -f | --force                             Force overwriting existed files.
         -i | --info                              Display the information of videos without downloading.
