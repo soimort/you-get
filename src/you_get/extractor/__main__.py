@@ -5,8 +5,8 @@ from ..extractor import *
 from ..common import *
 
 def url_to_module(url):
-    video_host = r1(r'http://([^/]+)/', url)
-    video_url = r1(r'http://[^/]+(.*)', url)
+    video_host = r1(r'https?://([^/]+)/', url)
+    video_url = r1(r'https?://[^/]+(.*)', url)
     assert video_host and video_url, 'invalid url: ' + url
 
     if video_host.endswith('.com.cn'):
