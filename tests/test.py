@@ -17,6 +17,11 @@ class YouGetTests(unittest.TestCase):
             "http://www.freesound.org/people/Corsica_S/sounds/184419/",
         ])
 
+    def test_magisto(self):
+        test_urls([
+            "http://www.magisto.com/album/video/f3x9AAQORAkfDnIFDA",
+        ])
+
     def test_mixcloud(self):
         test_urls([
             "http://www.mixcloud.com/beatbopz/beat-bopz-disco-mix/",
