@@ -19,29 +19,30 @@ def get_srt_lock_json(id):
     url = 'http://comment.acfun.tv/%s_lock.json' % id
     return get_html(url)
 
-def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    info = json.loads(get_html('http://wenzhou.acfun.tv/api/getVideoByID.aspx?vid=' + id))
-    t = info['vtype']
-    vid = info['vid']
-    if t == 'sina':
-        sina_download_by_vid(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
-    elif t == 'youku':
-        youku_download_by_id(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
-    elif t == 'tudou':
-        tudou_download_by_iid(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
-    elif t == 'qq':
-        qq_download_by_id(vid, title, output_dir = output_dir, merge = merge, info_only = info_only)
+def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only=False):
+    info = json.loads(get_html('http://www.acfun.tv/video/getVideo.aspx?id=' + vid))
+    sourceType = info['sourceType']
+    sourceId = info['sourceId']
+    danmakuId = info['danmakuId']
+    if sourceType == 'sina':
+        sina_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
+    elif sourceType == 'youku':
+        youku_download_by_id(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
+    elif sourceType == 'tudou':
+        tudou_download_by_iid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
+    elif sourceType == 'qq':
+        qq_download_by_id(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
         raise NotImplementedError(t)
-    
+
     if not info_only:
         try:
             print('Downloading %s ...' % (title + '.cmt.json'))
-            cmt = get_srt_json(vid)
+            cmt = get_srt_json(danmakuId)
             with open(os.path.join(output_dir, title + '.cmt.json'), 'w') as x:
                 x.write(cmt)
             print('Downloading %s ...' % (title + '.cmt_lock.json'))
-            cmt = get_srt_lock_json(vid)
+            cmt = get_srt_lock_json(danmakuId)
             with open(os.path.join(output_dir, title + '.cmt_lock.json'), 'w') as x:
                 x.write(cmt)
         except:
@@ -50,19 +51,22 @@ def acfun_download_by_id(id, title = None, output_dir = '.', merge = True, info_
 def acfun_download(url, output_dir = '.', merge = True, info_only = False):
     assert re.match(r'http://[^\.]+.acfun.tv/v/ac(\d+)', url)
     html = get_html(url)
-    
+
     title = r1(r'<h1 id="title-article" class="title"[^<>]*>([^<>]+)<', html)
-    assert title
     title = unescape_html(title)
     title = escape_file_path(title)
-    title = title.replace(' - AcFun.tv', '')
-    
-    id = r1(r"\[Video\](\d+)\[/Video\]", html) or r1(r"\[video\](\d+)\[/video\]", html)
-    if not id:
-        id = r1(r"src=\"/newflvplayer/player.*id=(\d+)", html)
-        sina_download_by_vid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+    assert title
+
+    videos = re.findall("data-vid=\"(\d+)\" href=\"[^\"]+\" title=\"([^\"]+)\"", html)
+    if videos is not None:
+        for video in videos:
+            p_vid = video[0]
+            p_title = title + " - " + video[1]
+            acfun_download_by_vid(p_vid, p_title, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
-        acfun_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        # Useless - to be removed?
+        id = r1(r"src=\"/newflvplayer/player.*id=(\d+)", html)
+        sina_download_by_vid(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
 
 site_info = "AcFun.tv"
 download = acfun_download
