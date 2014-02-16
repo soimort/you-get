@@ -122,6 +122,7 @@ def youtube_download(url, output_dir='.', merge=True, info_only=False):
     """
 
     id = match1(url, r'youtu.be/([^/]+)') or \
+        match1(url, r'youtube.com/embed/([^/]+)') or \
         parse_query_param(url, 'v') or \
         parse_query_param(parse_query_param(url, 'u'), 'v')
     if id is None:
