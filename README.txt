@@ -63,6 +63,7 @@ Supported Sites (As of Now)
 * Baidu Wangpan (百度网盘) http://pan.baidu.com
 * SongTaste http://www.songtaste.com
 * Alive.in.th http://alive.in.th
+* VK http://vk.com
 
 Dependencies
 ------------

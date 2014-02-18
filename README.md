@@ -60,6 +60,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * Baidu Wangpan (百度网盘) <http://pan.baidu.com>
 * SongTaste <http://www.songtaste.com>
 * Alive.in.th <http://alive.in.th>
+* VK <http://vk.com>
 
 ## Dependencies
 

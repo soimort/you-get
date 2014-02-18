@@ -58,6 +58,7 @@ def url_to_module(url):
         'vid48': vid48,
         'vimeo': vimeo,
         'vine': vine,
+        'vk': vk,
         'xiami': xiami,
         'yinyuetai': yinyuetai,
         'youku': youku,
