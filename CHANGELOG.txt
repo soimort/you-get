@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3.28
+------
+
+*Date: 2014-02-21*
+
+* New site support:
+    - Magisto.com
+    - VK.com
+
 0.3.27
 ------
 
