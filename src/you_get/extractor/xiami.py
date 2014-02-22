@@ -7,6 +7,7 @@ from ..common import *
 
 from xml.dom.minidom import parseString
 from urllib import parse
+from urllib.error import HTTPError
 
 def location_dec(str):
     head = int(str[0])
@@ -28,12 +29,24 @@ def location_dec(str):
     return parse.unquote(out).replace("^", "0")
 
 def xiami_download_lyric(lrc_url, file_name, output_dir):
-    lrc = get_html(lrc_url, faker = True)
+    lrc = ''
+    for i in range(10):
+        try:
+            lrc = get_html(lrc_url, faker = True)
+        except HTTPError as e:
+            if e.code == 404 or e.code == 416 or e.code == 504:
+                print(e.msg)
+                break
+            else:
+                raise e
+        break
+
     if len(lrc) > 0:
         with open(output_dir + "/" + file_name.replace('/', '-').replace('?', '-') + '.lrc', 'w', encoding='utf-8') as x:
             x.write(lrc)
 
 def xiami_download_pic(pic_url, file_name, output_dir):
+    output_dir = output_dir.strip(' ')
     pic_url = pic_url.replace('_1', '')
     pos = pic_url.rfind('.')
     ext = pic_url[pos:]
@@ -99,6 +112,7 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
     album_name = r1(r'<album_name><!\[CDATA\[(.*)\]\]>', xml)
     artist = r1(r'<artist><!\[CDATA\[(.*)\]\]>', xml)
     doc = parseString(xml)
+    album_name = album_name.replace(':', ' ').replace('/', '-')
     output_dir = output_dir + "/%s - %s" % (artist, album_name)
     tracks = doc.getElementsByTagName("track")
     track_nr = 1
@@ -115,7 +129,8 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
 
         print_info(site_info, song_title, type, size)
         if not info_only:
-            file_name = "%02d.%s" % (track_nr, song_title)
+            file_name = "%02d.%s" % (track_nr, song_title.replace(':', '-'))
+            output_dir = output_dir.strip(' ')
             download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
             try:
                 xiami_download_lyric(lrc_url, file_name, output_dir)
