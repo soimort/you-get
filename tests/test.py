@@ -28,13 +28,6 @@ class YouGetTests(unittest.TestCase):
             "http://www.mixcloud.com/DJVadim/north-america-are-you-ready/",
         ])
 
-    def test_sohu(self):
-        test_urls([
-            "http://tv.sohu.com/20120522/n343785589.shtml",
-            "http://tv.sohu.com/20130103/n362246415.shtml",
-            "http://tv.sohu.com/20130103/n362251239.shtml"
-        ])
-
     def test_ted(self):
         test_urls([
             "http://www.ted.com/talks/jennifer_lin_improvs_piano_magic.html",
