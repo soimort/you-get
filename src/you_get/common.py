@@ -514,8 +514,9 @@ class SimpleProgressBar(BaseProgressBar):
         percent = round(self.received * 100 / self.total_size, 1)
         if percent > 100:
             percent = 100
-        dots = bar_size * int(percent) // 100
-        plus = int(percent) - dots // bar_size * 100
+        dots_float = bar_size * percent / 100
+        dots = int(dots_float)
+        plus = dots_float - dots
         if plus > 0.8:
             plus = '='
         elif plus > 0.4:
