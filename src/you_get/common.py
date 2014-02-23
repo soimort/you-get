@@ -943,4 +943,5 @@ def script_main(script_name, download, download_playlist = None):
         if traceback:
             raise
         else:
+            print()
             sys.exit(1)
