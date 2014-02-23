@@ -433,13 +433,14 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
 def num2human(num, unit=1024):
     """Convert integer to human readable units"""
     units = ["K", "M", "G", "T"]
-    ret = "{}".format(num)
+    ret_fmt = "{:>6.2f}"
+    ret = ret_fmt.format(num)
     num = float(num)
 
     for i in range(len(units)-1, -1, -1):
         div = unit**(i+1)
         if (num/div) > 1:
-            ret = "{:>6.2f}{}".format(num/div, units[i])
+            ret = ret_fmt.format(num/div, units[i])
             break
     return ret
 
@@ -477,14 +478,15 @@ class BaseProgressBar:
         """
         if self.last_time < 0:
             self.last_time = time.time()
-            return 0
-        now = time.time()
-        delta_size = self.received - self.last_received
-        self.last_received = self.received
-        delta_time = now - self.last_time
-        speed = delta_size / delta_time
-        self.last_time = now
-        self.last_speed = speed
+            speed = 0
+        else:
+            now = time.time()
+            delta_size = self.received - self.last_received
+            self.last_received = self.received
+            delta_time = now - self.last_time
+            speed = delta_size / delta_time
+            self.last_time = now
+            self.last_speed = speed
         ret = "{}B/s".format(num2human(speed))
         return ret
 
