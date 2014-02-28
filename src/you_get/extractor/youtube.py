@@ -95,12 +95,16 @@ def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only
             break
 
     url = download_stream['url'][0]
-    if 'sig' in download_stream:
-        sig = download_stream['sig'][0]
-    else:
-        js = get_content(html5player)
-        sig = decipher(js, download_stream['s'][0])
-    url = '%s&signature=%s' % (url, sig)
+    try:
+        if 'sig' in download_stream:
+            sig = download_stream['sig'][0]
+            url = '%s&signature=%s' % (url, sig)
+        else:
+            js = get_content(html5player)
+            sig = decipher(js, download_stream['s'][0])
+            url = '%s&signature=%s' % (url, sig)
+    except NameError:
+        pass
 
     type, ext, size = url_info(url)
 
