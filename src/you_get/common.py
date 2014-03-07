@@ -787,7 +787,7 @@ def get_version():
     try:
         import subprocess
         real_dir = os.path.dirname(os.path.realpath(__file__))
-        git_hash = subprocess.Popen(['git', 'rev-parse', '--short', 'HEAD'], cwd=real_dir, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL).stdout.read().decode('utf-8').strip()
+        git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=real_dir, stderr=subprocess.DEVNULL).decode('utf-8').strip()
         assert git_hash
         return '%s-%s' % (__version__, git_hash)
     except:
