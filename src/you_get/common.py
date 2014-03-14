@@ -516,12 +516,12 @@ class SimpleProgressBar(BaseProgressBar):
         dots_float = bar_size * percent / 100
         dots = int(dots_float)
         plus = dots_float - dots
-        if plus > 0.8:
+        if plus > 0.9:
             plus = '='
-        elif plus > 0.4:
-            plus = '>'
         else:
-            plus = ''
+            signs = ">-\\|/+"*2
+            sign_len = len(signs)
+            plus = signs[int(plus * sign_len) % sign_len]
         bar = '=' * dots + plus
         bar = '{0:>5}% ({1:>5}/{2:<5}MB) [{3:<{bsize}}] {4}/{5} {6}'.format(
                 percent, round(self.received / 1048576, 1),
