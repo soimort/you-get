@@ -18,6 +18,7 @@ force = False
 player = None
 sogou_proxy = None
 sogou_env = None
+cookies_txt = None
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
