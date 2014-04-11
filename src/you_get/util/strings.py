@@ -18,3 +18,8 @@ except ImportError:
       return chr(int('0'+s, 16))
     else:
       return chr(int(s))
+
+from .fs import legitimize
+
+def get_filename(htmlstring):
+  return legitimize(unescape(htmlstring))

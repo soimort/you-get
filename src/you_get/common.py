@@ -11,7 +11,7 @@ import platform
 import threading
 
 from .version import __version__
-from .util import log, legitimize, sogou_proxy_server, unescape
+from .util import log, legitimize, sogou_proxy_server, get_filename, unescape
 
 dry_run = False
 force = False
@@ -523,8 +523,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             traceback.print_exc(file = sys.stdout)
             pass
     
-    title = unescape(title)
-    title = legitimize(title)
+    title = get_filename(title)
     
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
@@ -604,7 +603,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
 
     assert ext in ('ts')
     
-    title = legitimize(title)
+    title = get_filename(title)
     
     filename = '%s.%s' % (title, 'ts')
     filepath = os.path.join(output_dir, filename)
