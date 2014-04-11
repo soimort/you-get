@@ -11,7 +11,7 @@ import platform
 import threading
 
 from .version import __version__
-from .util import log, legitimize, sogou_proxy_server
+from .util import log, legitimize, sogou_proxy_server, unescape
 
 dry_run = False
 force = False
@@ -523,6 +523,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             traceback.print_exc(file = sys.stdout)
             pass
     
+    title = unescape(title)
     title = legitimize(title)
     
     filename = '%s.%s' % (title, ext)
@@ -727,7 +728,7 @@ def print_info(site_info, title, type, size):
         type_info = "Unknown type (%s)" % type
     
     print("Video Site:", site_info)
-    print("Title:     ", tr(title))
+    print("Title:     ", unescape(tr(title)))
     print("Type:      ", type_info)
     print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     print()
