@@ -11,7 +11,7 @@ import platform
 import threading
 
 from .version import __version__
-from .util import log, legitimize, sogou_proxy_server, get_filename, unescape
+from .util import log, sogou_proxy_server, get_filename, unescape_html
 
 dry_run = False
 force = False
@@ -142,12 +142,6 @@ def filenameable(text):
                 ord(':'): '-',
             })
     return text
-
-def unescape_html(html):
-    from html import parser
-    html = parser.HTMLParser().unescape(html)
-    html = re.sub(r'&#(\d+);', lambda x: chr(int(x.group(1))), html)
-    return html
 
 def ungzip(data):
     """Decompresses data for Content-Encoding: gzip.
@@ -727,7 +721,7 @@ def print_info(site_info, title, type, size):
         type_info = "Unknown type (%s)" % type
     
     print("Video Site:", site_info)
-    print("Title:     ", unescape(tr(title)))
+    print("Title:     ", unescape_html(tr(title)))
     print("Type:      ", type_info)
     print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     print()

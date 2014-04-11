@@ -1,11 +1,11 @@
 try:
   # py 3.4
-  from html import unescape
+  from html import unescape as unescape_html
 except ImportError:
   import re
   from html.entities import entitydefs
 
-  def unescape(string):
+  def unescape_html(string):
     '''HTML entity decode'''
     string = re.sub(r'&#[^;]+;', _sharp2uni, string)
     string = re.sub(r'&[^;]+;', lambda m: entitydefs[m.group(0)[1:-1]], string)
@@ -22,4 +22,4 @@ except ImportError:
 from .fs import legitimize
 
 def get_filename(htmlstring):
-  return legitimize(unescape(htmlstring))
+  return legitimize(unescape_html(htmlstring))
