@@ -38,7 +38,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * Youku (优酷) <http://www.youku.com>
 * Tudou (土豆) <http://www.tudou.com>
 * YinYueTai (音悦台) <http://www.yinyuetai.com>
-* AcFun <http://www.acfun.tv>
+* AcFun <http://www.acfun.com>
 * bilibili <http://www.bilibili.tv>
 * CNTV (中国网络电视台) <http://www.cntv.cn>
 * Douban (豆瓣) <http://douban.com>
