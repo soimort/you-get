@@ -9,7 +9,8 @@ def magisto_download(url, output_dir='.', merge=True, info_only=False):
 
     title1 = r1(r'<meta name="twitter:title" content="([^"]*)"', html)
     title2 = r1(r'<meta name="twitter:description" content="([^"]*)"', html)
-    title = "%s %s" % (title1, title2)
+    video_hash = r1(r'http://www.magisto.com/video/([^/]+)', url)
+    title = "%s %s - %s" % (title1, title2, video_hash)
     url = r1(r'<source type="[^"]+" src="([^"]*)"', html)
     type, ext, size = url_info(url)
 
