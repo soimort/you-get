@@ -74,7 +74,7 @@ def youtube_download_by_id(id, title=None, output_dir='.', merge=True, info_only
     else:
         # Parse video page when video_info is not usable.
         video_page = get_content('http://www.youtube.com/watch?v=%s' % id)
-        ytplayer_config = json.loads(match1(video_page, r'ytplayer.config\s*=\s*([^\n]+);'))
+        ytplayer_config = json.loads(match1(video_page, r'ytplayer.config\s*=\s*([^\n]+});'))
 
         title = ytplayer_config['args']['title']
         stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
