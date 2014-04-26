@@ -5,6 +5,7 @@ from .alive import *
 from .baidu import *
 from .bilibili import *
 from .blip import *
+from .cbs import *
 from .cntv import *
 from .coursera import *
 from .dailymotion import *
@@ -32,6 +33,7 @@ from .sina import *
 from .sohu import *
 from .songtaste import *
 from .soundcloud import *
+from .theplatform import *
 from .tudou import *
 from .tumblr import *
 from .vid48 import *
