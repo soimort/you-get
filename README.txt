@@ -21,6 +21,7 @@ Supported Sites (As of Now)
 * Vimeo http://vimeo.com
 * Coursera https://www.coursera.org
 * Blip http://blip.tv
+* CBS http://www.cbs.com
 * Dailymotion http://dailymotion.com
 * eHow http://www.ehow.com
 * Facebook http://facebook.com
