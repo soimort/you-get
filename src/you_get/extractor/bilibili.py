@@ -99,6 +99,7 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
         raise NotImplementedError(flashvars)
     
     if not info_only:
+        title = legitimize(title)
         print('Downloading %s ...' % (title + '.cmt.xml'))
         xml = get_srt_xml(id)
         with open(os.path.join(output_dir, title + '.cmt.xml'), 'w', encoding='utf-8') as x:
