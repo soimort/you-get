@@ -3,18 +3,37 @@
 __all__ = ['letv_download']
 
 import json
+import random
 import xml.etree.ElementTree as ET
 from ..common import *
 
+def get_timestamp():
+    tn = random.random()
+    url = 'http://api.letv.com/time?tn={}'.format(tn)
+    result = get_content(url)
+    return json.loads(result)['stime']
+
+def get_key(t):
+    for s in range(0, 8):
+        e = 1 & t
+        t >>= 1
+        e <<= 31
+        t += e
+    return t ^ 185025305
+
 def video_info(vid):
-    x = get_content("http://www.letv.com/v_xml/%s.xml" % vid)
-    xml_obj = ET.fromstring(x)
+    tn = get_timestamp()
+    key = get_key(tn)
+    url = 'http://api.letv.com/mms/out/video/play?id={}&platid=1&splatid=101&format=1&tkey={}&domain=http%3A%2F%2Fwww.letv.com'.format(vid, key)
+    r = get_content(url, decoded=False)
+    xml_obj = ET.fromstring(r)
     info = json.loads(xml_obj.find("playurl").text)
     title = info.get('title')
     urls = info.get('dispatch')
-    for key in urls.keys():
-        url = urls[key][0]
+    for k in urls.keys():
+        url = urls[k][0]
         break
+    url += '&termid=1&format=0&hwtype=un&ostype=Windows7&tag=letv&sign=letv&expect=1&pay=0&rateid={}'.format(k)
     return url, title
 
 def letv_download_by_vid(vid, output_dir='.', merge=True, info_only=False):
