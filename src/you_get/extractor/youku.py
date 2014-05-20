@@ -18,7 +18,7 @@ def trim_title(title):
     return title
 
 def find_video_id_from_url(url):
-    patterns = [r'^http://v.youku.com/v_show/id_([\w=]+).html',
+    patterns = [r'^http://v.youku.com/v_show/id_([\w=]+).htm[l]?',
                 r'^http://player.youku.com/player.php/sid/([\w=]+)/v.swf',
                 r'^loader\.swf\?VideoIDS=([\w=]+)',
                 r'^([\w=]+)$']
