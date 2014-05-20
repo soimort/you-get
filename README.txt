@@ -182,6 +182,7 @@ For a complete list of all available options, see::
         -i | --info                              Display the information of videos without downloading.
         -u | --url                               Display the real URLs of videos without downloading.
         -n | --no-merge                          Don't merge video parts.
+        -c | --cookies                           Load NetScape's cookies.txt file.
         -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
         -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer.
         -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
