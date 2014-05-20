@@ -11,7 +11,7 @@ import platform
 import threading
 
 from .version import __version__
-from .util import log, legitimize, sogou_proxy_server
+from .util import log, sogou_proxy_server, get_filename, unescape_html
 
 dry_run = False
 force = False
@@ -142,12 +142,6 @@ def filenameable(text):
                 ord(':'): '-',
             })
     return text
-
-def unescape_html(html):
-    from html import parser
-    html = parser.HTMLParser().unescape(html)
-    html = re.sub(r'&#(\d+);', lambda x: chr(int(x.group(1))), html)
-    return html
 
 def ungzip(data):
     """Decompresses data for Content-Encoding: gzip.
@@ -523,7 +517,7 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
             traceback.print_exc(file = sys.stdout)
             pass
     
-    title = legitimize(title)
+    title = get_filename(title)
     
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
@@ -603,7 +597,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
 
     assert ext in ('ts')
     
-    title = legitimize(title)
+    title = get_filename(title)
     
     filename = '%s.%s' % (title, 'ts')
     filepath = os.path.join(output_dir, filename)
@@ -727,7 +721,7 @@ def print_info(site_info, title, type, size):
         type_info = "Unknown type (%s)" % type
     
     print("Video Site:", site_info)
-    print("Title:     ", tr(title))
+    print("Title:     ", unescape_html(tr(title)))
     print("Type:      ", type_info)
     print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     print()
