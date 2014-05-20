@@ -9,6 +9,7 @@ import sys
 from urllib import request, parse
 import platform
 import threading
+import time
 
 from .version import __version__
 from .util import log, legitimize, sogou_proxy_server
@@ -429,70 +430,113 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
     os.rename(temp_filepath, filepath)
 
-class SimpleProgressBar:
+def num2human(num, unit=1024):
+    """Convert integer to human readable units"""
+    units = ["K", "M", "G", "T"]
+    ret = "{}".format(num)
+    num = float(num)
+
+    for i in range(len(units)-1, -1, -1):
+        div = unit**(i+1)
+        if (num/div) > 1:
+            ret = "{:.2f}{}".format(num/div, units[i])
+            break
+    return ret
+
+class BaseProgressBar:
     def __init__(self, total_size, total_pieces = 1):
         self.displayed = False
         self.total_size = total_size
         self.total_pieces = total_pieces
         self.current_piece = 1
         self.received = 0
-        
-    def update(self):
-        self.displayed = True
-        bar_size = 40
-        percent = round(self.received * 100 / self.total_size, 1)
-        if percent > 100:
-            percent = 100
-        dots = bar_size * int(percent) // 100
-        plus = int(percent) - dots // bar_size * 100
-        if plus > 0.8:
-            plus = '='
-        elif plus > 0.4:
-            plus = '>'
+        self.last_time = -1
+        self.last_received = 0
+        self.last_speed = -1
+        self.thread_obj = None
+        self.update_timeout = 2 # in second
+
+
+    def periodic_update(self):
+        """Non stopping loop to call self.update"""
+        while self.displayed == True:
+            self.update()
+            time.sleep(self.update_timeout)
+
+    def start_updator(self):
+        """Start progress update thread"""
+        if self.thread_obj is None or  not self.thread_obj.is_alive():
+            self.thread_obj = threading.Thread(target=self.periodic_update)
+            self.thread_obj.daemon = True
+            self.thread_obj.start()
+
+    def get_speed(self):
+        """Calculate current download speed
+        return speed in string like: 123KB/s
+        The float speed saved to self.last_speed
+        """
+        if self.last_time < 0:
+            self.last_time = time.time()
+            speed = 0
         else:
-            plus = ''
-        bar = '=' * dots + plus
-        bar = '{0:>5}% ({1:>5}/{2:<5}MB) [{3:<40}] {4}/{5}'.format(percent, round(self.received / 1048576, 1), round(self.total_size / 1048576, 1), bar, self.current_piece, self.total_pieces)
-        sys.stdout.write('\r' + bar)
-        sys.stdout.flush()
-        
+            now = time.time()
+            delta_size = self.received - self.last_received
+            self.last_received = self.received
+            delta_time = now - self.last_time
+            speed = delta_size / delta_time
+            self.last_time = now
+            self.last_speed = speed
+        ret = "{:>7}B/s".format(num2human(speed))
+        return ret
+
+    def update(self):
+        "virtual method"
+        raise NotImplemented
+
     def update_received(self, n):
         self.received += n
-        self.update()
+        self.displayed = True
+        self.start_updator()
         
     def update_piece(self, n):
         self.current_piece = n
         
     def done(self):
         if self.displayed:
+            self.update()
             print()
             self.displayed = False
 
-class PiecesProgressBar:
-    def __init__(self, total_size, total_pieces = 1):
-        self.displayed = False
-        self.total_size = total_size
-        self.total_pieces = total_pieces
-        self.current_piece = 1
-        self.received = 0
-        
+class SimpleProgressBar(BaseProgressBar):
     def update(self):
-        self.displayed = True
-        bar = '{0:>5}%[{1:<40}] {2}/{3}'.format('?', '?' * 40, self.current_piece, self.total_pieces)
+        bar_size = 30
+        percent = round(self.received * 100 / self.total_size, 1)
+        if percent > 100:
+            percent = 100
+        dots_float = bar_size * percent / 100
+        dots = int(dots_float)
+        plus = dots_float - dots
+        if plus > 0.9:
+            plus = '='
+        else:
+            signs = ">-\\|/+"*2
+            sign_len = len(signs)
+            plus = signs[int(plus * sign_len) % sign_len]
+        bar = '=' * dots + plus
+        bar = '{0:>5}% ({1:>5}/{2:<5}MB) [{3:<{bsize}}] {4}/{5} {6}'.format(
+                percent, round(self.received / 1048576, 1),
+                round(self.total_size / 1048576, 1), bar, self.current_piece,
+                self.total_pieces, self.get_speed(), bsize=bar_size)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
         
-    def update_received(self, n):
-        self.received += n
-        self.update()
+class PiecesProgressBar(BaseProgressBar):
+    def update(self):
+        self.displayed = True
+        bar = '{0:>5}%[{1:<40}] {2}/{3} {4}'.format('?', '?' * 40, self.current_piece, self.total_pieces, self.get_speed())
+        sys.stdout.write('\r' + bar)
+        sys.stdout.flush()
         
-    def update_piece(self, n):
-        self.current_piece = n
-        
-    def done(self):
-        if self.displayed:
-            print()
-            self.displayed = False
 
 class DummyProgressBar:
     def __init__(self, *args):
@@ -901,4 +945,5 @@ def script_main(script_name, download, download_playlist = None):
         if traceback:
             raise
         else:
+            print()
             sys.exit(1)
