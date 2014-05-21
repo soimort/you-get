@@ -36,7 +36,7 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
         raise NotImplementedError(t)
 
     if not info_only:
-        title = legitimize(title)
+        title = get_filename(title)
         try:
             print('Downloading %s ...' % (title + '.cmt.json'))
             cmt = get_srt_json(danmakuId)
