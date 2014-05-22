@@ -29,3 +29,7 @@ def download_rtmpdump_stream(url, playpath, title, ext, output_dir='.'):
 
     subprocess.call(params)
     return
+
+def play_rtmpdump_stream(player, url, playpath):
+    os.system("rtmpdump -r '%s' -y '%s' -o - | %s -" % (url, playpath, player))
+    return

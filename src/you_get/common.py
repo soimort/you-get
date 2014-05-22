@@ -679,7 +679,8 @@ def download_rtmp_url(url, playpath, title, ext, total_size=0, output_dir='.', r
         return
 
     if player:
-        launch_player(player, url)
+        from .processor.rtmpdump import play_rtmpdump_stream
+        play_rtmpdump_stream(player, url, playpath)
         return
 
     from .processor.rtmpdump import has_rtmpdump_installed, download_rtmpdump_stream
