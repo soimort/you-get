@@ -70,8 +70,10 @@ Dependencies
 ------------
 
 * `Python 3 <http://www.python.org/download/releases/>`_
-* (Optional) `FFmpeg <http://ffmpeg.org>`_
-    * Used for converting and joining video files.
+* (Optional) `FFmpeg <http://ffmpeg.org>`_ / `Libav <http://libav.org/>`_
+    * For converting and joining video files.
+* (Optional) `RTMPDump <http://rtmpdump.mplayerhq.hu/>`_
+    * For processing RTMP streams.
 
 Installation
 ------------

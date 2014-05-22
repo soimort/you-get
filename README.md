@@ -66,8 +66,10 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 ## Dependencies
 
 * [Python 3](http://www.python.org/download/releases/)
-* __(Optional)__ [FFmpeg](http://ffmpeg.org)
-    * Used for converting and joining video files.
+* __(Optional)__ [FFmpeg](http://ffmpeg.org) / [Libav](http://libav.org/)
+    * For converting and joining video files.
+* __(Optional)__ [RTMPDump](http://rtmpdump.mplayerhq.hu/)
+    * For processing RTMP streams.
 
 ## Installation
 
