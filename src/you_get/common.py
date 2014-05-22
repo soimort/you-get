@@ -674,7 +674,8 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 def download_rtmp_url(url, playpath, title, ext, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
     assert url
     if dry_run:
-        print('Real URLs:\n%s\n' % [url])
+        print('Real URL:\n%s\n' % [url])
+        print('Real Playpath:\n%s\n' % [playpath])
         return
 
     if player:
