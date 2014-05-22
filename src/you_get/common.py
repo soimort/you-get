@@ -503,10 +503,10 @@ class DummyProgressBar:
     def done(self):
         pass
 
-def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
+def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
     if dry_run:
-        print('Real URLs:\n', urls, '\n')
+        print('Real URLs:\n%s\n' % urls)
         return
 
     if player:
@@ -590,10 +590,10 @@ def download_urls(urls, title, ext, total_size, output_dir = '.', refer = None, 
 
     print()
 
-def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer = None, merge = True, faker = False):
+def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
     if dry_run:
-        print('Real URLs:\n', urls, '\n')
+        print('Real URLs:\n%s\n' % urls)
         return
 
     if player:
@@ -670,6 +670,20 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir = '.', refer 
             print("Can't merge %s files" % ext)
 
     print()
+
+def download_rtmp_url(url, playpath, title, ext, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
+    assert url
+    if dry_run:
+        print('Real URLs:\n%s\n' % [url])
+        return
+
+    if player:
+        launch_player(player, url)
+        return
+
+    from .processor.rtmpdump import has_rtmpdump_installed, download_rtmpdump_stream
+    assert has_rtmpdump_installed(), "RTMPDump not installed."
+    download_rtmpdump_stream(url, playpath, title, ext, output_dir)
 
 def playlist_not_supported(name):
     def f(*args, **kwargs):

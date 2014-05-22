@@ -17,9 +17,9 @@ def theplatform_download_by_pid(pid, title, output_dir='.', merge=True, info_onl
 
     print_info(site_info, title, type, size)
     if not info_only:
-        from ..processor.rtmpdump import has_rtmpdump_installed, download_rtmpdump_stream
-        assert has_rtmpdump_installed(), "RTMPDump not installed."
-        download_rtmpdump_stream(url=smil_base, playpath=ext+':'+smil_video, title=title, ext=ext, output_dir=output_dir)
+        #from ..processor.rtmpdump import has_rtmpdump_installed, download_rtmpdump_stream
+        #assert has_rtmpdump_installed(), "RTMPDump not installed."
+        download_rtmp_url(url=smil_base, playpath=ext+':'+smil_video, title=title, ext=ext, output_dir=output_dir)
 
 site_info = "thePlatform.com"
 download = theplatform_download_by_pid
