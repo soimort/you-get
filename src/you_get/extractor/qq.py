@@ -4,14 +4,27 @@ __all__ = ['qq_download']
 
 from ..common import *
 
-def qq_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    url = 'http://vsrc.store.qq.com/%s.flv' % id
+def qq_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False):
+    xml = get_html('http://www.acfun.com/getinfo?vids=%s' % id)
+    from xml.dom.minidom import parseString
+    doc = parseString(xml)
+    doc_root = doc.getElementsByTagName('root')[0]
+    doc_vl = doc_root.getElementsByTagName('vl')[0]
+    doc_vi = doc_vl.getElementsByTagName('vi')[0]
+    fn = doc_vi.getElementsByTagName('fn')[0].firstChild.data
+    fclip = doc_vi.getElementsByTagName('fclip')[0].firstChild.data
+    if int(fclip) > 0:
+        fn = fn[:-4] + "." + fclip + fn[-4:]
+    fvkey = doc_vi.getElementsByTagName('fvkey')[0].firstChild.data
+    doc_ul = doc_vi.getElementsByTagName('ul')
+    url = doc_ul[0].getElementsByTagName('url')[0].firstChild.data
+    url = url + fn + '?vkey=' + fvkey
 
-    _, _, size = url_info(url)
+    _, ext, size = url_info(url)
 
-    print_info(site_info, title, 'flv', size)
+    print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls([url], title, 'flv', size, output_dir = output_dir, merge = merge)
+        download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
 def qq_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://v.qq.com/([^\?]+)\?vid', url):
