@@ -33,7 +33,7 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
     elif sourceType == 'qq':
         qq_download_by_id(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
-        raise NotImplementedError(t)
+        raise NotImplementedError(sourceType)
 
     if not info_only:
         title = get_filename(title)
