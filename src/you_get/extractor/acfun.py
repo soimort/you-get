@@ -38,11 +38,11 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
     if not info_only:
         title = get_filename(title)
         try:
-            print('Downloading %s ...' % (title + '.cmt.json'))
+            print('Downloading %s ...\n' % (title + '.cmt.json'))
             cmt = get_srt_json(danmakuId)
             with open(os.path.join(output_dir, title + '.cmt.json'), 'w') as x:
                 x.write(cmt)
-            print('Downloading %s ...' % (title + '.cmt_lock.json'))
+            print('Downloading %s ...\n' % (title + '.cmt_lock.json'))
             cmt = get_srt_lock_json(danmakuId)
             with open(os.path.join(output_dir, title + '.cmt_lock.json'), 'w') as x:
                 x.write(cmt)

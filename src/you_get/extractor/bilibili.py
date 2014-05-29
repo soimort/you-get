@@ -100,7 +100,7 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
 
     if not info_only:
         title = get_filename(title)
-        print('Downloading %s ...' % (title + '.cmt.xml'))
+        print('Downloading %s ...\n' % (title + '.cmt.xml'))
         xml = get_srt_xml(id)
         with open(os.path.join(output_dir, title + '.cmt.xml'), 'w', encoding='utf-8') as x:
             x.write(xml)
