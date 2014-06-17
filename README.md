@@ -40,7 +40,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * Tudou (土豆) <http://www.tudou.com>
 * YinYueTai (音悦台) <http://www.yinyuetai.com>
 * AcFun <http://www.acfun.com>
-* bilibili <http://www.bilibili.tv>
+* bilibili <http://www.bilibili.com>
 * CNTV (中国网络电视台) <http://www.cntv.cn>
 * Douban (豆瓣) <http://douban.com>
 * ifeng (凤凰视频) <http://v.ifeng.com>
