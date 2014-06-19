@@ -35,7 +35,7 @@ yt_codecs = [
 def decipher(js, s):
     def tr_js(code):
         code = re.sub(r'function', r'def', code)
-        code = re.sub(r'\$', '_', code)
+        code = re.sub(r'\$', '_dollar', code)
         code = re.sub(r'\{', r':\n\t', code)
         code = re.sub(r'\}', r'\n', code)
         code = re.sub(r'var\s+', r'', code)
@@ -46,17 +46,17 @@ def decipher(js, s):
         code = re.sub(r'(\w+).split\(""\)', r'list(\1)', code)
         return code
 
-    f1 = match1(js, r'\w+\.sig\|\|(\w+)\(\w+\.\w+\)')
-    f1def = match1(js, r'(function %s\(\w+\)\{[^\{]+\})' % f1)
+    f1 = match1(js, r'\w+\.sig\|\|([$\w]+)\(\w+\.\w+\)')
+    f1def = match1(js, r'(function %s\(\w+\)\{[^\{]+\})' % re.escape(f1))
     code = tr_js(f1def)
     f2 = match1(f1def, r'([$\w]+)\(\w+,\d+\)')
     if f2 is not None:
         f2e = re.escape(f2)
         f2def = match1(js, r'(function %s\(\w+,\w+\)\{[^\{]+\})' % f2e)
-        f2 = re.sub(r'\$', r'_', f2)
+        f2 = re.sub(r'\$', '_dollar', f2)
         code = code + 'global %s\n' % f2 + tr_js(f2def)
 
-    code = code + 'sig=%s(s)' % f1
+    code = code + 'sig=%s(s)' % re.sub(r'\$', '_dollar', f1)
     exec(code, globals(), locals())
     return locals()['sig']
 
