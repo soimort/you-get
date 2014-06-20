@@ -3,16 +3,16 @@
 __all__ = ['ted_download']
 
 from ..common import *
+import json
 
-def ted_download(url, output_dir = '.', merge = True, info_only = False):
-    page = get_html(url).split("\n")
-    for line in page:
-        if line.find("<title>") > -1:
-            title = line.replace("<title>", "").replace("</title>", "").replace("\t", "")
-            title = title[:title.find(' | ')]
-        if line.find("no-flash-video-download") > -1:
-            url = line.replace('<a id="no-flash-video-download" href="', "").replace(" ", "").replace("\t", "").replace(".mp4", "-480p.mp4")
-            url = url[:url.find('"')]
+def ted_download(url, output_dir='.', merge=True, info_only=False):
+    html = get_html(url)
+    metadata = json.loads(match1(html, r'({"talks"(.*)})\)'))
+    title = metadata['talks'][0]['title']
+    nativeDownloads = metadata['talks'][0]['nativeDownloads']
+    for quality in ['high', 'medium', 'low']:
+        if quality in nativeDownloads:
+            url = nativeDownloads[quality]
             type, ext, size = url_info(url)
             print_info(site_info, title, type, size)
             if not info_only:
