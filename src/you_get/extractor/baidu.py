@@ -12,29 +12,11 @@ def baidu_get_song_data(sid):
     data = json.loads(get_html('http://music.baidu.com/data/music/fmlink?songIds=%s' % sid, faker = True))['data']
 
     if data['xcode'] != '':
-    # inside china mainland
+        # inside china mainland
         return data['songList'][0]
     else:
-    # outside china mainland
-        html = get_html("http://music.baidu.com/song/%s" % sid)
-
-        # baidu pan link
-        sourceLink = r1(r'"link-src-info"><a href="([^"]+)"', html)
-        if sourceLink != None:
-            sourceLink = sourceLink.replace('&amp;', '&')
-        sourceHtml = get_html(sourceLink) if sourceLink != None else None
-
-        songLink =  r1(r'\\"dlink\\":\\"([^"]*)\\"', sourceHtml).replace('\\\\/', '/') if sourceHtml != None else r1(r'download_url="([^"]+)"', html)
-        songName = parse.unquote(r1(r'songname=([^&]+)&', html))
-        artistName = parse.unquote(r1(r'songartistname=([^&]+)&', html))
-        albumName = parse.unquote(r1(r'songartistname=([^&]+)&', html))
-        lrcLink = r1(r'data-lyricdata=\'{ "href":"([^"]+)"', html)
-
-        return json.loads(json.dumps({'songLink'   : songLink,
-                                      'songName'   : songName,
-                                      'artistName' : artistName,
-                                      'albumName'  : albumName,
-                                      'lrcLink'    : lrcLink}, ensure_ascii=False))
+        # outside china mainland
+        return None
 
 def baidu_get_song_url(data):
     return data['songLink']
@@ -52,27 +34,33 @@ def baidu_get_song_lyric(data):
     lrc = data['lrcLink']
     return None if lrc is '' else "http://music.baidu.com%s" % lrc
 
-def baidu_download_song(sid, output_dir = '.', merge = True, info_only = False):
+def baidu_download_song(sid, output_dir='.', merge=True, info_only=False):
     data = baidu_get_song_data(sid)
-    url = baidu_get_song_url(data)
-    title = baidu_get_song_title(data)
-    artist = baidu_get_song_artist(data)
-    album = baidu_get_song_album(data)
-    lrc = baidu_get_song_lyric(data)
+    if data is not None:
+        url = baidu_get_song_url(data)
+        title = baidu_get_song_title(data)
+        artist = baidu_get_song_artist(data)
+        album = baidu_get_song_album(data)
+        lrc = baidu_get_song_lyric(data)
+        file_name = "%s - %s - %s" % (title, album, artist)
+    else:
+        html = get_html("http://music.baidu.com/song/%s" % sid)
+        url = r1(r'data_url="([^"]+)"', html)
+        title = r1(r'data_name="([^"]+)"', html)
+        file_name = title
 
-    assert url
-    file_name = "%s - %s - %s" % (title, album, artist)
-
-    type, ext, size = url_info(url, faker = True)
+    type, ext, size = url_info(url, faker=True)
     print_info(site_info, title, type, size)
     if not info_only:
-        download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
+        download_urls([url], file_name, ext, size, output_dir, merge=merge, faker=True)
 
-    if lrc:
-        type, ext, size = url_info(lrc, faker = True)
+    try:
+        type, ext, size = url_info(lrc, faker=True)
         print_info(site_info, title, type, size)
         if not info_only:
-            download_urls([lrc], file_name, ext, size, output_dir, faker = True)
+            download_urls([lrc], file_name, ext, size, output_dir, faker=True)
+    except:
+        pass
 
 def baidu_download_album(aid, output_dir = '.', merge = True, info_only = False):
     html = get_html('http://music.baidu.com/album/%s' % aid, faker = True)
