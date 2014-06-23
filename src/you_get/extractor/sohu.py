@@ -19,7 +19,9 @@ def real_url(host, prot, file, new):
             response1=request.urlopen(realurl)
             return realurl
         except:
-            url='http://%s/?prot=%s&file=%s&new=%s&idc=%s' % (host, prot, file, new,idc)
+            if idc:
+                url='http://%s/?prot=%s&file=%s&new=%s&idc=%s' % (host, prot, file, new,idc)
+                
             #print(host)
             #print(url)
             start, idc, host2, key = get_html(url).split('|')[:4]
