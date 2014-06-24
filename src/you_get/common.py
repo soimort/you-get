@@ -1022,6 +1022,7 @@ class VideoExtractor():
             else:
                 # Display all available streams
                 self.p([])
+
         else:
             if 'stream_id' in kwargs and kwargs['stream_id']:
                 # Download the stream
@@ -1040,4 +1041,4 @@ class VideoExtractor():
                 exit(1)
             download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'], output_dir=kwargs['output_dir'], merge=kwargs['merge'])
 
-            self.__init__()
+        self.__init__()
