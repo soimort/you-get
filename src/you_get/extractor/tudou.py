@@ -25,10 +25,10 @@ def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only 
     if not info_only:
         download_urls([url], title, ext, size, output_dir = output_dir, merge = merge)
 
-def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = False):     
+def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = False):
     html = get_html('http://www.tudou.com/programs/view/%s/' % id)
-    
-    iid = r1(r'iid\s*[:=]\s*(\S+)', html)    
+
+    iid = r1(r'iid\s*[:=]\s*(\S+)', html)
     title = r1(r'kw\s*[:=]\s*[\'\"]([^\']+?)[\'\"]', html)
     tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
@@ -37,22 +37,22 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False):
     id = r1(r'http://www.tudou.com/v/([^/]+)/', url)
     if id:
         return tudou_download_by_id(id, title="", info_only=info_only)
-    
+
     html = get_decoded_html(url)
-    
+
     title = r1(r'kw\s*[:=]\s*[\'\"]([^\']+?)[\'\"]', html)
     assert title
     title = unescape_html(title)
-    
+
     vcode = r1(r'vcode\s*[:=]\s*\'([^\']+)\'', html)
     if vcode:
-        from .youku import youku_download_by_id
-        return youku_download_by_id(vcode, title, output_dir = output_dir, merge = merge, info_only = info_only)
-    
+        from .youku import youku_download_by_vid
+        return youku_download_by_vid(vcode, title, output_dir = output_dir, merge = merge, info_only = info_only)
+
     iid = r1(r'iid\s*[:=]\s*(\d+)', html)
     if not iid:
         return tudou_download_playlist(url, output_dir, merge, info_only)
-    
+
     tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def parse_playlist(url):

@@ -1,222 +1,74 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['youku_download', 'youku_download_playlist', 'youku_download_by_id']
-
 from ..common import *
 
-import json
-from random import randint
-from time import time
-import re
-import sys
+class Youku(VideoExtractor):
+    name = "优酷 (Youku)"
 
-def trim_title(title):
-    title = title.replace(' - 视频 - 优酷视频 - 在线观看', '')
-    title = title.replace(' - 专辑 - 优酷视频', '')
-    title = re.sub(r'—([^—]+)—优酷网，视频高清在线观看', '', title)
-    return title
+    stream_types = [
+        {'id': 'hd3', 'container': 'flv', 'video_profile': '1080P'},
+        {'id': 'hd2', 'container': 'flv', 'video_profile': '超清'},
+        {'id': 'mp4', 'container': 'mp4', 'video_profile': '高清'},
+        {'id': 'flv', 'container': 'flv', 'video_profile': '标清'},
+        {'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
+    ]
 
-def find_video_id_from_url(url):
-    patterns = [r'^http://v.youku.com/v_show/id_([\w=]+).htm[l]?',
-                r'^http://player.youku.com/player.php/sid/([\w=]+)/v.swf',
-                r'^loader\.swf\?VideoIDS=([\w=]+)',
-                r'^([\w=]+)$']
-    return r1_of(patterns, url)
+    def __init__(self, *args):
+        super().__init__(args)
 
-def find_video_id_from_show_page(url):
-    return re.search(r'<a class="btnShow btnplay.*href="([^"]+)"', get_html(url)).group(1)
-
-def youku_url(url):
-    id = find_video_id_from_url(url)
-    if id:
-        return 'http://v.youku.com/v_show/id_%s.html' % id
-    if re.match(r'http://www.youku.com/show_page/id_\w+.html', url):
-        return find_video_id_from_show_page(url)
-    if re.match(r'http://v.youku.com/v_playlist/\w+.html', url):
-        return url
-    return None
-
-def parse_video_title(url, page):
-    if re.search(r'v_playlist', url):
-        # if we are playing a viedo from play list, the meta title might be incorrect
-        title = r1_of([r'<div class="show_title" title="([^"]+)">[^<]', r'<title>([^<>]*)</title>'], page)
-    else:
-        title = r1_of([r'<div class="show_title" title="([^"]+)">[^<]', r'<title>([^-]+)—在线播放.*</title>', r'<meta name="title" content="([^"]*)"'], page)
-    assert title
-    title = trim_title(title)
-    if re.search(r'v_playlist', url) and re.search(r'-.*\S+', title):
-        title = re.sub(r'^[^-]+-\s*', '', title) # remove the special name from title for playlist video
-    title = re.sub(r'—专辑：.*', '', title) # remove the special name from title for playlist video
-    title = unescape_html(title)
-    
-    subtitle = re.search(r'<span class="subtitle" id="subtitle">([^<>]*)</span>', page)
-    if subtitle:
-        subtitle = subtitle.group(1).strip()
-    if subtitle == title:
-        subtitle = None
-    if subtitle:
-        title += '-' + subtitle
-    return title
-
-def parse_playlist_title(url, page):
-    if re.search(r'v_playlist', url):
-        # if we are playing a video from play list, the meta title might be incorrect
-        title = re.search(r'<title>([^<>]*)</title>', page).group(1)
-    else:
-        title = re.search(r'<meta name="title" content="([^"]*)"', page).group(1)
-    title = trim_title(title)
-    if re.search(r'v_playlist', url) and re.search(r'-.*\S+', title):
-        title = re.sub(r'^[^-]+-\s*', '', title)
-    title = re.sub(r'^.*—专辑：《(.+)》', r'\1', title)
-    title = unescape_html(title)
-    return title
-
-def parse_page(url):
-    url = youku_url(url)
-    page = get_html(url)
-    id2 = re.search(r"var\s+videoId2\s*=\s*'(\S+)'", page).group(1)
-    title = parse_video_title(url, page)
-    return id2, title
-
-def get_info(videoId2):
-    return json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/' + videoId2 + '/timezone/+08/version/5/source/out/Sc/2'))
-    
-def find_video(info, stream_type = None):
-    #key = '%s%x' % (info['data'][0]['key2'], int(info['data'][0]['key1'], 16) ^ 0xA55AA5A5)
-    segs = info['data'][0]['segs']
-    types = segs.keys()
-    if not stream_type:
-        for x in ['hd3', 'hd2', 'mp4', 'flv']:
-            if x in types:
-                stream_type = x
-                break
+    def get_vid_from_url(url):
+        """Extracts video ID from URL.
+        """
+        patterns = [
+            'youku.com/v_show/id_([\w=]+)',
+            'player.youku.com/player.php/sid/([\w=]+)/v.swf',
+            'loader\.swf\?VideoIDS=([\w=]+)',
+        ]
+        matches = match1(url, *patterns)
+        if matches:
+            return matches[0]
         else:
-            raise NotImplementedError()
-    assert stream_type in ('hd3', 'hd2', 'mp4', 'flv')
-    file_type = {'hd3': 'flv', 'hd2': 'flv', 'mp4': 'mp4', 'flv': 'flv'}[stream_type]
-    
-    seed = info['data'][0]['seed']
-    source = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/\\:._-1234567890")
-    mixed = ''
-    while source:
-        seed = (seed * 211 + 30031) & 0xFFFF
-        index = seed * len(source) >> 16
-        c = source.pop(index)
-        mixed += c
-    
-    ids = info['data'][0]['streamfileids'][stream_type].split('*')[:-1]
-    vid = ''.join(mixed[int(i)] for i in ids)
-    
-    sid = '%s%s%s' % (int(time() * 1000), randint(1000, 1999), randint(1000, 9999))
-    
-    urls = []
-    for s in segs[stream_type]:
-        no = '%02x' % int(s['no'])
-        url = 'http://f.youku.com/player/getFlvPath/sid/%s_%s/st/%s/fileid/%s%s%s?K=%s&ts=%s' % (sid, no, file_type, vid[:8], no.upper(), vid[10:], s['k'], s['seconds'])
-        urls.append((url, int(s['size'])))
-    return urls
+            return None
 
-def file_type_of_url(url):
-    return str(re.search(r'/st/([^/]+)/', url).group(1))
+    def parse_m3u8(m3u8):
+        return re.findall(r'(http://[^?]+)\?ts_start=0', m3u8)
 
-def youku_download_by_id(id, title, output_dir = '.', stream_type = None, merge = True, info_only = False):
-    # Open Sogou proxy if required
-    if get_sogou_proxy() is not None:
-        server = sogou_proxy_server(get_sogou_proxy(), ostream=open(os.devnull, 'w'))
-        server_thread = threading.Thread(target=server.serve_forever)
-        server_thread.daemon = True
-        server_thread.start()
-        set_proxy(server.server_address)
-    
-    info = get_info(id)
-    
-    # Close Sogou proxy if required
-    if get_sogou_proxy() is not None:
-        server.shutdown()
-        unset_proxy()
-    
-    urls, sizes = zip(*find_video(info, stream_type))
-    ext = file_type_of_url(urls[0])
-    total_size = sum(sizes)
-    
-    print_info(site_info, title, ext, total_size)
-    if not info_only:
-        download_urls(urls, title, ext, total_size, output_dir, merge = merge)
+    def prepare(self, **kwargs):
+        assert self.url or self.vid
+        if self.url and not self.vid:
+            self.vid = __class__.get_vid_from_url(self.url)
 
-def parse_playlist_videos(html):
-    return re.findall(r'id="A_(\w+)"', html)
+        meta = json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/%s' % self.vid))
+        metadata0 = meta['data'][0]
 
-def parse_playlist_pages(html):
-    m = re.search(r'<ul class="pages">.*?</ul>', html, flags = re.S)
-    if m:
-        urls = re.findall(r'href="([^"]+)"', m.group())
-        x1, x2, x3 = re.match(r'^(.*page_)(\d+)(_.*)$', urls[-1]).groups()
-        return ['http://v.youku.com%s%s%s?__rt=1&__ro=listShow' % (x1, i, x3) for i in range(2, int(x2) + 1)]
-    else:
-        return []
+        self.title = metadata0['title']
 
-def parse_playlist(url):
-    html = get_html(url)
-    video_id = re.search(r"var\s+videoId\s*=\s*'(\d+)'", html).group(1)
-    show_id = re.search(r'var\s+showid\s*=\s*"(\d+)"', html).group(1)
-    list_url = 'http://v.youku.com/v_vpofficiallist/page_1_showid_%s_id_%s.html?__rt=1&__ro=listShow' % (show_id, video_id)
-    html = get_html(list_url)
-    ids = parse_playlist_videos(html)
-    for url in parse_playlist_pages(html):
-        ids.extend(parse_playlist_videos(get_html(url)))
-    return ids
+        for stream_type in self.stream_types:
+            if stream_type['id'] in metadata0['streamsizes']:
+                stream_id = stream_type['id']
+                stream_size = int(metadata0['streamsizes'][stream_id])
+                self.streams[stream_id] = {'container': stream_type['container'], 'video_profile': stream_type['video_profile'], 'size': stream_size}
 
-def parse_vplaylist(url):
-    id = r1_of([r'^http://www.youku.com/playlist_show/id_(\d+)(?:_ascending_\d_mode_pic(?:_page_\d+)?)?.html',
-                r'^http://v.youku.com/v_playlist/f(\d+)o[01]p\d+.html',
-                r'^http://u.youku.com/user_playlist/pid_(\d+)_id_[\w=]+(?:_page_\d+)?.html'],
-                url)
-    assert id, 'not valid vplaylist url: ' + url
-    url = 'http://www.youku.com/playlist_show/id_%s.html' % id
-    n = int(re.search(r'<span class="num">(\d+)</span>', get_html(url)).group(1))
-    return ['http://v.youku.com/v_playlist/f%so0p%s.html' % (id, i) for i in range(n)]
+    def extract(self, **kwargs):
+        if 'stream_id' in kwargs and kwargs['stream_id']:
+            # Extract the stream
+            stream_id = kwargs['stream_id']
+        else:
+            # Extract stream with the best quality
+            stream_id = self.streams_sorted[0]['id']
 
-def youku_download_playlist(url, output_dir='.', merge=True, info_only=False):
-    """Downloads a Youku playlist.
-    """
-    
-    if re.match(r'http://www.youku.com/playlist_show/id_\d+(?:_ascending_\d_mode_pic(?:_page_\d+)?)?.html', url):
-        ids = parse_vplaylist(url)
-    elif re.match(r'http://v.youku.com/v_playlist/f\d+o[01]p\d+.html', url):
-        ids = parse_vplaylist(url)
-    elif re.match(r'http://u.youku.com/user_playlist/pid_(\d+)_id_[\w=]+(?:_page_\d+)?.html', url):
-        ids = parse_vplaylist(url)
-    elif re.match(r'http://www.youku.com/show_page/id_\w+.html', url):
-        url = find_video_id_from_show_page(url)
-        assert re.match(r'http://v.youku.com/v_show/id_([\w=]+).html', url), 'URL not supported as playlist'
-        ids = parse_playlist(url)
-    else:
-        ids = []
-    assert ids != []
-    
-    title = parse_playlist_title(url, get_html(url))
-    title = filenameable(title)
-    output_dir = os.path.join(output_dir, title)
-    
-    for i, id in enumerate(ids):
-        print('Processing %s of %s videos...' % (i + 1, len(ids)))
-        try:
-            id, title = parse_page(youku_url(id))
-            youku_download_by_id(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
-        except:
-            continue
+        m3u8_url = "http://v.youku.com/player/getM3U8/vid/{vid}/type/{stream_id}/video.m3u8".format(vid=self.vid, stream_id=stream_id)
+        m3u8 = get_html(m3u8_url)
+        if not m3u8:
+            log.w('[Warning] This video can only be streamed within Mainland China!')
+            log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
 
-def youku_download(url, output_dir='.', merge=True, info_only=False):
-    """Downloads Youku videos by URL.
-    """
-    
-    try:
-        youku_download_playlist(url, output_dir=output_dir, merge=merge, info_only=info_only)
-    except:
-        id, title = parse_page(url)
-        youku_download_by_id(id, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+        self.streams[stream_id]['src'] = __class__.parse_m3u8(m3u8)
 
-site_info = "Youku.com"
-download = youku_download
-download_playlist = youku_download_playlist
+site = Youku()
+download = site.download_by_url
+download_playlist = playlist_not_supported('youku')
+
+youku_download_by_vid = site.download_by_vid
+# Used by: acfun.py bilibili.py miomio.py tudou.py

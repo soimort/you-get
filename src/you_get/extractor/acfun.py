@@ -7,7 +7,7 @@ from ..common import *
 from .qq import qq_download_by_id
 from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_iid
-from .youku import youku_download_by_id
+from .youku import youku_download_by_vid
 
 import json, re
 
@@ -27,7 +27,7 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
     if sourceType == 'sina':
         sina_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'youku':
-        youku_download_by_id(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        youku_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'tudou':
         tudou_download_by_iid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'qq':
