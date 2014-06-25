@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 __all__ = ['__version__', '__date__']
 
-__version__ = '0.3.21'
-__date__ = '2013-08-17'
+__name__ = 'you-get'
+__version__ = '0.3.30dev'
+__date__ = '2014-06-24'

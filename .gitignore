@@ -6,6 +6,7 @@
 
 _*/
 
+*.bak
 *.download
 *.cmt.*
 *.3gp
