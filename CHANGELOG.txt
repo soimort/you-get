@@ -1,6 +1,111 @@
 Changelog
 =========
 
+0.3.29
+------
+
+*Date: 2014-05-29*
+
+* Bug fix release
+
+0.3.28.3
+--------
+
+*Date: 2014-05-18*
+
+* New site support:
+    - CBS.com
+
+0.3.28.2
+--------
+
+*Date: 2014-04-13*
+
+* Bug fix release
+
+0.3.28.1
+--------
+
+*Date: 2014-02-28*
+
+* Bug fix release
+
+0.3.28
+------
+
+*Date: 2014-02-21*
+
+* New site support:
+    - Magisto.com
+    - VK.com
+
+0.3.27
+------
+
+*Date: 2014-02-14*
+
+* Bug fix release
+
+0.3.26
+------
+
+*Date: 2014-02-08*
+
+* New features:
+    - Play video in players (#286)
+    - LeTV support (#289)
+    - Youku 1080P support
+* Bug fixes:
+    - YouTube (#282, #292)
+    - Sina (#246, #280)
+    - Mixcloud
+    - NetEase
+    - QQ
+    - Vine
+
+0.3.25
+------
+
+*Date: 2013-12-20*
+
+* Bug fix release
+
+0.3.24
+------
+
+*Date: 2013-10-30*
+
+* Experimental: Sogou proxy server
+* Fix issues for:
+    - Vimeo
+
+0.3.23
+------
+
+*Date: 2013-10-23*
+
+* Support YouTube playlists
+* Support general short URLs
+* Fix issues for:
+    - Sina
+
+0.3.22
+------
+
+*Date: 2013-10-18*
+
+* Fix issues for:
+    - Baidu
+    - Bilibili
+    - JPopsuki TV
+    - Niconico
+    - PPTV
+    - TED
+    - Tumblr
+    - YinYueTai
+    - YouTube
+    - ...
+
 0.3.21
 ------
 

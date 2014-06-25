@@ -3,6 +3,8 @@ You-Get
 
 .. image:: https://api.travis-ci.org/soimort/you-get.png
 
+.. image:: https://badge.fury.io/py/you-get.png
+
 `You-Get <https://github.com/soimort/you-get>`_ is a video downloader runs on Python 3. It aims at easing the download of videos on `YouTube <http://www.youtube.com>`_, `Youku <http://www.youku.com>`_/`Tudou <http://www.tudou.com>`_ (biggest online video providers in China), `Niconico <http://www.nicovideo.jp>`_, etc., in one script.
 
 See the project homepage http://www.soimort.org/you-get for further documentation.
@@ -19,6 +21,7 @@ Supported Sites (As of Now)
 * Vimeo http://vimeo.com
 * Coursera https://www.coursera.org
 * Blip http://blip.tv
+* CBS http://www.cbs.com
 * Dailymotion http://dailymotion.com
 * eHow http://www.ehow.com
 * Facebook http://facebook.com
@@ -29,22 +32,25 @@ Supported Sites (As of Now)
 * Tumblr http://www.tumblr.com
 * Vine http://vine.co
 * Instagram http://instagram.com
+* Magisto http://www.magisto.com
 * SoundCloud http://soundcloud.com
 * Mixcloud http://www.mixcloud.com
 * Freesound http://www.freesound.org
+* JPopsuki http://jpopsuki.tv
 * VID48 http://vid48.com
 * Niconico (ニコニコ動画) http://www.nicovideo.jp
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
 * YinYueTai (音悦台) http://www.yinyuetai.com
-* AcFun http://www.acfun.tv
-* bilibili http://www.bilibili.tv
+* AcFun http://www.acfun.com
+* bilibili http://www.bilibili.com
 * CNTV (中国网络电视台) http://www.cntv.cn
 * Douban (豆瓣) http://douban.com
 * ifeng (凤凰视频) http://v.ifeng.com
 * iQIYI (爱奇艺) http://www.iqiyi.com
 * Joy.cn (激动网) http://www.joy.cn
 * Ku6 (酷6网) http://www.ku6.com
+* LeTV (乐视网) http://www.letv.com
 * MioMio http://www.miomio.tv
 * NetEase (网易视频) http://v.163.com
 * PPTV http://www.pptv.com
@@ -58,74 +64,78 @@ Supported Sites (As of Now)
 * Baidu Wangpan (百度网盘) http://pan.baidu.com
 * SongTaste http://www.songtaste.com
 * Alive.in.th http://alive.in.th
+* VK http://vk.com
 
 Dependencies
 ------------
 
 * `Python 3 <http://www.python.org/download/releases/>`_
-* (Optional) `FFmpeg <http://ffmpeg.org>`_
-    * Used for converting and joining video files.
+* (Optional) `FFmpeg <http://ffmpeg.org>`_ / `Libav <http://libav.org/>`_
+    * For converting and joining video files.
+* (Optional) `RTMPDump <http://rtmpdump.mplayerhq.hu/>`_
+    * For processing RTMP streams.
 
 Installation
 ------------
 
-#) Install via `Pip <http://www.pip-installer.org/>`_::
+#) Install via Pip::
 
-    $ pip install you-get
-    
+    $ [sudo] pip install you-get
+
    Check if the installation was successful::
-    
-    $ you-get -V
 
-#) Install via `EasyInstall <http://pypi.python.org/pypi/setuptools>`_::
-
-    $ easy_install you-get
-    
-   Check if the installation was successful::
-    
     $ you-get -V
 
 #) Install from Git::
 
     $ git clone git://github.com/soimort/you-get.git
-    
+
    Use the raw script without installation::
-    
+
     $ cd you-get/
     $ ./you-get -V
-    
+
    To install the package into the system path, execute::
-    
+
     $ make install
-    
+
    Check if the installation was successful::
-    
+
     $ you-get -V
 
 #) Direct download::
-    
+
     $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
     $ unzip you-get.zip
-    
+
    Use the raw script without installation::
-    
+
     $ cd soimort-you-get-*/
     $ ./you-get -V
-    
+
    To install the package into the system path, execute::
-    
+
     $ make install
-    
+
    Check if the installation was successful::
-    
+
     $ you-get -V
 
-#) Install from `AUR (Arch User Repository) <http://aur.archlinux.org/>`_:
+#) Install from your distro's repo:
 
-    Click `here <https://aur.archlinux.org/packages.php?ID=62576>`_.
+* `AUR (Arch) <https://aur.archlinux.org/packages/?O=0&K=you-get>`_
 
-Examples (For End-Users)
-------------------------
+* `Overlay (Gentoo) <http://gpo.zugaina.org/net-misc/you-get>`_
+
+Upgrading
+---------
+
+Using Pip::
+
+    $ [sudo] pip install --upgrade you-get
+
+Examples
+--------
 
 Display the information of the video without downloading::
 
@@ -163,33 +173,25 @@ Command-Line Options
 For a complete list of all available options, see::
 
     $ you-get --help
+    Usage: you-get [OPTION]... [URL]...
 
-Examples (For Developers)
--------------------------
+    Startup options:
+        -V | --version                           Display the version and exit.
+        -h | --help                              Print this help and exit.
 
-In Python 3 (interactive)::
-
-    >>> from you_get.downloader import *
-    >>> youtube.download("http://www.youtube.com/watch?v=8bQlxQJEzLk", info_only = True)
-    Video Site: YouTube.com
-    Title:      If you're good at something, never do it for free!
-    Type:       WebM video (video/webm)
-    Size:       0.13 MB (133176 Bytes)
-    
-    >>> import you_get
-    >>> you_get.any_download("http://www.youtube.com/watch?v=sGwy8DsUJ4M")
-    Video Site: YouTube.com
-    Title:      Mort from Madagascar LIKES
-    Type:       WebM video (video/webm)
-    Size:       1.78 MB (1867072 Bytes)
-    
-    Downloading Mort from Madagascar LIKES.webm ...
-    100.0% (  1.8/1.8  MB) [========================================] 1/1
-
-API Reference
--------------
-
-See source code.
+    Download options (use with URLs):
+        -f | --force                             Force overwriting existed files.
+        -i | --info                              Display the information of videos without downloading.
+        -u | --url                               Display the real URLs of videos without downloading.
+        -n | --no-merge                          Don't merge video parts.
+        -c | --cookies                           Load NetScape's cookies.txt file.
+        -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
+        -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer.
+        -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
+             --no-proxy                          Don't use any proxy. (ignore $http_proxy)
+        -S | --sogou                             Use a Sogou proxy server for downloading.
+             --sogou-proxy <HOST:PORT>           Run a standalone Sogou proxy server.
+             --debug                             Show traceback on KeyboardInterrupt.
 
 License
 -------
