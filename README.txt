@@ -188,6 +188,7 @@ For a complete list of all available options, see::
         -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
         -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer.
         -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
+        -y | --extractor-proxy <HOST:PORT>       Use specific HTTP proxy for extracting stream data.
              --no-proxy                          Don't use any proxy. (ignore $http_proxy)
         -S | --sogou                             Use a Sogou proxy server for downloading.
              --sogou-proxy <HOST:PORT>           Run a standalone Sogou proxy server.
