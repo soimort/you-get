@@ -39,7 +39,6 @@ def sina_download_by_xml(xml, title, output_dir, merge, info_only):
     assert title
     size = 0
     for url in urls:
-        print (url)
         _, _, temp = url_info(url)
         size += temp
 
