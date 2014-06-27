@@ -12,11 +12,13 @@ def get_k(vid, rand):
     t = str(int('{0:b}'.format(int(time()))[:-6], 2))
     return md5((vid + 'Z6prk18aWxP278cVAH' + t + rand).encode('utf-8')).hexdigest()[:16] + t
 
-def video_info(vid):
+def video_info_xml(vid):
     rand = "0.{0}{1}".format(randint(10000, 10000000), randint(10000, 10000000))
     url = 'http://v.iask.com/v_play.php?vid={0}&ran={1}&p=i&k={2}'.format(vid, rand, get_k(vid, rand))
     xml = get_content(url, headers=fake_headers, decoded=True)
+    return xml
 
+def video_info(xml):
     urls = re.findall(r'<url>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</url>', xml)
     name = match1(xml, r'<vname>(?:<!\[CDATA\[)?(.+?)(?:\]\]>)?</vname>')
     vstr = match1(xml, r'<vstr>(?:<!\[CDATA\[)?(.+?)(?:\]\]>)?</vstr>')
@@ -27,11 +29,17 @@ def sina_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only=
     http://video.sina.com.cn/
     """
 
-    urls, name, vstr = video_info(vid)
+    xml = video_info_xml(vid)
+    sina_download_by_urls(xml, title, output_dir, merge, info_only)
+
+
+def sina_download_by_xml(xml, title, output_dir, merge, info_only):
+    urls, name, vstr = video_info(xml)
     title = title or name
     assert title
     size = 0
     for url in urls:
+        print (url)
         _, _, temp = url_info(url)
         size += temp
 

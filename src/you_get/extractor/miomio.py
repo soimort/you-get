@@ -4,7 +4,7 @@ __all__ = ['miomio_download']
 
 from ..common import *
 
-from .sina import sina_download_by_vid
+from .sina import sina_download_by_xml
 from .tudou import tudou_download_by_id
 from .youku import youku_download_by_vid
 
@@ -21,7 +21,9 @@ def miomio_download(url, output_dir = '.', merge = True, info_only = False):
     elif t == 'tudou':
         tudou_download_by_id(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif t == 'sina':
-        sina_download_by_vid(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        url = "http://www.miomio.tv/mioplayer/mioplayerconfigfiles/sina.php?vid=" + id
+        xml = get_content (url, headers=fake_headers, decoded=True)
+        sina_download_by_xml(xml, title, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
         raise NotImplementedError(flashvars)
 
