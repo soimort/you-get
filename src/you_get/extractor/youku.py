@@ -72,8 +72,6 @@ class Youku(VideoExtractor):
             log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
 
         self.streams[stream_id]['src'] = __class__.parse_m3u8(m3u8)
-        if self.streams[stream_id]['src'] and 'size' not in self.streams[stream_id]:
-            self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'])
 
 site = Youku()
 download = site.download_by_url
