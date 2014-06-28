@@ -237,6 +237,9 @@ def url_size(url, faker = False):
     size = int(response.headers['content-length'])
     return size
 
+# TO BE DEPRECATED
+# urls_size() does not have a faker
+# also it takes too long time
 def urls_size(urls):
     return sum(map(url_size, urls))
 
@@ -947,13 +950,11 @@ class VideoExtractor():
     def download_by_url(self, url, **kwargs):
         self.url = url
 
-        self.prepare(**kwargs)
-
-        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
-
         global extractor_proxy
         if extractor_proxy:
             set_proxy(parse_host(extractor_proxy))
+        self.prepare(**kwargs)
+        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
         self.extract(**kwargs)
         if extractor_proxy:
             unset_proxy()
@@ -963,13 +964,11 @@ class VideoExtractor():
     def download_by_vid(self, vid, **kwargs):
         self.vid = vid
 
-        self.prepare(**kwargs)
-
-        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
-
         global extractor_proxy
         if extractor_proxy:
             set_proxy(parse_host(extractor_proxy))
+        self.prepare(**kwargs)
+        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
         self.extract(**kwargs)
         if extractor_proxy:
             unset_proxy()
