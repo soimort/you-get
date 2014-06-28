@@ -989,7 +989,10 @@ class VideoExtractor():
         print("    - id:            \033[7m%s\033[0m" % stream_id)
         print("      container:     %s" % stream['container'])
         print("      video-profile: %s" % stream['video_profile'])
-        print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
+        if 'size' in stream:
+            print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
+        else:
+            print("      size:          Unknown")
         #print("    # download-with: \033[4myou-get --stream=%s\033[0m" % stream_id)
         print()
 

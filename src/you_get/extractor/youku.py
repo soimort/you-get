@@ -10,6 +10,7 @@ class Youku(VideoExtractor):
         {'id': 'hd3', 'container': 'flv', 'video_profile': '1080P'},
         {'id': 'hd2', 'container': 'flv', 'video_profile': '超清'},
         {'id': 'mp4', 'container': 'mp4', 'video_profile': '高清'},
+        {'id': 'flvhd', 'container': 'flv', 'video_profile': '高清'},
         {'id': 'flv', 'container': 'flv', 'video_profile': '标清'},
         {'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
     ]
@@ -50,6 +51,12 @@ class Youku(VideoExtractor):
                 stream_size = int(metadata0['streamsizes'][stream_id])
                 self.streams[stream_id] = {'container': stream_type['container'], 'video_profile': stream_type['video_profile'], 'size': stream_size}
 
+        if not self.streams:
+            for stream_type in self.stream_types:
+                if stream_type['id'] in metadata0['streamtypes_o']:
+                    stream_id = stream_type['id']
+                    self.streams[stream_id] = {'container': stream_type['container'], 'video_profile': stream_type['video_profile']}
+
     def extract(self, **kwargs):
         if 'stream_id' in kwargs and kwargs['stream_id']:
             # Extract the stream
@@ -65,6 +72,8 @@ class Youku(VideoExtractor):
             log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
 
         self.streams[stream_id]['src'] = __class__.parse_m3u8(m3u8)
+        if self.streams[stream_id]['src'] and 'size' not in self.streams[stream_id]:
+            self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'])
 
 site = Youku()
 download = site.download_by_url
