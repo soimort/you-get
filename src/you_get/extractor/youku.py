@@ -61,6 +61,11 @@ class Youku(VideoExtractor):
         if 'stream_id' in kwargs and kwargs['stream_id']:
             # Extract the stream
             stream_id = kwargs['stream_id']
+
+            if stream_id not in self.streams:
+                log.e('[Failed] Invalid video format.')
+                log.e('Use without specifying any video format to check all available formats.')
+                exit(2)
         else:
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']

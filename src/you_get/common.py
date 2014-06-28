@@ -790,7 +790,7 @@ def set_http_proxy(proxy):
     opener = request.build_opener(proxy_support)
     request.install_opener(opener)
 
-def download_main(download, download_playlist, urls, playlist, output_dir, merge, info_only):
+def download_main(download, download_playlist, urls, playlist, **kwargs):
     for url in urls:
         if url.startswith('https://'):
             url = url[8:]
@@ -798,9 +798,9 @@ def download_main(download, download_playlist, urls, playlist, output_dir, merge
             url = 'http://' + url
 
         if playlist:
-            download_playlist(url, output_dir = output_dir, merge = merge, info_only = info_only)
+            download_playlist(url, **kwargs)
         else:
-            download(url, output_dir = output_dir, merge = merge, info_only = info_only)
+            download(url, **kwargs)
 
 def get_version():
     try:
@@ -825,6 +825,7 @@ def script_main(script_name, download, download_playlist = None):
     -u | --url                               Display the real URLs of videos without downloading.
     -c | --cookies                           Load NetScape's cookies.txt file.
     -n | --no-merge                          Don't merge video parts.
+    -F | --format <STREAM_ID>                Video format code.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
     -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer.
     -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
@@ -835,8 +836,8 @@ def script_main(script_name, download, download_playlist = None):
          --debug                             Show traceback on KeyboardInterrupt.
     '''
 
-    short_opts = 'Vhfiuc:nSo:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'sogou', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'sogou-proxy=', 'sogou-env=']
+    short_opts = 'Vhfiuc:nSF:o:p:x:y:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'sogou', 'format=', 'stream=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'sogou-proxy=', 'sogou-env=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -860,6 +861,7 @@ def script_main(script_name, download, download_playlist = None):
     info_only = False
     playlist = False
     merge = True
+    stream_id = None
     output_dir = '.'
     proxy = None
     extractor_proxy = None
@@ -890,6 +892,8 @@ def script_main(script_name, download, download_playlist = None):
             proxy = ''
         elif o in ('--debug',):
             traceback = True
+        elif o in ('-F', '--format', '--stream'):
+            stream_id = a
         elif o in ('-o', '--output-dir'):
             output_dir = a
         elif o in ('-p', '--player'):
@@ -927,7 +931,10 @@ def script_main(script_name, download, download_playlist = None):
     set_http_proxy(proxy)
 
     try:
-        download_main(download, download_playlist, args, playlist, output_dir, merge, info_only)
+        if stream_id:
+            download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only)
+        else:
+            download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only)
     except KeyboardInterrupt:
         if traceback:
             raise
@@ -992,7 +999,7 @@ class VideoExtractor():
             print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
         else:
             print("      size:          Unknown")
-        #print("    # download-with: \033[4myou-get --stream=%s\033[0m" % stream_id)
+        print("    # download-with: \033[4myou-get --format=%s [URL]\033[0m" % stream_id)
         print()
 
     def p(self, stream_id=None):

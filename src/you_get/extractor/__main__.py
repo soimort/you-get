@@ -82,13 +82,13 @@ def url_to_module(url):
         else:
             return url_to_module(location)
 
-def any_download(url, output_dir='.', merge=True, info_only=False):
+def any_download(url, **kwargs):
     m, url = url_to_module(url)
-    m.download(url, output_dir=output_dir, merge=merge, info_only=info_only)
+    m.download(url, **kwargs)
 
-def any_download_playlist(url, output_dir='.', merge=True, info_only=False):
+def any_download_playlist(url, **kwargs):
     m, url = url_to_module(url)
-    m.download_playlist(url, output_dir=output_dir, merge=merge, info_only=info_only)
+    m.download_playlist(url, **kwargs)
 
 def main():
     script_main('you-get', any_download, any_download_playlist)
