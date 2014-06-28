@@ -27,7 +27,8 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
     if sourceType == 'sina':
         sina_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'youku':
-        youku_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        print(sourceId, danmakuId)#
+        youku_download_by_vid(sourceId, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'tudou':
         tudou_download_by_iid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'qq':

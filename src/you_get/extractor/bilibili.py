@@ -91,7 +91,7 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
     elif t == 'vid':
         sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'ykid':
-        youku_download_by_vid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        youku_download_by_vid(id, title=title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'uid':
         tudou_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     else:

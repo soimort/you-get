@@ -47,7 +47,7 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False):
     vcode = r1(r'vcode\s*[:=]\s*\'([^\']+)\'', html)
     if vcode:
         from .youku import youku_download_by_vid
-        return youku_download_by_vid(vcode, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        return youku_download_by_vid(vcode, title=title, output_dir = output_dir, merge = merge, info_only = info_only)
 
     iid = r1(r'iid\s*[:=]\s*(\d+)', html)
     if not iid:

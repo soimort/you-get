@@ -17,7 +17,7 @@ def miomio_download(url, output_dir = '.', merge = True, info_only = False):
     t = r1(r'type=(\w+)', flashvars)
     id = r1(r'vid=([^"]+)', flashvars)
     if t == 'youku':
-        youku_download_by_vid(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        youku_download_by_vid(id, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif t == 'tudou':
         tudou_download_by_id(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif t == 'sina':
