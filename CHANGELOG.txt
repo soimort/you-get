@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.3.30dev-20140629
+------------------
+
+*Date: 2014-06-29*
+
+* Bug fix release for:
+    - Youku
+    - YouTube
+    - TED
+    - Bilibili
+* (Experimental) Video format selection (for Youku only)
+
 0.3.29
 ------
 
