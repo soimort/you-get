@@ -13,8 +13,8 @@ def kugou_download(url, output_dir=".", merge=True, info_only=False):
         html=get_html(url)
         ticket=r1(r'"ticket":\s*"(.*)"',html)
         j=loads(str(b64decode(ticket),encoding="utf-8"))
-        url=j[u'file']
-        title=j[u'songName']
+        url=j['file']
+        title=j['songName']
         songtype, ext, size = url_info(url)
         print_info(site_info, title, songtype, size)
         if not info_only:
