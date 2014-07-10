@@ -18,7 +18,6 @@ def url_to_module(url):
     downloads = {
         '163': netease,
         '56': w56,
-        '5sing': fivesing,
         'acfun': acfun,
         'baidu': baidu,
         'bilibili': bilibili,
@@ -41,6 +40,7 @@ def url_to_module(url):
         'jpopsuki': jpopsuki,
         'kankanews': bilibili,
         'ku6': ku6,
+        'kugou':kugou,
         'letv': letv,
         'magisto': magisto,
         'miomio': miomio,
