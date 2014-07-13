@@ -21,6 +21,7 @@ from .joy import *
 from .jpopsuki import *
 from .ku6 import *
 from .kugou import *
+from .kuwo import *
 from .letv import *
 from .magisto import *
 from .miomio import *
