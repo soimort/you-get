@@ -21,23 +21,24 @@ def get_key(t):
         t += e
     return t ^ 185025305
 
+
 def video_info(vid):
     tn = get_timestamp()
     key = get_key(tn)
-    url = 'http://api.letv.com/mms/out/video/play?id={}&platid=1&splatid=101&format=1&tkey={}&domain=http%3A%2F%2Fwww.letv.com'.format(vid, key)
+    url="http://api.letv.com/mms/out/common/geturl?platid=3&splatid=301&playid=0&vtype=9,13,21,28&version=2.0&tss=no&vid={}&domain=www.letv.com&tkey={}".format(vid,key)
     r = get_content(url, decoded=False)
-    xml_obj = ET.fromstring(r)
-    info = json.loads(xml_obj.find("playurl").text)
-    title = info.get('title')
-    urls = info.get('dispatch')
-    for k in urls.keys():
-        url = urls[k][0]
-        break
-    url += '&termid=1&format=0&hwtype=un&ostype=Windows7&tag=letv&sign=letv&expect=1&pay=0&rateid={}'.format(k)
-    return url, title
+    info=json.loads(str(r,"utf-8"))
+    size=0
+    for i in info["data"][0]["infos"]: #0 means only one file not truncated.need to upgrade 
+        if int(i["gsize"])>size:
+            size=int(i["gsize"])
+            url=i["mainUrl"]
 
-def letv_download_by_vid(vid, output_dir='.', merge=True, info_only=False):
-    url, title = video_info(vid)
+    url += '&termid=1&format=0&hwtype=un&ostype=Windows7&tag=letv&sign=letv&expect=1&pay=0&rateid=1300'   #{}'.format(k)
+    return url
+
+def letv_download_by_vid(vid,title, output_dir='.', merge=True, info_only=False):
+    url= video_info(vid)
     _, _, size = url_info(url)
     ext = 'flv'
     print_info(site_info, title, ext, size)
@@ -45,12 +46,14 @@ def letv_download_by_vid(vid, output_dir='.', merge=True, info_only=False):
         download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
 def letv_download(url, output_dir='.', merge=True, info_only=False):
+    html = get_content(url)
+    #to get title
     if re.match(r'http://www.letv.com/ptv/vplay/(\d+).html', url):
         vid = match1(url, r'http://www.letv.com/ptv/vplay/(\d+).html')
     else:
-        html = get_content(url)
         vid = match1(html, r'vid="(\d+)"')
-    letv_download_by_vid(vid, output_dir=output_dir, merge=merge, info_only=info_only)
+    title=match1(html,r'name="irTitle" content="(.*?)"')
+    letv_download_by_vid(vid,title, output_dir=output_dir, merge=merge, info_only=info_only)
 
 
 site_info = "letv.com"
