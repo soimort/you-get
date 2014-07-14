@@ -19,10 +19,10 @@ def kugou_download(url, output_dir=".", merge=True, info_only=False):
         songtype, ext, size = url_info(url)
         print_info(site_info, title, songtype, size)
         if not info_only:
-            download_urls([url], title, ext, size, output_dir)
+            download_urls([url], title, ext, size, output_dir, merge=merge)
     else:
         #for the www.kugou.com/
-        return kugou_download_playlist(url)
+        return kugou_download_playlist(url, output_dir=output_dir, merge=merge, info_only=info_only)
         # raise NotImplementedError(url)       
 
 def kugou_download_by_hash(title,hash_val,output_dir = '.', merge = True, info_only = False):
@@ -37,7 +37,7 @@ def kugou_download_by_hash(title,hash_val,output_dir = '.', merge = True, info_o
     songtype, ext, size = url_info(url)
     print_info(site_info, title, songtype, size)
     if not info_only:
-        download_urls([url], title, ext, size, output_dir)
+        download_urls([url], title, ext, size, output_dir, merge=merge)
 
 def kugou_download_playlist(url, output_dir = '.', merge = True, info_only = False):
     html=get_html(url)
