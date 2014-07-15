@@ -3,13 +3,15 @@
 __all__ = ['mtv81_download']
 
 from ..common import *
-from html.parser import unescape
+
 from xml.dom.minidom import parseString
+
+from html.parser import HTMLParser
 
 
 def mtv81_download(url, output_dir='.', merge=True, info_only=False):
     html = get_content(url)
-    title = unescape(
+    title = HTMLParser().unescape(
         "|".join(match1(html, r"<title>(.*?)</title>").split("|")[:-2]))
 
     # mgid%3Auma%3Avideo%3Amtv81.com%3A897974
