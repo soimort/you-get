@@ -16,20 +16,40 @@ RTMPDUMP = get_usable_rtmpdump('rtmpdump')
 def has_rtmpdump_installed():
     return RTMPDUMP is not None
 
-def download_rtmpdump_stream(url, playpath, title, ext, output_dir='.'):
+#
+#params ={"-y":"playlist","-q":None,} 
+#if Only Key ,Value should be None
+#-r -o should not be included in params 
+
+def download_rtmpdump_stream(url, title, ext,params={},output_dir='.'):
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
 
-    params = [RTMPDUMP, '-r']
-    params.append(url)
-    params.append('-y')
-    params.append(playpath)
-    params.append('-o')
-    params.append(filepath)
+    cmdline = [RTMPDUMP, '-r']
+    cmdline.append(url)
+    cmdline.append('-o')
+    cmdline.append(filepath)
 
-    subprocess.call(params)
+    for key in params.keys():
+        cmdline.append(key)
+        if params[key]!=None:
+            cmdline.append(params[key])
+
+    # cmdline.append('-y')
+    # cmdline.append(playpath)
+    print("Call rtmpdump:\n"+" ".join(cmdline)+"\n")
+    subprocess.call(cmdline)
     return
 
-def play_rtmpdump_stream(player, url, playpath):
-    os.system("rtmpdump -r '%s' -y '%s' -o - | %s -" % (url, playpath, player))
+#
+#To be refactor
+#
+def play_rtmpdump_stream(player, url, params={}):
+    cmdline="rtmpdump -r '%s' "%url
+    for key in params.keys():
+        cmdline+=key+" "+params[key] if params[key]!=None else ""+" "
+    cmdline+=" -o - | %s -"%player
+    print(cmdline)
+    os.system(cmdline)
+    # os.system("rtmpdump -r '%s' -y '%s' -o - | %s -" % (url, playpath, player))
     return

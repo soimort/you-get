@@ -26,6 +26,7 @@ from .letv import *
 from .magisto import *
 from .miomio import *
 from .mixcloud import *
+from .mtv81 import *
 from .netease import *
 from .nicovideo import *
 from .pptv import *
