@@ -17,7 +17,7 @@ def theplatform_download_by_pid(pid, title, output_dir='.', merge=True, info_onl
 
     print_info(site_info, title, type, size)
     if not info_only:
-        download_rtmp_url(url=smil_base, playpath=ext+':'+smil_video, title=title, ext=ext, output_dir=output_dir)
+        download_rtmp_url(url=smil_base, title=title, ext=ext,params={"-y":ext+':'+smil_video}, output_dir=output_dir)
 
 site_info = "thePlatform.com"
 download = theplatform_download_by_pid

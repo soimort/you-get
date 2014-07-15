@@ -46,6 +46,7 @@ def url_to_module(url):
         'magisto': magisto,
         'miomio': miomio,
         'mixcloud': mixcloud,
+        'mtv81':mtv81,
         'nicovideo': nicovideo,
         'pptv': pptv,
         'qq': qq,
