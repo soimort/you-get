@@ -7,7 +7,8 @@ class Youku(VideoExtractor):
     name = "优酷 (Youku)"
 
     stream_types = [
-        {'id': 'hd3', 'container': 'flv', 'video_profile': '1080P'},
+        # FIXME: Does not work for 1080P
+        # {'id': 'hd3', 'container': 'flv', 'video_profile': '1080P'},
         {'id': 'hd2', 'container': 'flv', 'video_profile': '超清'},
         {'id': 'mp4', 'container': 'mp4', 'video_profile': '高清'},
         {'id': 'flvhd', 'container': 'flv', 'video_profile': '高清'},
