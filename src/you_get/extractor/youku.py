@@ -16,9 +16,6 @@ class Youku(VideoExtractor):
         {'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
     ]
 
-    def __init__(self, *args):
-        super().__init__(args)
-
     def get_vid_from_url(url):
         """Extracts video ID from URL.
         """
