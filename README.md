@@ -34,6 +34,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * Mixcloud <http://www.mixcloud.com>
 * Freesound <http://www.freesound.org>
 * JPopsuki <http://jpopsuki.tv>
+* MTV 81 <http://www.mtv81.com>
 * VID48 <http://vid48.com>
 * Niconico (ニコニコ動画) <http://www.nicovideo.jp>
 * Youku (优酷) <http://www.youku.com>
@@ -50,13 +51,15 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * LeTV (乐视网) <http://www.letv.com>
 * MioMio <http://www.miomio.tv>
 * NetEase (网易视频) <http://v.163.com>
+* NetEase Music (网易云音乐) <http://music.163.com>
 * PPTV <http://www.pptv.com>
 * QQ (腾讯视频) <http://v.qq.com>
 * Sina (新浪视频) <http://video.sina.com.cn>
 * Sohu (搜狐视频) <http://tv.sohu.com>
 * 56 (56网) <http://www.56.com>
 * Xiami (虾米) <http://www.xiami.com>
-* 5sing <http://www.5sing.com>
+* Kugou (酷狗音乐) <http://www.kugou.com>
+* Kuwo (酷我音乐) <http://www.kuwo.cn>
 * Baidu Music (百度音乐) <http://music.baidu.com>
 * Baidu Wangpan (百度网盘) <http://pan.baidu.com>
 * SongTaste <http://www.songtaste.com>
