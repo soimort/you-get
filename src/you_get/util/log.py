@@ -111,16 +111,20 @@ def w(message, ostream=sys.stderr):
              'yellow' if has_colors else None,
              ostream=ostream)
 
-def e(message, ostream=sys.stderr):
+def e(message, ostream=sys.stderr, exit_code=None):
     """Sends an error log message.
     """
     printlog(message,
              'bold-yellow' if has_colors else None,
              ostream=ostream)
+    if exit_code is not None:
+        exit(exit_code)
 
-def wtf(message, ostream=sys.stderr):
+def wtf(message, ostream=sys.stderr, exit_code=-1):
     """What a Terrible Failure.
     """
     printlog(message,
              'bold-red' if has_colors else None,
              ostream=ostream)
+    if exit_code is not None:
+        exit(exit_code)
