@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.3.30dev-20140716
+------------------
+
+*Date: 2014-07-16*
+
+* Bug fix release for:
+    - YouTube
+    - Youku
+
+* New site support: (by @jackyzy823)
+    - MTV 81 http://www.mtv81.com
+    - Kugou (酷狗音乐) http://www.kugou.com
+    - Kuwo (酷我音乐) http://www.kuwo.cn
+    - NetEase Music (网易云音乐) http://music.163.com
+
 0.3.30dev-20140629
 ------------------
 
