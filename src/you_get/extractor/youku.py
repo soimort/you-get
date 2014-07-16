@@ -43,8 +43,7 @@ class Youku(VideoExtractor):
 
         meta = json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/%s' % self.vid))
         if not meta['data']:
-            log.e('[Failed] Video not found.')
-            exit(3)
+            log.wtf('[Failed] Video not found.')
         metadata0 = meta['data'][0]
 
         self.title = metadata0['title']
