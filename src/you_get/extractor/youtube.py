@@ -42,17 +42,23 @@ def decipher(js, s):
         code = re.sub(r'(\w+).join\(""\)', r'"".join(\1)', code)
         code = re.sub(r'(\w+).length', r'len(\1)', code)
         code = re.sub(r'(\w+).reverse\(\)', r'\1[::-1]', code)
-        code = re.sub(r'(\w+).slice\((\d+)\)', r'\1[\2:]', code)
+        code = re.sub(r'(\w+).slice\((\w+)\)', r'\1[\2:]', code)
         code = re.sub(r'(\w+).split\(""\)', r'list(\1)', code)
         return code
 
     f1 = match1(js, r'\w+\.sig\|\|([$\w]+)\(\w+\.\w+\)')
     f1def = match1(js, r'(function %s\(\w+\)\{[^\{]+\})' % re.escape(f1))
+    f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
     code = tr_js(f1def)
-    f2 = match1(f1def, r'([$\w]+)\(\w+,\d+\)')
-    if f2 is not None:
+    f2s = set(re.findall(r'([$\w]+)\(\w+,\d+\)', f1def))
+    for f2 in f2s:
         f2e = re.escape(f2)
-        f2def = match1(js, r'(function %s\(\w+,\w+\)\{[^\{]+\})' % f2e)
+        f2def = re.search(r'[^$\w]%s:function\((\w+,\w+)\)(\{[^\{\}]+\})' % f2e, js)
+        if f2def:
+            f2def = 'function {}({}){}'.format(f2e, f2def.group(1), f2def.group(2))
+        else:
+            f2def = re.search(r'[^$\w]%s:function\((\w+)\)(\{[^\{\}]+\})' % f2e, js)
+            f2def = 'function {}({},b){}'.format(f2e, f2def.group(1), f2def.group(2))
         f2 = re.sub(r'\$', '_dollar', f2)
         code = code + 'global %s\n' % f2 + tr_js(f2def)
 
