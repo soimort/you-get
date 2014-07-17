@@ -3,12 +3,12 @@
 __all__ = ['khan_download']
 
 from ..common import *
-from .youtube import youtube_download_by_id
+from .youtube import YouTube
 
-def khan_download(url, output_dir = '.', merge = True, info_only = False):
-    page = get_html(url)
-    id = page[page.find('src="https://www.youtube.com/embed/') + len('src="https://www.youtube.com/embed/') :page.find('?enablejsapi=1&wmode=transparent&modestbranding=1&rel=0&fs=1&showinfo=0')]
-    youtube_download_by_id(id, output_dir=output_dir, merge=merge, info_only=info_only)
+def khan_download(url, output_dir='.', merge=True, info_only=False):
+    html = get_content(url)
+    youtube_url = re.search('<meta property="og:video" content="([^"]+)', html).group(1)
+    YouTube().download_by_url(youtube_url, output_dir=output_dir, merge=merge, info_only=info_only)
 
 site_info = "khanacademy.org"
 download = khan_download

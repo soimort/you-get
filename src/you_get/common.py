@@ -1070,7 +1070,7 @@ class VideoExtractor():
 
     def p_playlist(self, stream_id=None):
         print("site:                %s" % self.__class__.name)
-        print("title:               %s" % self.title)
+        print("playlist:            %s" % self.title)
         print("videos:")
 
     def download(self, **kwargs):
