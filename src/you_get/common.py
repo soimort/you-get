@@ -1041,6 +1041,13 @@ class VideoExtractor():
 
         print()
 
+    def p_i(self, stream_id):
+        stream = self.streams[stream_id]
+        print("    - title:         %s" % self.title)
+        print("       size:         %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
+        print("        url:         %s" % self.url)
+        print()
+
     def p(self, stream_id=None):
         print("site:                %s" % self.__class__.name)
         print("title:               %s" % self.title)
@@ -1061,15 +1068,27 @@ class VideoExtractor():
             for stream in self.streams_sorted:
                 self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
 
+    def p_playlist(self, stream_id=None):
+        print("site:                %s" % self.__class__.name)
+        print("title:               %s" % self.title)
+        print("videos:")
+
     def download(self, **kwargs):
         if 'info_only' in kwargs and kwargs['info_only']:
             if 'stream_id' in kwargs and kwargs['stream_id']:
                 # Display the stream
                 stream_id = kwargs['stream_id']
-                self.p(stream_id)
+                if 'index' not in kwargs:
+                    self.p(stream_id)
+                else:
+                    self.p_i(stream_id)
             else:
                 # Display all available streams
-                self.p([])
+                if 'index' not in kwargs:
+                    self.p([])
+                else:
+                    stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
+                    self.p_i(stream_id)
 
         else:
             if 'stream_id' in kwargs and kwargs['stream_id']:
@@ -1079,7 +1098,10 @@ class VideoExtractor():
                 # Download stream with the best quality
                 stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
 
-            self.p(None)
+            if 'index' not in kwargs:
+                self.p(None)
+            else:
+                self.p_i(stream_id)
 
             urls = self.streams[stream_id]['src']
             if not urls:
