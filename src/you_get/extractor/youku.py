@@ -16,27 +16,45 @@ class Youku(VideoExtractor):
         {'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
     ]
 
-    def get_vid_from_url(url):
-        """Extracts video ID from URL.
-        """
-        patterns = [
-            'youku.com/v_show/id_([\w=]+)',
-            'player.youku.com/player.php/sid/([\w=]+)/v.swf',
-            'loader\.swf\?VideoIDS=([\w=]+)',
-        ]
-        matches = match1(url, *patterns)
-        if matches:
-            return matches[0]
-        else:
-            return None
-
     def parse_m3u8(m3u8):
         return re.findall(r'(http://[^?]+)\?ts_start=0', m3u8)
 
+    def get_vid_from_url(url):
+        """Extracts video ID from URL.
+        """
+        return match1(url, r'youku\.com/v_show/id_([\w=]+)') or \
+          match1(url, r'player\.youku\.com/player\.php/sid/([\w=]+)/v\.swf') or \
+          match1(url, r'loader\.swf\?VideoIDS=([\w=]+)')
+
+    def get_playlist_id_from_url(url):
+        """Extracts playlist ID from URL.
+        """
+        return match1(url, r'youku\.com/playlist_show/id_([\w=]+)')
+
+    def download_playlist_by_url(self, url, **kwargs):
+        self.url = url
+
+        playlist_id = __class__.get_playlist_id_from_url(self.url)
+        if playlist_id is None:
+            log.wtf('[Failed] Unsupported URL pattern.')
+
+        video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
+        videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
+        self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
+        self.p_playlist()
+        for video in videos:
+            index = parse_query_param(video, 'f')
+            __class__().download_by_url(video, index=index, **kwargs)
+
     def prepare(self, **kwargs):
         assert self.url or self.vid
+
         if self.url and not self.vid:
             self.vid = __class__.get_vid_from_url(self.url)
+
+            if self.vid is None:
+                self.download_playlist_by_url(self.url, **kwargs)
+                exit(0)
 
         meta = json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/%s' % self.vid))
         if not meta['data']:
@@ -80,7 +98,7 @@ class Youku(VideoExtractor):
 
 site = Youku()
 download = site.download_by_url
-download_playlist = playlist_not_supported('youku')
+download_playlist = site.download_playlist_by_url
 
 youku_download_by_vid = site.download_by_vid
 # Used by: acfun.py bilibili.py miomio.py tudou.py
