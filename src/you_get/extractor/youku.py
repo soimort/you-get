@@ -63,7 +63,7 @@ class Youku(VideoExtractor):
             stream_id = kwargs['stream_id']
 
             if stream_id not in self.streams:
-                log.e('[Failed] Invalid video format.')
+                log.e('[Error] Invalid video format.')
                 log.e('Use without specifying any video format to check all available formats.')
                 exit(2)
         else:
