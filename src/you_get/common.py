@@ -838,7 +838,7 @@ def script_main(script_name, download, download_playlist = None):
     '''
 
     short_opts = 'Vhfiuc:nSF:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'sogou', 'format=', 'stream=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'sogou-proxy=', 'sogou-env=']
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'sogou', 'format=', 'stream=', 'itag=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'sogou-proxy=', 'sogou-env=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -893,7 +893,7 @@ def script_main(script_name, download, download_playlist = None):
             proxy = ''
         elif o in ('--debug',):
             traceback = True
-        elif o in ('-F', '--format', '--stream'):
+        elif o in ('-F', '--format', '--stream', '--itag'):
             stream_id = a
         elif o in ('-o', '--output-dir'):
             output_dir = a
@@ -944,6 +944,20 @@ def script_main(script_name, download, download_playlist = None):
 
 
 
+def mime_to_container(mime):
+    mapping = {
+        'video/3gpp': '3gp',
+        'video/mp4': 'mp4',
+        'video/webm': 'webm',
+        'video/x-flv': 'flv',
+    }
+    if mime in mapping:
+        return mapping[mime]
+    else:
+        return mime.split('/')[1]
+
+
+
 class VideoExtractor():
     def __init__(self, *args):
         self.url = None
@@ -962,7 +976,12 @@ class VideoExtractor():
         if extractor_proxy:
             set_proxy(parse_host(extractor_proxy))
         self.prepare(**kwargs)
-        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
+
+        try:
+            self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
+        except:
+            self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
+
         self.extract(**kwargs)
         if extractor_proxy:
             unset_proxy()
@@ -976,7 +995,12 @@ class VideoExtractor():
         if extractor_proxy:
             set_proxy(parse_host(extractor_proxy))
         self.prepare(**kwargs)
-        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
+
+        try:
+            self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
+        except:
+            self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
+
         self.extract(**kwargs)
         if extractor_proxy:
             unset_proxy()
@@ -993,14 +1017,28 @@ class VideoExtractor():
 
     def p_stream(self, stream_id):
         stream = self.streams[stream_id]
-        print("    - id:            \033[7m%s\033[0m" % stream_id)
-        print("      container:     %s" % stream['container'])
-        print("      video-profile: %s" % stream['video_profile'])
+        if 'itag' in stream:
+            print("    - itag:          \033[7m%s\033[0m" % stream_id)
+        else:
+            print("    - id:            \033[7m%s\033[0m" % stream_id)
+
+        if 'container' in stream:
+            print("      container:     %s" % stream['container'])
+
+        if 'video_profile' in stream:
+            print("      video-profile: %s" % stream['video_profile'])
+
+        if 'quality' in stream:
+            print("      quality:       %s" % stream['quality'])
+
         if 'size' in stream:
             print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
+
+        if 'itag' in stream:
+            print("    # download-with: \033[4myou-get --itag=%s [URL]\033[0m" % stream_id)
         else:
-            print("      size:          Unknown")
-        print("    # download-with: \033[4myou-get --format=%s [URL]\033[0m" % stream_id)
+            print("    # download-with: \033[4myou-get --format=%s [URL]\033[0m" % stream_id)
+
         print()
 
     def p(self, stream_id=None):
@@ -1014,14 +1052,14 @@ class VideoExtractor():
         elif stream_id is None:
             # Print stream with best quality
             print("stream:              # Best quality")
-            stream_id = self.streams_sorted[0]['id']
+            stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
             self.p_stream(stream_id)
 
         elif stream_id == []:
             # Print all available streams
             print("streams:             # Available quality and codecs")
             for stream in self.streams_sorted:
-                self.p_stream(stream['id'])
+                self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
 
     def download(self, **kwargs):
         if 'info_only' in kwargs and kwargs['info_only']:
@@ -1039,7 +1077,7 @@ class VideoExtractor():
                 stream_id = kwargs['stream_id']
             else:
                 # Download stream with the best quality
-                stream_id = self.streams_sorted[0]['id']
+                stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
 
             self.p(None)
 
