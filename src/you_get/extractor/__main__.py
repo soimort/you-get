@@ -22,6 +22,7 @@ def url_to_module(url):
         'baidu': baidu,
         'bilibili': bilibili,
         'blip': blip,
+        'catfun':catfun,
         'cntv': cntv,
         'cbs': cbs,
         'coursera': coursera,
