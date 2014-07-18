@@ -30,7 +30,7 @@ def sina_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only=
     """
 
     xml = video_info_xml(vid)
-    sina_download_by_urls(xml, title, output_dir, merge, info_only)
+    sina_download_by_xml(xml, title, output_dir, merge, info_only)
 
 
 def sina_download_by_xml(xml, title, output_dir, merge, info_only):

@@ -5,6 +5,7 @@ from .alive import *
 from .baidu import *
 from .bilibili import *
 from .blip import *
+from .catfun import *
 from .cbs import *
 from .cntv import *
 from .coursera import *
