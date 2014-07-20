@@ -800,7 +800,7 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
             download(url, **kwargs)
 
 def script_main(script_name, download, download_playlist = None):
-    version = 'You-Get %s, a video downloader.' % get_version()
+    version = 'You-Get, a video downloader.'
     help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
     help += '''\nStartup options:
     -V | --version                           Display the version and exit.
