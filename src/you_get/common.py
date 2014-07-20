@@ -11,14 +11,13 @@ import platform
 import threading
 
 from .version import __version__
-from .util import log, sogou_proxy_server, get_filename, unescape_html
+from .util import log
+from .util.strings import get_filename, unescape_html
 
 dry_run = False
 force = False
 player = None
 extractor_proxy = None
-sogou_proxy = None
-sogou_env = None
 cookies_txt = None
 
 fake_headers = {
@@ -764,9 +763,6 @@ def parse_host(host):
     port = o.port or 0
     return (hostname, port)
 
-def get_sogou_proxy():
-    return sogou_proxy
-
 def set_proxy(proxy):
     proxy_handler = request.ProxyHandler({
         'http': '%s:%s' % proxy,
@@ -803,16 +799,6 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         else:
             download(url, **kwargs)
 
-def get_version():
-    try:
-        import subprocess
-        real_dir = os.path.dirname(os.path.realpath(__file__))
-        git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=real_dir, stderr=subprocess.DEVNULL).decode('utf-8').strip()
-        assert git_hash
-        return '%s-%s' % (__version__, git_hash)
-    except:
-        return __version__
-
 def script_main(script_name, download, download_playlist = None):
     version = 'You-Get %s, a video downloader.' % get_version()
     help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
@@ -832,13 +818,11 @@ def script_main(script_name, download, download_playlist = None):
     -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
     -y | --extractor-proxy <HOST:PORT>       Use specific HTTP proxy for extracting stream data.
          --no-proxy                          Don't use any proxy. (ignore $http_proxy)
-    -S | --sogou                             Use a Sogou proxy server for downloading.
-         --sogou-proxy <HOST:PORT>           Run a standalone Sogou proxy server.
          --debug                             Show traceback on KeyboardInterrupt.
     '''
 
-    short_opts = 'Vhfiuc:nSF:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'sogou', 'format=', 'stream=', 'itag=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'sogou-proxy=', 'sogou-env=', 'lang=']
+    short_opts = 'Vhfiuc:nF:o:p:x:y:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'format=', 'stream=', 'itag=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -854,8 +838,6 @@ def script_main(script_name, download, download_playlist = None):
     global dry_run
     global player
     global extractor_proxy
-    global sogou_proxy
-    global sogou_env
     global cookies_txt
     cookies_txt = None
 
@@ -904,33 +886,14 @@ def script_main(script_name, download, download_playlist = None):
             proxy = a
         elif o in ('-y', '--extractor-proxy'):
             extractor_proxy = a
-        elif o in ('-S', '--sogou'):
-            sogou_proxy = ("0.0.0.0", 0)
-        elif o in ('--sogou-proxy',):
-            sogou_proxy = parse_host(a)
-        elif o in ('--sogou-env',):
-            sogou_env = a
         elif o in ('--lang',):
             lang = a
         else:
             log.e("try 'you-get --help' for more options")
             sys.exit(2)
     if not args:
-        if sogou_proxy is not None:
-            try:
-                if sogou_env is not None:
-                    server = sogou_proxy_server(sogou_proxy, network_env=sogou_env)
-                else:
-                    server = sogou_proxy_server(sogou_proxy)
-                server.serve_forever()
-            except KeyboardInterrupt:
-                if traceback:
-                    raise
-                else:
-                    sys.exit()
-        else:
-            print(help)
-            sys.exit()
+        print(help)
+        sys.exit()
 
     set_http_proxy(proxy)
 
