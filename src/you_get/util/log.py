@@ -1,130 +1,97 @@
 #!/usr/bin/env python
+# This file is Python 2 compliant.
 
-from ..version import __name__
+from .. import __name__ as library_name
 
-import os, sys, subprocess
+import os, sys
 
-# Is terminal ANSI/VT100 compatible
-if os.getenv('TERM') in (
-        'xterm',
-        'vt100',
-        'linux',
-        'eterm-color',
-        'screen',
-    ):
-    has_colors = True
-else:
-    try:
-        # Eshell
-        ppid = os.getppid()
-        has_colors = (subprocess.getoutput('ps -p %d -ocomm=' % ppid)
-                      == 'emacs')
-    except:
-        has_colors = False
+IS_ANSI_TERMINAL = os.getenv('TERM') in (
+    'eterm-color',
+    'linux',
+    'screen',
+    'vt100',
+    'xterm')
 
-# ANSI/VT100 escape code
-# http://en.wikipedia.org/wiki/ANSI_escape_code
-colors = {
-    'none': '',
-    'reset': '\033[0m',
+# ANSI escape code
+# See <http://en.wikipedia.org/wiki/ANSI_escape_code>
+RESET = 0
+BOLD = 1
+UNDERLINE = 4
+NEGATIVE = 7
+NO_BOLD = 21
+NO_UNDERLINE = 24
+POSITIVE = 27
+BLACK = 30
+RED = 31
+GREEN = 32
+YELLOW = 33
+BLUE = 34
+MAGENTA = 35
+CYAN = 36
+LIGHT_GRAY = 37
+DEFAULT = 39
+BLACK_BACKGROUND = 40
+RED_BACKGROUND = 41
+GREEN_BACKGROUND = 42
+YELLOW_BACKGROUND = 43
+BLUE_BACKGROUND = 44
+MAGENTA_BACKGROUND = 45
+CYAN_BACKGROUND = 46
+LIGHT_GRAY_BACKGROUND = 47
+DEFAULT_BACKGROUND = 49
+DARK_GRAY = 90                 # xterm
+LIGHT_RED = 91                 # xterm
+LIGHT_GREEN = 92               # xterm
+LIGHT_YELLOW = 93              # xterm
+LIGHT_BLUE = 94                # xterm
+LIGHT_MAGENTA = 95             # xterm
+LIGHT_CYAN = 96                # xterm
+WHITE = 97                     # xterm
+DARK_GRAY_BACKGROUND = 100     # xterm
+LIGHT_RED_BACKGROUND = 101     # xterm
+LIGHT_GREEN_BACKGROUND = 102   # xterm
+LIGHT_YELLOW_BACKGROUND = 103  # xterm
+LIGHT_BLUE_BACKGROUND = 104    # xterm
+LIGHT_MAGENTA_BACKGROUND = 105 # xterm
+LIGHT_CYAN_BACKGROUND = 106    # xterm
+WHITE_BACKGROUND = 107         # xterm
 
-    'black': '\033[30m',
-    'bold-black': '\033[30;1m',
-    'dark-gray': '\033[90m',
-    'bold-dark-gray': '\033[90;1m',
+def sprint(text, *colors):
+    """Format text with color or other effects into ANSI escaped string."""
+    return "\33[{}m{content}\33[{}m".format(";".join([str(color) for color in colors]), RESET, content=text) if IS_ANSI_TERMINAL and colors else text
 
-    'red': '\033[31m',
-    'bold-red': '\033[31;1m',
-    'light-red': '\033[91m',
-    'bold-light-red': '\033[91;1m',
+def println(text, *colors):
+    """Print text to standard output."""
+    sys.stdout.write(sprint(text, *colors) + "\n")
 
-    'green': '\033[32m',
-    'bold-green': '\033[32;1m',
-    'light-green': '\033[92m',
-    'bold-light-green': '\033[92;1m',
+def print_err(text, *colors):
+    """Print text to standard error."""
+    sys.stderr.write(sprint(text, *colors) + "\n")
 
-    'yellow': '\033[33m',
-    'bold-yellow': '\033[33;1m',
-    'light-yellow': '\033[93m',
-    'bold-light-yellow': '\033[93;1m',
+def print_log(text, *colors):
+    """Print a log message to standard error."""
+    sys.stderr.write(sprint("{}: {}".format(library_name, text), *colors) + "\n")
 
-    'blue': '\033[34m',
-    'bold-blue': '\033[34;1m',
-    'light-blue': '\033[94m',
-    'bold-light-blue': '\033[94;1m',
+def i(message):
+    """Print a normal log message."""
+    print_log(message)
 
-    'magenta': '\033[35m',
-    'bold-magenta': '\033[35;1m',
-    'light-magenta': '\033[95m',
-    'bold-light-magenta': '\033[95;1m',
+def d(message):
+    """Print a debug log message."""
+    print_log(message, BLUE)
 
-    'cyan': '\033[36m',
-    'bold-cyan': '\033[36;1m',
-    'light-cyan': '\033[96m',
-    'bold-light-cyan': '\033[96;1m',
+def w(message):
+    """Print a warning log message."""
+    print_log(message, YELLOW)
 
-    'light-gray': '\033[37m',
-    'bold-light-gray': '\033[37;1m',
-    'white': '\033[97m',
-    'bold-white': '\033[97;1m',
-}
-
-def underlined(text):
-    """Returns an underlined text.
-    """
-    return "\33[4m%s\33[24m" % text if has_colors else text
-
-def println(text, color=None, ostream=sys.stdout):
-    """Prints a text line to stream.
-    """
-    if has_colors and color in colors:
-        ostream.write("{0}{1}{2}\n".format(colors[color], text, colors['reset']))
-    else:
-        ostream.write("{0}\n".format(text))
-
-def printlog(message, color=None, ostream=sys.stderr):
-    """Prints a log message to stream.
-    """
-    if has_colors and color in colors:
-        ostream.write("{0}{1}: {2}{3}\n".format(colors[color], __name__, message, colors['reset']))
-    else:
-        ostream.write("{0}: {1}\n".format(__name__, message))
-
-def i(message, ostream=sys.stderr):
-    """Sends an info log message.
-    """
-    printlog(message,
-             None,
-             ostream=ostream)
-
-def d(message, ostream=sys.stderr):
-    """Sends a debug log message.
-    """
-    printlog(message,
-             'blue' if has_colors else None,
-             ostream=ostream)
-
-def w(message, ostream=sys.stderr):
-    """Sends a warning log message.
-    """
-    printlog(message,
-             'yellow' if has_colors else None,
-             ostream=ostream)
-
-def e(message, ostream=sys.stderr, exit_code=None):
-    """Sends an error log message.
-    """
-    printlog(message,
-             'bold-yellow' if has_colors else None,
-             ostream=ostream)
+def e(message, exit_code=None):
+    """Print an error log message."""
+    print_log(message, YELLOW, BOLD)
     if exit_code is not None:
         exit(exit_code)
 
-def wtf(message, ostream=sys.stderr, exit_code=-1):
-    """What a Terrible Failure.
-    """
-    printlog(message,
-             'bold-red' if has_colors else None,
-             ostream=ostream)
+def wtf(message, exit_code=-1):
+    """What a Terrible Failure!"""
+    print_log(message, RED, BOLD)
     if exit_code is not None:
         exit(exit_code)
