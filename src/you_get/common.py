@@ -899,9 +899,9 @@ def script_main(script_name, download, download_playlist = None):
 
     try:
         if stream_id:
-            download_main(download, download_playlist, args, playlist, stream_id=stream_id, lang=lang, output_dir=output_dir, merge=merge, info_only=info_only)
+            download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only)
         else:
-            download_main(download, download_playlist, args, playlist, lang=lang, output_dir=output_dir, merge=merge, info_only=info_only)
+            download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only)
     except KeyboardInterrupt:
         if traceback:
             raise
