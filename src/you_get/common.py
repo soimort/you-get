@@ -838,7 +838,7 @@ def script_main(script_name, download, download_playlist = None):
     '''
 
     short_opts = 'Vhfiuc:nSF:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'sogou', 'format=', 'stream=', 'itag=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'sogou-proxy=', 'sogou-env=']
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'sogou', 'format=', 'stream=', 'itag=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'sogou-proxy=', 'sogou-env=', 'lang=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -863,6 +863,7 @@ def script_main(script_name, download, download_playlist = None):
     playlist = False
     merge = True
     stream_id = None
+    lang = None
     output_dir = '.'
     proxy = None
     extractor_proxy = None
@@ -909,6 +910,8 @@ def script_main(script_name, download, download_playlist = None):
             sogou_proxy = parse_host(a)
         elif o in ('--sogou-env',):
             sogou_env = a
+        elif o in ('--lang',):
+            lang = a
         else:
             log.e("try 'you-get --help' for more options")
             sys.exit(2)
@@ -933,9 +936,9 @@ def script_main(script_name, download, download_playlist = None):
 
     try:
         if stream_id:
-            download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only)
+            download_main(download, download_playlist, args, playlist, stream_id=stream_id, lang=lang, output_dir=output_dir, merge=merge, info_only=info_only)
         else:
-            download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only)
+            download_main(download, download_playlist, args, playlist, lang=lang, output_dir=output_dir, merge=merge, info_only=info_only)
     except KeyboardInterrupt:
         if traceback:
             raise
@@ -965,6 +968,7 @@ class VideoExtractor():
         self.vid = None
         self.streams = {}
         self.streams_sorted = []
+        self.audiolang = None
 
         if args:
             self.url = args[0]
@@ -1067,6 +1071,12 @@ class VideoExtractor():
             print("streams:             # Available quality and codecs")
             for stream in self.streams_sorted:
                 self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
+
+        if self.audiolang:
+            print("audio-languages:")
+            for i in self.audiolang:
+                print("    - lang:          {}".format(i['lang']))
+                print("      download-url:  {}\n".format(i['url']))
 
     def p_playlist(self, stream_id=None):
         print("site:                %s" % self.__class__.name)
