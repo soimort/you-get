@@ -1024,7 +1024,7 @@ class VideoExtractor():
         if 'itag' in stream:
             print("    - itag:          \033[7m%s\033[0m" % stream_id)
         else:
-            print("    - id:            \033[7m%s\033[0m" % stream_id)
+            print("    - format:        \033[7m%s\033[0m" % stream_id)
 
         if 'container' in stream:
             print("      container:     %s" % stream['container'])
