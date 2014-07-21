@@ -2,7 +2,7 @@
 
 import unittest
 
-from you_get import *
+from you_get.common import *
 
 class TestCommon(unittest.TestCase):
     
