@@ -68,6 +68,7 @@ Supported Sites (As of Now)
 * SongTaste http://www.songtaste.com
 * Alive.in.th http://alive.in.th
 * VK http://vk.com
+* Catfun (喵星球) http://www.catfun.tv
 
 Dependencies
 ------------

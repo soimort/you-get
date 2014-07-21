@@ -65,6 +65,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * SongTaste <http://www.songtaste.com>
 * Alive.in.th <http://alive.in.th>
 * VK <http://vk.com>
+* Catfun (喵星球) <http://www.catfun.tv>
 
 ## Dependencies
 
