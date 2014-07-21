@@ -76,9 +76,9 @@ class VideoExtractor():
     def p_stream(self, stream_id):
         stream = self.streams[stream_id]
         if 'itag' in stream:
-            print("    - itag:          \033[7m%s\033[0m" % stream_id)
+            print("    - itag:          %s" % log.sprint(stream_id, log.NEGATIVE))
         else:
-            print("    - format:        \033[7m%s\033[0m" % stream_id)
+            print("    - format:        %s" % log.sprint(stream_id, log.NEGATIVE))
 
         if 'container' in stream:
             print("      container:     %s" % stream['container'])
@@ -93,9 +93,9 @@ class VideoExtractor():
             print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
 
         if 'itag' in stream:
-            print("    # download-with: \033[4myou-get --itag=%s [URL]\033[0m" % stream_id)
+            print("    # download-with: %s" % log.sprint("you-get --itag=%s [URL]" % stream_id, log.UNDERLINE))
         else:
-            print("    # download-with: \033[4myou-get --format=%s [URL]\033[0m" % stream_id)
+            print("    # download-with: %s" % log.sprint("you-get --format=%s [URL]" % stream_id, log.UNDERLINE))
 
         print()
 
