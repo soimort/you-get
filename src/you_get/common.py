@@ -4,11 +4,10 @@ import getopt
 import json
 import locale
 import os
+import platform
 import re
 import sys
 from urllib import request, parse
-import platform
-import threading
 
 from .version import __version__
 from .util import log
@@ -751,6 +750,18 @@ def print_info(site_info, title, type, size):
     print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     print()
 
+def mime_to_container(mime):
+    mapping = {
+        'video/3gpp': '3gp',
+        'video/mp4': 'mp4',
+        'video/webm': 'webm',
+        'video/x-flv': 'flv',
+    }
+    if mime in mapping:
+        return mapping[mime]
+    else:
+        return mime.split('/')[1]
+
 def parse_host(host):
     """Parses host name and port number from a string.
     """
@@ -786,6 +797,10 @@ def set_http_proxy(proxy):
         proxy_support = request.ProxyHandler({'http': '%s' % proxy, 'https': '%s' % proxy})
     opener = request.build_opener(proxy_support)
     request.install_opener(opener)
+
+
+
+from .extractors import *
 
 def download_main(download, download_playlist, urls, playlist, **kwargs):
     for url in urls:
@@ -908,180 +923,93 @@ def script_main(script_name, download, download_playlist = None):
         else:
             sys.exit(1)
 
+def url_to_module(url):
+    video_host = r1(r'https?://([^/]+)/', url)
+    video_url = r1(r'https?://[^/]+(.*)', url)
+    assert video_host and video_url, 'invalid url: ' + url
 
+    if video_host.endswith('.com.cn'):
+        video_host = video_host[:-3]
+    domain = r1(r'(\.[^.]+\.[^.]+)$', video_host) or video_host
+    assert domain, 'unsupported url: ' + url
 
-def mime_to_container(mime):
-    mapping = {
-        'video/3gpp': '3gp',
-        'video/mp4': 'mp4',
-        'video/webm': 'webm',
-        'video/x-flv': 'flv',
+    k = r1(r'([^.]+)', domain)
+    downloads = {
+        '163': netease,
+        '56': w56,
+        'acfun': acfun,
+        'baidu': baidu,
+        'bilibili': bilibili,
+        'blip': blip,
+        'catfun':catfun,
+        'cntv': cntv,
+        'cbs': cbs,
+        'coursera': coursera,
+        'dailymotion': dailymotion,
+        'douban': douban,
+        'ehow': ehow,
+        'facebook': facebook,
+        'freesound': freesound,
+        'google': google,
+        'iask': sina,
+        'ifeng': ifeng,
+        'in': alive,
+        'instagram': instagram,
+        'iqiyi': iqiyi,
+        'joy': joy,
+        'jpopsuki': jpopsuki,
+        'kankanews': bilibili,
+        'khanacademy': khan,
+        'ku6': ku6,
+        'kugou':kugou,
+        'kuwo':kuwo,
+        'letv': letv,
+        'magisto': magisto,
+        'miomio': miomio,
+        'mixcloud': mixcloud,
+        'mtv81': mtv81,
+        'nicovideo': nicovideo,
+        'pptv': pptv,
+        'qq': qq,
+        'sina': sina,
+        'smgbb': bilibili,
+        'sohu': sohu,
+        'songtaste':songtaste,
+        'soundcloud': soundcloud,
+        'ted': ted,
+        'theplatform': theplatform,
+        'tudou': tudou,
+        'tumblr': tumblr,
+        'vid48': vid48,
+        'vimeo': vimeo,
+        'vine': vine,
+        'vk': vk,
+        'xiami': xiami,
+        'yinyuetai': yinyuetai,
+        'youku': youku,
+        'youtu': youtube,
+        'youtube': youtube,
     }
-    if mime in mapping:
-        return mapping[mime]
+    if k in downloads:
+        return downloads[k], url
     else:
-        return mime.split('/')[1]
-
-
-
-class VideoExtractor():
-    def __init__(self, *args):
-        self.url = None
-        self.title = None
-        self.vid = None
-        self.streams = {}
-        self.streams_sorted = []
-        self.audiolang = None
-
-        if args:
-            self.url = args[0]
-
-    def download_by_url(self, url, **kwargs):
-        self.url = url
-
-        global extractor_proxy
-        if extractor_proxy:
-            set_proxy(parse_host(extractor_proxy))
-        self.prepare(**kwargs)
-
-        try:
-            self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
-        except:
-            self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
-
-        self.extract(**kwargs)
-        if extractor_proxy:
-            unset_proxy()
-
-        self.download(**kwargs)
-
-    def download_by_vid(self, vid, **kwargs):
-        self.vid = vid
-
-        global extractor_proxy
-        if extractor_proxy:
-            set_proxy(parse_host(extractor_proxy))
-        self.prepare(**kwargs)
-
-        try:
-            self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
-        except:
-            self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
-
-        self.extract(**kwargs)
-        if extractor_proxy:
-            unset_proxy()
-
-        self.download(**kwargs)
-
-    def prepare(self, **kwargs):
-        pass
-        #raise NotImplementedError()
-
-    def extract(self, **kwargs):
-        pass
-        #raise NotImplementedError()
-
-    def p_stream(self, stream_id):
-        stream = self.streams[stream_id]
-        if 'itag' in stream:
-            print("    - itag:          \033[7m%s\033[0m" % stream_id)
+        import http.client
+        conn = http.client.HTTPConnection(video_host)
+        conn.request("HEAD", video_url)
+        res = conn.getresponse()
+        location = res.getheader('location')
+        if location is None:
+            raise NotImplementedError(url)
         else:
-            print("    - format:        \033[7m%s\033[0m" % stream_id)
+            return url_to_module(location)
 
-        if 'container' in stream:
-            print("      container:     %s" % stream['container'])
+def any_download(url, **kwargs):
+    m, url = url_to_module(url)
+    m.download(url, **kwargs)
 
-        if 'video_profile' in stream:
-            print("      video-profile: %s" % stream['video_profile'])
+def any_download_playlist(url, **kwargs):
+    m, url = url_to_module(url)
+    m.download_playlist(url, **kwargs)
 
-        if 'quality' in stream:
-            print("      quality:       %s" % stream['quality'])
-
-        if 'size' in stream:
-            print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
-
-        if 'itag' in stream:
-            print("    # download-with: \033[4myou-get --itag=%s [URL]\033[0m" % stream_id)
-        else:
-            print("    # download-with: \033[4myou-get --format=%s [URL]\033[0m" % stream_id)
-
-        print()
-
-    def p_i(self, stream_id):
-        stream = self.streams[stream_id]
-        print("    - title:         %s" % self.title)
-        print("       size:         %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
-        print("        url:         %s" % self.url)
-        print()
-
-    def p(self, stream_id=None):
-        print("site:                %s" % self.__class__.name)
-        print("title:               %s" % self.title)
-        if stream_id:
-            # Print the stream
-            print("stream:")
-            self.p_stream(stream_id)
-
-        elif stream_id is None:
-            # Print stream with best quality
-            print("stream:              # Best quality")
-            stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
-            self.p_stream(stream_id)
-
-        elif stream_id == []:
-            # Print all available streams
-            print("streams:             # Available quality and codecs")
-            for stream in self.streams_sorted:
-                self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
-
-        if self.audiolang:
-            print("audio-languages:")
-            for i in self.audiolang:
-                print("    - lang:          {}".format(i['lang']))
-                print("      download-url:  {}\n".format(i['url']))
-
-    def p_playlist(self, stream_id=None):
-        print("site:                %s" % self.__class__.name)
-        print("playlist:            %s" % self.title)
-        print("videos:")
-
-    def download(self, **kwargs):
-        if 'info_only' in kwargs and kwargs['info_only']:
-            if 'stream_id' in kwargs and kwargs['stream_id']:
-                # Display the stream
-                stream_id = kwargs['stream_id']
-                if 'index' not in kwargs:
-                    self.p(stream_id)
-                else:
-                    self.p_i(stream_id)
-            else:
-                # Display all available streams
-                if 'index' not in kwargs:
-                    self.p([])
-                else:
-                    stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
-                    self.p_i(stream_id)
-
-        else:
-            if 'stream_id' in kwargs and kwargs['stream_id']:
-                # Download the stream
-                stream_id = kwargs['stream_id']
-            else:
-                # Download stream with the best quality
-                stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
-
-            if 'index' not in kwargs:
-                self.p(None)
-            else:
-                self.p_i(stream_id)
-
-            urls = self.streams[stream_id]['src']
-            if not urls:
-                log.e('[Failed] Cannot extract video source.')
-                log.e('This is most likely because the video has not been made available in your country.')
-                log.e('You may try to use a proxy via \'-y\' for extracting stream data.')
-                exit(1)
-            download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'], output_dir=kwargs['output_dir'], merge=kwargs['merge'])
-
-        self.__init__()
+def main():
+    script_main('you-get', any_download, any_download_playlist)

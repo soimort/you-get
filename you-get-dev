@@ -10,7 +10,7 @@ sys.path.insert(1, os.path.join(_filepath, _srcdir))
 if sys.version_info[0] == 3:
     import you_get
     if __name__ == '__main__':
-        you_get.main(repo_path=_filepath)
+        you_get.main_dev(repo_path=_filepath)
 else:
     from you_get.util import log
     log.wtf("""

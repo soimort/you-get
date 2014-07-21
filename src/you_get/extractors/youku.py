@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from ..common import *
+from ..extractor import VideoExtractor
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
