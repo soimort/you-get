@@ -137,7 +137,7 @@ def pptv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
     assert rid.endswith('.mp4')
     print_info(site_info, title, 'mp4', total_size)
     if not info_only:
-        download_urls([urls], title, 'mp4', total_size, output_dir = output_dir, merge = merge)
+        download_urls(urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge)
 
 def pptv_download(url, output_dir = '.', merge = True, info_only = False):
     assert re.match(r'http://v.pptv.com/show/(\w+)\.html$', url)
