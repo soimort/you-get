@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.3.30dev-20140723
+------------------
+
+*Date: 2014-07-23*
+
+* YouTube: (experimental) video format selection
+* Youku: playlist support
+* NetEase Music: high quality download (by @farseer90718)
+* PPTV: support fixed (by @jackyzy823)
+* Catfun.tv: new site support (by @jackyzy823)
+* AcFun.tv: domain name fixed
+
 0.3.30dev-20140716
 ------------------
 
