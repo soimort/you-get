@@ -5,6 +5,7 @@
 *.py[cod]
 
 _*/
+*_
 
 *.bak
 *.download

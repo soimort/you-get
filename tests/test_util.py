@@ -2,7 +2,7 @@
 
 import unittest
 
-from you_get.util import *
+from you_get.util.fs import *
 
 class TestUtil(unittest.TestCase):
     def test_legitimize(self):

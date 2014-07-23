@@ -65,6 +65,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * SongTaste <http://www.songtaste.com>
 * Alive.in.th <http://alive.in.th>
 * VK <http://vk.com>
+* Catfun (喵星球) <http://www.catfun.tv>
 
 ## Dependencies
 
@@ -186,8 +187,6 @@ For a complete list of all available options, see:
         -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
         -y | --extractor-proxy <HOST:PORT>       Use specific HTTP proxy for extracting stream data.
              --no-proxy                          Don't use any proxy. (ignore $http_proxy)
-        -S | --sogou                             Use a Sogou proxy server for downloading.
-             --sogou-proxy <HOST:PORT>           Run a standalone Sogou proxy server.
              --debug                             Show traceback on KeyboardInterrupt.
 
 ## License

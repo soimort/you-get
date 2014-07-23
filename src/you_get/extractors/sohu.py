@@ -19,14 +19,6 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         vid = r1(r'\Wvid\s*[\:=]\s*[\'"]?(\d+)[\'"]?', html)
     assert vid
 
-    # Open Sogou proxy if required
-    if get_sogou_proxy() is not None:
-        server = sogou_proxy_server(get_sogou_proxy(), ostream=open(os.devnull, 'w'))
-        server_thread = threading.Thread(target=server.serve_forever)
-        server_thread.daemon = True
-        server_thread.start()
-        set_proxy(server.server_address)
-
     if re.match(r'http://tv.sohu.com/', url):
         data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
         for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
@@ -57,11 +49,6 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
         for file, new in zip(data['clipsURL'], data['su']):
             urls.append(real_url(host, prot, file, new))
         assert data['clipsURL'][0].endswith('.mp4')
-
-    # Close Sogou proxy if required
-    if get_sogou_proxy() is not None:
-        server.shutdown()
-        unset_proxy()
 
     print_info(site_info, title, 'mp4', size)
     if not info_only:

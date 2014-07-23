@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from ..common import *
+from ..extractor import VideoExtractor
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
@@ -62,6 +63,11 @@ class Youku(VideoExtractor):
         metadata0 = meta['data'][0]
 
         self.title = metadata0['title']
+
+        if 'dvd' in metadata0 and 'audiolang' in metadata0['dvd']:
+            self.audiolang = metadata0['dvd']['audiolang']
+            for i in self.audiolang:
+                i['url'] = 'http://v.youku.com/v_show/id_{}'.format(i['vid'])
 
         for stream_type in self.stream_types:
             if stream_type['id'] in metadata0['streamsizes']:

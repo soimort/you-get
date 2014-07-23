@@ -4,7 +4,6 @@
 __all__ = ['baidu_download']
 
 from ..common import *
-from .. import common
 
 from urllib import parse
 
