@@ -131,8 +131,7 @@ def pptv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
     pieces = re.findall('<sgm no="(\d+)"[^<>]+fs="(\d+)"', xml)
     numbers, fs = zip(*pieces)
     urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.4&k={}&type=web.fpp".format(i,rid,key,k)  for i in range(max(map(int,numbers))+1)]
-    print(urls)
-    # urls = ['http://%s/%s/%s?k=%s' % (host, i, rid, key) for i in numbers]
+
     total_size = sum(map(int, fs))
     assert rid.endswith('.mp4')
     print_info(site_info, title, 'mp4', total_size)
