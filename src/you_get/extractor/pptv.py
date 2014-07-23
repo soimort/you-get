@@ -5,8 +5,6 @@ __all__ = ['pptv_download', 'pptv_download_by_id']
 from ..common import *
 
 import re
-import urllib
-# import hashlib
 import time
 from random import random
 
