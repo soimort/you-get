@@ -6,6 +6,7 @@ from ..common import *
 
 import re
 import time
+import urllib
 from random import random
 
 
@@ -133,8 +134,13 @@ def pptv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
     total_size = sum(map(int, fs))
     assert rid.endswith('.mp4')
     print_info(site_info, title, 'mp4', total_size)
+
     if not info_only:
-        download_urls(urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge)
+        try:
+            download_urls(urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge)
+        except urllib.error.HTTPError:
+            #for key expired
+            pptv_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def pptv_download(url, output_dir = '.', merge = True, info_only = False):
     assert re.match(r'http://v.pptv.com/show/(\w+)\.html$', url)
