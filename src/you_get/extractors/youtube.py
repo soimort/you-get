@@ -43,8 +43,8 @@ class YouTube(VideoExtractor):
             code = re.sub(r'var\s+', r'', code)
             code = re.sub(r'(\w+).join\(""\)', r'"".join(\1)', code)
             code = re.sub(r'(\w+).length', r'len(\1)', code)
-            code = re.sub(r'(\w+).reverse\(\)', r'\1[::-1]', code)
             code = re.sub(r'(\w+).slice\((\w+)\)', r'\1[\2:]', code)
+            code = re.sub(r'(\w+).splice\((\w+),(\w+)\)', r'del \1[\2:\2+\3]', code)
             code = re.sub(r'(\w+).split\(""\)', r'list(\1)', code)
             return code
 
