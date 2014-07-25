@@ -173,7 +173,9 @@ class VideoExtractor():
                 log.e('This is most likely because the video has not been made available in your country.')
                 log.e('You may try to use a proxy via \'-y\' for extracting stream data.')
                 exit(1)
-            #download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'], output_dir=kwargs['output_dir'], merge=kwargs['merge'])
-            download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'])
+            # For legacy main()
+            download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'], output_dir=kwargs['output_dir'], merge=kwargs['merge'])
+            # For main_dev()
+            #download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'])
 
         self.__init__()
