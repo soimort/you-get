@@ -22,6 +22,7 @@ class VideoExtractor():
         self.streams = {}
         self.streams_sorted = []
         self.audiolang = None
+        self.password_protected = False
 
         if args:
             self.url = args[0]

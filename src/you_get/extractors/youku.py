@@ -66,6 +66,9 @@ class Youku(VideoExtractor):
             if metadata0['error_code'] == -8:
                 log.w('[Warning] This video can only be streamed within Mainland China!')
                 log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
+            elif metadata0['error_code'] == -6:
+                log.w('[Warning] This video is password protected.')
+                self.password_protected = True
 
         self.title = metadata0['title']
 
@@ -100,8 +103,16 @@ class Youku(VideoExtractor):
             stream_id = self.streams_sorted[0]['id']
 
         m3u8_url = "http://v.youku.com/player/getM3U8/vid/{vid}/type/{stream_id}/video.m3u8".format(vid=self.vid, stream_id=stream_id)
-        m3u8 = get_html(m3u8_url)
-        if m3u8:
+
+        if not kwargs['info_only']:
+            if self.password_protected:
+                password = input(log.sprint('Password: ', log.YELLOW))
+                m3u8_url += '?password={}'.format(password)
+
+            m3u8 = get_html(m3u8_url)
+            if not m3u8 and self.password_protected:
+                log.wtf('[Failed] Wrong password.')
+
             self.streams[stream_id]['src'] = __class__.parse_m3u8(m3u8)
 
 site = Youku()
