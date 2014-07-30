@@ -43,7 +43,7 @@ Supported Sites (As of Now)
 * Youku (优酷) http://www.youku.com
 * Tudou (土豆) http://www.tudou.com
 * YinYueTai (音悦台) http://www.yinyuetai.com
-* AcFun http://www.acfun.com
+* AcFun http://www.acfun.tv
 * bilibili http://www.bilibili.com
 * CNTV (中国网络电视台) http://www.cntv.cn
 * Douban (豆瓣) http://douban.com
