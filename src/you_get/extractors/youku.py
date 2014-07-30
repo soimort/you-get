@@ -62,6 +62,11 @@ class Youku(VideoExtractor):
             log.wtf('[Failed] Video not found.')
         metadata0 = meta['data'][0]
 
+        if 'error_code' in metadata0 and metadata0['error_code']:
+            if metadata0['error_code'] == -8:
+                log.w('[Warning] This video can only be streamed within Mainland China!')
+                log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
+
         self.title = metadata0['title']
 
         if 'dvd' in metadata0 and 'audiolang' in metadata0['dvd']:
@@ -96,11 +101,8 @@ class Youku(VideoExtractor):
 
         m3u8_url = "http://v.youku.com/player/getM3U8/vid/{vid}/type/{stream_id}/video.m3u8".format(vid=self.vid, stream_id=stream_id)
         m3u8 = get_html(m3u8_url)
-        if not m3u8:
-            log.w('[Warning] This video can only be streamed within Mainland China!')
-            log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
-
-        self.streams[stream_id]['src'] = __class__.parse_m3u8(m3u8)
+        if m3u8:
+            self.streams[stream_id]['src'] = __class__.parse_m3u8(m3u8)
 
 site = Youku()
 download = site.download_by_url
