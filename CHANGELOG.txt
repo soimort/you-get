@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.30dev-20140730
+------------------
+
+*Date: 2014-07-30*
+
+* YouTube: support fixed
+* Youku: password-protected video support
+
 0.3.30dev-20140723
 ------------------
 
