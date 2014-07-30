@@ -88,7 +88,7 @@ class Youku(VideoExtractor):
 
             if stream_id not in self.streams:
                 log.e('[Error] Invalid video format.')
-                log.e('Use without specifying any video format to check all available formats.')
+                log.e('Run \'-i\' command with no specific video format to view all available formats.')
                 exit(2)
         else:
             # Extract stream with the best quality
