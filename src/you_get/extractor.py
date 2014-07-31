@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .common import match1, download_urls
+from .common import match1, download_urls, parse_host, set_proxy, unset_proxy
 from .util import log
 
 class Extractor():
@@ -30,9 +30,8 @@ class VideoExtractor():
     def download_by_url(self, url, **kwargs):
         self.url = url
 
-        #global extractor_proxy
-        #if extractor_proxy:
-        #    set_proxy(parse_host(extractor_proxy))
+        if kwargs['extractor_proxy']:
+            set_proxy(parse_host(kwargs['extractor_proxy']))
         self.prepare(**kwargs)
 
         try:
@@ -42,17 +41,16 @@ class VideoExtractor():
 
         self.extract(**kwargs)
 
-        #if extractor_proxy:
-        #    unset_proxy()
+        if kwargs['extractor_proxy']:
+            unset_proxy()
 
         self.download(**kwargs)
 
     def download_by_vid(self, vid, **kwargs):
         self.vid = vid
 
-        #global extractor_proxy
-        #if extractor_proxy:
-        #    set_proxy(parse_host(extractor_proxy))
+        if kwargs['extractor_proxy']:
+            set_proxy(parse_host(kwargs['extractor_proxy']))
         self.prepare(**kwargs)
 
         try:
@@ -61,8 +59,8 @@ class VideoExtractor():
             self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
 
         self.extract(**kwargs)
-        #if extractor_proxy:
-        #    unset_proxy()
+        if kwargs['extractor_proxy']:
+            unset_proxy()
 
         self.download(**kwargs)
 
