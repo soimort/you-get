@@ -30,7 +30,7 @@ class VideoExtractor():
     def download_by_url(self, url, **kwargs):
         self.url = url
 
-        if kwargs['extractor_proxy']:
+        if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             set_proxy(parse_host(kwargs['extractor_proxy']))
         self.prepare(**kwargs)
 
@@ -41,7 +41,7 @@ class VideoExtractor():
 
         self.extract(**kwargs)
 
-        if kwargs['extractor_proxy']:
+        if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             unset_proxy()
 
         self.download(**kwargs)
@@ -49,7 +49,7 @@ class VideoExtractor():
     def download_by_vid(self, vid, **kwargs):
         self.vid = vid
 
-        if kwargs['extractor_proxy']:
+        if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             set_proxy(parse_host(kwargs['extractor_proxy']))
         self.prepare(**kwargs)
 
@@ -59,7 +59,7 @@ class VideoExtractor():
             self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
 
         self.extract(**kwargs)
-        if kwargs['extractor_proxy']:
+        if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             unset_proxy()
 
         self.download(**kwargs)
