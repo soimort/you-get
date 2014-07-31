@@ -4,8 +4,21 @@ __all__ = ['qq_download']
 
 from ..common import *
 
+#QQMUSIC
+#SINGLE
+#1. http://y.qq.com/#type=song&mid=000A9lMb0iEqwN
+#2. http://y.qq.com/#type=song&id=4754713
+#3. http://s.plcloud.music.qq.com/fcgi-bin/fcg_yqq_song_detail_info.fcg?songmid=002NqCeX3owQIw
+#4. http://s.plcloud.music.qq.com/fcgi-bin/fcg_yqq_song_detail_info.fcg?songid=4754713
+#ALBUM
+#1. http://y.qq.com/y/static/album/3/c/00385vBa0n3O3c.html?pgv_ref=qqmusic.y.index.music.pic1
+#2. http://y.qq.com/#type=album&mid=004c62RC2uujor
+#MV
+#can download as video through qq_download_by_id
+#1. http://y.qq.com/y/static/mv/mv_play.html?vid=i0014ufczcw
+
 def qq_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False):
-    xml = get_html('http://www.acfun.com/getinfo?vids=%s' % id)
+    xml = get_html('http://www.acfun.tv/getinfo?vids=%s' % id)
     from xml.dom.minidom import parseString
     doc = parseString(xml)
     doc_root = doc.getElementsByTagName('root')[0]

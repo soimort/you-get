@@ -37,6 +37,7 @@ from .sohu import *
 from .songtaste import *
 from .soundcloud import *
 from .theplatform import *
+from .tucao import *
 from .tudou import *
 from .tumblr import *
 from .vid48 import *
