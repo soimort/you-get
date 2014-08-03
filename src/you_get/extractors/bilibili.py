@@ -65,11 +65,15 @@ def parse_cid_playurl(xml):
     urls = [durl.getElementsByTagName('url')[0].firstChild.nodeValue for durl in doc.getElementsByTagName('durl')]
     return urls
 
-def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_only = False):
-    sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + id + secretkey, 'utf-8')).hexdigest()
-    url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + id + '&sign=' + sign_this
-    urls = [i if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i) else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i) for i in parse_cid_playurl(get_content(url, headers=client))]
-        #get_html(url, 'utf-8'))] # dirty fix for QQ
+def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only=False):
+    urls = []
+    for cid in cids:
+        sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + cid + secretkey, 'utf-8')).hexdigest()
+        url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + cid + '&sign=' + sign_this
+        urls += [i
+                if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i)
+                else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
+                for i in parse_cid_playurl(get_content(url, headers=client))]
 
     if re.search(r'\.(flv|hlv)\b', urls[0]):
         type = 'flv'
@@ -87,9 +91,35 @@ def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_onl
 
     print_info(site_info, title, type, size)
     if not info_only:
-        download_urls(urls, title, type, total_size = None, output_dir = output_dir, merge = merge)
+        download_urls(urls, title, type, total_size=None, output_dir=output_dir, merge=merge)
 
-def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
+def bilibili_download_by_cid(id, title, output_dir='.', merge=True, info_only=False):
+    sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + id + secretkey, 'utf-8')).hexdigest()
+    url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + id + '&sign=' + sign_this
+    urls = [i
+            if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i)
+            else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
+            for i in parse_cid_playurl(get_content(url, headers=client))]
+
+    if re.search(r'\.(flv|hlv)\b', urls[0]):
+        type = 'flv'
+    elif re.search(r'/flv/', urls[0]):
+        type = 'flv'
+    elif re.search(r'/mp4/', urls[0]):
+        type = 'mp4'
+    else:
+        type = 'flv'
+
+    size = 0
+    for url in urls:
+        _, _, temp = url_info(url)
+        size += temp
+
+    print_info(site_info, title, type, size)
+    if not info_only:
+        download_urls(urls, title, type, total_size=None, output_dir=output_dir, merge=merge)
+
+def bilibili_download(url, output_dir='.', merge=True, info_only=False):
     html = get_html(url)
 
     title = r1(r'<h2[^>]*>([^<>]+)</h2>', html)
@@ -101,7 +131,16 @@ def bilibili_download(url, output_dir = '.', merge = True, info_only = False):
     t, id = flashvars.split('=', 1)
     id = id.split('&')[0]
     if t == 'cid':
-        bilibili_download_by_cid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        # Multi-P
+        cids = []
+        p = re.findall('<option value=\'([^\']*)\'>', html)
+        for i in p:
+            html = get_html("http://www.bilibili.com%s" % i)
+            flashvars = r1_of([r'player_params=\'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+            t, cid = flashvars.split('=', 1)
+            cids.append(cid.split('&')[0])
+        bilibili_download_by_cids(cids, title, output_dir=output_dir, merge=merge, info_only=info_only)
+
     elif t == 'vid':
         sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'ykid':
