@@ -14,6 +14,13 @@ import re
 # API key provided by cnbeining
 appkey='85eb6835b0a1034e';
 secretkey = '2ad42749773c441109bdc0191257a664'
+client = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Charset': 'UTF-8,*;q=0.5',
+    'Accept-Encoding': 'gzip,deflate,sdch',
+    'Accept-Language': 'en-US,en;q=0.8',
+    'User-Agent': 'Biligrab /0.8 (cnbeining@gmail.com)'
+}
 
 def get_srt_xml(id):
     url = 'http://comment.bilibili.com/%s.xml' % id
@@ -61,7 +68,8 @@ def parse_cid_playurl(xml):
 def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_only = False):
     sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + id + secretkey, 'utf-8')).hexdigest()
     url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + id + '&sign=' + sign_this
-    urls = [i if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i) else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i) for i in parse_cid_playurl(get_html(url, 'utf-8'))] # dirty fix for QQ
+    urls = [i if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i) else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i) for i in parse_cid_playurl(get_content(url, headers=client))]
+        #get_html(url, 'utf-8'))] # dirty fix for QQ
 
     if re.search(r'\.(flv|hlv)\b', urls[0]):
         type = 'flv'
