@@ -8,7 +8,12 @@ from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_id
 from .youku import youku_download_by_vid
 
+import hashlib
 import re
+
+# API key provided by cnbeining
+appkey='85eb6835b0a1034e';
+secretkey = '2ad42749773c441109bdc0191257a664'
 
 def get_srt_xml(id):
     url = 'http://comment.bilibili.com/%s.xml' % id
@@ -54,7 +59,8 @@ def parse_cid_playurl(xml):
     return urls
 
 def bilibili_download_by_cid(id, title, output_dir = '.', merge = True, info_only = False):
-    url = 'http://interface.bilibili.com/playurl?cid=' + id
+    sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + id + secretkey, 'utf-8')).hexdigest()
+    url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + id + '&sign=' + sign_this
     urls = [i if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i) else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i) for i in parse_cid_playurl(get_html(url, 'utf-8'))] # dirty fix for QQ
 
     if re.search(r'\.(flv|hlv)\b', urls[0]):
