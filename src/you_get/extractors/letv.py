@@ -25,6 +25,22 @@ def get_key(t):
 def video_info(vid):
     tn = get_timestamp()
     key = get_key(tn)
+#old api reserve for future use or for example
+    # url = 'http://api.letv.com/mms/out/video/play?id={}&platid=1&splatid=101&format=1&tkey={}&domain=www.letv.com'.format(vid, key)
+    # print(url)
+    # r = get_content(url, decoded=False)
+    # print(r)
+    # xml_obj = ET.fromstring(r)
+    # info = json.loads(xml_obj.find("playurl").text)
+    # title = info.get('title')
+    # urls = info.get('dispatch')
+    # for k in urls.keys():
+    #     url = urls[k][0]
+    #     break
+    # url += '&termid=1&format=0&hwtype=un&ostype=Windows7&tag=letv&sign=letv&expect=1&pay=0&rateid={}'.format(k)
+    # return url, title
+
+
     url="http://api.letv.com/mms/out/common/geturl?platid=3&splatid=301&playid=0&vtype=9,13,21,28&version=2.0&tss=no&vid={}&domain=www.letv.com&tkey={}".format(vid,key)
     r = get_content(url, decoded=False)
     info=json.loads(str(r,"utf-8"))
@@ -34,8 +50,13 @@ def video_info(vid):
             size=int(i["gsize"])
             url=i["mainUrl"]
 
-    url += '&termid=1&format=0&hwtype=un&ostype=Windows7&tag=letv&sign=letv&expect=1&pay=0&rateid=1300'   #{}'.format(k)
-    return url
+    url+="&ctv=pc&m3v=1&termid=1&format=1&hwtype=un&ostype=Linux&tag=letv&sign=letv&expect=3&tn={}&pay=0&iscpn=f9051&rateid=1300".format(random.random())
+    # url += '&termid=1&format=0&hwtype=un&ostype=Windows7&tag=letv&sign=letv&expect=1&pay=0&rateid=1000'   #{}'.format(k)
+    r2=get_content(url,decoded=False)
+    info2=json.loads(str(r2,"utf-8"))
+    return info2["location"]
+
+    # return url
 
 def letv_download_by_vid(vid,title, output_dir='.', merge=True, info_only=False):
     url= video_info(vid)
