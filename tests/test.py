@@ -18,10 +18,6 @@ class YouGetTests(unittest.TestCase):
         mixcloud.download("http://www.mixcloud.com/beatbopz/beat-bopz-disco-mix/", info_only=True)
         mixcloud.download("http://www.mixcloud.com/DJVadim/north-america-are-you-ready/", info_only=True)
 
-    def test_ted(self):
-        ted.download("http://www.ted.com/talks/jennifer_lin_improvs_piano_magic.html", info_only=True)
-        ted.download("http://www.ted.com/talks/derek_paravicini_and_adam_ockelford_in_the_key_of_genius.html", info_only=True)
-
     def test_vimeo(self):
         vimeo.download("http://vimeo.com/56810854", info_only=True)
 
