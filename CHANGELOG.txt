@@ -1,6 +1,20 @@
 Changelog
 =========
 
+0.3.30dev-20140806
+------------------
+
+*Date: 2014-08-06*
+
+* Bug fixes:
+    - Youku
+    - Nicovideo
+    - Bilibili
+    - Letv
+* New site support:
+    - Tucao.cc
+* Use FFmpeg concat demuxer to join video segments (ffmpeg>=1.1)
+
 0.3.30dev-20140730
 ------------------
 
