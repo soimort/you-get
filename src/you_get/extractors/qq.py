@@ -3,7 +3,7 @@
 __all__ = ['qq_download']
 
 from ..common import *
-
+import uuid
 #QQMUSIC
 #SINGLE
 #1. http://y.qq.com/#type=song&mid=000A9lMb0iEqwN
@@ -25,19 +25,36 @@ def qq_download_by_id(id, title=None, output_dir='.', merge=True, info_only=Fals
     doc_vl = doc_root.getElementsByTagName('vl')[0]
     doc_vi = doc_vl.getElementsByTagName('vi')[0]
     fn = doc_vi.getElementsByTagName('fn')[0].firstChild.data
-    fclip = doc_vi.getElementsByTagName('fclip')[0].firstChild.data
-    if int(fclip) > 0:
-        fn = fn[:-4] + "." + fclip + fn[-4:]
+    # fclip = doc_vi.getElementsByTagName('fclip')[0].firstChild.data
+    # fc=doc_vi.getElementsByTagName('fc')[0].firstChild.data
     fvkey = doc_vi.getElementsByTagName('fvkey')[0].firstChild.data
     doc_ul = doc_vi.getElementsByTagName('ul')
-    url = doc_ul[0].getElementsByTagName('url')[0].firstChild.data
-    url = url + fn + '?vkey=' + fvkey
 
-    _, ext, size = url_info(url)
+
+    url = doc_ul[0].getElementsByTagName('url')[1].firstChild.data
+
+    # print(i.firstChild.data)
+    urls=[]
+    ext=fn[-3:]
+    size=0
+    for i in doc.getElementsByTagName("cs"):
+        size+=int(i.firstChild.data)
+
+    # size=sum(map(int,doc.getElementsByTagName("cs")))
+    locid=str(uuid.uuid4())
+    for i in doc.getElementsByTagName("ci"):
+        urls.append(url+fn[:-4] + "." + i.getElementsByTagName("idx")[0].firstChild.data + fn[-4:] + '?vkey=' + fvkey+ '&sdtfrom=v1000&type='+ fn[-3:0] +'&locid=' + locid + "&&level=1&platform=11&br=133&fmt=hd&sp=0")
+        
+    print(urls)    
+    # if int(fclip) > 0:
+    #     fn = fn[:-4] + "." + fclip + fn[-4:]
+    # url = url + fn + '?vkey=' + fvkey
+
+    # _, ext, size = url_info(url)
 
     print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
+        download_urls(urls, title, ext, size, output_dir=output_dir, merge=merge)
 
 def qq_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://v.qq.com/([^\?]+)\?vid', url):
