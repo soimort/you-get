@@ -41,7 +41,7 @@ from .tucao import *
 from .tudou import *
 from .tumblr import *
 from .vid48 import *
-form .videobam import *
+from .videobam import *
 from .vimeo import *
 from .vine import *
 from .vk import *
