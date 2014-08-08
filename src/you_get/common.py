@@ -928,7 +928,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
 
 def url_to_module(url):
-    from .extractors import netease, w56, acfun, baidu, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, douban, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
+    from .extractors import netease, w56, acfun, baidu, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, douban, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
 
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
@@ -988,6 +988,7 @@ def url_to_module(url):
         'tudou': tudou,
         'tumblr': tumblr,
         'vid48': vid48,
+        'videobam': videobam,
         'vimeo': vimeo,
         'vine': vine,
         'vk': vk,
