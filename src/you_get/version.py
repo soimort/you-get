@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 
 script_name = 'you-get'
-__version__ = '0.3.30dev-20140806'
+__version__ = '0.3.30dev-20140807-videobam-Beining'

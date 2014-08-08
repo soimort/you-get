@@ -36,6 +36,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * JPopsuki <http://jpopsuki.tv>
 * MTV 81 <http://www.mtv81.com>
 * VID48 <http://vid48.com>
+* VideoBam <http://videobam.com>
 * Niconico (ニコニコ動画) <http://www.nicovideo.jp>
 * Youku (优酷) <http://www.youku.com>
 * Tudou (土豆) <http://www.tudou.com>
