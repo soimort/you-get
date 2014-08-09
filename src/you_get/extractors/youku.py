@@ -155,7 +155,7 @@ class Youku(VideoExtractor):
         if not kwargs['info_only']:
             if self.password_protected:
                 password = input(log.sprint('Password: ', log.YELLOW))
-                m3u8_url += '?password={}'.format(password)
+                m3u8_url += '&password={}'.format(password)
 
             m3u8 = get_html(m3u8_url)
             if not m3u8 and self.password_protected:
