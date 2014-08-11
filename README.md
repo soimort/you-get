@@ -66,6 +66,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 * Alive.in.th <http://alive.in.th>
 * VK <http://vk.com>
 * Catfun (喵星球) <http://www.catfun.tv>
+* VideoBam <http://videobam.com>
 
 ## Dependencies
 
