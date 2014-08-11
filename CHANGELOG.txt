@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3.30dev-20140812
+------------------
+
+*Date: 2014-08-12*
+
+* Bug fixes:
+    - Youku
+* New site support:
+    - VideoBam (by @cnbeining)
+
 0.3.30dev-20140806
 ------------------
 
