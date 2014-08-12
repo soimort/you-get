@@ -7,11 +7,16 @@ def get_usable_ffmpeg(cmd):
     try:
         p = subprocess.Popen([cmd, '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = p.communicate()
-        vers = str(out, 'utf-8').split('\n')[0].split(' ')
+        vers = str(out, 'utf-8').split('\n')[0].split()
         assert (vers[0] == 'ffmpeg' and vers[2][0] > '0') or (vers[0] == 'avconv')
-        return cmd, [int(i) for i in vers[2].split('.')]
+        #if the version is strange like 'N-1234-gd1111', set version to 2.0
+        try:
+            version = [int(i) for i in vers[2].split('.')]
+        except:
+            version = [2, 0]
+        return cmd, version
     except:
-        return None
+        return None, None
 
 FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv')
 
