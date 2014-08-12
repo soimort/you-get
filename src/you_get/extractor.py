@@ -162,7 +162,7 @@ class VideoExtractor():
                 stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
 
             if 'index' not in kwargs:
-                self.p(None)
+                self.p(stream_id)
             else:
                 self.p_i(stream_id)
 
