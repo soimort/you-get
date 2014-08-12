@@ -69,6 +69,7 @@ Supported Sites (As of Now)
 * Alive.in.th http://alive.in.th
 * VK http://vk.com
 * Catfun (喵星球) http://www.catfun.tv
+* VideoBam http://videobam.com
 
 Dependencies
 ------------
