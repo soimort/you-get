@@ -13,12 +13,16 @@ def get_usable_ffmpeg(cmd):
         try:
             version = [int(i) for i in vers[2].split('.')]
         except:
-            version = [2, 0]
+            version = [1, 0]
         return cmd, version
     except:
-        return None, None
+        return None
 
-FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv')
+get_usable_ffmpeg_result = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv')
+if get_usable_ffmpeg_result:
+    FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg_result
+else:
+    FFMPEG, FFMPEG_VERSION = None, None
 
 def has_ffmpeg_installed():
     return FFMPEG is not None
