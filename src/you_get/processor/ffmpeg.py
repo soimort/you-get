@@ -18,11 +18,7 @@ def get_usable_ffmpeg(cmd):
     except:
         return None
 
-get_usable_ffmpeg_result = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv')
-if get_usable_ffmpeg_result:
-    FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg_result
-else:
-    FFMPEG, FFMPEG_VERSION = None, None
+FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv') or (None, None)
 
 def has_ffmpeg_installed():
     return FFMPEG is not None
