@@ -129,7 +129,7 @@ class YouTube(VideoExtractor):
             else:
                 # Parse video page instead
                 video_page = get_content('http://www.youtube.com/watch?v=%s' % self.vid)
-                ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+});', video_page).group(1))
+                ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
 
                 self.title = ytplayer_config['args']['title']
                 self.html5player = 'http:' + ytplayer_config['assets']['js']

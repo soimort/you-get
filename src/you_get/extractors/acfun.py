@@ -58,7 +58,7 @@ def acfun_download(url, output_dir = '.', merge = True, info_only = False):
     title = escape_file_path(title)
     assert title
 
-    videos = re.findall("data-vid=\"(\d+)\" href=\"[^\"]+\" title=\"([^\"]+)\"", html)
+    videos = re.findall("data-vid=\"(\d+)\".*href=\"[^\"]+\".*title=\"([^\"]+)\"", html)
     if videos is not None:
         for video in videos:
             p_vid = video[0]
