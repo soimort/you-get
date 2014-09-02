@@ -70,11 +70,10 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
 
     title = info["data"]["vi"]["vn"]
 
-
     #for highest qualities
     #for http://www.iqiyi.com/v_19rrmmz5yw.html  not vp -> np
     try:
-        if info["data"]["vp"] or info["data"]['vp']["tkl"]=='' :
+        if not info["data"]["vp"] and info["data"]['vp']["tkl"]=='' :
             raise ValueError
     except:
         log.e("[Error] Do not support for iQIYI VIP video.")
