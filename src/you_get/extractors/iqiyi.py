@@ -72,6 +72,15 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
 
 
     #for highest qualities
+    #for http://www.iqiyi.com/v_19rrmmz5yw.html  not vp -> np
+    try:
+        if info["data"]["vp"] or info["data"]['vp']["tkl"]=='' :
+            raise ValueError
+    except:
+        log.e("[Error] Do not support for iQIYI VIP video.")
+        exit(-1)
+
+    # assert info["data"]['vp']["tkl"]!=''
     bid=0
     for i in info["data"]["vp"]["tkl"][0]["vs"]:
         if int(i["bid"])<=10 and int(i["bid"])>=bid:
