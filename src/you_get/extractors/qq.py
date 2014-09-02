@@ -44,8 +44,7 @@ def qq_download_by_id(id, title=None, output_dir='.', merge=True, info_only=Fals
     locid=str(uuid.uuid4())
     for i in doc.getElementsByTagName("ci"):
         urls.append(url+fn[:-4] + "." + i.getElementsByTagName("idx")[0].firstChild.data + fn[-4:] + '?vkey=' + fvkey+ '&sdtfrom=v1000&type='+ fn[-3:0] +'&locid=' + locid + "&&level=1&platform=11&br=133&fmt=hd&sp=0")
-        
-    print(urls)    
+
     # if int(fclip) > 0:
     #     fn = fn[:-4] + "." + fclip + fn[-4:]
     # url = url + fn + '?vkey=' + fvkey
