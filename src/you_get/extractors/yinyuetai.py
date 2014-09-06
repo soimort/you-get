@@ -7,14 +7,15 @@ from ..common import *
 def yinyuetai_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     assert title
     html = get_html('http://www.yinyuetai.com/insite/get-video-info?flex=true&videoId=' + id)
-    
+
     for quality in ['he\w*', 'hd\w*', 'hc\w*', '\w+']:
         url = r1(r'(http://' + quality + '\.yinyuetai\.com/uploads/videos/common/\w+\.(?:flv|mp4)\?(?:sc=[a-f0-9]{16}|v=\d{12}))', html)
         if url:
             break
     assert url
-    type, ext, size = url_info(url)
-    
+    type = ext = r1(r'\.(flv|mp4)', url)
+    _, _, size = url_info(url)
+
     print_info(site_info, title, type, size)
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge)
