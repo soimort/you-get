@@ -44,9 +44,7 @@ class Youku(VideoExtractor):
 
             return result
 
-        ep = ep.encode('ascii') if isinstance(ep, str) else ep
-
-        e_code = trans_e(f_code_1, base64.b64decode(ep))
+        e_code = trans_e(f_code_1, base64.b64decode(bytes(ep, 'ascii')))
         sid, token = e_code.split('_')
         new_ep = trans_e(f_code_2, '%s_%s_%s' % (sid, vid, token))
         return base64.b64encode(bytes(new_ep, 'latin')), sid, token
