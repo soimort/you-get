@@ -557,7 +557,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
         if not merge:
             print()
             return
-        if ext == 'flv':
+        if ext in ['flv', 'f4v']:
             try:
                 from .processor.ffmpeg import has_ffmpeg_installed
                 if has_ffmpeg_installed():
