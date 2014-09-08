@@ -3,27 +3,24 @@
 __all__ = ['tudou_download', 'tudou_download_playlist', 'tudou_download_by_id', 'tudou_download_by_iid']
 
 from ..common import *
+from xml.dom.minidom import parseString
 
 def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only = False):
     data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?iid=%s' % iid))
-    vids = []
-    for k in data:
-        if len(data[k]) > 0:
-            vids.append({"k": data[k][0]["k"], "size": data[k][0]["size"]})
+    temp = max([data[i] for i in data], key=lambda x:x[0]["size"])
+    vids, size = [t["k"] for t in temp], sum([t["size"] for t in temp])
+    urls = [[n.firstChild.nodeValue.strip()
+             for n in
+                parseString(
+                    get_html('http://ct.v2.tudou.com/f?id=%s' % vid))
+                .getElementsByTagName('f')][0]
+            for vid in vids]
 
-    temp = max(vids, key=lambda x:x["size"])
-    vid, size = temp["k"], temp["size"]
-
-    xml = get_html('http://ct.v2.tudou.com/f?id=%s' % vid)
-    from xml.dom.minidom import parseString
-    doc = parseString(xml)
-    url = [n.firstChild.nodeValue.strip() for n in doc.getElementsByTagName('f')][0]
-
-    ext = r1(r'http://[\w.]*/(\w+)/[\w.]*', url)
+    ext = r1(r'http://[\w.]*/(\w+)/[\w.]*', urls[0])
 
     print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls([url], title, ext, size, output_dir = output_dir, merge = merge)
+        download_urls(urls, title, ext, size, output_dir=output_dir, merge = merge)
 
 def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = False):
     html = get_html('http://www.tudou.com/programs/view/%s/' % id)
