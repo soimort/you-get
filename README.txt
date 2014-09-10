@@ -85,7 +85,7 @@ Installation
 
 #) Install via Pip::
 
-    $ [sudo] pip install you-get
+    $ [sudo] pip3 install --pre you-get
 
    Check if the installation was successful::
 

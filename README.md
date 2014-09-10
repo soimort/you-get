@@ -80,7 +80,7 @@ __中文说明__已移至[wiki](https://github.com/soimort/you-get/wiki/%E4%B8%A
 
 ### 1. Install via Pip:
 
-    $ [sudo] pip install you-get
+    $ [sudo] pip3 install --pre you-get
 
    Check if the installation was successful:
 
