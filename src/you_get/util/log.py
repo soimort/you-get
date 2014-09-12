@@ -90,7 +90,7 @@ def e(message, exit_code=None):
     if exit_code is not None:
         exit(exit_code)
 
-def wtf(message, exit_code=-1):
+def wtf(message, exit_code=1):
     """What a Terrible Failure!"""
     print_log(message, RED, BOLD)
     if exit_code is not None:
