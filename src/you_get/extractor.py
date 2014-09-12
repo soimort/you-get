@@ -168,10 +168,7 @@ class VideoExtractor():
 
             urls = self.streams[stream_id]['src']
             if not urls:
-                log.e('[Failed] Cannot extract video source.')
-                log.e('This is most likely because the video has not been made available in your country.')
-                log.e('You may try to use a proxy via \'-y\' for extracting stream data.')
-                exit(1)
+                log.wtf('[Failed] Cannot extract video source.')
             # For legacy main()
             download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'], output_dir=kwargs['output_dir'], merge=kwargs['merge'])
             # For main_dev()
