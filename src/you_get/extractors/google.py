@@ -56,8 +56,9 @@ def google_download(url, output_dir = '.', merge = True, info_only = False):
             title = None
 
         html = get_html(url)
-        real_urls = re.findall(r'\[(\d+),\d+,\d+,"([^"]+)"\]', html)
-        real_url = unicodize(sorted(real_urls, key = lambda x : fmt_level[x[0]])[0][1])
+        temp = re.findall(r'\[(\d+),\d+,\d+,"([^"]+)"\]', html)
+        temp = sorted(temp, key = lambda x : fmt_level[x[0]])
+        real_urls = [unicodize(i[1]) for i in temp if i[0] == temp[0][0]]
 
         if title is None:
             post_url = r1(r'"(https://plus.google.com/\d+/posts/[^"]*)"', html)
@@ -70,9 +71,15 @@ def google_download(url, output_dir = '.', merge = True, info_only = False):
                 filename = parse.unquote(r1(r'filename="?(.+)"?', response.headers['content-disposition'])).split('.')
                 title = ''.join(filename[:-1])
 
-        type, ext, size = url_info(real_url)
-        if ext is None:
-            ext = 'mp4'
+        for i in range(0, len(real_urls)):
+            real_url = real_urls[i]
+            type, ext, size = url_info(real_url)
+            if ext is None:
+                ext = 'mp4'
+
+            print_info(site_info, "%s[%s]" % (title, i), ext, size)
+            if not info_only:
+                download_urls([real_url], "%s[%s]" % (title, i), ext, size, output_dir, merge = merge)
 
     elif service in ['docs', 'drive'] : # Google Docs
 
@@ -91,9 +98,9 @@ def google_download(url, output_dir = '.', merge = True, info_only = False):
 
         type, ext, size = url_info(real_url)
 
-    print_info(site_info, title, ext, size)
-    if not info_only:
-        download_urls([real_url], title, ext, size, output_dir, merge = merge)
+        print_info(site_info, title, ext, size)
+        if not info_only:
+            download_urls([real_url], title, ext, size, output_dir, merge = merge)
 
 site_info = "Google.com"
 download = google_download
