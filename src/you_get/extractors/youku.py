@@ -158,10 +158,10 @@ class Youku(VideoExtractor):
                 m3u8_url += '&password={}'.format(password)
 
             m3u8 = get_html(m3u8_url)
-            if not m3u8 and self.password_protected:
-                log.wtf('[Failed] Wrong password.')
 
             self.streams[stream_id]['src'] = __class__.parse_m3u8(m3u8)
+            if not self.streams[stream_id]['src'] and self.password_protected:
+                log.e('[Failed] Wrong password.')
 
 site = Youku()
 download = site.download_by_url
