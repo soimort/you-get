@@ -12,7 +12,8 @@ from .youku import youku_download_by_vid
 import json, re
 
 def get_srt_json(id):
-    url = 'http://comment.acfun.tv/%s.json' % id
+    # url = 'http://comment.acfun.tv/%s.json' % id
+    url = 'http://static.comment.acfun.mm111.net/%s' %id
     return get_html(url)
 
 def get_srt_lock_json(id):
@@ -23,7 +24,7 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
     info = json.loads(get_html('http://www.acfun.tv/video/getVideo.aspx?id=' + vid))
     sourceType = info['sourceType']
     sourceId = info['sourceId']
-    danmakuId = info['danmakuId']
+    # danmakuId = info['danmakuId']
     if sourceType == 'sina':
         sina_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'youku':
@@ -39,13 +40,13 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
         title = get_filename(title)
         try:
             print('Downloading %s ...\n' % (title + '.cmt.json'))
-            cmt = get_srt_json(danmakuId)
+            cmt = get_srt_json(vid)
             with open(os.path.join(output_dir, title + '.cmt.json'), 'w') as x:
                 x.write(cmt)
-            print('Downloading %s ...\n' % (title + '.cmt_lock.json'))
-            cmt = get_srt_lock_json(danmakuId)
-            with open(os.path.join(output_dir, title + '.cmt_lock.json'), 'w') as x:
-                x.write(cmt)
+            # print('Downloading %s ...\n' % (title + '.cmt_lock.json'))
+            # cmt = get_srt_lock_json(danmakuId)
+            # with open(os.path.join(output_dir, title + '.cmt_lock.json'), 'w') as x:
+            #     x.write(cmt)
         except:
             pass
 
