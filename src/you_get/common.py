@@ -34,8 +34,7 @@ else:
 
 def tr(s):
     try:
-        s.encode(default_encoding)
-        return s
+        return s.encode(default_encoding)
     except:
         return str(s.encode('utf-8'))[2:-1]
 
