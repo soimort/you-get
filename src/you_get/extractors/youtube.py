@@ -138,7 +138,7 @@ class YouTube(VideoExtractor):
         elif video_info['status'] == ['fail']:
             if video_info['errorcode'] == ['150']:
                 video_page = get_content('http://www.youtube.com/watch?v=%s' % self.vid)
-                ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+});', video_page).group(1))
+                ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+});ytplayer', video_page).group(1))
 
                 if 'title' in ytplayer_config['args']:
                     # 150 Restricted from playback on certain sites
