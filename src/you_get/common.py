@@ -111,38 +111,6 @@ def escape_file_path(path):
     path = path.replace('?', '-')
     return path
 
-# DEPRECATED in favor of util.legitimize()
-def filenameable(text):
-    """Converts a string to a legal filename through various OSes.
-    """
-    # All POSIX systems
-    text = text.translate({
-        0: None,
-        ord('/'): '-',
-    })
-    if platform.system() == 'Windows': # For Windows
-        text = text.translate({
-            ord(':'): '-',
-            ord('*'): '-',
-            ord('?'): '-',
-            ord('\\'): '-',
-            ord('\"'): '\'',
-            ord('<'): '-',
-            ord('>'): '-',
-            ord('|'): '-',
-            ord('+'): '-',
-            ord('['): '(',
-            ord(']'): ')',
-        })
-    else:
-        if text.startswith("."):
-            text = text[1:]
-        if platform.system() == 'Darwin': # For Mac OS
-            text = text.translate({
-                ord(':'): '-',
-            })
-    return text
-
 def ungzip(data):
     """Decompresses data for Content-Encoding: gzip.
     """
