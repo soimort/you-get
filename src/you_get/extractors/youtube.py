@@ -89,7 +89,7 @@ class YouTube(VideoExtractor):
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
 
-        playlist_id = __class__.get_playlist_id_from_url(self.url)
+        playlist_id = self.__class__.get_playlist_id_from_url(self.url)
         if playlist_id is None:
             log.wtf('[Failed] Unsupported URL pattern.')
 
@@ -104,13 +104,13 @@ class YouTube(VideoExtractor):
         for video in videos:
             vid = parse_query_param(video, 'v')
             index = parse_query_param(video, 'index')
-            __class__().download_by_url(__class__.get_url_from_vid(vid), index=index, **kwargs)
+            self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
 
         if not self.vid and self.url:
-            self.vid = __class__.get_vid_from_url(self.url)
+            self.vid = self.__class__.get_vid_from_url(self.url)
 
             if self.vid is None:
                 self.download_playlist_by_url(self.url, **kwargs)
@@ -199,7 +199,7 @@ class YouTube(VideoExtractor):
         elif self.streams[stream_id]['s'] is not None:
             s = self.streams[stream_id]['s']
             js = get_content(self.html5player)
-            sig = __class__.decipher(js, s)
+            sig = self.__class__.decipher(js, s)
             src += '&signature={}'.format(sig)
 
         self.streams[stream_id]['src'] = [src]

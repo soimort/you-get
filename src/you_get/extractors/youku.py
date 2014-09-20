@@ -67,7 +67,7 @@ class Youku(VideoExtractor):
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
 
-        playlist_id = __class__.get_playlist_id_from_url(self.url)
+        playlist_id = self.__class__.get_playlist_id_from_url(self.url)
         if playlist_id is None:
             log.wtf('[Failed] Unsupported URL pattern.')
 
@@ -77,13 +77,13 @@ class Youku(VideoExtractor):
         self.p_playlist()
         for video in videos:
             index = parse_query_param(video, 'f')
-            __class__().download_by_url(video, index=index, **kwargs)
+            self.__class__().download_by_url(video, index=index, **kwargs)
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
 
         if self.url and not self.vid:
-            self.vid = __class__.get_vid_from_url(self.url)
+            self.vid = self.__class__.get_vid_from_url(self.url)
 
             if self.vid is None:
                 self.download_playlist_by_url(self.url, **kwargs)
@@ -137,7 +137,7 @@ class Youku(VideoExtractor):
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
 
-        new_ep, sid, token = __class__.generate_ep(self.vid, self.ep)
+        new_ep, sid, token = self.__class__.generate_ep(self.vid, self.ep)
         m3u8_query = parse.urlencode(dict(
             ctype=12,
             ep=new_ep,
@@ -159,7 +159,7 @@ class Youku(VideoExtractor):
 
             m3u8 = get_html(m3u8_url)
 
-            self.streams[stream_id]['src'] = __class__.parse_m3u8(m3u8)
+            self.streams[stream_id]['src'] = self.__class__.parse_m3u8(m3u8)
             if not self.streams[stream_id]['src'] and self.password_protected:
                 log.e('[Failed] Wrong password.')
 
