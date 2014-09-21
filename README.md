@@ -115,13 +115,24 @@ Check if the installation is successful:
 
     $ you-get -V
 
-### 2. Using Git (Recommended for Developers and Advanced Users)
+### 2. Downloading from PyPI
 
-    $ git clone git://github.com/soimort/you-get.git
+You can also download the Python wheel for each release from [PyPI](https://pypi.python.org/pypi/you-get).
+
+If you choose to download the wheel from a PyPI mirror or elsewhere, remember to verify the signature of the package. For example:
+
+    $ gpg --verify you_get-0.3.30-py3-none-any.whl.asc you_get-0.3.30-py3-none-any.whl
+
+### 3. Downloading from GitHub
+
+Download it [here](https://github.com/soimort/you-get/zipball/master) or:
+
+    $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
+    $ unzip you-get.zip
 
 Use the raw script without installation:
 
-    $ cd you-get/
+    $ cd soimort-you-get-*/
     $ ./you-get -V
 
 To install the package into the system path, execute:
@@ -132,16 +143,13 @@ Check if the installation is successful:
 
     $ you-get -V
 
-### 3. Direct Download
+### 4. Using Git (Recommended for Developers and Advanced Users)
 
-Download it [here](https://github.com/soimort/you-get/zipball/master) or:
-
-    $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
-    $ unzip you-get.zip
+    $ git clone git://github.com/soimort/you-get.git
 
 Use the raw script without installation:
 
-    $ cd soimort-you-get-*/
+    $ cd you-get/
     $ ./you-get -V
 
 To install the package into the system path, execute:
