@@ -45,4 +45,4 @@ install: bdist_wheel
 
 release: rst
 	zenity --question
-	$(SETUP) sdist bdist_wheel upload
+	$(SETUP) sdist bdist_wheel upload --sign
