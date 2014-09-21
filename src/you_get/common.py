@@ -33,9 +33,9 @@ else:
     default_encoding = locale.getpreferredencoding().lower()
 
 def tr(s):
-    try:
-        return s.encode(default_encoding)
-    except:
+    if default_encoding == 'utf-8':
+        return s
+    else:
         return str(s.encode('utf-8'))[2:-1]
 
 # DEPRECATED in favor of match1()
@@ -491,13 +491,13 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             traceback.print_exc(file = sys.stdout)
             pass
 
-    title = get_filename(title)
+    title = tr(get_filename(title))
 
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
     if total_size:
         if not force and os.path.exists(filepath) and os.path.getsize(filepath) >= total_size * 0.9:
-            print('Skipping %s: file already exists' % tr(filepath))
+            print('Skipping %s: file already exists' % filepath)
             print()
             return
         bar = SimpleProgressBar(total_size, len(urls))
@@ -571,13 +571,13 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 
     assert ext in ('ts')
 
-    title = get_filename(title)
+    title = tr(get_filename(title))
 
     filename = '%s.%s' % (title, 'ts')
     filepath = os.path.join(output_dir, filename)
     if total_size:
         if not force and os.path.exists(filepath[:-3] + '.mkv'):
-            print('Skipping %s: file already exists' % tr(filepath[:-3] + '.mkv'))
+            print('Skipping %s: file already exists' % filepath[:-3] + '.mkv')
             print()
             return
         bar = SimpleProgressBar(total_size, len(urls))
