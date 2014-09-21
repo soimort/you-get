@@ -1,6 +1,20 @@
 Changelog
 =========
 
+0.3.30
+------
+
+*Date: 2014-09-21*
+
+* First Alpha release
+* Support PyPy3
+* Bug fixes:
+    - YouTube
+    - Youku
+    - Tudou
+    - Niconico
+    - AcFun
+
 0.3.30dev-20140907
 ------------------
 
