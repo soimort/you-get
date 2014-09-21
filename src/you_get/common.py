@@ -226,6 +226,7 @@ def url_info(url, faker = False):
         'video/webm': 'webm',
         'video/x-flv': 'flv',
         'video/x-ms-asf': 'asf',
+        'audio/mp4': 'mp4',
         'audio/mpeg': 'mp3'
     }
     if type in mapping:
@@ -706,6 +707,8 @@ def print_info(site_info, title, type, size):
         type_info = "Advanced Systems Format (%s)" % type
     #elif type in ['video/mpeg']:
     #    type_info = "MPEG video (%s)" % type
+    elif type in ['audio/mp4']:
+        type_info = "MPEG-4 audio (%s)" % type
     elif type in ['audio/mpeg']:
         type_info = "MP3 (%s)" % type
     else:
