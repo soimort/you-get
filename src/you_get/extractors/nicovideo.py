@@ -18,7 +18,10 @@ context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
     request.install_opener(opener)
 
     import netrc, getpass
-    info = netrc.netrc().authenticators('nicovideo')
+    try:
+        info = netrc.netrc().authenticators('nicovideo')
+    except FileNotFoundError:
+        info = None
     if info is None:
         user = input("User:     ")
         password = getpass.getpass("Password: ")
