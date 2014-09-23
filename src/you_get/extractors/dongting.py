@@ -4,6 +4,16 @@ __all__ = ['dongting_download']
 
 from ..common import *
 
+_unit_prefixes = 'bkmg'
+
+def parse_size(size):
+    m = re.match(r'([\d.]+)(.(?:i?B)?)', size, re.I)
+    if m:
+        return int(float(m.group(1)) * 1024 **
+                   _unit_prefixes.index(m.group(2).lower()))
+    else:
+        return 0
+
 def dongting_download_lyric(lrc_url, file_name, output_dir):
     j = get_html(lrc_url)
     info = json.loads(j)
