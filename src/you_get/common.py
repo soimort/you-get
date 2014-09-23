@@ -993,12 +993,3 @@ def any_download_playlist(url, **kwargs):
 def main():
     script_main('you-get', any_download, any_download_playlist)
 
-_unit_prefixes = 'bkmg'
-
-def parse_size(size):
-    m = re.match(r'([\d.]+)(.(?:i?B)?)', size, re.I)
-    if m:
-        return int(float(m.group(1)) * 1024 **
-                   _unit_prefixes.index(m.group(2).lower()))
-    else:
-        return 0
