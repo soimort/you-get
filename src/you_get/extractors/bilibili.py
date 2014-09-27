@@ -66,7 +66,6 @@ def parse_cid_playurl(xml):
     return urls
 
 def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only=False):
-    urls = []
     for cid in cids:
         sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + cid + secretkey, 'utf-8')).hexdigest()
         url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + cid + '&sign=' + sign_this
@@ -134,12 +133,15 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
         # Multi-P
         cids = []
         p = re.findall('<option value=\'([^\']*)\'>', html)
-        for i in p:
-            html = get_html("http://www.bilibili.com%s" % i)
-            flashvars = r1_of([r'player_params=\'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
-            t, cid = flashvars.split('=', 1)
-            cids.append(cid.split('&')[0])
-        bilibili_download_by_cids(cids, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        if not p:
+            bilibili_download_by_cid(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        else:
+            for i in p:
+                html = get_html("http://www.bilibili.com%s" % i)
+                flashvars = r1_of([r'player_params=\'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+                t, cid = flashvars.split('=', 1)
+                cids.append(cid.split('&')[0])
+            bilibili_download_by_cids(cids, title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     elif t == 'vid':
         sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
