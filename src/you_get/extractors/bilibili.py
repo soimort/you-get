@@ -61,11 +61,15 @@ def parse_srt_xml(xml):
 
 def parse_cid_playurl(xml):
     from xml.dom.minidom import parseString
-    doc = parseString(xml.encode('utf-8'))
-    urls = [durl.getElementsByTagName('url')[0].firstChild.nodeValue for durl in doc.getElementsByTagName('durl')]
-    return urls
+    try:
+        doc = parseString(xml.encode('utf-8'))
+        urls = [durl.getElementsByTagName('url')[0].firstChild.nodeValue for durl in doc.getElementsByTagName('durl')]
+        return urls
+    except:
+        return []
 
 def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only=False):
+    urls = []
     for cid in cids:
         sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + cid + secretkey, 'utf-8')).hexdigest()
         url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + cid + '&sign=' + sign_this
@@ -125,22 +129,23 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
     title = unescape_html(title)
     title = escape_file_path(title)
 
-    flashvars = r1_of([r'(cid=\d+)', r'player_params=\'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+    flashvars = r1_of([r'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
     assert flashvars
     t, id = flashvars.split('=', 1)
     id = id.split('&')[0]
     if t == 'cid':
         # Multi-P
-        cids = []
+        cids = [id]
         p = re.findall('<option value=\'([^\']*)\'>', html)
         if not p:
             bilibili_download_by_cid(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
         else:
             for i in p:
                 html = get_html("http://www.bilibili.com%s" % i)
-                flashvars = r1_of([r'player_params=\'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
-                t, cid = flashvars.split('=', 1)
-                cids.append(cid.split('&')[0])
+                flashvars = r1_of([r'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+                if flashvars:
+                    t, cid = flashvars.split('=', 1)
+                    cids.append(cid.split('&')[0])
             bilibili_download_by_cids(cids, title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     elif t == 'vid':
