@@ -125,7 +125,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
     title = unescape_html(title)
     title = escape_file_path(title)
 
-    flashvars = r1_of([r'player_params=\'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+    flashvars = r1_of([r'(cid=\d+)', r'player_params=\'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
     assert flashvars
     t, id = flashvars.split('=', 1)
     id = id.split('&')[0]
