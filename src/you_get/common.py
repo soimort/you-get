@@ -246,7 +246,7 @@ def url_info(url, faker = False):
             ext = None
 
     if headers['transfer-encoding'] != 'chunked':
-        size = int(headers['content-length'])
+        size = int(headers['content-length'] or '-1')
     else:
         size = None
 

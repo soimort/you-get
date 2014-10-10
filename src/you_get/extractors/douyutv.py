@@ -7,7 +7,7 @@ import re
 import json
 
 def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
-    html = get_html(p_url)
+    html = get_html(url)
     room_id_patt = '"room_id":(\d{1,99}),'
     title_patt = '<title>([^<]{0,1000})</title>'
     
@@ -17,8 +17,8 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
     conf = get_html("http://www.douyutv.com/api/client/room/"+roomid)
     metadata = json.loads(conf)
     
-    rtmp_live= jcfg.get('data').get('rtmp_live')
-    rtmp_url= jcfg.get('data').get('rtmp_url')
+    rtmp_live= metadata.get('data').get('rtmp_live')
+    rtmp_url= metadata.get('data').get('rtmp_url')
     real_url = rtmp_url+'/'+rtmp_live
 
     type, ext, size = url_info(real_url)
