@@ -299,7 +299,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
     else:
         open_mode = 'wb'
 
-    if received < file_size:
+    if file_size==None or received < file_size:
         if faker:
             headers = fake_headers
         else:
@@ -315,9 +315,9 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
             end_length = end = int(response.headers['content-range'][6:].split('/')[1])
             range_length = end_length - range_start
         except:
-            range_length = int(response.headers['content-length'])
+            range_length = response.headers['content-length'] and int(response.headers['content-length'])
 
-        if file_size != received + range_length:
+        if range_length==None or file_size != received + range_length:
             received = 0
             if bar:
                 bar.received = 0
