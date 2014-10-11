@@ -13,6 +13,7 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
     
     roomid = re.findall(room_id_patt,html)[0]
     title = unescape_html(re.findall(title_patt,html)[0])
+    print(title)
 
     conf = get_html("http://www.douyutv.com/api/client/room/"+roomid)
     metadata = json.loads(conf)

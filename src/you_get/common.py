@@ -199,14 +199,17 @@ def url_size(url, faker = False):
     else:
         response = request.urlopen(url)
 
-    size = int(response.headers['content-length'])
-    return size
+    size = response.headers['content-length']
+    return int(size) if size!=None else None
 
 # TO BE DEPRECATED
 # urls_size() does not have a faker
 # also it takes too long time
 def urls_size(urls):
-    return sum(map(url_size, urls))
+    try:
+        return sum(map(url_size, urls))
+    except:
+        return None
 
 def url_info(url, faker = False):
     if faker:
@@ -245,8 +248,8 @@ def url_info(url, faker = False):
         else:
             ext = None
 
-    if headers['transfer-encoding'] != 'chunked':
-        size = int(headers['content-length'] or '-1')
+    if headers['transfer-encoding'] != 'chunked' and headers['content-length']:
+        size = int(headers['content-length']) 
     else:
         size = None
 
@@ -491,7 +494,6 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             import sys
             traceback.print_exc(file = sys.stdout)
             pass
-
     title = tr(get_filename(title))
 
     filename = '%s.%s' % (title, ext)
@@ -717,7 +719,10 @@ def print_info(site_info, title, type, size):
     print("Video Site:", site_info)
     print("Title:     ", unescape_html(tr(title)))
     print("Type:      ", type_info)
-    print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
+    if size:
+        print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
+    else:
+        print("Size:      ", "Unknow")    
     print()
 
 def mime_to_container(mime):
