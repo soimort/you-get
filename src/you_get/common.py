@@ -199,14 +199,17 @@ def url_size(url, faker = False):
     else:
         response = request.urlopen(url)
 
-    size = int(response.headers['content-length'])
-    return size
+    size = response.headers['content-length']
+    return int(size) if size!=None else None
 
 # TO BE DEPRECATED
 # urls_size() does not have a faker
 # also it takes too long time
 def urls_size(urls):
-    return sum(map(url_size, urls))
+    try:
+        return sum(map(url_size, urls))
+    except:
+        return None
 
 def url_info(url, faker = False):
     if faker:
@@ -245,8 +248,8 @@ def url_info(url, faker = False):
         else:
             ext = None
 
-    if headers['transfer-encoding'] != 'chunked':
-        size = int(headers['content-length'])
+    if headers['transfer-encoding'] != 'chunked' and headers['content-length']:
+        size = int(headers['content-length']) 
     else:
         size = None
 
@@ -296,7 +299,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
     else:
         open_mode = 'wb'
 
-    if received < file_size:
+    if file_size==None or received < file_size:
         if faker:
             headers = fake_headers
         else:
@@ -312,9 +315,9 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
             end_length = end = int(response.headers['content-range'][6:].split('/')[1])
             range_length = end_length - range_start
         except:
-            range_length = int(response.headers['content-length'])
+            range_length = response.headers['content-length'] and int(response.headers['content-length'])
 
-        if file_size != received + range_length:
+        if range_length==None or file_size != received + range_length:
             received = 0
             if bar:
                 bar.received = 0
@@ -491,7 +494,6 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             import sys
             traceback.print_exc(file = sys.stdout)
             pass
-
     title = tr(get_filename(title))
 
     filename = '%s.%s' % (title, ext)
@@ -717,7 +719,10 @@ def print_info(site_info, title, type, size):
     print("Video Site:", site_info)
     print("Title:     ", unescape_html(tr(title)))
     print("Type:      ", type_info)
-    print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
+    if size:
+        print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
+    else:
+        print("Size:      ", "Unknow")    
     print()
 
 def mime_to_container(mime):
@@ -898,7 +903,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
 
 def url_to_module(url):
-    from .extractors import netease, w56, acfun, baidu, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, douban, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
+    from .extractors import netease, w56, acfun, baidu, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
 
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
@@ -923,6 +928,7 @@ def url_to_module(url):
         'coursera': coursera,
         'dailymotion': dailymotion,
         'douban': douban,
+        'douyutv': douyutv,
         'ehow': ehow,
         'facebook': facebook,
         'freesound': freesound,

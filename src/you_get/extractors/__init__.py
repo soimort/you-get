@@ -11,6 +11,7 @@ from .cntv import *
 from .coursera import *
 from .dailymotion import *
 from .douban import *
+from .douyutv import *
 from .ehow import *
 from .facebook import *
 from .freesound import *
