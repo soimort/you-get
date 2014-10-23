@@ -125,12 +125,13 @@ def bilibili_download_by_cid(id, title, output_dir='.', merge=True, info_only=Fa
 def bilibili_download(url, output_dir='.', merge=True, info_only=False):
     html = get_html(url)
 
-    title = r1(r'<h2[^>]*>([^<>]+)</h2>', html)
+    title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',r'<h2[^>]*>([^<>]+)</h2>'], html)
     title = unescape_html(title)
     title = escape_file_path(title)
 
-    flashvars = r1_of([r'(cid=\d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+    flashvars = r1_of([r'(cid=\d+)', r'(cid: \d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
     assert flashvars
+    flashvars = flashvars.replace(': ','=')
     t, id = flashvars.split('=', 1)
     id = id.split('&')[0]
     if t == 'cid':

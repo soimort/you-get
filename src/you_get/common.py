@@ -246,7 +246,7 @@ def url_info(url, faker = False):
             ext = None
 
     if headers['transfer-encoding'] != 'chunked':
-        size = int(headers['content-length'])
+        size = int(headers['content-length'] or '-1')
     else:
         size = None
 
@@ -898,7 +898,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
 
 def url_to_module(url):
-    from .extractors import netease, w56, acfun, baidu, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
+    from .extractors import netease, w56, acfun, baidu, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
 
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
@@ -924,6 +924,7 @@ def url_to_module(url):
         'dailymotion': dailymotion,
         'dongting': dongting,
         'douban': douban,
+        'douyutv': douyutv,
         'ehow': ehow,
         'facebook': facebook,
         'freesound': freesound,
