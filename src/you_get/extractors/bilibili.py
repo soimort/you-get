@@ -116,7 +116,7 @@ def bilibili_download_by_cid(id, title, output_dir='.', merge=True, info_only=Fa
     size = 0
     for url in urls:
         _, _, temp = url_info(url)
-        size += temp
+        size += temp or 0
 
     print_info(site_info, title, type, size)
     if not info_only:
