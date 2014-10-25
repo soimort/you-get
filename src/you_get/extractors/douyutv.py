@@ -21,11 +21,11 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
     rtmp_url= metadata.get('data').get('rtmp_url')
     real_url = rtmp_url+'/'+rtmp_live
 
-    type, ext, size = url_info(real_url)
+    type, _, _ = url_info(real_url)
     
-    print_info(site_info, title, type, size)
+    print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
-        download_urls([real_url], title, ext, size, output_dir, merge = merge)
+        download_urls([real_url], title, 'flv', None, output_dir, merge = merge)
 
 site_info = "douyutv.com"
 download = douyutv_download

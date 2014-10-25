@@ -199,8 +199,8 @@ def url_size(url, faker = False):
     else:
         response = request.urlopen(url)
 
-    size = int(response.headers['content-length'])
-    return size
+    size = response.headers['content-length']
+    return int(size) if size!=None else float('inf')
 
 # TO BE DEPRECATED
 # urls_size() does not have a faker
@@ -246,7 +246,7 @@ def url_info(url, faker = False):
             ext = None
 
     if headers['transfer-encoding'] != 'chunked':
-        size = int(headers['content-length'] or '-1')
+        size = headers['content-length'] and int(headers['content-length'])
     else:
         size = None
 
@@ -284,7 +284,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
     elif not os.path.exists(os.path.dirname(filepath)):
         os.mkdir(os.path.dirname(filepath))
 
-    temp_filepath = filepath + '.download'
+    temp_filepath = filepath + '.download' if file_size!=float('inf') else filepath
     received = 0
     if not force:
         open_mode = 'ab'
@@ -312,7 +312,8 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
             end_length = end = int(response.headers['content-range'][6:].split('/')[1])
             range_length = end_length - range_start
         except:
-            range_length = int(response.headers['content-length'])
+            content_length = response.headers['content-length']
+            range_length = int(content_length) if content_length!=None else float('inf')
 
         if file_size != received + range_length:
             received = 0
