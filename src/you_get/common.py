@@ -994,4 +994,3 @@ def any_download_playlist(url, **kwargs):
 
 def main():
     script_main('you-get', any_download, any_download_playlist)
-

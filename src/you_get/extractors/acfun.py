@@ -4,6 +4,7 @@ __all__ = ['acfun_download']
 
 from ..common import *
 
+from .letv import letvcloud_download_by_vu
 from .qq import qq_download_by_id
 from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_iid
@@ -33,6 +34,8 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
         tudou_download_by_iid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'qq':
         qq_download_by_id(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
+    elif sourceType == 'letv':
+        letvcloud_download_by_vu(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
         raise NotImplementedError(sourceType)
 
