@@ -24,7 +24,6 @@ from .ku6 import *
 from .kugou import *
 from .kuwo import *
 from .letv import *
-from .letvcloud import *
 from .magisto import *
 from .miomio import *
 from .mixcloud import *
