@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.3.31
+------
+
+*Date: 2014-11-01*
+
+* New site support:
+    - Dongting (by @lilydjwg)
+    - DouyuTV (by @0x00-pl)
+    - LeTV cloud (by @cnbeining)
+* Bug fixes:
+    - AcFun
+    - Bilibili
+    - Niconico
+    - iQIYI
+
 0.3.30
 ------
 
