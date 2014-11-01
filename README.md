@@ -42,6 +42,7 @@ Others:
 * CNTV (中国网络电视台) <http://www.cntv.cn>
 * Coursera <https://www.coursera.org>
 * Douban (豆瓣) <http://douban.com>
+* DouyuTV (斗鱼) <http://www.douyutv.com>
 * eHow <http://www.ehow.com>
 * Facebook <http://facebook.com>
 * Google Drive <http://docs.google.com>
