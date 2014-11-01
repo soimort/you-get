@@ -41,6 +41,7 @@ Others:
 * CBS <http://www.cbs.com>
 * CNTV (中国网络电视台) <http://www.cntv.cn>
 * Coursera <https://www.coursera.org>
+* Dongting (天天动听) <http://www.dongting.com>
 * Douban (豆瓣) <http://douban.com>
 * DouyuTV (斗鱼) <http://www.douyutv.com>
 * eHow <http://www.ehow.com>
