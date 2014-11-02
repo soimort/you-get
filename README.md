@@ -212,7 +212,7 @@ Watch a video in your media player of choice: (this is just a trick to let you g
 
 **Q**: Will you release an executable version / Windows Installer package?
 
-**A**: Maybe, but never a priority.
+**A**: Yes, it's on my to-do list.
 
 ## Command-Line Options
 
