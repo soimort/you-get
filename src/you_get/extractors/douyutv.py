@@ -9,10 +9,12 @@ import json
 def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
     room_id_patt = r'"room_id":(\d{1,99}),'
-    title_patt = r'<div class="headline clearfix">\s*<h1>([^<]{1,9999})</h1>\s*</div>'
+    title_patt = r'<div class="headline clearfix">\s*<h1>([^<]{1,9999})</h1>'
+    title_patt_backup = r'<title>([^<]{1,9999})</title>'
     
     roomid = re.findall(room_id_patt,html)[0]
-    title = unescape_html(re.findall(title_patt,html)[0])
+    title = r1_of([title_patt,title_patt_backup], html)
+    title = unescape_html(title)
 
     conf = get_html("http://www.douyutv.com/api/client/room/"+roomid)
     metadata = json.loads(conf)
