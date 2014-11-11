@@ -35,7 +35,7 @@ Others:
 * Alive.in.th <http://alive.in.th>
 * Baidu Music (百度音乐) <http://music.baidu.com>
 * Baidu Wangpan (百度网盘) <http://pan.baidu.com>
-* baomihua（爆米花）<http://video.baomihua.com>
+* Baomihua (爆米花) <http://video.baomihua.com>
 * bilibili <http://www.bilibili.com>
 * Blip <http://blip.tv>
 * Catfun (喵星球) <http://www.catfun.tv>
