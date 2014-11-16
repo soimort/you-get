@@ -21,4 +21,3 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
 site_info = "douyutv.com"
 download = douyutv_download
 download_playlist = playlist_not_supported('douyutv')
-
