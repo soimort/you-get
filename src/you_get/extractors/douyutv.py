@@ -7,16 +7,16 @@ import re
 import json
 
 def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
-    html = get_html(url)
+    html = get_content(url)
     room_id_patt = r'"room_id":(\d{1,99}),'
     title_patt = r'<div class="headline clearfix">\s*<h1>([^<]{1,9999})</h1>'
     title_patt_backup = r'<title>([^<]{1,9999})</title>'
     
-    roomid = re.findall(room_id_patt,html)[0]
-    title = r1_of([title_patt,title_patt_backup], html)
+    roomid = match1(html, room_id_patt)
+    title = match1(html, title_patt) or match1(html, title_patt_backup)
     title = unescape_html(title)
 
-    conf = get_html("http://www.douyutv.com/api/client/room/"+roomid)
+    conf = get_content("http://www.douyutv.com/api/client/room/"+roomid)
     metadata = json.loads(conf)
     
     rtmp_live= metadata.get('data').get('rtmp_live')
