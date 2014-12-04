@@ -36,7 +36,7 @@ def ffmpeg_convert_ts_to_mkv(files, output='output.mkv'):
 def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w')
+        concat_list = open(output + '.txt', 'w', encoding="utf-8")
         for file in files:
             if os.path.isfile(file):
                 concat_list.write("file '%s'\n" % file)
@@ -97,7 +97,7 @@ def ffmpeg_concat_ts_to_mkv(files, output='output.mkv'):
 def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w')
+        concat_list = open(output + '.txt', 'w', encoding="utf-8")
         for file in files:
             if os.path.isfile(file):
                 concat_list.write("file '%s'\n" % file)
@@ -143,7 +143,7 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
 def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w')
+        concat_list = open(output + '.txt', 'w', encoding="utf-8")
         for file in files:
             if os.path.isfile(file):
                 concat_list.write("file '%s'\n" % file)
