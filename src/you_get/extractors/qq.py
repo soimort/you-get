@@ -2,8 +2,8 @@
 
 __all__ = ['qq_download']
 
-from ..common import *
-import uuid
+from you_get.common import *
+import uuid, urllib
 #QQMUSIC
 #SINGLE
 #1. http://y.qq.com/#type=song&mid=000A9lMb0iEqwN
@@ -17,43 +17,49 @@ import uuid
 #can download as video through qq_download_by_id
 #1. http://y.qq.com/y/static/mv/mv_play.html?vid=i0014ufczcw
 
-def qq_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False):
-    xml = get_html('http://www.acfun.tv/getinfo?vids=%s' % id)
-    from xml.dom.minidom import parseString
-    doc = parseString(xml)
-    doc_root = doc.getElementsByTagName('root')[0]
-    doc_vl = doc_root.getElementsByTagName('vl')[0]
-    doc_vi = doc_vl.getElementsByTagName('vi')[0]
-    fn = doc_vi.getElementsByTagName('fn')[0].firstChild.data
-    # fclip = doc_vi.getElementsByTagName('fclip')[0].firstChild.data
-    # fc=doc_vi.getElementsByTagName('fc')[0].firstChild.data
-    fvkey = doc_vi.getElementsByTagName('fvkey')[0].firstChild.data
-    doc_ul = doc_vi.getElementsByTagName('ul')
 
+def qq_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False, urls_only=False):
+    data = {'vids': id, 'otype': 'json'}
+    url = urllib.request.Request('http://vv.video.qq.com/getinfo', urllib.parse.urlencode(data).encode('utf-8'))
+    f = urllib.request.urlopen(url)
+    json_str = f.read()
+    data = json.loads(json_str[13:-1].decode('utf-8'))
+    format_id = 10202
+    file_id = 1
+    for format_info in data['fl']['fi']:
+        if format_info['sl'] > 0:
+            format_id = format_info['id']
+            file_id = format_info['sl']
+            break
+    file_name = data['vl']['vi'][0]['fn']
+    split_pos = file_name.rfind('.')
+    file_name = file_name[:split_pos] + '.%d' % file_id + file_name[split_pos:]
+    video_urls = [ui['url'] for ui in data['vl']['vi'][0]['ul']['ui']]
 
-    url = doc_ul[0].getElementsByTagName('url')[1].firstChild.data
+    data = {'format': format_id, 'otype': 'json', 'vid': id, 'filename': file_name}
+    url = urllib.request.Request('http://vv.video.qq.com/getkey', urllib.parse.urlencode(data).encode('utf-8'))
+    f = urllib.request.urlopen(url)
+    json_str = f.read()
+    data = json.loads(json_str[13:-1].decode('utf-8'))
+    video_key = data['key']
 
-    # print(i.firstChild.data)
-    urls=[]
-    ext=fn[-3:]
-    size=0
-    for i in doc.getElementsByTagName("cs"):
-        size+=int(i.firstChild.data)
+    urls = []
+    size = 0
+    ext = ''
+    for url in video_urls:
+        try:
+            url = "%s%s?vkey=%s" % (url, file_name, video_key)
+            _, ext, size = url_info(url)
+            urls = [url]
+            break
+        except:
+            print(url)
 
-    # size=sum(map(int,doc.getElementsByTagName("cs")))
-    locid=str(uuid.uuid4())
-    for i in doc.getElementsByTagName("ci"):
-        urls.append(url+fn[:-4] + "." + i.getElementsByTagName("idx")[0].firstChild.data + fn[-4:] + '?vkey=' + fvkey+ '&sdtfrom=v1000&type='+ fn[-3:0] +'&locid=' + locid + "&&level=1&platform=11&br=133&fmt=hd&sp=0")
+    if urls_only:
+        return urls, size, ext, {}
 
-    # if int(fclip) > 0:
-    #     fn = fn[:-4] + "." + fclip + fn[-4:]
-    # url = url + fn + '?vkey=' + fvkey
-
-    # _, ext, size = url_info(url)
-
-    print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls(urls, title, ext, size, output_dir=output_dir, merge=merge)
+        download_urls([url], title, 'flv', size, output_dir = output_dir, merge = merge)
 
 def qq_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://v.qq.com/([^\?]+)\?vid', url):
@@ -97,3 +103,9 @@ def qq_download(url, output_dir = '.', merge = True, info_only = False):
 site_info = "QQ.com"
 download = qq_download
 download_playlist = playlist_not_supported('qq')
+
+
+if __name__ == '__main__':
+    #print(qq_download('http://v.qq.com/cover/c/crfns95chw1snp2/t0012q2nz5m.html', urls_only = True))
+    # print(get_videoId('http://v.qq.com/cover/k/kuegopa6s70qeu1.html?vid=t0013jyqbo7'))
+    print(qq_download_by_id('u001428c4av', urls_only=True))

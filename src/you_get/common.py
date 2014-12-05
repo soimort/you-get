@@ -18,6 +18,7 @@ force = False
 player = None
 extractor_proxy = None
 cookies_txt = None
+dry_infos = {}
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -464,6 +465,7 @@ class PiecesProgressBar:
             print()
             self.displayed = False
 
+
 class DummyProgressBar:
     def __init__(self, *args):
         pass
@@ -477,7 +479,10 @@ class DummyProgressBar:
 def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
     if dry_run:
-        print('Real URLs:\n%s\n' % urls)
+        dry_infos.clear()
+        dry_infos.update({'urls':urls, 'ext':ext, 'total_size':total_size})
+
+        print('Real URLs dry_infos:\n%s\n' % dry_infos['urls'])
         return
 
     if player:
@@ -899,7 +904,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
 
 def url_to_module(url):
-    from .extractors import netease, w56, acfun, baidu, baomihua, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
+    from .extractors import netease, w56, acfun, baidu, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
 
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
@@ -916,7 +921,6 @@ def url_to_module(url):
         '56': w56,
         'acfun': acfun,
         'baidu': baidu,
-        'baomihua': baomihua,
         'bilibili': bilibili,
         'blip': blip,
         'catfun': catfun,
@@ -984,9 +988,11 @@ def url_to_module(url):
             raise NotImplementedError(url)
         else:
             return url_to_module(location)
-
+extractor = []
 def any_download(url, **kwargs):
     m, url = url_to_module(url)
+    extractor.clear()
+    extractor.append(m)
     m.download(url, **kwargs)
 
 def any_download_playlist(url, **kwargs):

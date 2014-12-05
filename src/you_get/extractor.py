@@ -2,7 +2,6 @@
 
 from .common import match1, download_urls, parse_host, set_proxy, unset_proxy
 from .util import log
-
 class Extractor():
     def __init__(self, *args):
         self.url = None
