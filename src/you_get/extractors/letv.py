@@ -4,10 +4,32 @@ __all__ = ['letv_download', 'letvcloud_download', 'letvcloud_download_by_vu']
 
 import json
 import random
+import xml
 import xml.etree.ElementTree as ET
 import base64, hashlib, urllib
+import os
+import sys
+import inspect
+import io
+import bs4, requests
+import time
+import urllib.request
+import urllib.parse
+
+
+currentDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentDir = os.path.dirname(os.path.dirname(currentDir))
+se_parentDir = os.path.dirname(parentDir)
+sys.path.append(parentDir)
+sys.path.append(se_parentDir)
+
+print(currentDir)
+print(parentDir)
 
 from ..common import *
+
+USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0'
+OSTYPE = 'MacOS10.10.1'
 
 def get_timestamp():
     tn = random.random()
@@ -94,6 +116,7 @@ def letv_download(url, output_dir='.', merge=True, info_only=False):
     if re.match(r'http://yuntv.letv.com/', url):
         letvcloud_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
+        """
         html = get_content(url)
         #to get title
         if re.match(r'http://www.letv.com/ptv/vplay/(\d+).html', url):
@@ -101,8 +124,200 @@ def letv_download(url, output_dir='.', merge=True, info_only=False):
         else:
             vid = match1(html, r'vid="(\d+)"')
         title = match1(html,r'name="irTitle" content="(.*?)"')
+
         letv_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+
+        """
+
+        title, vid, nextvid = letv_get_vid2title(url)
+        letv_download_by_vid_sub(vid, nextvid, title=title, output_dir=output_dir,
+                                 merge=merge, info_only=info_only)
+
+
+def to_dict(dict_str):
+    class _dict(dict):
+        def __getitem__(self, key):
+            return key
+    return eval(dict_str, _dict())
+
+
+def ror(a, b):
+    c = 0
+    while c < b:
+        a = (0x7fffffff & (a >> 1)) + (0x80000000 & (a << 31))
+        c += 1
+    return a
+
+
+def get_tkey(tm=None):
+    l2 = 773625421
+    if not tm:
+        tm = int(time.time())
+    l3 = ror(tm, l2 % 13)
+    l3 ^= l2
+    l3 = ror(l3, l2 % 17)
+    if l3 & 0x80000000:
+        return l3 - 0x100000000
+    return l3
+
+
+def letv_get_vid2title(page_url):
+    #browser = Browser()
+    #browser.set_handle_robots(False)
+    #browser.addheaders = [('User-Agent', USER_AGENT)]
+
+    #resp = browser.open(page_url)
+    #resp_body = resp.read()
+
+    #request = urllib.request.Request(page_url)
+    #request.add_header('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0')
+    #response = urllib.request.urlopen(request)
+    #resp_body = response.read()
+
+    """
+    tree = html.fromstring(resp_body)
+    for script in tree.xpath('/html/head/script'):
+    """
+    #print(resp_body)
+
+    response = requests.get(page_url)
+    tree = bs4.BeautifulSoup(response.text)
+    for script in tree.select('head script'):
+        match_info = []
+        start = False
+        if not script.text:
+            continue
+        for line in script.text.split('\n'):
+            if not start:
+                match = re.match('var\s+__INFO__\s?=(.+)', line)
+                if match:
+                    start = True
+                    match_info.append(match.group(1))
+            else:
+                if line.startswith('var'):
+                    start = False
+                    break
+                hp = line.find('://')
+                p = line.rfind('//')
+                if p != -1 and p != hp+1:
+                    match_info.append(line[:p])
+                else:
+                    match_info.append(line)
+        if match_info:
+            break
+
+    match_info = '\n'.join(match_info)
+    match_info = to_dict(match_info)
+    vid = match_info['video']['vid']
+    nextvid = match_info['video']['nextvid']
+    #print '%s' % match_info['video']['title']
+    title = match_info['video']['title']
+
+    return (title, vid, nextvid)
+
+
+def letv_download_by_vid_sub(vid, nextvid, title, output_dir='.', merge=True, info_only=False):
+    """
+    browser = Browser()
+    browser.set_handle_robots(False)
+    browser.addheaders = [
+        ('User-Agent', USER_AGENT),
+        ('Referer', 'http://player.letvcdn.com/p/201411/14/10/newplayer/LetvPlayer.swf')
+    ]
+    """
+
+    param_dict = {
+        'id': vid,
+        'platid': 1,
+        'splatid': 101,
+        'format': 1,
+        'nextvid': nextvid,
+        'tkey': get_tkey(),
+        'domain': 'www.letv.com'
+    }
+
+    url = 'http://api.letv.com/mms/out/video/playJson?%s' % urllib.parse.urlencode(param_dict)
+
+    #resp = browser.open(url)
+    #resp_body = resp.read()
+
+    #request = urllib.request.Request(url)
+    #request.add_header('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0')
+    #request.add_header('Referer', 'http://player.letvcdn.com/p/201411/14/10/newplayer/LetvPlayer.swf')
+
+    #response = urllib.request.urlopen(request)
+    #resp_body = response.read()
+
+    response = requests.get(url)
+    resp_body = response.text
+    resp_dict = json.loads(str(resp_body))
+
+    assert resp_dict['statuscode'] == '1001'
+    assert resp_dict['playstatus']['status'] == '1'
+
+    playurls = resp_dict['playurl']['dispatch']
+    domains = resp_dict['playurl']['domain']
+    duration = int(resp_dict['playurl']['duration'])
+
+    #print 'Avaliable Size:', ' '.join(playurls.keys())
+    keys = ['1080p', '720p', '1300', '1000', '350']
+    for key in keys:
+        playurl = playurls.get(key)
+        if playurl:
+            break
+
+    #print 'Select %s' % key
+    assert playurl
+
+    tn = random.random()
+    url = domains[0] + playurl[0] + '&ctv=pc&m3v=1&termid=1&format=1&hwtype=un&ostype=%s&tag=letv&sign=letv&expect=3&tn=%s&pay=0&rateid=%s' % (OSTYPE, tn, key)
+
+    #resp = browser.open(url)
+    #gslb_data = json.loads(resp.read())
+
+    #request = urllib.request.Request(url)
+    #response = urllib.request.urlopen(request)
+    #gslb_data = json.loads(str(response.read()) )
+
+    response = requests.get(url)
+    gslb_data = json.loads(response.text)
+
+#    import pprint
+#    pprint.pprint(resp_dict)
+#    pprint.pprint(gslb_data)
+    play_url = gslb_data.get('location')
+
+    """
+    file_name_m3u8 = os.path.basename(urlparse.urlsplit(play_url).path)
+    file_name = '%s.ts' % os.path.splitext(file_name_m3u8)[0]
+    target_file = os.path.join(target_dir, file_name)
+
+
+    """
+
+    url= play_url
+    size = 0
+    ext = 'm3u8'
+    print_info(site_info, title, ext, size)
+    #print "###LETV:m3u8:%s" % url
+    print("###LETV:m3u8{}".format(url))
+
+    if not info_only:
+        download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
+
 
 site_info = "LeTV.com"
 download = letv_download
 download_playlist = playlist_not_supported('letv')
+
+
+
+if __name__ == '__main__':
+    #page_url = "http://www.letv.com/ptv/vplay/21371716.html"
+    #page_url = "http://www.letv.com/ptv/vplay/21470739.html"
+    #page_url = "http://www.letv.com/ptv/vplay/21470465.html"
+    #page_url = "http://www.letv.com/ptv/vplay/21470448.html"
+    #target_dir = "./"
+
+    letv_download("http://www.letv.com/ptv/vplay/21470448.html", './', True, True)
+    pass
