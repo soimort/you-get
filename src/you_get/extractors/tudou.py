@@ -29,7 +29,7 @@ def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = 
     title = r1(r'kw\s*[:=]\s*[\'\"]([^\']+?)[\'\"]', html)
     tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
-def tudou_download(url, output_dir = '.', merge = True, info_only = False):
+def tudou_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     # Embedded player
     id = r1(r'http://www.tudou.com/v/([^/]+)/', url)
     if id:
@@ -44,7 +44,10 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False):
     vcode = r1(r'vcode\s*[:=]\s*\'([^\']+)\'', html)
     if vcode:
         from .youku import youku_download_by_vid
-        return youku_download_by_vid(vcode, title=title, output_dir = output_dir, merge = merge, info_only = info_only)
+        if 'stream_id' in kwargs:
+            return youku_download_by_vid(vcode, title=title, output_dir=output_dir, merge=merge, info_only=info_only, stream_id=kwargs['stream_id'])
+        else:
+            return youku_download_by_vid(vcode, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     iid = r1(r'iid\s*[:=]\s*(\d+)', html)
     if not iid:
