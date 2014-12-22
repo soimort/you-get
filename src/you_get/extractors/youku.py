@@ -19,9 +19,9 @@ class Youku(VideoExtractor):
         {'id': 'mp4', 'container': 'mp4', 'video_profile': '高清'},
         {'id': 'flvhd', 'container': 'flv', 'video_profile': '高清'},
         {'id': 'flv', 'container': 'flv', 'video_profile': '标清'},
-        {'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
+        {'id': '3gphd', 'container': 'mp4', 'video_profile': '高清（3GP）'},
     ]
-    
+    #{'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
     def trans_e(a, c):
         f = h = 0
         b = list(range(256))
@@ -219,7 +219,7 @@ class Youku(VideoExtractor):
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
 
-        container = self.streams_sorted[0]['container']
+        container = self.streams[stream_id]['container']
         self.streamfileids = self.metadata['streamfileids'][stream_id]
 
         fileId0,sid,token = self.__class__.generate_ep_prepare(self.streamfileids,self.seed,self.ep)
@@ -231,8 +231,8 @@ class Youku(VideoExtractor):
             fileId,ep  = self.__class__.generate_ep(no,fileId0,sid,token)
             #pdb.set_trace()
             m3u8  += 'http://k.youku.com/player/getFlvPath/sid/'+ sid
-            m3u8+='/fileid/'+ fileId
             m3u8+='_00/st/'+ container
+            m3u8+='/fileid/'+ fileId
             m3u8+='?K='+ k
             m3u8+='&ctype=12&ev=1&token='+ token
             m3u8+='&oip='+ str(self.ip)
