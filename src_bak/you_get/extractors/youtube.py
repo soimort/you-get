@@ -205,6 +205,7 @@ class YouTube(VideoExtractor):
         self.streams[stream_id]['src'] = [src]
         self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'])
 
-site = YouTube()
+site = "YouTube.com"
+site_info = "YouTube.com"
 download = site.download_by_url
 download_playlist = site.download_playlist_by_url

@@ -8,7 +8,7 @@ import base64
 import time
 
 class Youku(VideoExtractor):
-    name = "优酷 (Youku)"
+    name = "Youku"
 
     stream_types = [
         {'id': 'hd3', 'container': 'flv', 'video_profile': '1080P'},
@@ -163,7 +163,8 @@ class Youku(VideoExtractor):
             if not self.streams[stream_id]['src'] and self.password_protected:
                 log.e('[Failed] Wrong password.')
 
-site = Youku()
+
+site_info = "YouTube.com"
 download = site.download_by_url
 download_playlist = site.download_playlist_by_url
 
