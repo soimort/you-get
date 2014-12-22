@@ -167,6 +167,7 @@ class Youku(VideoExtractor):
             if not self.streams[stream_id]['src'] and self.password_protected:
                 log.e('[Failed] Wrong password.')
 
+site_info = "youku.com"
 site = Youku()
 download = site.download_by_url
 download_playlist = site.download_playlist_by_url
