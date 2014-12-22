@@ -164,7 +164,7 @@ class Youku(VideoExtractor):
                 log.e('[Failed] Wrong password.')
 
 
-site_info = "YouTube.com"
+site_info = "youku.com"
 download = site.download_by_url
 download_playlist = site.download_playlist_by_url
 
