@@ -129,7 +129,7 @@ def undeflate(data):
     return decompressobj.decompress(data)+decompressobj.flush()
 
 # DEPRECATED in favor of get_content()
-def get_response(url, faker = True):
+def get_response(url, faker = False):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
     else:
@@ -144,12 +144,12 @@ def get_response(url, faker = True):
     return response
 
 # DEPRECATED in favor of get_content()
-def get_html(url, encoding = None, faker = True):
+def get_html(url, encoding = None, faker = False):
     content = get_response(url, faker).data
     return str(content, 'utf-8', 'ignore')
 
 # DEPRECATED in favor of get_content()
-def get_decoded_html(url, faker = True):
+def get_decoded_html(url, faker = False):
     response = get_response(url, faker)
     data = response.data
     charset = r1(r'charset=([\w-]+)', response.headers['content-type'])
@@ -194,7 +194,7 @@ def get_content(url, headers={}, decoded=True):
 
     return data
 
-def url_size(url, faker = True):
+def url_size(url, faker = False):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
     else:
@@ -209,7 +209,7 @@ def url_size(url, faker = True):
 def urls_size(urls):
     return sum(map(url_size, urls))
 
-def url_info(url, faker = True):
+def url_info(url, faker = False):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
     else:
@@ -253,7 +253,7 @@ def url_info(url, faker = True):
 
     return type, ext, size
 
-def url_locations(urls, faker = True):
+def url_locations(urls, faker = False):
     locations = []
     for url in urls:
         if faker:
@@ -264,7 +264,7 @@ def url_locations(urls, faker = True):
         locations.append(response.url)
     return locations
 
-def url_save(url, filepath, bar, refer = None, is_part = False, faker = True):
+def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
     file_size = url_size(url, faker = faker)
 
     if os.path.exists(filepath):
@@ -342,7 +342,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = True):
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
     os.rename(temp_filepath, filepath)
 
-def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = True):
+def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False):
     if os.path.exists(filepath):
         if not force:
             if not is_part:
@@ -476,7 +476,7 @@ class DummyProgressBar:
     def done(self):
         pass
 
-def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=True):
+def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
     if dry_run:
         dry_infos.clear()
@@ -566,7 +566,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     print()
 
-def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=True):
+def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
     if dry_run:
         print('Real URLs:\n%s\n' % urls)
@@ -647,7 +647,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 
     print()
 
-def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=True):
+def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
     assert url
     if dry_run:
         print('Real URL:\n%s\n' % [url])
