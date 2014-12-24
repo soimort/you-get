@@ -25,6 +25,8 @@ fake_headers = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
+    'RA-Sid': '6FC1B019-20140902-070431-9ec808-4213d6',
+    'RA-Ver': '2.8.6',
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0'
 }
 
