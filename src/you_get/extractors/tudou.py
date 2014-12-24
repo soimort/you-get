@@ -6,13 +6,13 @@ from ..common import *
 from xml.dom.minidom import parseString
 
 def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only = False):
-    data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?iid=%s' % iid))
+    data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?iid=%s' % iid, faker=True))
     temp = max([data[i] for i in data], key=lambda x:x[0]["size"])
     vids, size = [t["k"] for t in temp], sum([t["size"] for t in temp])
     urls = [[n.firstChild.nodeValue.strip()
              for n in
                 parseString(
-                    get_html('http://ct.v2.tudou.com/f?id=%s' % vid))
+                    get_html('http://ct.v2.tudou.com/f?id=%s' % vid, faker=True))
                 .getElementsByTagName('f')][0]
             for vid in vids]
 
@@ -23,7 +23,7 @@ def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only 
         download_urls(urls, title, ext, size, output_dir=output_dir, merge = merge)
 
 def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = False):
-    html = get_html('http://www.tudou.com/programs/view/%s/' % id)
+    html = get_html('http://www.tudou.com/programs/view/%s/' % id, faker=True)
 
     iid = r1(r'iid\s*[:=]\s*(\S+)', html)
     title = r1(r'kw\s*[:=]\s*[\'\"]([^\']+?)[\'\"]', html)
@@ -35,7 +35,7 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False):
     if id:
         return tudou_download_by_id(id, title="", info_only=info_only)
 
-    html = get_decoded_html(url)
+    html = get_decoded_html(url, faker=True)
 
     title = r1(r'kw\s*[:=]\s*[\'\"]([^\']+?)[\'\"]', html)
     assert title
@@ -54,7 +54,7 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False):
 
 def parse_playlist(url):
     aid = r1('http://www.tudou.com/playlist/p/a(\d+)(?:i\d+)?\.html', url)
-    html = get_decoded_html(url)
+    html = get_decoded_html(url, faker=True)
     if not aid:
         aid = r1(r"aid\s*[:=]\s*'(\d+)'", html)
     if re.match(r'http://www.tudou.com/albumcover/', url):
@@ -68,7 +68,7 @@ def parse_playlist(url):
     import json
     #url = 'http://www.tudou.com/playlist/service/getZyAlbumItems.html?aid='+aid
     url = 'http://www.tudou.com/playlist/service/getAlbumItems.html?aid='+aid
-    return [(atitle + '-' + x['title'], str(x['itemId'])) for x in json.loads(get_html(url))['message']]
+    return [(atitle + '-' + x['title'], str(x['itemId'])) for x in json.loads(get_html(url, faker=True))['message']]
 
 def tudou_download_playlist(url, output_dir = '.', merge = True, info_only = False):
     videos = parse_playlist(url)
