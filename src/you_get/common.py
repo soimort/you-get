@@ -20,6 +20,7 @@ extractor_proxy = None
 cookies_txt = None
 dry_infos = {}
 
+'''
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Charset': 'UTF-8,*;q=0.5',
@@ -28,6 +29,18 @@ fake_headers = {
     'RA-Sid': '6FC1B019-20140902-070431-9ec808-4213d6',
     'RA-Ver': '2.8.6',
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0'
+}'''
+
+fake_headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, sdch',
+    'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,ja;q=0.2',
+    'Cache-Control': 'max-age=0',
+    'Connection': 'keep-alive',
+    'DNT': '1',
+    'RA-Sid': '6FC1B019-20140902-070431-9ec808-4213d6',
+    'RA-Ver': '2.8.6',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19'
 }
 
 if sys.stdout.isatty():
