@@ -40,7 +40,7 @@ fake_headers = {
     'DNT': '1',
     'RA-Sid': '6FC1B019-20140902-070431-9ec808-4213d6',
     'RA-Ver': '2.8.6',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19'
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0'
 }
 
 if sys.stdout.isatty():
