@@ -1015,3 +1015,4 @@ def any_download_playlist(url, **kwargs):
 
 def main():
     script_main('you-get', any_download, any_download_playlist)
+    # any_download("http://v.youku.com/v_show/id_XODYwNTkxODQ0.html", output_dir='.', merge=True, info_only=False)
