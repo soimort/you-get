@@ -127,6 +127,16 @@ def read_raw(stream, size, left, type):
     body = stream.read(left)
     return Atom(type, size, body)
 
+def read_udta(stream, size, left, type):
+    assert size == left + 8
+    body = stream.read(left)
+    class Udta(Atom):
+        def write(self, stream):
+            return
+        def calsize(self):
+            return 0
+    return Udta(type, size, body)
+
 def read_body_stream(stream, left):
     body = stream.read(left)
     assert len(body) == left
@@ -240,8 +250,9 @@ def read_hdlr(stream, size, left, type):
     qt_component_flags_mask = read_uint(stream)
     left -= 20
     
-    track_name = stream.read(left - 1)
-    assert stream.read(1) == b'\x00'
+    track_name = stream.read(left)
+    #track_name = stream.read(left - 1)
+    #assert stream.read(1) == b'\x00'
     
     return Atom(b'hdlr', size, body)
 
@@ -324,7 +335,7 @@ def read_stts(stream, size, left, type):
     left -= 4
     
     entry_count = read_uint(stream)
-    assert entry_count == 1
+    #assert entry_count == 1
     left -= 4
     
     samples = []
@@ -625,6 +636,7 @@ atom_readers = {
     b'pasp': read_raw,
     
     b'mdat': read_mdat,
+    b'udta': read_udta,
 }
 #stsd sample descriptions (codec types, initialization etc.) 
 #stts (decoding) time-to-sample  
@@ -679,6 +691,7 @@ def parse_atoms(stream):
     return atoms
 
 def read_mp4(stream):
+    print(stream.name)
     atoms = parse_atoms(stream)
     moov = list(filter(lambda x: x.type == b'moov', atoms))
     mdat = list(filter(lambda x: x.type == b'mdat', atoms))
@@ -695,7 +708,7 @@ def read_mp4(stream):
 def merge_stts(samples_list):
     sample_list = []
     for samples in samples_list:
-        assert len(samples) == 1
+        #assert len(samples) == 1
         sample_list.append(samples[0])
     counts, durations = zip(*sample_list)
     assert len(set(durations)) == 1, 'not all durations equal'
