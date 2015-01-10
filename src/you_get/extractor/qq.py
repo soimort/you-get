@@ -207,7 +207,7 @@ def qq_download_by_vid(vid, title = None, output_dir = '.', merge = True, info_o
 
     print_info(site_info, title, type_name, size)
     if not info_only:
-        download_urls(urls, title, 'flv', size, output_dir = output_dir, merge = merge)
+        download_urls(urls, title, type_name, size, output_dir = output_dir, merge = merge)
 
 def qq_download(url, output_dir = '.', merge = True, info_only = False):
     content = get_html(url)
