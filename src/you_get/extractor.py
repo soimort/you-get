@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-from .common import match1, download_urls, parse_host, set_proxy, unset_proxy
+from .common import match1, download_urls, get_filename, parse_host, set_proxy, unset_proxy
 from .util import log
+from . import json_output
+import os
 
 class Extractor():
     def __init__(self, *args):
@@ -23,6 +25,8 @@ class VideoExtractor():
         self.streams_sorted = []
         self.audiolang = None
         self.password_protected = False
+        self.dash_streams = {}
+        self.caption_tracks = {}
 
         if args:
             self.url = args[0]
@@ -72,7 +76,11 @@ class VideoExtractor():
         #raise NotImplementedError()
 
     def p_stream(self, stream_id):
-        stream = self.streams[stream_id]
+        if stream_id in self.streams:
+            stream = self.streams[stream_id]
+        else:
+            stream = self.dash_streams[stream_id]
+
         if 'itag' in stream:
             print("    - itag:          %s" % log.sprint(stream_id, log.NEGATIVE))
         else:
@@ -98,7 +106,11 @@ class VideoExtractor():
         print()
 
     def p_i(self, stream_id):
-        stream = self.streams[stream_id]
+        if stream_id in self.streams:
+            stream = self.streams[stream_id]
+        else:
+            stream = self.dash_streams[stream_id]
+
         print("    - title:         %s" % self.title)
         print("       size:         %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
         print("        url:         %s" % self.url)
@@ -119,8 +131,16 @@ class VideoExtractor():
             self.p_stream(stream_id)
 
         elif stream_id == []:
-            # Print all available streams
             print("streams:             # Available quality and codecs")
+            # Print DASH streams
+            if self.dash_streams:
+                print("    [ DASH ] %s" % ('_' * 36))
+                itags = sorted(self.dash_streams,
+                               key=lambda i: -self.dash_streams[i]['size'])
+                for stream in itags:
+                    self.p_stream(stream)
+            # Print all other available streams
+            print("    [ DEFAULT ] %s" % ('_' * 33))
             for stream in self.streams_sorted:
                 self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
 
@@ -136,7 +156,9 @@ class VideoExtractor():
         print("videos:")
 
     def download(self, **kwargs):
-        if 'info_only' in kwargs and kwargs['info_only']:
+        if 'json_output' in kwargs and kwargs['json_output']:
+            json_output.output(self)
+        elif 'info_only' in kwargs and kwargs['info_only']:
             if 'stream_id' in kwargs and kwargs['stream_id']:
                 # Display the stream
                 stream_id = kwargs['stream_id']
@@ -165,11 +187,31 @@ class VideoExtractor():
             else:
                 self.p_i(stream_id)
 
-            urls = self.streams[stream_id]['src']
+            if stream_id in self.streams:
+                urls = self.streams[stream_id]['src']
+                ext = self.streams[stream_id]['container']
+                total_size = self.streams[stream_id]['size']
+            else:
+                urls = self.dash_streams[stream_id]['src']
+                ext = self.dash_streams[stream_id]['container']
+                total_size = self.dash_streams[stream_id]['size']
+
             if not urls:
                 log.wtf('[Failed] Cannot extract video source.')
             # For legacy main()
-            download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'], output_dir=kwargs['output_dir'], merge=kwargs['merge'])
+            download_urls(urls, self.title, ext, total_size,
+                          output_dir=kwargs['output_dir'],
+                          merge=kwargs['merge'],
+                          av=stream_id in self.dash_streams)
+            for lang in self.caption_tracks:
+                filename = '%s.%s.srt' % (get_filename(self.title), lang)
+                print('Saving %s ... ' % filename, end="", flush=True)
+                srt = self.caption_tracks[lang]
+                with open(os.path.join(kwargs['output_dir'], filename),
+                          'w', encoding='utf-8') as x:
+                    x.write(srt)
+                print('Done.')
+
             # For main_dev()
             #download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'])
 

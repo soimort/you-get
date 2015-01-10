@@ -35,7 +35,7 @@ def tucao_single_download(type_link, title, output_dir=".", merge=True, info_onl
         if not info_only:
             download_urls(urls, title, ext, size, output_dir) 
 
-def tucao_download(url, output_dir=".", merge=True, info_only=False):
+def tucao_download(url, output_dir=".", merge=True, info_only=False, **kwargs):
     html=get_content(url)
     title=match1(html,r'<h1 class="show_title">(.*?)<\w')
     raw_list=match1(html,r"<li>(type=.+?)</li>")

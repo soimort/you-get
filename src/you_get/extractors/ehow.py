@@ -4,7 +4,7 @@ __all__ = ['ehow_download']
 
 from ..common import *
 
-def ehow_download(url, output_dir = '.', merge = True, info_only = False):
+def ehow_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
 	
 	assert re.search(r'http://www.ehow.com/video_', url), "URL you entered is not supported"
 

@@ -3,6 +3,7 @@
 __all__ = ['qq_download']
 
 from ..common import *
+<<<<<<< HEAD
 import uuid
 #QQMUSIC
 #SINGLE
@@ -56,6 +57,7 @@ def qq_download_by_id(id, title=None, output_dir='.', merge=True, info_only=Fals
         download_urls(urls, title, ext, size, output_dir=output_dir, merge=merge)
 
 def qq_download(url, output_dir = '.', merge = True, info_only = False):
+<<<<<<< HEAD
     if re.match(r'http://v.qq.com/([^\?]+)\?vid', url):
         aid = r1(r'(.*)\.html', url)
         vid = r1(r'http://v.qq.com/[^\?]+\?vid=(\w+)', url)
@@ -83,6 +85,12 @@ def qq_download(url, output_dir = '.', merge = True, info_only = False):
     html = get_html(url)
 
     title = match1(html, r'<title>(.+?)</title>', r'title:"([^"]+)"')[0].strip()
+=======
+    content = get_html(url)
+    video_info = to_dict(match1(content, r'var\s+VIDEO_INFO\s?=\s?({[^}]+})'))
+    vid = video_info['vid']
+    title = video_info['title']
+>>>>>>> 20fe47f... [qq] fix #548, close #443
     assert title
     title = unescape_html(title)
     title = escape_file_path(title)
@@ -93,6 +101,26 @@ def qq_download(url, output_dir = '.', merge = True, info_only = False):
         id = r1(r'vid:"([^"]+)"', html)
 
     qq_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+=======
+
+def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
+    api = "http://vv.video.qq.com/geturl?otype=json&vid=%s" % vid
+    content = get_html(api)
+    output_json = json.loads(match1(content, r'QZOutputJson=(.*)')[:-1])
+    url = output_json['vd']['vi'][0]['url']
+    _, ext, size = url_info(url, faker=True)
+
+    print_info(site_info, title, ext, size)
+    if not info_only:
+        download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
+
+def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    content = get_html(url)
+    vid = match1(content, r'vid\s*:\s*"\s*([^"]+)"')
+    title = match1(content, r'title\s*:\s*"\s*([^"]+)"')
+
+    qq_download_by_vid(vid, title, output_dir, merge, info_only)
+>>>>>>> 1a58b53... [qq] reimplement qq.py, close #657
 
 site_info = "QQ.com"
 download = qq_download

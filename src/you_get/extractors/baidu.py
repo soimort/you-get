@@ -4,8 +4,8 @@
 __all__ = ['baidu_download']
 
 from ..common import *
-
-from urllib import parse
+from .embed import *
+from .universal import *
 
 def baidu_get_song_data(sid):
     data = json.loads(get_html('http://music.baidu.com/data/music/fmlink?songIds=%s' % sid, faker = True))['data']
@@ -88,8 +88,12 @@ def baidu_download_album(aid, output_dir = '.', merge = True, info_only = False)
 
         track_nr += 1
 
-def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
-    if re.match(r'http://pan.baidu.com', url):
+def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False, **kwargs):
+    if re.match(r'http://imgsrc.baidu.com', url):
+        universal_download(url, output_dir, merge=merge, info_only=info_only)
+        return
+
+    elif re.match(r'http://pan.baidu.com', url):
         html = get_html(url)
 
         title = r1(r'server_filename="([^"]+)"', html)
@@ -110,6 +114,35 @@ def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info
     elif re.match('http://music.baidu.com/song/\d+', url):
         id = r1(r'http://music.baidu.com/song/(\d+)', url)
         baidu_download_song(id, output_dir, merge, info_only)
+
+    elif re.match('http://tieba.baidu.com/', url):
+        try:
+            # embedded videos
+            embed_download(url, output_dir, merge=merge, info_only=info_only)
+        except:
+            # images
+            html = get_html(url)
+            title = r1(r'title:"([^"]+)"', html)
+
+            items = re.findall(r'//imgsrc.baidu.com/forum/w[^"]+/([^/"]+)', html)
+            urls = ['http://imgsrc.baidu.com/forum/pic/item/' + i
+                    for i in set(items)]
+
+            # handle albums
+            kw = r1(r'kw=([^&]+)', html)
+            tid = r1(r'tid=(\d+)', html)
+            album_url = 'http://tieba.baidu.com/photo/g/bw/picture/list?kw=%s&tid=%s' % (kw, tid)
+            album_info = json.loads(get_content(album_url))
+            for i in album_info['data']['pic_list']:
+                urls.append('http://imgsrc.baidu.com/forum/pic/item/' + i['pic_id'] + '.jpg')
+
+            ext = 'jpg'
+            size = float('Inf')
+            print_info(site_info, title, ext, size)
+
+            if not info_only:
+                download_urls(urls, title, ext, size,
+                              output_dir=output_dir, merge=False)
 
 site_info = "Baidu.com"
 download = baidu_download

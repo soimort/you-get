@@ -4,22 +4,21 @@ __all__ = ['dailymotion_download']
 
 from ..common import *
 
-def dailymotion_download(url, output_dir = '.', merge = True, info_only = False):
+def dailymotion_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     """Downloads Dailymotion videos by URL.
     """
 
-    id = match1(url, r'/video/([^\?]+)') or match1(url, r'video=([^\?]+)')
-    embed_url = 'http://www.dailymotion.com/embed/video/%s' % id
-    html = get_content(embed_url)
+    html = get_content(url)
+    info = json.loads(match1(html, r'qualities":({.+?}),"'))
+    title = match1(html, r'"video_title"\s*:\s*"(.+?)",')
 
-    info = json.loads(match1(html, r'var\s*info\s*=\s*({.+}),\n'))
-
-    title = info['title']
-
-    for quality in ['stream_h264_hd1080_url', 'stream_h264_hd_url', 'stream_h264_hq_url', 'stream_h264_url', 'stream_h264_ld_url']:
-        real_url = info[quality]
-        if real_url:
-            break
+    for quality in ['720','480','380','240','auto']:
+        try:
+            real_url = info[quality][0]["url"]
+            if real_url:
+                break
+        except KeyError:
+            pass
 
     type, ext, size = url_info(real_url)
 

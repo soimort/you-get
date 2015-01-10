@@ -17,9 +17,9 @@ def has_rtmpdump_installed():
     return RTMPDUMP is not None
 
 #
-#params ={"-y":"playlist","-q":None,} 
+#params ={"-y":"playlist","-q":None,}
 #if Only Key ,Value should be None
-#-r -o should not be included in params 
+#-r -o should not be included in params
 
 def download_rtmpdump_stream(url, title, ext,params={},output_dir='.'):
     filename = '%s.%s' % (title, ext)
