@@ -2,6 +2,7 @@
 
 from .common import match1, download_urls, parse_host, set_proxy, unset_proxy
 from .util import log
+from .util.strings import safe_print as print
 
 class Extractor():
     def __init__(self, *args):

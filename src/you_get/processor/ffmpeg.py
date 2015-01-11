@@ -23,13 +23,12 @@ FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avcon
 def has_ffmpeg_installed():
     return FFMPEG is not None
 
-def ffmpeg_convert_ts_to_mkv(files, output='output.mkv'):
-    for file in files:
-        if os.path.isfile(file):
-            params = [FFMPEG, '-y', '-i']
-            params.append(file)
-            params.append(output)
-            subprocess.call(params)
+def ffmpeg_convert_ts_to_mkv(file, output='output.mkv'):
+    if os.path.isfile(file):
+        params = [FFMPEG, '-y', '-i']
+        params.append(file)
+        params.append(output)
+        subprocess.call(params)
 
     return
 

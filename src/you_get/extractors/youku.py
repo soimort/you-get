@@ -19,6 +19,7 @@ class Youku(VideoExtractor):
         {'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
     ]
 
+    @staticmethod
     def generate_ep(vid, ep):
         f_code_1 = 'becaf9be'
         f_code_2 = 'bf7e5f01'
@@ -49,9 +50,11 @@ class Youku(VideoExtractor):
         new_ep = trans_e(f_code_2, '%s_%s_%s' % (sid, vid, token))
         return base64.b64encode(bytes(new_ep, 'latin')), sid, token
 
+    @staticmethod
     def parse_m3u8(m3u8):
         return re.findall(r'(http://[^?]+)\?ts_start=0', m3u8)
 
+    @staticmethod
     def get_vid_from_url(url):
         """Extracts video ID from URL.
         """
@@ -59,6 +62,7 @@ class Youku(VideoExtractor):
           match1(url, r'player\.youku\.com/player\.php/sid/([a-zA-Z0-9=]+)/v\.swf') or \
           match1(url, r'loader\.swf\?VideoIDS=([a-zA-Z0-9=]+)')
 
+    @staticmethod
     def get_playlist_id_from_url(url):
         """Extracts playlist ID from URL.
         """

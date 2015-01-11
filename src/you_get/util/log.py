@@ -2,6 +2,7 @@
 # This file is Python 2 compliant.
 
 from .. import __name__ as library_name
+from .strings import safe_print as print
 
 import os, sys
 
@@ -62,15 +63,15 @@ def sprint(text, *colors):
 
 def println(text, *colors):
     """Print text to standard output."""
-    sys.stdout.write(sprint(text, *colors) + "\n")
+    print(sprint(text, *colors), file=sys.stdout)
 
 def print_err(text, *colors):
     """Print text to standard error."""
-    sys.stderr.write(sprint(text, *colors) + "\n")
+    print(sprint(text, *colors), file=sys.stderr)
 
 def print_log(text, *colors):
     """Print a log message to standard error."""
-    sys.stderr.write(sprint("{}: {}".format(library_name, text), *colors) + "\n")
+    print_err("{}: {}".format(library_name, text), *colors)
 
 def i(message):
     """Print a normal log message."""

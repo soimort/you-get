@@ -2,6 +2,7 @@
 
 import os.path
 import subprocess
+from ..util.strings import safe_print as print
 
 def get_usable_rtmpdump(cmd):
     try:
