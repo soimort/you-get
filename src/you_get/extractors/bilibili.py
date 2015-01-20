@@ -26,6 +26,7 @@ def get_srt_xml(id):
     url = 'http://comment.bilibili.com/%s.xml' % id
     return get_html(url)
 
+
 def parse_srt_p(p):
     fields = p.split(',')
     assert len(fields) == 8, fields
@@ -49,15 +50,31 @@ def parse_srt_p(p):
 
     font_size = int(font_size)
 
-    font_color = '#%06x' % int(font_color)
+    font_color = int(font_color)
 
-    return pool, mode, font_size, font_color
+    return time,font_color, mode, font_size, 'bilibili_'+user_id, pub_time
 
 def parse_srt_xml(xml):
-    d = re.findall(r'<d p="([^"]+)">(.*)</d>', xml)
-    for x, y in d:
-        p = parse_srt_p(x)
-    raise NotImplementedError()
+    ret = []
+    d = re.findall(r'<d p="([^"]+)">(.*?)</d>', xml)
+    if len(d) > 3000:
+        d = d[:3000]
+    for parameters, text in d:
+        item = {}
+        time,font_color, mode, font_size, uuid, publishTime = parse_srt_p(parameters)
+        item['text'] = text
+        item['color'] = font_color
+        item['fontSize'] = font_size
+        item['direct'] = mode
+        item['startTime'] = time
+        item['uuid'] = uuid
+        item['publishTime'] = publishTime
+        ret.append(item)
+
+    return ret
+
+def get_Danmu(id):
+    return parse_srt_xml(get_srt_xml(id))
 
 def parse_cid_playurl(xml):
     from xml.dom.minidom import parseString

@@ -55,13 +55,17 @@ class Youku(VideoExtractor):
     def get_vid_from_url(url):
         """Extracts video ID from URL.
         """
+        # return match1(url, r'youku\.com/v_show/id_([\w=]+)') or \
+        #   match1(url, r'player\.youku\.com/player\.php/sid/([\w=]+)/v\.swf') or \
+        #   match1(url, r'loader\.swf\?VideoIDS=([\w=]+)')
         return match1(url, r'youku\.com/v_show/id_([a-zA-Z0-9=]+)') or \
-          match1(url, r'player\.youku\.com/player\.php/sid/([a-zA-Z0-9=]+)/v\.swf') or \
-          match1(url, r'loader\.swf\?VideoIDS=([a-zA-Z0-9=]+)')
+               match1(url, r'player\.youku\.com/player\.php/sid/([a-zA-Z0-9=]+)/v\.swf') or \
+               match1(url, r'loader\.swf\?VideoIDS=([a-zA-Z0-9=]+)')
 
     def get_playlist_id_from_url(url):
         """Extracts playlist ID from URL.
         """
+        # return match1(url, r'youku\.com/playlist_show/id_([\w=]+)')
         return match1(url, r'youku\.com/playlist_show/id_([a-zA-Z0-9=]+)')
 
     def download_playlist_by_url(self, url, **kwargs):
@@ -163,6 +167,7 @@ class Youku(VideoExtractor):
             if not self.streams[stream_id]['src'] and self.password_protected:
                 log.e('[Failed] Wrong password.')
 
+site_info = "youku.com"
 site = Youku()
 download = site.download_by_url
 download_playlist = site.download_playlist_by_url

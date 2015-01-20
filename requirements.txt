@@ -1,0 +1,5 @@
+pymongo==2.7.2
+redis==2.10.3
+tornado==4.0.2
+beautifulsoup4==4.3.2
+requests==2.5.0

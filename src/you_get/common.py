@@ -18,13 +18,29 @@ force = False
 player = None
 extractor_proxy = None
 cookies_txt = None
+dry_infos = {}
 
+'''
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
+    'RA-Sid': '6FC1B019-20140902-070431-9ec808-4213d6',
+    'RA-Ver': '2.8.6',
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0'
+}'''
+
+fake_headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, sdch',
+    'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4,ja;q=0.2',
+    'Cache-Control': 'max-age=0',
+    'Connection': 'keep-alive',
+    'DNT': '1',
+    'RA-Sid': '6FC1B019-20140902-070431-9ec808-4213d6',
+    'RA-Ver': '2.8.6',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
 }
 
 if sys.stdout.isatty():
@@ -465,6 +481,7 @@ class PiecesProgressBar:
             print()
             self.displayed = False
 
+
 class DummyProgressBar:
     def __init__(self, *args):
         pass
@@ -478,7 +495,10 @@ class DummyProgressBar:
 def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
     if dry_run:
-        print('Real URLs:\n%s\n' % urls)
+        dry_infos.clear()
+        dry_infos.update({'urls':urls, 'ext':ext, 'total_size':total_size})
+
+        print('Real URLs dry_infos:\n%s\n' % dry_infos['urls'])
         return
 
     if player:
@@ -900,8 +920,12 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
 
 def url_to_module(url):
+<<<<<<< HEAD
+    from .extractors import netease, w56, acfun, baidu, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube
+=======
     from .extractors import netease, w56, acfun, baidu, baomihua, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube, zhanqi
 
+>>>>>>> 1b55b01b047824312c2eba342eed47d1d0503a97
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
     assert video_host and video_url, 'invalid url: ' + url
@@ -917,7 +941,6 @@ def url_to_module(url):
         '56': w56,
         'acfun': acfun,
         'baidu': baidu,
-        'baomihua': baomihua,
         'bilibili': bilibili,
         'blip': blip,
         'catfun': catfun,
@@ -986,9 +1009,11 @@ def url_to_module(url):
             raise NotImplementedError(url)
         else:
             return url_to_module(location)
-
+extractor = []
 def any_download(url, **kwargs):
     m, url = url_to_module(url)
+    extractor.clear()
+    extractor.append(m)
     m.download(url, **kwargs)
 
 def any_download_playlist(url, **kwargs):
@@ -997,3 +1022,4 @@ def any_download_playlist(url, **kwargs):
 
 def main():
     script_main('you-get', any_download, any_download_playlist)
+    # any_download("http://v.youku.com/v_show/id_XODYwNTkxODQ0.html", output_dir='.', merge=True, info_only=False)
