@@ -54,7 +54,7 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
             pass
 
 def acfun_download(url, output_dir = '.', merge = True, info_only = False):
-    assert re.match(r'http://[^\.]+.acfun.[^\.]+/v/ac(\d+)', url)
+    assert re.match(r'http://[^\.]+.acfun.[^\.]+/\D/\D\D(\d+)', url)
     html = get_html(url)
 
     title = r1(r'<h1 id="txt-title-view">([^<>]+)<', html)
