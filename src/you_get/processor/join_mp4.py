@@ -24,6 +24,9 @@ def read_uint(stream):
 def write_uint(stream, n):
     stream.write(struct.pack('>I', n))
 
+def write_ulong(stream, n):
+    stream.write(struct.pack('>Q', n))
+
 def read_ushort(stream):
     return struct.unpack('>H', stream.read(2))[0]
 
@@ -99,11 +102,16 @@ class VariableAtom(Atom):
         self.write1(stream)
         i = 0
         n = 0
-        for name, offset, value in self.variables:
+        for name, offset, value, bsize in self.variables:
             stream.write(self.body[i:offset])
-            write_uint(stream, value)
-            n += offset - i + 4
-            i = offset + 4
+            if bsize == 4:
+                write_uint(stream, value)
+            elif bsize == 8:
+                write_ulong(stream, value)
+            else:
+                raise NotImplementedError()
+            n += offset - i + bsize
+            i = offset + bsize
         stream.write(self.body[i:])
         n += len(self.body) - i
         assert n == len(self.body)
@@ -117,7 +125,7 @@ class VariableAtom(Atom):
         for i in range(len(self.variables)):
             variable = self.variables[i]
             if variable[0] == k:
-                self.variables[i] = (k, variable[1], v)
+                self.variables[i] = (k, variable[1], v, variable[3])
                 break
         else:
             raise Exception('field not found: '+k)
@@ -126,6 +134,16 @@ def read_raw(stream, size, left, type):
     assert size == left + 8
     body = stream.read(left)
     return Atom(type, size, body)
+
+def read_udta(stream, size, left, type):
+    assert size == left + 8
+    body = stream.read(left)
+    class Udta(Atom):
+        def write(self, stream):
+            return
+        def calsize(self):
+            return 0
+    return Udta(type, size, body)
 
 def read_body_stream(stream, left):
     body = stream.read(left)
@@ -138,6 +156,12 @@ def read_full_atom(stream):
     flags = value & 0xffffff
     assert version == 0
     return value
+
+def read_full_atom2(stream):
+    value = read_uint(stream)
+    version = value >> 24
+    flags = value & 0xffffff
+    return version, value
 
 def read_mvhd(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
@@ -172,7 +196,7 @@ def read_mvhd(stream, size, left, type):
     nextTrackID = read_uint(stream)
     left -= 80
     assert left == 0
-    return VariableAtom(b'mvhd', size, body, [('duration', 16, duration)])
+    return VariableAtom(b'mvhd', size, body, [('duration', 16, duration, 4)])
 
 def read_tkhd(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
@@ -207,26 +231,35 @@ def read_tkhd(stream, size, left, type):
     height = qt_track_height >> 16
     left -= 60
     assert left == 0
-    return VariableAtom(b'tkhd', size, body, [('duration', 20, duration)])
+    return VariableAtom(b'tkhd', size, body, [('duration', 20, duration, 4)])
 
 def read_mdhd(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
-    value = read_full_atom(stream)
+    ver, value = read_full_atom2(stream)
     left -= 4
-    
-    # new Date(movieTime * 1000 - 2082850791998L); 
-    creation_time = read_uint(stream)
-    modification_time = read_uint(stream)
-    time_scale = read_uint(stream)
-    duration = read_uint(stream)
-    left -= 16
+
+    if ver == 1:
+        creation_time = read_ulong(stream)
+        modification_time = read_ulong(stream)
+        time_scale = read_uint(stream)
+        duration = read_ulong(stream)
+        var = [('duration', 24, duration, 8)]
+        left -= 28
+    else: 
+        assert ver == 0, "ver=%d" % ver
+        creation_time = read_uint(stream)
+        modification_time = read_uint(stream)
+        time_scale = read_uint(stream)
+        duration = read_uint(stream)
+        var = [('duration', 16, duration, 4)]
+        left -= 16
     
     packed_language = read_ushort(stream)
     qt_quality = read_ushort(stream)
     left -= 4
     
     assert left == 0
-    return VariableAtom(b'mdhd', size, body, [('duration', 16, duration)])
+    return VariableAtom(b'mdhd', size, body, var)
 
 def read_hdlr(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
@@ -240,8 +273,8 @@ def read_hdlr(stream, size, left, type):
     qt_component_flags_mask = read_uint(stream)
     left -= 20
     
-    track_name = stream.read(left - 1)
-    assert stream.read(1) == b'\x00'
+    track_name = stream.read(left)
+    #assert track_name[-1] == b'\x00'
     
     return Atom(b'hdlr', size, body)
 
@@ -324,16 +357,16 @@ def read_stts(stream, size, left, type):
     left -= 4
     
     entry_count = read_uint(stream)
-    assert entry_count == 1
+    #assert entry_count == 1
     left -= 4
     
     samples = []
     for i in range(entry_count):
-            sample_count = read_uint(stream)
-            sample_duration = read_uint(stream)
-            samples.append((sample_count, sample_duration))
-            left -= 8
-    
+        sample_count = read_uint(stream)
+        sample_duration = read_uint(stream)
+        samples.append((sample_count, sample_duration))
+        left -= 8
+
     assert left == 0
     #return Atom('stts', size, None)
     class stts_atom(Atom):
@@ -347,9 +380,9 @@ def read_stts(stream, size, left, type):
                 write_uint(stream, sample_count)
                 write_uint(stream, sample_duration)
         def calsize(self):
-            oldsize = self.size # TODO: remove
+            #oldsize = self.size # TODO: remove
             self.size = 8 + 4 + 4 + len(self.body[1]) * 8
-            assert oldsize == self.size, '%s: %d, %d' % (self.type, oldsize, self.size) # TODO: remove
+            #assert oldsize == self.size, '%s: %d, %d' % (self.type, oldsize, self.size) # TODO: remove
             return self.size
     return stts_atom(b'stts', size, (value, samples))
 
@@ -623,8 +656,9 @@ atom_readers = {
     b'free': read_raw,
     b'edts': read_raw,
     b'pasp': read_raw,
-    
+
     b'mdat': read_mdat,
+    b'udta': read_udta,
 }
 #stsd sample descriptions (codec types, initialization etc.) 
 #stts (decoding) time-to-sample  
@@ -679,6 +713,7 @@ def parse_atoms(stream):
     return atoms
 
 def read_mp4(stream):
+    print(stream.name)
     atoms = parse_atoms(stream)
     moov = list(filter(lambda x: x.type == b'moov', atoms))
     mdat = list(filter(lambda x: x.type == b'mdat', atoms))
@@ -695,11 +730,14 @@ def read_mp4(stream):
 def merge_stts(samples_list):
     sample_list = []
     for samples in samples_list:
-        assert len(samples) == 1
-        sample_list.append(samples[0])
+        #assert len(samples) == 1
+        #sample_list.append(samples[0])
+        sample_list += samples
     counts, durations = zip(*sample_list)
-    assert len(set(durations)) == 1, 'not all durations equal'
-    return [(sum(counts), durations[0])]
+    #assert len(set(durations)) == 1, 'not all durations equal'
+    if len(set(durations)) == 1:
+        return [(sum(counts), durations[0])]
+    return sample_list
 
 def merge_stss(samples, sample_number_list):
     results = []
