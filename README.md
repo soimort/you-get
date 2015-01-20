@@ -75,6 +75,7 @@ Others:
 * 56 (56网) <http://www.56.com>
 * Xiami (虾米) <http://www.xiami.com>
 * YinYueTai (音悦台) <http://www.yinyuetai.com>
+* Zhanqi (战旗TV) <http://www.zhanqi.tv/lives>
 
 ## Prerequisites
 

@@ -40,7 +40,7 @@ bdist_egg:
 bdist_wheel:
 	$(SETUP) bdist_wheel
 
-install: bdist_wheel
+install:
 	$(SETUP) install
 
 release: rst
