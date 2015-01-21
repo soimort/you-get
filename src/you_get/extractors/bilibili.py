@@ -150,7 +150,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
             bilibili_download_by_cids(cids, title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     elif t == 'vid':
-        sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        sina_download_by_vid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'ykid':
         youku_download_by_vid(id, title=title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'uid':
