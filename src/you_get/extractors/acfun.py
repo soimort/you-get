@@ -59,10 +59,8 @@ def get_srt_lock_json(id):
 # protected static const VIDEO_PARSE_API:String = "http://jiexi.acfun.info/index.php?vid=";
 # protected static var VIDEO_RATES_CODE:Array = ["C40","C30","C20","C10"];
 # public static var VIDEO_RATES_STRING:Array = ["原画","超清","高清","流畅"];
-
 # Sometimes may find C80 but size smaller than C30 
-stream_types     = ["C40","C30","C20","C10"]
-stream_types_map = {"C10":"流畅","C20":"高清","C30":"超清","C40":"原画"}
+
 
 def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only=False ,**kwargs):
     #api example http://jiexi.acfun.info/index.php?vid=1122870
@@ -108,12 +106,9 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
             cmt = get_srt_json(vid)
             with open(os.path.join(output_dir, title + '.cmt.json'), 'w') as x:
                 x.write(cmt)
-            # print('Downloading %s ...\n' % (title + '.cmt_lock.json'))
-            # cmt = get_srt_lock_json(danmakuId)
-            # with open(os.path.join(output_dir, title + '.cmt_lock.json'), 'w') as x:
-            #     x.write(cmt)
         except:
             pass
+
 def acfun_download(url, output_dir = '.', merge = True, info_only = False ,**kwargs):
     assert re.match(r'http://[^\.]+.acfun.[^\.]+/\D/\D\D(\d+)', url)
     html = get_html(url)
