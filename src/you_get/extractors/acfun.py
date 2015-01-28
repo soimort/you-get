@@ -77,9 +77,9 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
         print("Current Video Supports:")
         for i in support_types:
             if info["result"][i]["totalbytes"] != 0:
-                print("\t--foramt",i,"<URL>:",info["result"][i]["quality"],"size:","%.2f"% (info["result"][i]["totalbytes"] / 1024.0 /1024.0),"MB")
+                print("\t--format",i,"<URL>:",info["result"][i]["quality"],"size:","%.2f"% (info["result"][i]["totalbytes"] / 1024.0 /1024.0),"MB")
             else:
-                print("\t--foramt",i,"<URL>:",info["result"][i]["quality"])
+                print("\t--format",i,"<URL>:",info["result"][i]["quality"])
         #because C80 is not the best
         if "C80" not in support_types:
             stream_id = support_types[-1]
