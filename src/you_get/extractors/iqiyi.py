@@ -56,8 +56,7 @@ def getVMS(tvid,vid,uid):
                 "&enc="+hashlib.new('md5',bytes('ts56gh'+str(tm)+tvid,"utf-8")).hexdigest()+\
                 "&qyid="+uid+"&tn="+str(random()) +"&um=0" +\
                 "&authkey="+hashlib.new('md5',bytes(''+str(tm)+tvid,'utf-8')).hexdigest()
-    tmp = get_content(vmsreq)
-    return json.loads(tmp)
+    return json.loads(get_content(vmsreq))
 
 def getDispathKey(rid):
     tp=")(*&^flash@#$%a"  #magic from swf
