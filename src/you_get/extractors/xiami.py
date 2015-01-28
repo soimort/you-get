@@ -27,11 +27,11 @@ def location_dec(str):
             out += char
     return parse.unquote(out).replace("^", "0")
 
-def xiami_download_lyric(lrc_url, file_name, output_dir):
+def xiami_download_lyric(lrc_url, basename, sid, output_dir):
     lrc = get_html(lrc_url, faker = True)
-    filename = get_filename(file_name)
+    filename = get_filename(basename, '.lrc', id=sid)
     if len(lrc) > 0:
-        with open(output_dir + "/" + filename + '.lrc', 'w', encoding='utf-8') as x:
+        with open(os.path.join(output_dir, filename), 'w', encoding='utf-8') as x:
             x.write(lrc)
 
 def xiami_download_pic(pic_url, file_name, output_dir):
@@ -61,10 +61,10 @@ def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
     
     print_info(site_info, song_title, ext, size)
     if not info_only:
-        file_name = "%s - %s - %s" % (song_title, album_name, artist)
-        download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
+        basename = "%s - %s - %s" % (song_title, album_name, artist)
+        download_urls([url], basename, ext, size, output_dir, merge = merge, faker = True)
         try:
-            xiami_download_lyric(lrc_url, file_name, output_dir)
+            xiami_download_lyric(lrc_url, basename, output_dir)
         except:
             pass
 

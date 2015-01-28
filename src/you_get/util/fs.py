@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import platform
+import sys
+from .strings import safe_chars
 
 def legitimize(text, os=platform.system()):
     """Converts a string to a valid filename.
@@ -41,5 +43,13 @@ def legitimize(text, os=platform.system()):
         if text.startswith("."):
             text = text[1:]
 
-    text = text[:82] # Trim to 82 Unicode characters long
     return text
+
+def get_filename(basename, ext, id=None, part=None, encoding=sys.getfilesystemencoding(), **kwargs):
+    safe_basename = safe_chars(basename, encoding=encoding)
+    if safe_basename != basename and id is not None:
+        safe_basename = safe_chars('%s - %s' % (basename, id), encoding=encoding)
+    safe_basename = safe_basename[:82] # Trim to 82 Unicode characters long
+    if part is not None:
+        safe_basename = '%s[%02d]' % (safe_basename, part)
+    return legitimize('%s.%s' % (safe_basename, ext), **kwargs)

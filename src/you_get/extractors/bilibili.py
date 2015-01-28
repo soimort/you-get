@@ -159,10 +159,10 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
         raise NotImplementedError(flashvars)
 
     if not info_only:
-        title = get_filename(title)
-        print('Downloading %s ...\n' % (title + '.cmt.xml'))
+        filename = get_filename(title, '.cmt.xml', id=id)
+        print('Downloading %s ...\n' % filename)
         xml = get_srt_xml(id)
-        with open(os.path.join(output_dir, title + '.cmt.xml'), 'w', encoding='utf-8') as x:
+        with open(os.path.join(output_dir, filename), 'w', encoding='utf-8') as x:
             x.write(xml)
 
 site_info = "bilibili.com"

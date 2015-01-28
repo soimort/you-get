@@ -107,12 +107,12 @@ def download_url_chunked(url, title, ext, size, output_dir = '.', refer = None, 
     filepath = os.path.join(output_dir, filename)
     
     if not force and os.path.exists(filepath):
-        print('Skipping %s: file already exists' % tr(filepath))
+        print('Skipping %s: file already exists' % filepath)
         print()
         return
     
     bar = DummyProgressBar()
-    print('Downloading %s ...' % tr(filename))
+    print('Downloading %s ...' % filename)
     url_save_chunked(url, filepath, bar, refer = refer, faker = faker)
     bar.done()
     

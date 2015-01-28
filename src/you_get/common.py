@@ -11,7 +11,8 @@ from urllib import request, parse
 
 from .version import __version__
 from .util import log
-from .util.strings import get_filename, unescape_html
+from .util.strings import unescape_html, safe_print as print
+from .util.fs import get_filename
 
 dry_run = False
 force = False
@@ -26,18 +27,6 @@ fake_headers = {
     'Accept-Language': 'en-US,en;q=0.8',
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0'
 }
-
-if sys.stdout.isatty():
-    default_encoding = sys.stdout.encoding.lower()
-else:
-    default_encoding = locale.getpreferredencoding().lower()
-
-def tr(s):
-    if default_encoding == 'utf-8':
-        return s
-    else:
-        return s
-        #return str(s.encode('utf-8'))[2:-1]
 
 # DEPRECATED in favor of match1()
 def r1(pattern, text):
@@ -272,7 +261,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
             if not is_part:
                 if bar:
                     bar.done()
-                print('Skipping %s: file already exists' % tr(os.path.basename(filepath)))
+                print('Skipping %s: file already exists' % os.path.basename(filepath))
             else:
                 if bar:
                     bar.update_received(file_size)
@@ -281,7 +270,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
             if not is_part:
                 if bar:
                     bar.done()
-                print('Overwriting %s' % tr(os.path.basename(filepath)), '...')
+                print('Overwriting %s' % os.path.basename(filepath), '...')
     elif not os.path.exists(os.path.dirname(filepath)):
         os.mkdir(os.path.dirname(filepath))
 
@@ -348,7 +337,7 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
             if not is_part:
                 if bar:
                     bar.done()
-                print('Skipping %s: file already exists' % tr(os.path.basename(filepath)))
+                print('Skipping %s: file already exists' % os.path.basename(filepath))
             else:
                 if bar:
                     bar.update_received(os.path.getsize(filepath))
@@ -357,7 +346,7 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
             if not is_part:
                 if bar:
                     bar.done()
-                print('Overwriting %s' % tr(os.path.basename(filepath)), '...')
+                print('Overwriting %s' % os.path.basename(filepath), '...')
     elif not os.path.exists(os.path.dirname(filepath)):
         os.mkdir(os.path.dirname(filepath))
 
@@ -490,13 +479,10 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             total_size = urls_size(urls)
         except:
             import traceback
-            import sys
             traceback.print_exc(file = sys.stdout)
             pass
 
-    title = tr(get_filename(title))
-
-    filename = '%s.%s' % (title, ext)
+    filename = get_filename(title, ext)
     filepath = os.path.join(output_dir, filename)
     if total_size:
         if not force and os.path.exists(filepath) and os.path.getsize(filepath) >= total_size * 0.9:
@@ -507,35 +493,32 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
     else:
         bar = PiecesProgressBar(total_size, len(urls))
 
+    print('Downloading %s ...' % filename)
     if len(urls) == 1:
         url = urls[0]
-        print('Downloading %s ...' % tr(filename))
         url_save(url, filepath, bar, refer = refer, faker = faker)
         bar.done()
     else:
         parts = []
-        print('Downloading %s.%s ...' % (tr(title), ext))
         for i, url in enumerate(urls):
-            filename = '%s[%02d].%s' % (title, i, ext)
-            filepath = os.path.join(output_dir, filename)
-            parts.append(filepath)
-            #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
+            part_filepath = os.path.join(output_dir, get_filename(title, ext, part=i))
+            parts.append(part_filepath)
+            #print('Downloading %s [%s/%s]...' % (filename, i + 1, len(urls)))
             bar.update_piece(i + 1)
-            url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker)
+            url_save(url, part_filepath, bar, refer = refer, is_part = True, faker = faker)
         bar.done()
 
+        from .processor import ffmpeg
         if not merge:
             print()
             return
         if ext in ['flv', 'f4v']:
             try:
-                from .processor.ffmpeg import has_ffmpeg_installed
-                if has_ffmpeg_installed():
-                    from .processor.ffmpeg import ffmpeg_concat_flv_to_mp4
-                    ffmpeg_concat_flv_to_mp4(parts, os.path.join(output_dir, title + '.mp4'))
+                if ffmpeg.has_ffmpeg_installed():
+                    ffmpeg.ffmpeg_concat_flv_to_mp4(parts, filepath)
                 else:
                     from .processor.join_flv import concat_flv
-                    concat_flv(parts, os.path.join(output_dir, title + '.flv'))
+                    concat_flv(parts, filepath)
             except:
                 raise
             else:
@@ -544,13 +527,11 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
         elif ext == 'mp4':
             try:
-                from .processor.ffmpeg import has_ffmpeg_installed
-                if has_ffmpeg_installed():
-                    from .processor.ffmpeg import ffmpeg_concat_mp4_to_mp4
-                    ffmpeg_concat_mp4_to_mp4(parts, os.path.join(output_dir, title + '.mp4'))
+                if ffmpeg.has_ffmpeg_installed():
+                    ffmpeg.ffmpeg_concat_mp4_to_mp4(parts, filepath)
                 else:
                     from .processor.join_mp4 import concat_mp4
-                    concat_mp4(parts, os.path.join(output_dir, title + '.mp4'))
+                    concat_mp4(parts, filepath)
             except:
                 raise
             else:
@@ -574,68 +555,59 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 
     assert ext in ('ts')
 
-    title = tr(get_filename(title))
-
-    filename = '%s.%s' % (title, 'ts')
+    filename = get_filename(title, '.mkv')
     filepath = os.path.join(output_dir, filename)
     if total_size:
-        if not force and os.path.exists(filepath[:-3] + '.mkv'):
-            print('Skipping %s: file already exists' % filepath[:-3] + '.mkv')
+        if not force and os.path.exists(filepath):
+            print('Skipping %s: file already exists' % filepath)
             print()
             return
         bar = SimpleProgressBar(total_size, len(urls))
     else:
         bar = PiecesProgressBar(total_size, len(urls))
 
+    print('Downloading %s ...' % filename)
     if len(urls) == 1:
-        parts = []
+        temp_filepath = os.path.join(output_dir, get_filename(title, ext))
         url = urls[0]
-        print('Downloading %s ...' % tr(filename))
-        filepath = os.path.join(output_dir, filename)
-        parts.append(filepath)
-        url_save_chunked(url, filepath, bar, refer = refer, faker = faker)
+        url_save_chunked(url, temp_filepath, bar, refer = refer, faker = faker)
         bar.done()
 
+        from .processor import ffmpeg
         if not merge:
             print()
             return
         if ext == 'ts':
-            from .processor.ffmpeg import has_ffmpeg_installed
-            if has_ffmpeg_installed():
-                from .processor.ffmpeg import ffmpeg_convert_ts_to_mkv
-                if ffmpeg_convert_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv')):
-                    for part in parts:
-                        os.remove(part)
+            if ffmpeg.has_ffmpeg_installed():
+                if ffmpeg.ffmpeg_convert_ts_to_mkv(temp_filepath, filepath):
+                    os.remove(temp_filepath)
                 else:
-                    os.remove(os.path.join(output_dir, title + '.mkv'))
+                    os.remove(filepath)
             else:
                 print('No ffmpeg is found. Conversion aborted.')
         else:
             print("Can't convert %s files" % ext)
     else:
         parts = []
-        print('Downloading %s.%s ...' % (tr(title), ext))
         for i, url in enumerate(urls):
-            filename = '%s[%02d].%s' % (title, i, ext)
-            filepath = os.path.join(output_dir, filename)
-            parts.append(filepath)
-            #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
+            part_filepath = os.path.join(output_dir, get_filename(title, ext, part=i))
+            parts.append(part_filepath)
+            #print('Downloading %s [%s/%s]...' % (filename, i + 1, len(urls)))
             bar.update_piece(i + 1)
-            url_save_chunked(url, filepath, bar, refer = refer, is_part = True, faker = faker)
+            url_save_chunked(url, part_filepath, bar, refer = refer, is_part = True, faker = faker)
         bar.done()
 
+        from .processor import ffmpeg
         if not merge:
             print()
             return
         if ext == 'ts':
-            from .processor.ffmpeg import has_ffmpeg_installed
-            if has_ffmpeg_installed():
-                from .processor.ffmpeg import ffmpeg_concat_ts_to_mkv
-                if ffmpeg_concat_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv')):
+            if ffmpeg.has_ffmpeg_installed():
+                if ffmpeg.ffmpeg_concat_ts_to_mkv(parts, filepath):
                     for part in parts:
                         os.remove(part)
                 else:
-                    os.remove(os.path.join(output_dir, title + '.mkv'))
+                    os.remove(filepath)
             else:
                 print('No ffmpeg is found. Merging aborted.')
         else:
@@ -717,7 +689,7 @@ def print_info(site_info, title, type, size):
         type_info = "Unknown type (%s)" % type
 
     print("Video Site:", site_info)
-    print("Title:     ", unescape_html(tr(title)))
+    print("Title:     ", unescape_html(title))
     print("Type:      ", type_info)
     print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     print()

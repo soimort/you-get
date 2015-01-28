@@ -40,11 +40,11 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
         raise NotImplementedError(sourceType)
 
     if not info_only:
-        title = get_filename(title)
+        filename = get_filename(title, '.cmt.json', id=vid)
         try:
-            print('Downloading %s ...\n' % (title + '.cmt.json'))
+            print('Downloading %s ...\n' % filename)
             cmt = get_srt_json(vid)
-            with open(os.path.join(output_dir, title + '.cmt.json'), 'w') as x:
+            with open(os.path.join(output_dir, filename), 'w') as x:
                 x.write(cmt)
             # print('Downloading %s ...\n' % (title + '.cmt_lock.json'))
             # cmt = get_srt_lock_json(danmakuId)
