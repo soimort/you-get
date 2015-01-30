@@ -98,7 +98,13 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     for i in info["data"]["vp"]["tkl"][0]["vs"]:
         if int(i["bid"])<=10 and int(i["bid"])>=bid:
             bid=int(i["bid"])
-            video_links=i["flvs"] #now in i["flvs"] not in i["fs"] 
+           
+            video_links=i["fs"] #now in i["flvs"] not in i["fs"]
+            if not i["fs"][0]["l"].startswith("/"):
+                tmp = getVrsEncodeCode(i["fs"][0]["l"])
+                if tmp.endswith('mp4'):
+                     video_links = i["flvs"]
+            
 
     urls=[]
     size=0
@@ -113,7 +119,6 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
         baseurl.insert(-1,key)
         url="/".join(baseurl)+vlink+'?su='+gen_uid+'&qyid='+uuid4().hex+'&client=&z=&bt=&ct=&tn='+str(randint(10000,20000))
         urls.append(json.loads(get_content(url))["l"])
-
     #download should be complete in 10 minutes
     #because the url is generated before start downloading
     #and the key may be expired after 10 minutes
