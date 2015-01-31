@@ -9,8 +9,8 @@ import time
 import urllib
 from random import random
 import xml.etree.ElementTree as ET
-
-
+from urllib import request
+from multiprocessing.dummy import Pool 
 #Thanks to FFDEC and showmycode.com
 #decompile Player4Player2.swf and VodCore.swf
 #key point
@@ -122,21 +122,27 @@ def constructKey(arg):
     res=encrypt(loc1,SERVER_KEY)
     return str2hex(res)
 
+
+
+
+
 #quality level
 #level bitrate
 # 0     336 
 # 1     452
 # 2     782
-# 3     1764
-# 4     6144  ->for vip
+# 3     1764  ->for vip
+# 4     6144  ->for vip 
 
 def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only = False ,**kwargs):
     #xml api version update to 4 @2015/01/31
     xmlstr = get_html('http://web-play.pptv.com/webplay3-0-%s.xml&version=4?type=web.fpp' % cid)
     xml = ET.fromstring(xmlstr)
 
-    stream_id = 4 #default for vip quality 
-    support_stream_id = sorted([i.get("ft") for i in xml.findall("./channel/file/item")])
+    stream_id = '2' #default vip level may have some error?
+    # support_stream_id = sorted([i.get("ft") for i in xml.findall("./channel/file/item")])
+    support_stream_id = sorted([i.get("ft") for i in xml.findall("./channel/file/item[@vip='0']")])
+
     if "stream_id" in kwargs and kwargs["stream_id"] in support_stream_id:
         stream_id = kwargs["stream_id"]
     else:
@@ -145,7 +151,7 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
             bitrate = xml.find("./channel/file/item[@ft='{}']".format(i)).get('bitrate')
             filesize = int(xml.find("./channel/file/item[@ft='{}']".format(i)).get('filesize'))
             vip = int(xml.find("./channel/file/item[@ft='{}']".format(i)).get('vip'))
-            print("\t--format",i,"<URL>:","bitrate:",bitrate,"kbps","size:","%.2f"% (filesize/ 1024.0 /1024.0),"MB")
+            print("\t--format",i,"<URL>:","bitrate:",bitrate,"kbps","size:","%.2f"% (filesize/ 1024.0 /1024.0),"MB", "<---default" if int(i) == int(stream_id) else '')
 
 
     item = xml.find("./channel/file/item[@ft='{}']".format(stream_id))
@@ -169,18 +175,40 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
 
     key=constructKey(st)
     numbers = [ i.get('no') for i in dragdata.findall('sgm')]
-    urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type=web.fpp".format(i,rid,key,k)  for i in numbers]
-    # total_size = sum(map(int, [ i.get('fs') for i in dragdata.findall('sgm')]))
-    # print(total_size)
-    total_size = int(xml.find("./channel/file/item[@ft='{}']".format(stream_id)).get('filesize'))
+    type_ = "web.fpp"
+    # type_ = "web.fpp" if int(stream_id) <=2 else "web.fpp.vip"
+    urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type={}".format(i,rid,key,k,type_)  for i in numbers]
+
+    print ("Converting urls to real urls....Please wait")
+
+    def convertUrl(url):
+        res = request.urlopen(request.Request(url,headers={'Referer':refer_url},method='HEAD'))
+        return (int(res.headers.get('content-length',0)),res.geturl())
+    
+    threads = Pool(10) 
+    results = threads.map(convertUrl,urls)
+    threads.close()
+    threads.join()
+
+    size_list ,real_urls = zip(*results)
+    total_size = sum(size_list) 
+
+    # for i in urls:
+    #     print(i)
+    #     res = request.urlopen(request.Request(i,headers={'Referer':refer_url},method='HEAD'))
+    #     real_urls.append(res.geturl())
+    #     total_size +=int(res.headers.get('content-length',0))
+
+    # fs_size = sum(map(int, [ i.get('fs') for i in dragdata.findall('sgm')])) #reliable 
+
     print_info(site_info, title, 'mp4', total_size)
 
     if not info_only:
         try:
             #accept-encoding = *  is a workaround ,cause server of pptv may not return content-length when accept-encoding is special point to some zip algorithm 
-            download_urls(urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge, faker = {'Referer':refer_url,'Accept-Encoding':'*'})  
+            download_urls(real_urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge,  faker = {'Referer':refer_url,'Accept-Encoding':'*'})
         except urllib.error.HTTPError as e:
-            pptv_download_by_id(cid, refer_url, output_dir = output_dir, merge = merge, info_only = info_only,**kwargs)
+            # pptv_download_by_id(cid, refer_url, output_dir = output_dir, merge = merge, info_only = info_only,**kwargs)
             pass
 
 def pptv_download(url, output_dir = '.', merge = True, info_only = False , **kwargs):
