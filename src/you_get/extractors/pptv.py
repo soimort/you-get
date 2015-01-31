@@ -120,8 +120,6 @@ def constructKey(arg):
     loc1=hex(int(arg))[2:]+(16-len(hex(int(arg))[2:]))*"\x00"
     SERVER_KEY="qqqqqww"+"\x00"*9
     res=encrypt(loc1,SERVER_KEY)
-    # import codecs
-    # print(codecs.encode(bytes(res,'latin-1'),'hex'))
     return str2hex(res)
 
 #quality level
@@ -171,7 +169,6 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
 
     key=constructKey(st)
     numbers = [ i.get('no') for i in dragdata.findall('sgm')]
-    #if vip type = type+'.vip'
     urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type=web.fpp".format(i,rid,key,k)  for i in numbers]
     # total_size = sum(map(int, [ i.get('fs') for i in dragdata.findall('sgm')]))
     # print(total_size)
@@ -180,8 +177,8 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
 
     if not info_only:
         try:
-            download_urls(urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge, faker = {'Referer':refer_url,'Accept-Encoding':'*'})  
             #accept-encoding = *  is a workaround ,cause server of pptv may not return content-length when accept-encoding is special point to some zip algorithm 
+            download_urls(urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge, faker = {'Referer':refer_url,'Accept-Encoding':'*'})  
         except urllib.error.HTTPError as e:
             pptv_download_by_id(cid, refer_url, output_dir = output_dir, merge = merge, info_only = info_only,**kwargs)
             pass
