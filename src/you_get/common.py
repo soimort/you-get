@@ -131,7 +131,12 @@ def undeflate(data):
 # DEPRECATED in favor of get_content()
 def get_response(url, faker = False):
     if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        if isinstance(faker,dict):
+            tmp_headers = fake_headers.copy()
+            tmp_headers.update(faker)
+            response = request.urlopen(request.Request(url, headers = tmp_headers), None)
+        else:
+            response = request.urlopen(request.Request(url, headers = fake_headers), None)
     else:
         response = request.urlopen(url)
 
@@ -195,11 +200,16 @@ def get_content(url, headers={}, decoded=True):
     return data
 
 def url_size(url, faker = False):
+    #USE method HEAD to replace GET
     if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        if isinstance(faker,dict):
+            tmp_headers = fake_headers.copy()
+            tmp_headers.update(faker)
+            response = request.urlopen(request.Request(url, headers = tmp_headers,method = 'HEAD'), None)
+        else:
+            response = request.urlopen(request.Request(url, headers = fake_headers, method = 'HEAD'), None)
     else:
         response = request.urlopen(url)
-
     size = response.headers['content-length']
     return int(size) if size!=None else float('inf')
 
@@ -211,7 +221,12 @@ def urls_size(urls):
 
 def url_info(url, faker = False):
     if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        if isinstance(faker,dict):
+            tmp_headers = fake_headers.copy()
+            tmp_headers.update(faker)
+            response = request.urlopen(request.Request(url, headers = tmp_headers), None)
+        else:
+            response = request.urlopen(request.Request(url, headers = fake_headers), None)
     else:
         response = request.urlopen(request.Request(url))
 
@@ -257,7 +272,12 @@ def url_locations(urls, faker = False):
     locations = []
     for url in urls:
         if faker:
-            response = request.urlopen(request.Request(url, headers = fake_headers), None)
+            if isinstance(faker,dict):
+                tmp_headers = fake_headers.copy()
+                tmp_headers.update(faker)
+                response = request.urlopen(request.Request(url, headers = tmp_headers), None)
+            else:
+                response = request.urlopen(request.Request(url, headers = fake_headers), None)
         else:
             response = request.urlopen(request.Request(url))
 
@@ -299,7 +319,12 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
 
     if received < file_size:
         if faker:
-            headers = fake_headers
+            if isinstance(faker,dict):
+                tmp_headers = fake_headers.copy()
+                tmp_headers.update(faker)
+                headers = tmp_headers
+            else:
+                headers = fake_headers
         else:
             headers = {}
         if received:
@@ -374,7 +399,12 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
         open_mode = 'wb'
 
     if faker:
-        headers = fake_headers
+        if isinstance(faker,dict):
+            tmp_headers = fake_headers.copy()
+            tmp_headers.update(faker)
+            headers = tmp_headers
+        else:
+            headers = fake_headers
     else:
         headers = {}
     if received:

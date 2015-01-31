@@ -8,7 +8,18 @@ import re
 import time
 import urllib
 from random import random
+import xml.etree.ElementTree as ET
 
+
+#Thanks to FFDEC and showmycode.com
+#decompile Player4Player2.swf and VodCore.swf
+#key point
+# in Player4player2.swf
+#cn.pplive.player.model.VodPlayProxy -> playUrk #to get xml info
+#cn.pplive.player.controller.VodPlayCommand -> execute #parse xml info
+#cn.pplive.player.view.components.VodP2PPlayer ->addNetStream #send info to the kernel(aka vodcore.swf)
+#   #constructKey in Utils
+# go into vodcore.swf
 
 def constructKey(arg):
 
@@ -109,46 +120,80 @@ def constructKey(arg):
     loc1=hex(int(arg))[2:]+(16-len(hex(int(arg))[2:]))*"\x00"
     SERVER_KEY="qqqqqww"+"\x00"*9
     res=encrypt(loc1,SERVER_KEY)
+    # import codecs
+    # print(codecs.encode(bytes(res,'latin-1'),'hex'))
     return str2hex(res)
 
+#quality level
+#level bitrate
+# 0     336 
+# 1     452
+# 2     782
+# 3     1764
+# 4     6144  ->for vip
 
-def pptv_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    xml = get_html('http://web-play.pptv.com/webplay3-0-%s.xml?type=web.fpp' % id)
-    #vt=3 means vod mode vt=5 means live mode
-    host = r1(r'<sh>([^<>]+)</sh>', xml)
-    k = r1(r'<key expire=[^<>]+>([^<>]+)</key>', xml)
-    rid = r1(r'rid="([^"]+)"', xml)
-    title = r1(r'nm="([^"]+)"', xml)
+def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only = False ,**kwargs):
+    #xml api version update to 4 @2015/01/31
+    xmlstr = get_html('http://web-play.pptv.com/webplay3-0-%s.xml&version=4?type=web.fpp' % cid)
+    xml = ET.fromstring(xmlstr)
 
-    st=r1(r'<st>([^<>]+)</st>',xml)[:-4]
+    stream_id = 4 #default for vip quality 
+    support_stream_id = sorted([i.get("ft") for i in xml.findall("./channel/file/item")])
+    if "stream_id" in kwargs and kwargs["stream_id"] in support_stream_id:
+        stream_id = kwargs["stream_id"]
+    else:
+        print("Current Video Supports:")
+        for i in support_stream_id:
+            bitrate = xml.find("./channel/file/item[@ft='{}']".format(i)).get('bitrate')
+            filesize = int(xml.find("./channel/file/item[@ft='{}']".format(i)).get('filesize'))
+            vip = int(xml.find("./channel/file/item[@ft='{}']".format(i)).get('vip'))
+            print("\t--format",i,"<URL>:","bitrate:",bitrate,"kbps","size:","%.2f"% (filesize/ 1024.0 /1024.0),"MB")
+
+
+    item = xml.find("./channel/file/item[@ft='{}']".format(stream_id))
+    assert item!=None 
+    dt = xml.find("./dt[@ft='{}']".format(stream_id))
+    assert dt!=None
+    dragdata = xml.find("./dragdata[@ft='{}']".format(stream_id))
+    assert dragdata!=None
+
+    host = dt.find('sh').text
+    k = dt.find('key').text
+    rid = item.get('rid')
+    assert rid.endswith('.mp4')
+    title = xml.find("./channel").get('nm')
+
+    st = dt.find('st').text[:-4]
+    st = 'Fri Jan 30 18:16:35 2015'
     st=time.mktime(time.strptime(st))*1000-60*1000-time.time()*1000
     st+=time.time()*1000
     st=st/1000
 
     key=constructKey(st)
-
-    pieces = re.findall('<sgm no="(\d+)"[^<>]+fs="(\d+)"', xml)
-    numbers, fs = zip(*pieces)
-    urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.4&k={}&type=web.fpp".format(i,rid,key,k)  for i in range(max(map(int,numbers))+1)]
-
-    total_size = sum(map(int, fs))
-    assert rid.endswith('.mp4')
+    numbers = [ i.get('no') for i in dragdata.findall('sgm')]
+    #if vip type = type+'.vip'
+    urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type=web.fpp".format(i,rid,key,k)  for i in numbers]
+    # total_size = sum(map(int, [ i.get('fs') for i in dragdata.findall('sgm')]))
+    # print(total_size)
+    total_size = int(xml.find("./channel/file/item[@ft='{}']".format(stream_id)).get('filesize'))
     print_info(site_info, title, 'mp4', total_size)
 
     if not info_only:
         try:
-            download_urls(urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge)
-        except urllib.error.HTTPError:
-            #for key expired
-            pptv_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
+            download_urls(urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge, faker = {'Referer':refer_url,'Accept-Encoding':'*'})  
+            #accept-encoding = *  is a workaround ,cause server of pptv may not return content-length when accept-encoding is special point to some zip algorithm 
+        except urllib.error.HTTPError as e:
+            pptv_download_by_id(cid, refer_url, output_dir = output_dir, merge = merge, info_only = info_only,**kwargs)
+            pass
 
-def pptv_download(url, output_dir = '.', merge = True, info_only = False):
+def pptv_download(url, output_dir = '.', merge = True, info_only = False , **kwargs):
     assert re.match(r'http://v.pptv.com/show/(\w+)\.html$', url)
     html = get_html(url)
-    id = r1(r'webcfg\s*=\s*{"id":\s*(\d+)', html)
-    assert id
-    pptv_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
+    cid = r1(r'webcfg\s*=\s*{"id":\s*(\d+)', html)
+    assert cid
+    pptv_download_by_id(cid, url ,output_dir = output_dir, merge = merge, info_only = info_only,**kwargs)
 
 site_info = "PPTV.com"
 download = pptv_download
 download_playlist = playlist_not_supported('pptv')
+
