@@ -45,8 +45,17 @@ def getVrsEncodeCode(vlink):
     return loc2[::-1]
 
 def getVMS(tvid,vid,uid):
-    tm=randint(1000,2000)
-    vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=p'+"&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+str(tm)+"&enc="+hashlib.new('md5',bytes('ts56gh'+str(tm)+tvid,"utf-8")).hexdigest()+"&qyid="+uid+"&tn="+str(random())
+    #tm ->the flash run time for md5 usage
+    #um -> vip 1 normal 0
+    #authkey -> for password protected video ,replace '' with your password 
+    #puid user.passportid may empty?
+    #TODO: support password protected video
+    tm=randint(100,1000) 
+    vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=1702633101b340d8917a69cf8a4b8c7' +\
+                "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+str(tm)+\
+                "&enc="+hashlib.new('md5',bytes('ts56gh'+str(tm)+tvid,"utf-8")).hexdigest()+\
+                "&qyid="+uid+"&tn="+str(random()) +"&um=0" +\
+                "&authkey="+hashlib.new('md5',bytes(''+str(tm)+tvid,'utf-8')).hexdigest()
     return json.loads(get_content(vmsreq))
 
 def getDispathKey(rid):
@@ -67,8 +76,14 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     assert videoid
 
     info = getVMS(tvid,videoid,gen_uid)
+    assert info["code"] == "A000000"
 
     title = info["data"]["vi"]["vn"]
+
+    # data.vp = json.data.vp
+    #  data.vi = json.data.vi
+    #  data.f4v = json.data.f4v
+    # if movieIsMember data.vp = json.data.np
 
     #for highest qualities
     #for http://www.iqiyi.com/v_19rrmmz5yw.html  not vp -> np
@@ -79,30 +94,31 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
         log.e("[Error] Do not support for iQIYI VIP video.")
         exit(-1)
 
-    # assert info["data"]['vp']["tkl"]!=''
     bid=0
     for i in info["data"]["vp"]["tkl"][0]["vs"]:
         if int(i["bid"])<=10 and int(i["bid"])>=bid:
             bid=int(i["bid"])
-            video_links=i["fs"] 
-    #todo support choose quality  with cmdline
+           
+            video_links=i["fs"] #now in i["flvs"] not in i["fs"]
+            if not i["fs"][0]["l"].startswith("/"):
+                tmp = getVrsEncodeCode(i["fs"][0]["l"])
+                if tmp.endswith('mp4'):
+                     video_links = i["flvs"]
+            
 
     urls=[]
     size=0
     for i in video_links:
         vlink=i["l"]
-        # print(vlink)
         if not vlink.startswith("/"):
             #vlink is encode
             vlink=getVrsEncodeCode(vlink)
-        assert vlink.endswith(".f4v")
-        size+=i["b"]
         key=getDispathKey(vlink.split("/")[-1].split(".")[0])
+        size+=i["b"]
         baseurl=info["data"]["vp"]["du"].split("/")
         baseurl.insert(-1,key)
-        url="/".join(baseurl)+vlink+'?su='+gen_uid+'&client=&z=&bt=&ct=&tn='+str(randint(10000,20000))
+        url="/".join(baseurl)+vlink+'?su='+gen_uid+'&qyid='+uuid4().hex+'&client=&z=&bt=&ct=&tn='+str(randint(10000,20000))
         urls.append(json.loads(get_content(url))["l"])
-
     #download should be complete in 10 minutes
     #because the url is generated before start downloading
     #and the key may be expired after 10 minutes
