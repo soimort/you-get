@@ -3,6 +3,7 @@
 __all__ = ['pptv_download', 'pptv_download_by_id']
 
 from ..common import *
+from ..util.url import UrlGenerator
 
 import re
 import time
@@ -20,6 +21,31 @@ from multiprocessing.dummy import Pool
 #cn.pplive.player.view.components.VodP2PPlayer ->addNetStream #send info to the kernel(aka vodcore.swf)
 #   #constructKey in Utils
 # go into vodcore.swf
+
+class PPTVUrlGenerator(UrlGenerator):
+    def __init__(self,rid,numbers,k,type_,refer_url):
+        #self.urls = urls
+        self.cur = 0
+        self.length = len(numbers)
+        self.refer_url = refer_url
+        self.rid = rid
+        self.numbers = numbers
+        self.type_ = type_
+        self.k = k
+
+    def __next__(self):
+        if self.cur == self.length:
+            raise StopIteration
+        url= "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type={}".format(self.numbers[self.cur],self.rid,constructKey(int(time.time()-60)),self.k,self.type_) 
+        real_url = request.urlopen(request.Request(url,headers={'Referer':self.refer_url})).geturl()
+        self.cur += 1 
+        return real_url
+        
+    def __iter__(self):
+        return self
+
+    def __len__(self):
+        return self.length
 
 def constructKey(arg):
 
@@ -167,46 +193,41 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
     assert rid.endswith('.mp4')
     title = xml.find("./channel").get('nm')
 
-    st = dt.find('st').text[:-4]
-    st = 'Fri Jan 30 18:16:35 2015'
-    st=time.mktime(time.strptime(st))*1000-60*1000-time.time()*1000
-    st+=time.time()*1000
-    st=st/1000
+    #print(dt.find('st'))
+    #st = dt.find('st').text[:-4]
+    #print(st)
+    #st=int(time.mktime(time.strptime(st))-60)
+    #st+=time.time()
+    #st = int(st)
 
     key=constructKey(st)
     numbers = [ i.get('no') for i in dragdata.findall('sgm')]
     type_ = "web.fpp"
     # type_ = "web.fpp" if int(stream_id) <=2 else "web.fpp.vip"
-    urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type={}".format(i,rid,key,k,type_)  for i in numbers]
+    #urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type={}".format(i,rid,key,k,type_)  for i in numbers]
 
-    print ("Converting urls to real urls....Please wait")
 
-    def convertUrl(url):
-        res = request.urlopen(request.Request(url,headers={'Referer':refer_url},method='HEAD'))
-        return (int(res.headers.get('content-length',0)),res.geturl())
+    #def convertUrl(url):
+    #    res = request.urlopen(request.Request(url,headers={'Referer':refer_url},method='HEAD'))
+    #    return (int(res.headers.get('content-length',0)),res.geturl())
     
-    threads = Pool(10) 
-    results = threads.map(convertUrl,urls)
-    threads.close()
-    threads.join()
+    #threads = Pool(10) 
+    #results = threads.map(convertUrl,urls)
+    #threads.close()
+    #threads.join()
 
-    size_list ,real_urls = zip(*results)
-    total_size = sum(size_list) 
-
-    # for i in urls:
-    #     print(i)
-    #     res = request.urlopen(request.Request(i,headers={'Referer':refer_url},method='HEAD'))
-    #     real_urls.append(res.geturl())
-    #     total_size +=int(res.headers.get('content-length',0))
-
-    # fs_size = sum(map(int, [ i.get('fs') for i in dragdata.findall('sgm')])) #reliable 
+    #size_list ,real_urls = zip(*results)
+    #total_size = sum(size_list) 
+    #print(real_urls)
+    
+    total_size = sum(map(int, [ i.get('fs') for i in dragdata.findall('sgm')])) #reliable 
 
     print_info(site_info, title, 'mp4', total_size)
 
     if not info_only:
         try:
             #accept-encoding = *  is a workaround ,cause server of pptv may not return content-length when accept-encoding is special point to some zip algorithm 
-            download_urls(real_urls, title, 'mp4', total_size, output_dir = output_dir, merge = merge,  faker = {'Referer':refer_url,'Accept-Encoding':'*'})
+            download_urls(PPTVUrlGenerator(rid,numbers,k,type_,refer_url), title, 'mp4', total_size, output_dir = output_dir, merge = merge,  faker = {'Referer':refer_url,'Accept-Encoding':'*'})
         except urllib.error.HTTPError as e:
             # pptv_download_by_id(cid, refer_url, output_dir = output_dir, merge = merge, info_only = info_only,**kwargs)
             pass
