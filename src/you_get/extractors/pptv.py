@@ -48,6 +48,10 @@ class PPTVUrlGenerator(UrlGenerator):
     def __len__(self):
         return self.length
 
+    def __str__(self):
+        return str([i for i in self])
+
+
 def constructKey(arg):
 
     def str2hex(s):

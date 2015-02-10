@@ -12,3 +12,8 @@ class UrlGenerator:
     def __len__(self):
         #you must imply this method 
         pass
+
+    def __str__(self):
+        #you may imply this method for option [-u] to display real urls
+        #otherwise it will just return <object@hash>
+        pass
