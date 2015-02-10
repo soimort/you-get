@@ -200,7 +200,7 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
     #st+=time.time()
     #st = int(st)
 
-    key=constructKey(st)
+    #key=constructKey(st)
     numbers = [ i.get('no') for i in dragdata.findall('sgm')]
     type_ = "web.fpp"
     # type_ = "web.fpp" if int(stream_id) <=2 else "web.fpp.vip"
