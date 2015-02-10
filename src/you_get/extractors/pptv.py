@@ -12,6 +12,7 @@ from random import random
 import xml.etree.ElementTree as ET
 from urllib import request
 from multiprocessing.dummy import Pool 
+
 #Thanks to FFDEC and showmycode.com
 #decompile Player4Player2.swf and VodCore.swf
 #key point
@@ -233,7 +234,7 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
             pass
 
 def pptv_download(url, output_dir = '.', merge = True, info_only = False , **kwargs):
-    assert re.match(r'http://v.pptv.com/show/(\w+)\.html$', url)
+    assert re.match(r'http://v.pptv.com/show/(\w+)\.html', url)
     html = get_html(url)
     cid = r1(r'webcfg\s*=\s*{"id":\s*(\d+)', html)
     assert cid
