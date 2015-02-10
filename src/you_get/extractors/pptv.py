@@ -17,33 +17,33 @@ from multiprocessing.dummy import Pool
 #decompile Player4Player2.swf and VodCore.swf
 #key point
 # in Player4player2.swf
-#cn.pplive.player.model.VodPlayProxy -> playUrk #to get xml info
+#cn.pplive.player.model.VodPlayProxy -> playUrl #to get xml info
 #cn.pplive.player.controller.VodPlayCommand -> execute #parse xml info
 #cn.pplive.player.view.components.VodP2PPlayer ->addNetStream #send info to the kernel(aka vodcore.swf)
-#   #constructKey in Utils
+   #constructKey in Utils
+#in player4player2.swf version 3.3.0.9
+#cn.pplive.player.model.VodPlayProxy -> ppllive.core.proxy.VodPlayProxy
+#and etc
 # go into vodcore.swf
+# com.pplive.play.Playinfo -> constructCdnURL
 
 class PPTVUrlGenerator(UrlGenerator):
-    def __init__(self,rid,numbers,k,type_,refer_url):
+    def __init__(self,rid,numbers,k,refer_url):
         #self.urls = urls
         self.cur = 0
         self.length = len(numbers)
         self.refer_url = refer_url
         self.rid = rid
         self.numbers = numbers
-        self.type_ = type_
         self.k = k
 
     def __next__(self):
         if self.cur == self.length:
             raise StopIteration
-        url= "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type={}".format(self.numbers[self.cur],self.rid,constructKey(int(time.time()-60)),self.k,self.type_) 
+        url= "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type=web.fpp".format(self.numbers[self.cur],self.rid,constructKey(int(time.time()-60)),self.k)
         real_url = request.urlopen(request.Request(url,headers={'Referer':self.refer_url})).geturl()
         self.cur += 1 
         return real_url
-        
-    def __iter__(self):
-        return self
 
     def __len__(self):
         return self.length
@@ -171,8 +171,8 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
     xml = ET.fromstring(xmlstr)
 
     stream_id = '2' #default vip level may have some error?
-    # support_stream_id = sorted([i.get("ft") for i in xml.findall("./channel/file/item")])
-    support_stream_id = sorted([i.get("ft") for i in xml.findall("./channel/file/item[@vip='0']")])
+    support_stream_id = sorted([i.get("ft") for i in xml.findall("./channel/file/item")])
+    #support_stream_id = sorted([i.get("ft") for i in xml.findall("./channel/file/item[@vip='0']")])
 
     if "stream_id" in kwargs and kwargs["stream_id"] in support_stream_id:
         stream_id = kwargs["stream_id"]
@@ -198,17 +198,8 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
     assert rid.endswith('.mp4')
     title = xml.find("./channel").get('nm')
 
-    #print(dt.find('st'))
-    #st = dt.find('st').text[:-4]
-    #print(st)
-    #st=int(time.mktime(time.strptime(st))-60)
-    #st+=time.time()
-    #st = int(st)
-
-    #key=constructKey(st)
     numbers = [ i.get('no') for i in dragdata.findall('sgm')]
     type_ = "web.fpp"
-    # type_ = "web.fpp" if int(stream_id) <=2 else "web.fpp.vip"
     #urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.15&k={}&type={}".format(i,rid,key,k,type_)  for i in numbers]
 
 
@@ -232,8 +223,9 @@ def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only
     if not info_only:
         try:
             #accept-encoding = *  is a workaround ,cause server of pptv may not return content-length when accept-encoding is special point to some zip algorithm 
-            download_urls(PPTVUrlGenerator(rid,numbers,k,type_,refer_url), title, 'mp4', total_size, output_dir = output_dir, merge = merge,  faker = {'Referer':refer_url,'Accept-Encoding':'*'})
+            download_urls(PPTVUrlGenerator(rid,numbers,k,refer_url), title, 'mp4', total_size, output_dir = output_dir, merge = merge,  faker = {'Referer':refer_url,'Accept-Encoding':'*'})
         except urllib.error.HTTPError as e:
+            print(e.message)
             # pptv_download_by_id(cid, refer_url, output_dir = output_dir, merge = merge, info_only = info_only,**kwargs)
             pass
 

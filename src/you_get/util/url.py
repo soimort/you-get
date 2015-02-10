@@ -10,7 +10,7 @@ class UrlGenerator:
         pass
 
     def __len__(self):
-        #you must imply this method 
+        #you must implement this method 
         pass
 
     def __str__(self):
