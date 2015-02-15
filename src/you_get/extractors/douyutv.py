@@ -8,7 +8,7 @@ import json
 def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
     room_id = url[url.rfind('/')+1:]
 
-    content = get_content("http://www.douyutv.com/api/client/room/"+room_id)
+    content = get_html("http://www.douyutv.com/api/client/room/"+room_id)
     data = json.loads(content)['data']
 
     title = data.get('room_name')

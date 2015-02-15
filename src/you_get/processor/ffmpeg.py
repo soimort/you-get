@@ -26,7 +26,7 @@ def has_ffmpeg_installed():
 def ffmpeg_convert_ts_to_mkv(files, output='output.mkv'):
     for file in files:
         if os.path.isfile(file):
-            params = [FFMPEG, '-i']
+            params = [FFMPEG, '-y', '-i']
             params.append(file)
             params.append(output)
             subprocess.call(params)
@@ -36,13 +36,13 @@ def ffmpeg_convert_ts_to_mkv(files, output='output.mkv'):
 def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w')
+        concat_list = open(output + '.txt', 'w', encoding="utf-8")
         for file in files:
             if os.path.isfile(file):
                 concat_list.write("file '%s'\n" % file)
         concat_list.close()
 
-        params = [FFMPEG, '-f', 'concat', '-i']
+        params = [FFMPEG, '-f', 'concat', '-y', '-i']
         params.append(output + '.txt')
         params += ['-c', 'copy', output]
 
@@ -54,7 +54,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
 
     for file in files:
         if os.path.isfile(file):
-            params = [FFMPEG, '-i']
+            params = [FFMPEG, '-y', '-i']
             params.append(file)
             params.append(file + '.mpg')
             subprocess.call(params)
@@ -64,7 +64,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
         for input in inputs:
             o.write(input.read())
 
-    params = [FFMPEG, '-i']
+    params = [FFMPEG, '-y', '-i']
     params.append(output + '.mpg')
     params += ['-vcodec', 'copy', '-acodec', 'copy']
     params.append(output)
@@ -79,7 +79,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
         raise
 
 def ffmpeg_concat_ts_to_mkv(files, output='output.mkv'):
-    params = [FFMPEG, '-isync', '-i']
+    params = [FFMPEG, '-isync', '-y', '-i']
     params.append('concat:')
     for file in files:
         if os.path.isfile(file):
@@ -97,13 +97,13 @@ def ffmpeg_concat_ts_to_mkv(files, output='output.mkv'):
 def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w')
+        concat_list = open(output + '.txt', 'w', encoding="utf-8")
         for file in files:
             if os.path.isfile(file):
                 concat_list.write("file '%s'\n" % file)
         concat_list.close()
 
-        params = [FFMPEG, '-f', 'concat', '-i']
+        params = [FFMPEG, '-f', 'concat', '-y', '-i']
         params.append(output + '.txt')
         params += ['-c', 'copy', output]
 
@@ -115,14 +115,14 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
 
     for file in files:
         if os.path.isfile(file):
-            params = [FFMPEG, '-i']
+            params = [FFMPEG, '-y', '-i']
             params.append(file)
             params += ['-map', '0', '-c', 'copy', '-f', 'mpegts', '-bsf:v', 'h264_mp4toannexb']
             params.append(file + '.ts')
 
             subprocess.call(params)
 
-    params = [FFMPEG, '-i']
+    params = [FFMPEG, '-y', '-i']
     params.append('concat:')
     for file in files:
         f = file + '.ts'
@@ -143,13 +143,13 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
 def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w')
+        concat_list = open(output + '.txt', 'w', encoding="utf-8")
         for file in files:
             if os.path.isfile(file):
                 concat_list.write("file '%s'\n" % file)
         concat_list.close()
 
-        params = [FFMPEG, '-f', 'concat', '-i']
+        params = [FFMPEG, '-f', 'concat', '-y', '-i']
         params.append(output + '.txt')
         params += ['-c', 'copy', output]
 
@@ -161,14 +161,14 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
 
     for file in files:
         if os.path.isfile(file):
-            params = [FFMPEG, '-i']
+            params = [FFMPEG, '-y', '-i']
             params.append(file)
             params += ['-c', 'copy', '-f', 'mpegts', '-bsf:v', 'h264_mp4toannexb']
             params.append(file + '.ts')
 
             subprocess.call(params)
 
-    params = [FFMPEG, '-i']
+    params = [FFMPEG, '-y', '-i']
     params.append('concat:')
     for file in files:
         f = file + '.ts'

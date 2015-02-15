@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.3.32
+------
+
+*Date: 2014-12-10*
+
+* New site support:
+    - baomihua.com
+    - zhanqi.tv
+* Bug fixes:
+    - DouyuTV
+    - Tudou
+    - Tumblr
+    - Vine
+    - Youku
+
 0.3.31
 ------
 

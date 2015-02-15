@@ -19,7 +19,8 @@ client = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Biligrab /0.8 (cnbeining@gmail.com)'
+    #'User-Agent': 'Biligrab /0.8 (cnbeining@gmail.com)'
+    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36"
 }
 
 def get_srt_xml(id):
@@ -150,7 +151,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
             bilibili_download_by_cids(cids, title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     elif t == 'vid':
-        sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        sina_download_by_vid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'ykid':
         youku_download_by_vid(id, title=title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'uid':
