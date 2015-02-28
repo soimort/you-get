@@ -163,9 +163,19 @@ class Youku(VideoExtractor):
             if not self.streams[stream_id]['src'] and self.password_protected:
                 log.e('[Failed] Wrong password.')
 
-site = Youku()
-download = site.download_by_url
-download_playlist = site.download_playlist_by_url
+def my_download_by_url(*args, **kwargs):
+    site = Youku()
+    return site.download_by_url(*args, **kwargs)
 
-youku_download_by_vid = site.download_by_vid
+def my_download_playlist_by_url(*args, **kwargs):
+    site = Youku()
+    return site.download_playlist_by_url(*args, **kwargs)
+
+# youku_download_by_vid = site.download_by_vid
 # Used by: acfun.py bilibili.py miomio.py tudou.py
+def youku_download_by_vid(*args, **kwargs):
+    site = Youku()
+    return site.download_by_vid(*args, **kwargs)
+
+download = my_download_by_url
+download_playlist = my_download_playlist_by_url
