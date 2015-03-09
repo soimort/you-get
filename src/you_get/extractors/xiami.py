@@ -142,8 +142,8 @@ def xiami_download(url, output_dir = '.', stream_type = None, merge = True, info
         id = r1(r'http://www.xiami.com/album/(\d+)', url)
         xiami_download_album(id, output_dir, merge, info_only)
     
-    if re.match(r'http://www.xiami.com/song/showcollect/id/\d+', url):
-        id = r1(r'http://www.xiami.com/song/showcollect/id/(\d+)', url)
+    if re.match(r'http://www.xiami.com/collect/\d+', url):
+        id = r1(r'http://www.xiami.com/collect/(\d+)', url)
         xiami_download_showcollect(id, output_dir, merge, info_only)
     
     if re.match('http://www.xiami.com/song/\d+', url):
