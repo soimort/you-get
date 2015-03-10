@@ -78,10 +78,16 @@ def xiami_download_showcollect(cid, output_dir = '.', merge = True, info_only = 
     tracks = doc.getElementsByTagName("track")
     track_nr = 1
     for i in tracks:
-        artist = i.getElementsByTagName("artist")[0].firstChild.nodeValue
-        album_name = i.getElementsByTagName("album_name")[0].firstChild.nodeValue
-        song_title = i.getElementsByTagName("title")[0].firstChild.nodeValue
-        url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
+        artist=album_name=song_title=url=""
+        try:
+            song_id = i.getElementsByTagName("song_id")[0].firstChild.nodeValue
+            artist = i.getElementsByTagName("artist")[0].firstChild.nodeValue
+            album_name = i.getElementsByTagName("album_name")[0].firstChild.nodeValue
+            song_title = i.getElementsByTagName("title")[0].firstChild.nodeValue
+            url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
+        except:
+            log.e("Song %s failed. [Info Missing] artist:%s, album:%s, title:%s, url:%s" % (song_id, artist, album_name, song_title, url))
+            continue
         try:
             lrc_url = i.getElementsByTagName("lyric")[0].firstChild.nodeValue
         except:
