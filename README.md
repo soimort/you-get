@@ -56,6 +56,7 @@ Others:
 * Kugou (酷狗音乐) <http://www.kugou.com>
 * Kuwo (酷我音乐) <http://www.kuwo.cn>
 * LeTV (乐视网) <http://www.letv.com>
+* Lizhi.fm (荔枝FM) <http://www.lizhi.fm>
 * MioMio <http://www.miomio.tv>
 * MTV 81 <http://www.mtv81.com>
 * NetEase (网易视频) <http://v.163.com>
