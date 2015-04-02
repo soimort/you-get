@@ -61,7 +61,7 @@ def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
     
     print_info(site_info, song_title, ext, size)
     if not info_only:
-        file_name = "%s - %s - %s" % (song_title, album_name, artist)
+        file_name = "%s - %s - %s" % (song_title, artist, album_name)
         download_urls([url], file_name, ext, size, output_dir, merge = merge, faker = True)
         try:
             xiami_download_lyric(lrc_url, file_name, output_dir)
@@ -78,10 +78,16 @@ def xiami_download_showcollect(cid, output_dir = '.', merge = True, info_only = 
     tracks = doc.getElementsByTagName("track")
     track_nr = 1
     for i in tracks:
-        artist = i.getElementsByTagName("artist")[0].firstChild.nodeValue
-        album_name = i.getElementsByTagName("album_name")[0].firstChild.nodeValue
-        song_title = i.getElementsByTagName("title")[0].firstChild.nodeValue
-        url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
+        artist=album_name=song_title=url=""
+        try:
+            song_id = i.getElementsByTagName("song_id")[0].firstChild.nodeValue
+            artist = i.getElementsByTagName("artist")[0].firstChild.nodeValue
+            album_name = i.getElementsByTagName("album_name")[0].firstChild.nodeValue
+            song_title = i.getElementsByTagName("title")[0].firstChild.nodeValue
+            url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
+        except:
+            log.e("Song %s failed. [Info Missing] artist:%s, album:%s, title:%s, url:%s" % (song_id, artist, album_name, song_title, url))
+            continue
         try:
             lrc_url = i.getElementsByTagName("lyric")[0].firstChild.nodeValue
         except:
@@ -142,8 +148,8 @@ def xiami_download(url, output_dir = '.', stream_type = None, merge = True, info
         id = r1(r'http://www.xiami.com/album/(\d+)', url)
         xiami_download_album(id, output_dir, merge, info_only)
     
-    if re.match(r'http://www.xiami.com/song/showcollect/id/\d+', url):
-        id = r1(r'http://www.xiami.com/song/showcollect/id/(\d+)', url)
+    if re.match(r'http://www.xiami.com/collect/\d+', url):
+        id = r1(r'http://www.xiami.com/collect/(\d+)', url)
         xiami_download_showcollect(id, output_dir, merge, info_only)
     
     if re.match('http://www.xiami.com/song/\d+', url):
