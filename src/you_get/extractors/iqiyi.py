@@ -88,7 +88,6 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     assert videoid
 
     info = getVMS(tvid,videoid,gen_uid)
-    print(info)
     assert info["code"] == "A000000"
 
     title = info["data"]["vi"]["vn"]
