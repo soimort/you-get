@@ -478,7 +478,7 @@ class DummyProgressBar:
 def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
     if dry_run:
-        print('Real URLs:\n%s\n' % urls)
+        print('Real URLs:\n%s' % '\n'.join(urls))
         return
 
     if player:
