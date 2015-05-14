@@ -3,7 +3,6 @@
 __all__ = ['pptv_download', 'pptv_download_by_id']
 
 from ..common import *
-from ..util.url import UrlGenerator
 
 import re
 import time
@@ -27,7 +26,7 @@ from multiprocessing.dummy import Pool
 # go into vodcore.swf
 # com.pplive.play.Playinfo -> constructCdnURL
 
-class PPTVUrlGenerator(UrlGenerator):
+class PPTVUrlGenerator():
     def __init__(self,rid,numbers,k,refer_url):
         #self.urls = urls
         self.cur = 0
@@ -36,6 +35,9 @@ class PPTVUrlGenerator(UrlGenerator):
         self.rid = rid
         self.numbers = numbers
         self.k = k
+
+    def __iter__(self):
+        return self
 
     def __next__(self):
         if self.cur == self.length:
