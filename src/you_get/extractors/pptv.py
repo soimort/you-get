@@ -169,7 +169,9 @@ def constructKey(arg):
 
 def pptv_download_by_id(cid,refer_url, output_dir = '.', merge = True, info_only = False ,**kwargs):
     #xml api version update to 4 @2015/01/31
-    xmlstr = get_html('http://web-play.pptv.com/webplay3-0-%s.xml&version=4?type=web.fpp' % cid)
+    #modify xmlreq@2015/05/14  for http://player.pplive.cn/ikan/3.4.0.12/player4player2.swf 
+    xmlurl = 'http://web-play.pptv.com/webplay3-0-%s.xml?zone=8&pid=5701&username=&salt=pv&o=0&referer=&param=type%3Dweb.fpp%26userType%3D0%26o%3D0&version=4&type=web.fpp&r=%d&pageUrl=%s' % (cid,time.time()/1000,refer_url)
+    xmlstr = get_html(xmlurl)
     xml = ET.fromstring(xmlstr)
 
     stream_id = '2' #default vip level may have some error?
