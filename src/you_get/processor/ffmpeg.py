@@ -100,7 +100,9 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
         concat_list = open(output + '.txt', 'w', encoding="utf-8")
         for file in files:
             if os.path.isfile(file):
-                concat_list.write("file '%s'\n" % file)
+                # for escaping rules, see:
+                # https://www.ffmpeg.org/ffmpeg-utils.html#Quoting-and-escaping
+                concat_list.write("file '%s'\n" % file.replace("'", r"'\''"))
         concat_list.close()
 
         params = [FFMPEG, '-f', 'concat', '-y', '-i']

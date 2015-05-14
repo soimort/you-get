@@ -11,7 +11,7 @@ def real_url(host, prot, file, new):
     start, _, host, key = get_html(url).split('|')[:4]
     return '%s%s?key=%s' % (start[:-1], new, key)
 
-def sohu_download(url, output_dir = '.', merge = True, info_only = False):
+def sohu_download(url, output_dir = '.', merge = True, info_only = False, extractor_proxy=None):
     if re.match(r'http://share.vrs.sohu.com', url):
         vid = r1('id=(\d+)', url)
     else:
@@ -20,12 +20,16 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False):
     assert vid
 
     if re.match(r'http://tv.sohu.com/', url):
+        if extractor_proxy:
+            set_proxy(tuple(extractor_proxy.split(":")))
         data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
         for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
             hqvid = data['data'][qtyp]
             if hqvid != 0 and hqvid != vid :
                 data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % hqvid))
                 break
+        if extractor_proxy:
+            unset_proxy()
         host = data['allot']
         prot = data['prot']
         urls = []

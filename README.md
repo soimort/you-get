@@ -1,6 +1,6 @@
 # You-Get
 
-[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get) [![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get)
+[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get) [![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [You-Get](http://www.soimort.org/you-get) is a video downloader for [YouTube](http://www.youtube.com), [Youku](http://www.youku.com), [niconico](http://www.nicovideo.jp) and a few other sites.
 
@@ -56,6 +56,7 @@ Others:
 * Kugou (酷狗音乐) <http://www.kugou.com>
 * Kuwo (酷我音乐) <http://www.kuwo.cn>
 * LeTV (乐视网) <http://www.letv.com>
+* Lizhi.fm (荔枝FM) <http://www.lizhi.fm>
 * MioMio <http://www.miomio.tv>
 * MTV 81 <http://www.mtv81.com>
 * NetEase (网易视频) <http://v.163.com>
