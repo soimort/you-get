@@ -9,6 +9,15 @@ import json
 from math import floor
 import hashlib
 
+
+'''
+Changelog:
+
+-> http://www.iqiyi.com/common/flashplayer/20150506/MainPlayer_5_2_21_c3_2_6_1.swf
+    In this version iqiyi player, it changes enc key from  'ts56gh' to 'aw6UWGtp'
+
+'''
+
 '''
 com.qiyi.player.core.model.def.DefinitonEnum
 bid meaning for quality
@@ -22,6 +31,9 @@ bid meaning for quality
 96 topspeed
 
 '''
+
+
+ENC_KEY = 'aw6UWGtp'
 
 
 def getVRSXORCode(arg1,arg2):
@@ -53,7 +65,7 @@ def getVMS(tvid,vid,uid):
     tm=randint(100,1000) 
     vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=1702633101b340d8917a69cf8a4b8c7' +\
                 "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+str(tm)+\
-                "&enc="+hashlib.new('md5',bytes('ts56gh'+str(tm)+tvid,"utf-8")).hexdigest()+\
+                "&enc="+hashlib.new('md5',bytes(ENC_KEY+str(tm)+tvid,"utf-8")).hexdigest()+\
                 "&qyid="+uid+"&tn="+str(random()) +"&um=0" +\
                 "&authkey="+hashlib.new('md5',bytes(''+str(tm)+tvid,'utf-8')).hexdigest()
     return json.loads(get_content(vmsreq))
