@@ -7,8 +7,8 @@ from uuid import uuid4
 from random import random,randint
 import json
 from math import floor
+from zlib import decompress
 import hashlib
-
 
 '''
 Changelog:
@@ -36,7 +36,6 @@ bid meaning for quality
 '''
 
 
-ENC_KEY = 'Qakh4T0A'
 
 
 def getVRSXORCode(arg1,arg2):
@@ -59,7 +58,7 @@ def getVrsEncodeCode(vlink):
         loc2+=chr(loc6)
     return loc2[::-1]
 
-def getVMS(tvid,vid,uid):
+def getVMS(tvid,vid,enc,uid):
     #tm ->the flash run time for md5 usage
     #um -> vip 1 normal 0
     #authkey -> for password protected video ,replace '' with your password 
@@ -68,7 +67,7 @@ def getVMS(tvid,vid,uid):
     tm=randint(100,1000) 
     vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=1702633101b340d8917a69cf8a4b8c7' +\
                 "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+str(tm)+\
-                "&enc="+hashlib.new('md5',bytes(ENC_KEY+str(tm)+tvid,"utf-8")).hexdigest()+\
+                "&enc="+hashlib.new('md5',bytes(enc+str(tm)+tvid,"utf-8")).hexdigest()+\
                 "&qyid="+uid+"&tn="+str(random()) +"&um=0" +\
                 "&authkey="+hashlib.new('md5',bytes(''+str(tm)+tvid,'utf-8')).hexdigest()
     return json.loads(get_content(vmsreq))
@@ -79,18 +78,30 @@ def getDispathKey(rid):
     t=str(int(floor(int(time)/(10*60.0))))
     return hashlib.new("md5",bytes(t+tp+rid,"utf-8")).hexdigest()
 
+def getEncKey(swflink):
+    swfcontent = get_content(swflink,decoded=False)
+    swfraw  = decompress(swfcontent[8:])
+    key = r1(b'MixerRemote\x08(.+?)\$&vv',swfraw)
+    return key.decode('utf-8')
+
 
 def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     gen_uid=uuid4().hex
 
     html = get_html(url)
-
+    
+    swflink = r1(r'(http://.+?MainPlayer.+?swf)',html)
+    enc_key = getEncKey(swflink)
+    
     tvid = r1(r'data-player-tvid="([^"]+)"', html)
     videoid = r1(r'data-player-videoid="([^"]+)"', html)
+    
+    assert enc_key
     assert tvid
     assert videoid
 
-    info = getVMS(tvid,videoid,gen_uid)
+    info = getVMS(tvid, videoid, enc_key, gen_uid)
+    
     assert info["code"] == "A000000"
 
     title = info["data"]["vi"]["vn"]
