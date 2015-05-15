@@ -12,6 +12,9 @@ import hashlib
 
 '''
 Changelog:
+-> http://www.iqiyi.com/common/flashplayer/20150514/MainPlayer_5_2_21_c3_2_6_2.swf
+    In this version ,it changes enc key to 'Qakh4T0A'
+    consider to write a function to parse swf and extract this key automatically
 
 -> http://www.iqiyi.com/common/flashplayer/20150506/MainPlayer_5_2_21_c3_2_6_1.swf
     In this version iqiyi player, it changes enc key from  'ts56gh' to 'aw6UWGtp'
@@ -33,7 +36,7 @@ bid meaning for quality
 '''
 
 
-ENC_KEY = 'aw6UWGtp'
+ENC_KEY = 'Qakh4T0A'
 
 
 def getVRSXORCode(arg1,arg2):
