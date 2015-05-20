@@ -5,11 +5,13 @@ __all__ = ['sohu_download']
 from ..common import *
 
 import json
+import time
 
-def real_url(host, prot, file, new):
-    url = 'http://%s/?prot=%s&file=%s&new=%s' % (host, prot, file, new)
-    start, _, host, key = get_html(url).split('|')[:4]
-    return '%s%s?key=%s' % (start[:-1], new, key)
+
+
+def real_url(vid,new):
+    url = 'http://data.vod.itc.cn/cdnList?new='+new+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))
+    return json.loads(get_html(url))['url']
 
 def sohu_download(url, output_dir = '.', merge = True, info_only = False, extractor_proxy=None):
     if re.match(r'http://share.vrs.sohu.com', url):
@@ -37,8 +39,8 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         title = data['tvName']
         size = sum(data['clipsBytes'])
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
-        for file, new in zip(data['clipsURL'], data['su']):
-            urls.append(real_url(host, prot, file, new))
+        for new in data['su']:
+            urls.append(real_url(hqvid, new))
         assert data['clipsURL'][0].endswith('.mp4')
 
     else:
