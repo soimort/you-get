@@ -97,10 +97,15 @@ def letv_download_by_vid(vid,title, output_dir='.', merge=True, info_only=False,
     if not info_only:
         download_urls(urls, title, ext, size, output_dir=output_dir, merge=merge)
 
+#changelog
+#api ver 2.2
+#   1.ran -> str(int(time.time())) 
+#   2. key -> 2f9d6924b33a165a6d8b5d3d42f4f987 in bcloud.swf ->binaryData -> com.letv.player.model.EmbedConfig_BIN_CONFIG(xml) -> key ->decode(base64)
 def letvcloud_download_by_vu(vu, title=None, output_dir='.', merge=True, info_only=False):
-    str2Hash = 'cfflashformatjsonran0.7214574650861323uu2d8c027396ver2.1vu' + vu + 'bie^#@(%27eib58'
+    ran= str(int(time.time()))
+    str2Hash = 'cfflashformatjsonran'+ran+'uu2d8c027396ver2.2vu' + vu + '2f9d6924b33a165a6d8b5d3d42f4f987'    
     sign = hashlib.md5(str2Hash.encode('utf-8')).hexdigest()
-    request_info = urllib.request.Request('http://api.letvcloud.com/gpc.php?&sign='+sign+'&cf=flash&vu='+vu+'&ver=2.1&ran=0.7214574650861323&qr=2&format=json&uu=2d8c027396')
+    request_info = urllib.request.Request('http://api.letvcloud.com/gpc.php?&sign='+sign+'&cf=flash&vu='+vu+'&ver=2.2&ran='+ran+'&qr=2&format=json&uu=2d8c027396')
     response = urllib.request.urlopen(request_info)
     data = response.read()
     info = json.loads(data.decode('utf-8'))
