@@ -50,7 +50,6 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         urls = []
         data = data['data']
         title = data['tvName']
-        print(data)
         size = sum([int(clipsBytes) for clipsBytes in data['clipsBytes']])
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
         for new in data['su']:
