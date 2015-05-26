@@ -97,10 +97,11 @@ def letv_download_by_vid(vid,title, output_dir='.', merge=True, info_only=False,
     if not info_only:
         download_urls(urls, title, ext, size, output_dir=output_dir, merge=merge)
 
-def letvcloud_download_by_vu(vu, title=None, output_dir='.', merge=True, info_only=False):
-    str2Hash = 'cfflashformatjsonran0.7214574650861323uu2d8c027396ver2.1vu' + vu + 'bie^#@(%27eib58'
+def letvcloud_download_by_vu(vu, uu, title=None, output_dir='.', merge=True, info_only=False):
+    ran = float('0.' + str(random.randint(0, 9999999999999999)))
+    str2Hash = 'cfflashformatjsonran{ran}uu{uu}ver2.1vu{vu}bie^#@(%27eib58'.format(vu = vu, uu = uu, ran = ran)  #Magic!
     sign = hashlib.md5(str2Hash.encode('utf-8')).hexdigest()
-    request_info = urllib.request.Request('http://api.letvcloud.com/gpc.php?&sign='+sign+'&cf=flash&vu='+vu+'&ver=2.1&ran=0.7214574650861323&qr=2&format=json&uu=2d8c027396')
+    request_info = urllib.request.Request('http://api.letvcloud.com/gpc.php?&sign={sign}&cf=flash&vu={vu}&ver=2.1&ran{ran}&qr=2&format=json&uu={uu}'.format(sign = sign, vu = vu, uu = uu, ran = ran))
     response = urllib.request.urlopen(request_info)
     data = response.read()
     info = json.loads(data.decode('utf-8'))
@@ -118,10 +119,14 @@ def letvcloud_download(url, output_dir='.', merge=True, info_only=False):
     for i in url.split('&'):
         if 'vu=' in i:
             vu = i[3:]
+        if 'uu=' in i:
+            uu = i[3:]
     if len(vu) == 0:
         raise ValueError('Cannot get vu!')
+    if len(uu) == 0:
+        raise ValueError('Cannot get uu!')
     title = "LETV-%s" % vu
-    letvcloud_download_by_vu(vu, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+    letvcloud_download_by_vu(vu, uu, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
 def letv_download(url, output_dir='.', merge=True, info_only=False ,**kwargs):
     if re.match(r'http://yuntv.letv.com/', url):
