@@ -79,23 +79,15 @@ def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only
                 else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
                 for i in parse_cid_playurl(get_content(url, headers=client))]
 
-    if re.search(r'\.(flv|hlv)\b', urls[0]):
-        type = 'flv'
-    elif re.search(r'/flv/', urls[0]):
-        type = 'flv'
-    elif re.search(r'/mp4/', urls[0]):
-        type = 'mp4'
-    else:
-        type = 'flv'
-
+    type_ = ''
     size = 0
     for url in urls:
-        _, _, temp = url_info(url)
+        _, type_, temp = url_info(url)
         size += temp
 
-    print_info(site_info, title, type, size)
+    print_info(site_info, title, type_, size)
     if not info_only:
-        download_urls(urls, title, type, total_size=None, output_dir=output_dir, merge=merge)
+        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
 def bilibili_download_by_cid(id, title, output_dir='.', merge=True, info_only=False):
     sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + id + secretkey, 'utf-8')).hexdigest()
@@ -105,23 +97,15 @@ def bilibili_download_by_cid(id, title, output_dir='.', merge=True, info_only=Fa
             else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
             for i in parse_cid_playurl(get_content(url, headers=client))]
 
-    if re.search(r'\.(flv|hlv)\b', urls[0]):
-        type = 'flv'
-    elif re.search(r'/flv/', urls[0]):
-        type = 'flv'
-    elif re.search(r'/mp4/', urls[0]):
-        type = 'mp4'
-    else:
-        type = 'flv'
-
+    type_ = ''
     size = 0
     for url in urls:
-        _, _, temp = url_info(url)
+        _, type_, temp = url_info(url)
         size += temp or 0
 
-    print_info(site_info, title, type, size)
+    print_info(site_info, title, type_, size)
     if not info_only:
-        download_urls(urls, title, type, total_size=None, output_dir=output_dir, merge=merge)
+        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
 def bilibili_download(url, output_dir='.', merge=True, info_only=False):
     html = get_html(url)
