@@ -48,7 +48,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
 def netease_song_download(song, output_dir='.', info_only=False):
     title = "%s. %s" % (song['position'], song['name'])
 
-    if 'hMusic' in song:
+    if 'hMusic' in song and song['hMusic'] != None:
         url_best = make_url(song['hMusic']['dfsId'])
     elif 'mp3Url' in song:
         url_best = song['mp3Url']
