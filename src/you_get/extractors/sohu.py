@@ -44,7 +44,7 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         title = data['tvName']
         size = sum(data['clipsBytes'])
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
-        for new,clip,ck, in zip(data['su'],data['clipsURL']):
+        for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
             clipURL = urlparse(clip).path
             urls.append(real_url(host,hqvid,tvid,new,clipURL,ck))
         # assert data['clipsURL'][0].endswith('.mp4')
@@ -59,7 +59,7 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         tvid = data['tvid']
         size = sum(data['clipsBytes'])
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
-        for new,clip,ck, in zip(data['su'],data['clipsURL']):
+        for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
             clipURL = urlparse(clip).path
             urls.append(real_url(host,hqvid,tvid,new,clipURL,ck))
 
