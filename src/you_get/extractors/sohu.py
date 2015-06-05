@@ -7,7 +7,7 @@ from ..common import *
 import json
 import time
 from random import random
-from url.parse import urlparse
+from urllib.parse import urlparse
 #http://115.25.217.132/?prot=9&prod=flash&pt=1&
 #file=/v/Sample1/BackUp_Sample1/svc/20150604/1663504_2406534_v_H_231452_18500/1663504_2406534_v_H_231452_18500_001.mp4
 #&new=/248/222/JwoalHHmSNWLsCVDEPqgTD.mp4
