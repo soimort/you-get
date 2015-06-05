@@ -53,10 +53,10 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         info = json.loads(get_decoded_html('http://my.tv.sohu.com/play/videonew.do?vid=%s&referer=http://my.tv.sohu.com' % vid))
         host = info['allot']
         prot = info['prot']
+        tvid = info['tvid']
         urls = []
         data = info['data']
         title = data['tvName']
-        tvid = data['tvid']
         size = sum(data['clipsBytes'])
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
         for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
