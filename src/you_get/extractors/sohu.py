@@ -28,20 +28,20 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
     if re.match(r'http://tv.sohu.com/', url):
         if extractor_proxy:
             set_proxy(tuple(extractor_proxy.split(":")))
-        data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
+        info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
         for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
-            hqvid = data['data'][qtyp]
+            hqvid = info['data'][qtyp]
             if hqvid != 0 and hqvid != vid :
-                data = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % hqvid))
+                info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % hqvid))
                 break
         if extractor_proxy:
             unset_proxy()
-        host = data['allot']
-        prot = data['prot']
+        host = info['allot']
+        prot = info['prot']
+        tvid = info['tvid']
         urls = []
-        data = data['data']
+        data = info['data']
         title = data['tvName']
-        tvid = data['tvid']
         size = sum(data['clipsBytes'])
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
         for new,clip,ck, in zip(data['su'],data['clipsURL']):
@@ -50,11 +50,11 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         # assert data['clipsURL'][0].endswith('.mp4')
 
     else:
-        data = json.loads(get_decoded_html('http://my.tv.sohu.com/play/videonew.do?vid=%s&referer=http://my.tv.sohu.com' % vid))
-        host = data['allot']
-        prot = data['prot']
+        info = json.loads(get_decoded_html('http://my.tv.sohu.com/play/videonew.do?vid=%s&referer=http://my.tv.sohu.com' % vid))
+        host = info['allot']
+        prot = info['prot']
         urls = []
-        data = data['data']
+        data = info['data']
         title = data['tvName']
         tvid = data['tvid']
         size = sum(data['clipsBytes'])
