@@ -57,7 +57,7 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         urls = []
         data = info['data']
         title = data['tvName']
-        size = sum(data['clipsBytes'])
+        size = sum(map(int,data['clipsBytes']))
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
         for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
             clipURL = urlparse(clip).path
