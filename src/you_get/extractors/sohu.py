@@ -61,7 +61,7 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
         for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
             clipURL = urlparse(clip).path
-            urls.append(real_url(host,hqvid,tvid,new,clipURL,ck))
+            urls.append(real_url(host,vid,tvid,new,clipURL,ck))
 
     print_info(site_info, title, 'mp4', size)
     if not info_only:
