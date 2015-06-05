@@ -8,10 +8,12 @@ import json
 import time
 from random import random
 from urllib.parse import urlparse
-#http://115.25.217.132/?prot=9&prod=flash&pt=1&
-#file=/v/Sample1/BackUp_Sample1/svc/20150604/1663504_2406534_v_H_231452_18500/1663504_2406534_v_H_231452_18500_001.mp4
-#&new=/248/222/JwoalHHmSNWLsCVDEPqgTD.mp4
-#&key=3q6dEeDbCZwpf-kydU-7TH0YDP5UxFdU&vid=2406534&tvid=1663504&uid=13796019242829873083&sz=1583_434&md=WG4FExsQg2SW3C8BylUDISibt+AaBtYlyoHEkA==179&t=0.928698823787272
+
+'''
+Changelog:
+    1. http://tv.sohu.com/upload/swf/20150604/Main.swf
+        new api
+'''
 
 def real_url(host,vid,tvid,new,clipURL,ck):
     url = 'http://'+host+'/?prot=9&prod=flash&pt=1&file='+clipURL+'&new='+new +'&key='+ ck+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))+'&t='+str(random())
