@@ -88,6 +88,12 @@ def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only
     else:
         type = 'flv'
 
+    ret = []
+    for u in urls:
+        if u not in ret:    # remove duplicate, keep url order
+            ret.append(u)
+    urls = ret
+
     size = 0
     for url in urls:
         _, _, temp = url_info(url)
