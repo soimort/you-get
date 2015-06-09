@@ -16,6 +16,8 @@ Changelog:
 -> http://www.iqiyi.com/common/flashplayer/20150506/MainPlayer_5_2_21_c3_2_6_1.swf
     In this version iqiyi player, it changes enc key from  'ts56gh' to 'aw6UWGtp'
 
+->http://www.iqiyi.com/common/flashplayer/20150514/EnjoyPlayer_4_2_1_c3_2_6_2.swf
+In this version iqiyi player, it changes enc key from 'aw6uwGtp' to 'Qakh4T0A'
 '''
 
 '''
@@ -33,7 +35,7 @@ bid meaning for quality
 '''
 
 
-ENC_KEY = 'aw6UWGtp'
+ENC_KEY = 'Qakh4T0A'
 
 
 def getVRSXORCode(arg1,arg2):
