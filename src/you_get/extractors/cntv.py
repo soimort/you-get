@@ -28,7 +28,7 @@ def cntv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
         download_urls(urls, title, ext, size, output_dir = output_dir, merge = merge)
 
 def cntv_download(url, output_dir = '.', merge = True, info_only = False):
-    if re.match(r'http://\w+\.cntv\.cn/(\w+/\w+/(classpage/video/)?)?\d+/\d+\.shtml', url):
+    if re.match(r'http://\w+\.cntv\.cn/(\w+/\w+/(classpage/video/)?)?\d+/\d+\.shtml', url) or re.match(r'http://\w+.cntv.cn/(\w+/)*VIDE\d+.shtml', url):
         id = r1(r'<!--repaste.video.code.begin-->(\w+)<!--repaste.video.code.end-->', get_html(url))
     elif re.match(r'http://xiyou.cntv.cn/v-[\w-]+\.html', url):
         id = r1(r'http://xiyou.cntv.cn/v-([\w-]+)\.html', url)
