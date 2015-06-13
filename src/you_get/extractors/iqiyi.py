@@ -12,6 +12,12 @@ import hashlib
 
 '''
 Changelog:
+-> http://www.iqiyi.com/common/flashplayer/20150612/MainPlayer_5_2_23_1_c3_2_6_5.swf
+    In this version do not directly use enc key 
+    gen enc key (so called sc ) in DMEmagelzzup.mix(tvid) -> (tm->getTimer(),src='hsalf',sc)
+    encrypy alogrithm is md5(DMEmagelzzup.mix.genInnerKey +tm+tvid)
+    how to gen genInnerKey ,can see first 3 lin in mix function in this file
+
 -> http://www.iqiyi.com/common/flashplayer/20150514/MainPlayer_5_2_21_c3_2_6_2.swf
     In this version ,it changes enc key to 'Qakh4T0A'
     consider to write a function to parse swf and extract this key automatically
@@ -35,8 +41,18 @@ bid meaning for quality
 
 '''
 
-
-
+def mix(tvid):
+    enc = []
+    arr =  [ -0.625, -0.5546875, -0.59375, -0.625, -0.234375, -0.203125, -0.609375, -0.2421875, -0.234375, -0.2109375, -0.625, -0.2265625, -0.625, -0.234375, -0.6171875, -0.234375, -0.5546875, -0.5625, -0.625, -0.59375, -0.2421875, -0.234375, -0.203125, -0.234375, -0.21875, -0.6171875, -0.6015625, -0.6015625, -0.2109375, -0.5703125, -0.2109375, -0.203125 ] [::-1]
+    for i in arr:
+        enc.append(chr(int(i *(1<<7)+(1<<7))))
+    #enc -> fe7e331dbfba4089b1b0c0eba2fb0490
+    tm = str(randint(100,1000))
+    src = 'hsalf'
+    enc.append(str(tm))
+    enc.append(tvid)
+    sc = hashlib.new('md5',bytes("".join(enc),'utf-8')).hexdigest()
+    return tm,sc,src
 
 def getVRSXORCode(arg1,arg2):
     loc3=arg2 %3
@@ -58,16 +74,16 @@ def getVrsEncodeCode(vlink):
         loc2+=chr(loc6)
     return loc2[::-1]
 
-def getVMS(tvid,vid,enc,uid):
+def getVMS(tvid,vid,uid):
     #tm ->the flash run time for md5 usage
     #um -> vip 1 normal 0
     #authkey -> for password protected video ,replace '' with your password 
     #puid user.passportid may empty?
     #TODO: support password protected video
-    tm=randint(100,1000) 
+    tm,sc,src = mix(tvid) 
     vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=1702633101b340d8917a69cf8a4b8c7' +\
-                "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+str(tm)+\
-                "&enc="+hashlib.new('md5',bytes(enc+str(tm)+tvid,"utf-8")).hexdigest()+\
+                "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+tm+\
+                "&enc="+sc+\
                 "&qyid="+uid+"&tn="+str(random()) +"&um=0" +\
                 "&authkey="+hashlib.new('md5',bytes(''+str(tm)+tvid,'utf-8')).hexdigest()
     return json.loads(get_content(vmsreq))
@@ -78,29 +94,19 @@ def getDispathKey(rid):
     t=str(int(floor(int(time)/(10*60.0))))
     return hashlib.new("md5",bytes(t+tp+rid,"utf-8")).hexdigest()
 
-def getEncKey(swflink):
-    swfcontent = get_content(swflink,decoded=False)
-    swfraw  = decompress(swfcontent[8:])
-    key = r1(b'MixerRemote\x08(.+?)\$&vv',swfraw)
-    return key.decode('utf-8')
-
 
 def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     gen_uid=uuid4().hex
 
     html = get_html(url)
     
-    swflink = r1(r'(http://.+?MainPlayer.+?swf)',html)
-    enc_key = getEncKey(swflink)
-    
     tvid = r1(r'data-player-tvid="([^"]+)"', html)
     videoid = r1(r'data-player-videoid="([^"]+)"', html)
     
-    assert enc_key
     assert tvid
     assert videoid
 
-    info = getVMS(tvid, videoid, enc_key, gen_uid)
+    info = getVMS(tvid, videoid, gen_uid)
     
     assert info["code"] == "A000000"
 
