@@ -27,7 +27,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Twitter <http://twitter.com>
 * Youku (优酷) <http://www.youku.com>
 * YouTube <http://www.youtube.com>
-
 * AcFun <http://www.acfun.tv>
 * Alive.in.th <http://alive.in.th>
 * Baidu Music (百度音乐) <http://music.baidu.com>
