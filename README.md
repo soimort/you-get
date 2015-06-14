@@ -14,8 +14,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 
 ### Supported Sites
 
-First-class (better maintained):
-
 * Dailymotion <http://dailymotion.com>
 * Freesound <http://www.freesound.org>
 * Google+ <http://plus.google.com>
@@ -26,10 +24,9 @@ First-class (better maintained):
 * Niconico (ニコニコ動画) <http://www.nicovideo.jp>
 * Vimeo <http://vimeo.com>
 * Vine <http://vine.co>
+* Twitter <http://twitter.com>
 * Youku (优酷) <http://www.youku.com>
 * YouTube <http://www.youtube.com>
-
-Others:
 
 * AcFun <http://www.acfun.tv>
 * Alive.in.th <http://alive.in.th>
