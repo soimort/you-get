@@ -556,6 +556,22 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             else:
                 for part in parts:
                     os.remove(part)
+        
+        elif ext == "ts":
+            try:
+                from .processor.ffmpeg import has_ffmpeg_installed
+                if has_ffmpeg_installed():
+                    from .processor.ffmpeg import ffmpeg_concat_ts_to_mkv
+                    ffmpeg_concat_ts_to_mkv(parts, os.path.join(output_dir, title + '.mkv'))
+                else:
+                    from .processor.join_ts import concat_ts
+                    concat_ts(parts, os.path.join(output_dir, title + '.ts'))
+            except:
+                raise
+            else:
+                for part in parts:
+                    os.remove(part)
+
 
         else:
             print("Can't merge %s files" % ext)
