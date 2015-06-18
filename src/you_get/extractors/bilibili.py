@@ -19,7 +19,8 @@ client = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Biligrab /0.8 (cnbeining@gmail.com)'
+    #'User-Agent': 'Biligrab /0.8 (cnbeining@gmail.com)'
+    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36"
 }
 
 def get_srt_xml(id):
@@ -78,23 +79,15 @@ def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only
                 else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
                 for i in parse_cid_playurl(get_content(url, headers=client))]
 
-    if re.search(r'\.(flv|hlv)\b', urls[0]):
-        type = 'flv'
-    elif re.search(r'/flv/', urls[0]):
-        type = 'flv'
-    elif re.search(r'/mp4/', urls[0]):
-        type = 'mp4'
-    else:
-        type = 'flv'
-
+    type_ = ''
     size = 0
     for url in urls:
-        _, _, temp = url_info(url)
+        _, type_, temp = url_info(url)
         size += temp
 
-    print_info(site_info, title, type, size)
+    print_info(site_info, title, type_, size)
     if not info_only:
-        download_urls(urls, title, type, total_size=None, output_dir=output_dir, merge=merge)
+        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
 def bilibili_download_by_cid(id, title, output_dir='.', merge=True, info_only=False):
     sign_this = hashlib.md5(bytes('appkey=' + appkey + '&cid=' + id + secretkey, 'utf-8')).hexdigest()
@@ -104,28 +97,20 @@ def bilibili_download_by_cid(id, title, output_dir='.', merge=True, info_only=Fa
             else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
             for i in parse_cid_playurl(get_content(url, headers=client))]
 
-    if re.search(r'\.(flv|hlv)\b', urls[0]):
-        type = 'flv'
-    elif re.search(r'/flv/', urls[0]):
-        type = 'flv'
-    elif re.search(r'/mp4/', urls[0]):
-        type = 'mp4'
-    else:
-        type = 'flv'
-
+    type_ = ''
     size = 0
     for url in urls:
-        _, _, temp = url_info(url)
+        _, type_, temp = url_info(url)
         size += temp or 0
 
-    print_info(site_info, title, type, size)
+    print_info(site_info, title, type_, size)
     if not info_only:
-        download_urls(urls, title, type, total_size=None, output_dir=output_dir, merge=merge)
+        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
 def bilibili_download(url, output_dir='.', merge=True, info_only=False):
     html = get_html(url)
 
-    title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',r'<h2[^>]*>([^<>]+)</h2>'], html)
+    title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',r'<h1[^>]*>([^<>]+)</h1>'], html)
     title = unescape_html(title)
     title = escape_file_path(title)
 
@@ -150,7 +135,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
             bilibili_download_by_cids(cids, title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     elif t == 'vid':
-        sina_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+        sina_download_by_vid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'ykid':
         youku_download_by_vid(id, title=title, output_dir = output_dir, merge = merge, info_only = info_only)
     elif t == 'uid':

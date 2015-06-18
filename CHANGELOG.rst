@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3.33
+------
+
+*Date: 2015-06-10*
+
+* Many bug fixes by our awesome contributors
+
 0.3.32
 ------
 

@@ -36,7 +36,8 @@ def tr(s):
     if default_encoding == 'utf-8':
         return s
     else:
-        return str(s.encode('utf-8'))[2:-1]
+        return s
+        #return str(s.encode('utf-8'))[2:-1]
 
 # DEPRECATED in favor of match1()
 def r1(pattern, text):
@@ -477,7 +478,7 @@ class DummyProgressBar:
 def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
     if dry_run:
-        print('Real URLs:\n%s\n' % urls)
+        print('Real URLs:\n%s' % '\n'.join(urls))
         return
 
     if player:
@@ -899,7 +900,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
 
 def url_to_module(url):
-    from .extractors import netease, w56, acfun, baidu, baomihua, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, vid48, videobam, vimeo, vine, vk, xiami, yinyuetai, youku, youtube, zhanqi
+    from .extractors import netease, w56, acfun, baidu, baomihua, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, lizhi, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, twitter, vid48, videobam, vidto, vimeo, vine, vk, xiami, yinyuetai, youku, youtube, zhanqi
 
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
@@ -944,6 +945,7 @@ def url_to_module(url):
         'kugou': kugou,
         'kuwo': kuwo,
         'letv': letv,
+        'lizhi':lizhi,
         'magisto': magisto,
         'miomio': miomio,
         'mixcloud': mixcloud,
@@ -961,8 +963,10 @@ def url_to_module(url):
         "tucao":tucao,
         'tudou': tudou,
         'tumblr': tumblr,
+        'twitter': twitter,
         'vid48': vid48,
         'videobam': videobam,
+        'vidto': vidto,
         'vimeo': vimeo,
         'vine': vine,
         'vk': vk,

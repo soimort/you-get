@@ -25,6 +25,7 @@ from .ku6 import *
 from .kugou import *
 from .kuwo import *
 from .letv import *
+from .lizhi import *
 from .magisto import *
 from .miomio import *
 from .mixcloud import *
@@ -41,6 +42,7 @@ from .theplatform import *
 from .tucao import *
 from .tudou import *
 from .tumblr import *
+from .twitter import *
 from .vid48 import *
 from .videobam import *
 from .vimeo import *

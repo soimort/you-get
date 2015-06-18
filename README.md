@@ -1,6 +1,6 @@
 # You-Get
 
-[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get) [![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get)
+[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get) [![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [You-Get](http://www.soimort.org/you-get) is a video downloader for [YouTube](http://www.youtube.com), [Youku](http://www.youku.com), [niconico](http://www.nicovideo.jp) and a few other sites.
 
@@ -14,8 +14,6 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 
 ### Supported Sites
 
-First-class (better maintained):
-
 * Dailymotion <http://dailymotion.com>
 * Freesound <http://www.freesound.org>
 * Google+ <http://plus.google.com>
@@ -26,11 +24,9 @@ First-class (better maintained):
 * Niconico (ニコニコ動画) <http://www.nicovideo.jp>
 * Vimeo <http://vimeo.com>
 * Vine <http://vine.co>
+* Twitter <http://twitter.com>
 * Youku (优酷) <http://www.youku.com>
 * YouTube <http://www.youtube.com>
-
-Others:
-
 * AcFun <http://www.acfun.tv>
 * Alive.in.th <http://alive.in.th>
 * Baidu Music (百度音乐) <http://music.baidu.com>
@@ -56,6 +52,7 @@ Others:
 * Kugou (酷狗音乐) <http://www.kugou.com>
 * Kuwo (酷我音乐) <http://www.kuwo.cn>
 * LeTV (乐视网) <http://www.letv.com>
+* Lizhi.fm (荔枝FM) <http://www.lizhi.fm>
 * MioMio <http://www.miomio.tv>
 * MTV 81 <http://www.mtv81.com>
 * NetEase (网易视频) <http://v.163.com>
