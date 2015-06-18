@@ -18,7 +18,7 @@ def zhanqi_download(url, output_dir = '.', merge = True, info_only = False):
     title = match1(html, title_patt) or match1(html, title_patt_backup)
     title = unescape_html(title)
     rtmp_base = "http://wshdl.load.cdn.zhanqi.tv/zqlive"
-    vod_base = "http://dlvod.cdn.zhanqi.tv/"
+    vod_base = "http://dlvod.cdn.zhanqi.tv"
     
     if video_type == "LIVE":
         rtmp_id = match1(html, rtmp_id_patt).replace('\\/','/')
@@ -31,10 +31,10 @@ def zhanqi_download(url, output_dir = '.', merge = True, info_only = False):
     elif video_type == "VOD":
         vod_m3u8_request = vod_base + match1(html, vod_m3u8_id_patt).replace('\\/','/')
         vod_m3u8 = get_html(vod_m3u8_request)
-        part_url = re.findall(r'\w*/\w*\w*/\w*\w*/\w*-\w*\.ts',vod_m3u8)
+        part_url = re.findall(r'(/[^#]+)\.ts',vod_m3u8)
         real_url = []
         for i in part_url:
-            i = vod_base + i
+            i = vod_base + i + ".ts"
             real_url.append(i)
         type_ = ''
         size = 0
