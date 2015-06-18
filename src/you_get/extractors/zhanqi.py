@@ -38,14 +38,15 @@ def zhanqi_download(url, output_dir = '.', merge = True, info_only = False):
             real_url.append(i)
         type_ = ''
         size = 0
-        _, type_, temp = url_info(real_url[0])
-        size = temp*(len(real_url))
-        
+        for url in real_url:
+        _, type_, temp = url_info(url)
+        size += temp or 0
+
         print_info(site_info, title, type_ or 'ts', size)
         if not info_only:
             download_urls(real_url, title, type_ or 'ts', None, output_dir, merge = merge)
     else:
-        NotImplementedError(Unknown_video_type)
+        NotImplementedError('Unknown_video_type')
 site_info = "zhanqi.tv"
 download = zhanqi_download
 download_playlist = playlist_not_supported('zhanqi')
