@@ -3,96 +3,219 @@
 __all__ = ['qq_download']
 
 from ..common import *
+
+import xml.etree.ElementTree as ET
+import urllib.parse
+import random
+import base64
+import struct
 import uuid
-#QQMUSIC
-#SINGLE
-#1. http://y.qq.com/#type=song&mid=000A9lMb0iEqwN
-#2. http://y.qq.com/#type=song&id=4754713
-#3. http://s.plcloud.music.qq.com/fcgi-bin/fcg_yqq_song_detail_info.fcg?songmid=002NqCeX3owQIw
-#4. http://s.plcloud.music.qq.com/fcgi-bin/fcg_yqq_song_detail_info.fcg?songid=4754713
-#ALBUM
-#1. http://y.qq.com/y/static/album/3/c/00385vBa0n3O3c.html?pgv_ref=qqmusic.y.index.music.pic1
-#2. http://y.qq.com/#type=album&mid=004c62RC2uujor
-#MV
-#can download as video through qq_download_by_id
-#1. http://y.qq.com/y/static/mv/mv_play.html?vid=i0014ufczcw
 
-def qq_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False):
-    xml = get_html('http://www.acfun.tv/getinfo?vids=%s' % id)
-    from xml.dom.minidom import parseString
-    doc = parseString(xml)
-    doc_root = doc.getElementsByTagName('root')[0]
-    doc_vl = doc_root.getElementsByTagName('vl')[0]
-    doc_vi = doc_vl.getElementsByTagName('vi')[0]
-    fn = doc_vi.getElementsByTagName('fn')[0].firstChild.data
-    # fclip = doc_vi.getElementsByTagName('fclip')[0].firstChild.data
-    # fc=doc_vi.getElementsByTagName('fc')[0].firstChild.data
-    fvkey = doc_vi.getElementsByTagName('fvkey')[0].firstChild.data
-    doc_ul = doc_vi.getElementsByTagName('ul')
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:33.0) Gecko/20100101 Firefox/33.0'
+PLAYER_PLATFORM = 11
+PLAYER_VERSION = '3.2.18.285'
+KLIB_VERSION = '2.0'
 
+def pack(data):
+    target = []
+    target.extend(struct.pack('>I', data[0]))
+    target.extend(struct.pack('>I', data[1]))
+    target = [c for c in target]
+    return target
 
-    url = doc_ul[0].getElementsByTagName('url')[1].firstChild.data
+def unpack(data):
+    data = ''.join([chr(b) for b in data])
+    target = []
+    data = data.encode('latin')
+    target.extend(struct.unpack('>I', data[:4]))
+    target.extend(struct.unpack('>I', data[4:8]))
+    return target
 
-    # print(i.firstChild.data)
-    urls=[]
-    ext=fn[-3:]
-    size=0
-    for i in doc.getElementsByTagName("cs"):
-        size+=int(i.firstChild.data)
+def tea_encrypt(v, key):
+    delta = 0x9e3779b9
+    s = 0
+    v = unpack(v)
+    rounds = 16
+    while rounds:
+        s += delta
+        s &= 0xffffffff
+        v[0] += (v[1]+s) ^ ((v[1]>>5)+key[1]) ^ ((v[1]<<4)+key[0])
+        v[0] &= 0xffffffff
+        v[1] += (v[0]+s) ^ ((v[0]>>5)+key[3]) ^ ((v[0]<<4)+key[2])
+        v[1] &= 0xffffffff
+        rounds = rounds - 1
+    return pack(v)
 
-    # size=sum(map(int,doc.getElementsByTagName("cs")))
-    locid=str(uuid.uuid4())
-    for i in doc.getElementsByTagName("ci"):
-        urls.append(url+fn[:-4] + "." + i.getElementsByTagName("idx")[0].firstChild.data + fn[-4:] + '?vkey=' + fvkey+ '&sdtfrom=v1000&type='+ fn[-3:0] +'&locid=' + locid + "&&level=1&platform=11&br=133&fmt=hd&sp=0")
+def qq_encrypt(data, key):
+    temp = [0x00]*8
+    enc = tea_encrypt(data, key)
+    for i in range(8, len(data), 8):
+        d1 = data[i:]
+        for j in range(8):
+            d1[j] = d1[j] ^ enc[i+j-8]
+        d1 = tea_encrypt(d1, key)
+        for j in range(len(d1)):
+            d1[j] = d1[j]^data[i+j-8]^temp[j]
+            enc.append(d1[j])
+            temp[j] = enc[i+j-8]
+    return enc
 
-    # if int(fclip) > 0:
-    #     fn = fn[:-4] + "." + fclip + fn[-4:]
-    # url = url + fn + '?vkey=' + fvkey
+def strsum(data):
+    s = 0
+    for c in data:
+        s = s*131 + ord(c)
+    return 0x7fffffff & s
 
-    # _, ext, size = url_info(url)
+def ccc(platform, version, timestamp):
+    key = [1735078436, 1281895718, 1815356193, 879325047]
+    s1 = '537e6f0425c50d7a711f4af6af719e05d41d8cd98f00b204e9800998ecf8427e8afc2cf649f5c36c4fa3850ff01c1863d41d8cd98100b204e9810998ecf84271'
+    d = [0x3039, 0x02]
+    d.append(timestamp)
+    d.append(platform)
+    d.append(strsum(version))
+    d.append(strsum(s1))
+    data = [0xa6, 0xf1, 0xd9, 0x2a, 0x82, 0xc8, 0xd8, 0xfe, 0x43]
+    for i in d:
+        data.extend([c for c in struct.pack('>I', i)])
+    data.extend([0x00]*7)
+    enc = qq_encrypt(data, key)
+    return base64.b64encode(bytes(enc), b'_-').replace(b'=', b'')
 
-    print_info(site_info, title, ext, size)
+def to_dict(json_object):
+    class global_dict(dict):
+        def __getitem__(self, key):
+            return key
+    return eval(json_object, global_dict())
+
+def get_from(url):
+    return 'v1001'
+
+def qq_get_final_url(url, fmt_name, type_name, br, sp, vkey, level):
+    params = {
+        'stdfrom': get_from(url),
+        'type': type_name,
+        'vkey': vkey,
+        'level': level,
+        'platform': PLAYER_PLATFORM,
+        'br': br,
+        'fmt': fmt_name,
+        'sp': sp,
+    }
+    form = urllib.parse.urlencode(params)
+    return "%s?%s" % (url, form)
+
+def load_key():
+    url = 'http://vv.video.qq.com/checktime'
+    tree = ET.fromstring(get_content(url))
+    t = int(tree.find('./t').text)
+    return ccc(PLAYER_PLATFORM, PLAYER_VERSION, t)
+
+def qq_download_by_vid(vid, title = None, output_dir = '.', merge = True, info_only = False):
+    player_pid = uuid.uuid4().hex.upper()
+    params = {
+        'vids': vid,
+        'vid': vid,
+        'otype': 'xml',
+        'defnpayver': 1,
+        'platform': PLAYER_PLATFORM,
+        'charge': 0,
+        'ran': random.random(),
+        'speed': 8096, #random.randint(2048, 8096),
+        'pid': player_pid,
+        'appver': PLAYER_VERSION,
+        'fhdswitch': 0,
+        'defn': 'shd',  # default to super hd
+        'defaultfmt': 'shd', # default to super hd
+        'fp2p': 1,
+        'utype': 0,
+        'cKey': load_key(),
+        'encryptVer': KLIB_VERSION,
+    }
+
+    form = urllib.parse.urlencode(params)
+    url1 = '%s?%s' % ('http://vv.video.qq.com/getvinfo', form)
+    content = get_content(url1, headers = {'User-Agent': USER_AGENT})
+    tree = ET.fromstring(content)
+    fmt_id = None
+    fmt_name = None
+    fmt_br = None
+    for fmt in tree.findall('./fl/fi'):
+        sl = int(fmt.find('./sl').text)
+        if sl:
+            fmt_id = fmt.find('./id').text
+            fmt_name = fmt.find('./name').text
+            fmt_br = fmt.find('./br').text
+
+    video = tree.find('./vl/vi')
+    filename = video.find('./fn').text
+    filesize = video.find('./fs').text
+
+    cdn = video.find('./ul/ui')
+    cdn_url = cdn.find('./url').text
+    filetype = int(cdn.find('./dt').text)
+    vt = cdn.find('./vt').text
+
+    if filetype == 1:
+        type_name = 'flv'
+    elif filetype == 2:
+        type_name = 'mp4'
+    else:
+        type_name = 'unknown'
+
+    clips = []
+    for ci in video.findall('./cl/ci'):
+        clip_size = int(ci.find('./cs').text)
+        clip_idx = int(ci.find('./idx').text)
+        clips.append({'idx': clip_idx, 'size': clip_size})
+
+    size = 0
+    for clip in clips:
+        size += clip['size']
+
+    user_agent = 'Mozilla/5.0 TencentPlayerVod_1.1.91 tencent_-%s-%s' % (vid, fmt_id)
+    fns = os.path.splitext(filename)
+
+    urls =[]
+    for clip in clips:
+        fn = '%s.%d%s' % (fns[0], clip['idx'], fns[1])
+        params = {
+            'vid': vid,
+            'otype': 'xml',
+            'platform': PLAYER_PLATFORM,
+            'format': fmt_id,
+            'charge': 0,
+            'ran': random.random(),
+            'filename': fn,
+            'vt': vt,
+            'appver': PLAYER_VERSION,
+            'cKey': load_key(),
+            'encryptVer': KLIB_VERSION
+        }
+
+        form = urllib.parse.urlencode(params)
+        url2 = '%s?%s' % ('http://vv.video.qq.com/getvkey', form)
+        content = get_content(url2, headers = {'User-Agent': user_agent})
+        tree = ET.fromstring(content)
+
+        vkey = tree.find('./key').text
+        level = tree.find('./level').text
+        sp = tree.find('./sp').text
+
+        clip_url = '%s%s' % (cdn_url, fn)
+
+        urls.append(qq_get_final_url(clip_url, fmt_name, type_name, fmt_br, sp, vkey, level))
+
+    print_info(site_info, title, type_name, size)
     if not info_only:
-        download_urls(urls, title, ext, size, output_dir=output_dir, merge=merge)
+        download_urls(urls, title, type_name, size, output_dir = output_dir, merge = merge)
 
 def qq_download(url, output_dir = '.', merge = True, info_only = False):
-    if re.match(r'http://v.qq.com/([^\?]+)\?vid', url):
-        aid = r1(r'(.*)\.html', url)
-        vid = r1(r'http://v.qq.com/[^\?]+\?vid=(\w+)', url)
-        url = 'http://sns.video.qq.com/tvideo/fcgi-bin/video?vid=%s' % vid
-
-    if re.match(r'http://y.qq.com/([^\?]+)\?vid', url):
-        vid = r1(r'http://y.qq.com/[^\?]+\?vid=(\w+)', url)
-
-        url = "http://v.qq.com/page/%s.html" % vid
-
-        r_url = r1(r'<meta http-equiv="refresh" content="0;url=([^"]*)', get_html(url))
-        if r_url:
-            aid = r1(r'(.*)\.html', r_url)
-            url = "%s/%s.html" % (aid, vid)
-
-    if re.match(r'http://static.video.qq.com/.*vid=', url):
-        vid = r1(r'http://static.video.qq.com/.*vid=(\w+)', url)
-        url = "http://v.qq.com/page/%s.html" % vid
-
-    if re.match(r'http://v.qq.com/cover/.*\.html', url):
-        html = get_html(url)
-        vid = r1(r'vid:"([^"]+)"', html)
-        url = 'http://sns.video.qq.com/tvideo/fcgi-bin/video?vid=%s' % vid
-
-    html = get_html(url)
-
-    title = match1(html, r'<title>(.+?)</title>', r'title:"([^"]+)"')[0].strip()
+    content = get_html(url)
+    video_info = to_dict(match1(content, r'var\s+VIDEO_INFO\s?=\s?({[^;]+);'))
+    vid = video_info['vid']
+    title = video_info['title']
     assert title
-    title = unescape_html(title)
-    title = escape_file_path(title)
-
-    try:
-        id = vid
-    except:
-        id = r1(r'vid:"([^"]+)"', html)
-
-    qq_download_by_id(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
+    qq_download_by_vid(vid, title, output_dir, merge, info_only)
 
 site_info = "QQ.com"
 download = qq_download
