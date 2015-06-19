@@ -211,7 +211,7 @@ def qq_download_by_vid(vid, title = None, output_dir = '.', merge = True, info_o
 
 def qq_download(url, output_dir = '.', merge = True, info_only = False):
     content = get_html(url)
-    video_info = to_dict(match1(content, r'var\s+VIDEO_INFO\s?=\s?({[^;]+);'))
+    video_info = to_dict(match1(content, r'var\s+VIDEO_INFO\s?=\s?({[^}]+})'))
     vid = video_info['vid']
     title = video_info['title']
     assert title
