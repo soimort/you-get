@@ -39,8 +39,8 @@ def zhanqi_download(url, output_dir = '.', merge = True, info_only = False):
         type_ = ''
         size = 0
         for url in real_url:
-        _, type_, temp = url_info(url)
-        size += temp or 0
+            _, type_, temp = url_info(url)
+            size += temp or 0
 
         print_info(site_info, title, type_ or 'ts', size)
         if not info_only:
