@@ -12,19 +12,14 @@ import hashlib
 
 '''
 Changelog:
+-> http://www.iqiyi.com/common/flashplayer/20150618/MainPlayer_5_2_24_1_c3_3_2.swf
+    In this version Z7elzzup.cexe,just use node.js to run this code(with some modification) and get innerkey.
+
 -> http://www.iqiyi.com/common/flashplayer/20150612/MainPlayer_5_2_23_1_c3_2_6_5.swf
     In this version do not directly use enc key 
     gen enc key (so called sc ) in DMEmagelzzup.mix(tvid) -> (tm->getTimer(),src='hsalf',sc)
     encrypy alogrithm is md5(DMEmagelzzup.mix.genInnerKey +tm+tvid)
     how to gen genInnerKey ,can see first 3 lin in mix function in this file
-
--> http://www.iqiyi.com/common/flashplayer/20150514/MainPlayer_5_2_21_c3_2_6_2.swf
-    In this version ,it changes enc key to 'Qakh4T0A'
-    consider to write a function to parse swf and extract this key automatically
-
--> http://www.iqiyi.com/common/flashplayer/20150506/MainPlayer_5_2_21_c3_2_6_1.swf
-    In this version iqiyi player, it changes enc key from  'ts56gh' to 'aw6UWGtp'
-
 '''
 
 '''
@@ -43,10 +38,7 @@ bid meaning for quality
 
 def mix(tvid):
     enc = []
-    arr =  [ -0.625, -0.5546875, -0.59375, -0.625, -0.234375, -0.203125, -0.609375, -0.2421875, -0.234375, -0.2109375, -0.625, -0.2265625, -0.625, -0.234375, -0.6171875, -0.234375, -0.5546875, -0.5625, -0.625, -0.59375, -0.2421875, -0.234375, -0.203125, -0.234375, -0.21875, -0.6171875, -0.6015625, -0.6015625, -0.2109375, -0.5703125, -0.2109375, -0.203125 ] [::-1]
-    for i in arr:
-        enc.append(chr(int(i *(1<<7)+(1<<7))))
-    #enc -> fe7e331dbfba4089b1b0c0eba2fb0490
+    enc.append('7b11c5408ff342318da3e7c97b92e890')
     tm = str(randint(100,1000))
     src = 'hsalf'
     enc.append(str(tm))
