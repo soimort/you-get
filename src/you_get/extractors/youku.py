@@ -184,9 +184,11 @@ class Youku(VideoExtractor):
                 metadata0 = meta['data'][0]
 
         if 'error_code' in metadata0 and metadata0['error_code']:
-            if metadata0['error_code'] == -8:
+            if metadata0['error_code'] == -8 or metadata0['error_code'] == -26:
                 log.w('[Warning] This video can only be streamed within Mainland China!')
                 log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
+            else:
+                log.w(metadata0['error'])
 
         self.title = metadata0['title']
         self.metadata = metadata0
