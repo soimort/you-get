@@ -61,7 +61,10 @@ def google_download(url, output_dir = '.', merge = True, info_only = False):
         real_urls = [unicodize(i[1]) for i in temp if i[0] == temp[0][0]]
 
         if title is None:
-            post_url = r1(r'"(https://plus.google.com/\d+/posts/[^"]*)"', html)
+            post_url = r1(r'"(https://plus.google.com/[^/]+/posts/[^"]*)"', html)
+            post_author = r1(r'/\+([^/]+)/posts', post_url)
+            if post_author:
+                post_url = "https://plus.google.com/+%s/posts/%s" % (parse.quote(post_author), r1(r'posts/(.+)', post_url))
             post_html = get_html(post_url)
             title = r1(r'<title[^>]*>([^<\n]+)', post_html)
 
