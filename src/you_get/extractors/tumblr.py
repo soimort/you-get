@@ -23,7 +23,7 @@ def tumblr_download(url, output_dir = '.', merge = True, info_only = False):
     
     title = unescape_html(r1(r'<meta property="og:title" content="([^"]*)" />', html) or
         r1(r'<meta property="og:description" content="([^"]*)" />', html) or
-        r1(r'<title>([^<\n]*)', html)).replace('\n', '')
+        r1(r'<title>([^<\n]*)', html) or url.split("/")[4]).replace('\n', '')
     
     type, ext, size = url_info(real_url)
     
