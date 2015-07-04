@@ -12,6 +12,9 @@ import hashlib
 
 '''
 Changelog:
+-> http://www.iqiyi.com/common/flashplayer/20150703/MainPlayer_5_2_24_1_c3_3_3.swf
+    SingletonClass.ekam
+
 -> http://www.iqiyi.com/common/flashplayer/20150618/MainPlayer_5_2_24_1_c3_3_2.swf
     In this version Z7elzzup.cexe,just use node.js to run this code(with some modification) and get innerkey.
 
@@ -38,7 +41,7 @@ bid meaning for quality
 
 def mix(tvid):
     enc = []
-    enc.append('7b11c5408ff342318da3e7c97b92e890')
+    enc.append('754f3a28fee047ad9b654420056b400b')
     tm = str(randint(2000,4000))
     src = 'hsalf'
     enc.append(str(tm))
