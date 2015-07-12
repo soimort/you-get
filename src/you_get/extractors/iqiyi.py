@@ -12,6 +12,8 @@ import hashlib
 
 '''
 Changelog:
+-> http://www.iqiyi.com/common/flashplayer/20150710/MainPlayer_5_2_25_c3_3_5_1.swf
+
 -> http://www.iqiyi.com/common/flashplayer/20150703/MainPlayer_5_2_24_1_c3_3_3.swf
     SingletonClass.ekam
 
@@ -41,7 +43,7 @@ bid meaning for quality
 
 def mix(tvid):
     enc = []
-    enc.append('754f3a28fee047ad9b654420056b400b')
+    enc.append('341c0055ad1d4e798c2b784d9dbed29f')
     tm = str(randint(2000,4000))
     src = 'hsalf'
     enc.append(str(tm))
