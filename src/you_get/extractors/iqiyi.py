@@ -21,7 +21,7 @@ Changelog:
     In this version Z7elzzup.cexe,just use node.js to run this code(with some modification) and get innerkey.
 
 -> http://www.iqiyi.com/common/flashplayer/20150612/MainPlayer_5_2_23_1_c3_2_6_5.swf
-    In this version do not directly use enc key 
+    In this version do not directly use enc key
     gen enc key (so called sc ) in DMEmagelzzup.mix(tvid) -> (tm->getTimer(),src='hsalf',sc)
     encrypy alogrithm is md5(DMEmagelzzup.mix.genInnerKey +tm+tvid)
     how to gen genInnerKey ,can see first 3 lin in mix function in this file
@@ -74,10 +74,10 @@ def getVrsEncodeCode(vlink):
 def getVMS(tvid,vid,uid):
     #tm ->the flash run time for md5 usage
     #um -> vip 1 normal 0
-    #authkey -> for password protected video ,replace '' with your password 
+    #authkey -> for password protected video ,replace '' with your password
     #puid user.passportid may empty?
     #TODO: support password protected video
-    tm,sc,src = mix(tvid) 
+    tm,sc,src = mix(tvid)
     vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=1702633101b340d8917a69cf8a4b8c7' +\
                 "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+tm+\
                 "&enc="+sc+\
@@ -96,15 +96,15 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     gen_uid=uuid4().hex
 
     html = get_html(url)
-    
-    tvid = r1(r'data-player-tvid="([^"]+)"', html)
-    videoid = r1(r'data-player-videoid="([^"]+)"', html)
-    
+
+    tvid = r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tvid=([^&]+)', url)
+    videoid = r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=([^&]+)', url)
+
     assert tvid
     assert videoid
 
     info = getVMS(tvid, videoid, gen_uid)
-    
+
     assert info["code"] == "A000000"
 
     title = info["data"]["vi"]["vn"]
@@ -127,13 +127,13 @@ def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
     for i in info["data"]["vp"]["tkl"][0]["vs"]:
         if int(i["bid"])<=10 and int(i["bid"])>=bid:
             bid=int(i["bid"])
-           
+
             video_links=i["fs"] #now in i["flvs"] not in i["fs"]
             if not i["fs"][0]["l"].startswith("/"):
                 tmp = getVrsEncodeCode(i["fs"][0]["l"])
                 if tmp.endswith('mp4'):
                      video_links = i["flvs"]
-            
+
 
     urls=[]
     size=0
