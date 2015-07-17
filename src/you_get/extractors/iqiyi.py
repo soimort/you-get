@@ -43,7 +43,7 @@ bid meaning for quality
 
 def mix(tvid):
     enc = []
-    enc.append('341c0055ad1d4e798c2b784d9dbed29f')
+    enc.append('8e29ab5666d041c3a1ea76e06dabdffb')
     tm = str(randint(2000,4000))
     src = 'hsalf'
     enc.append(str(tm))
