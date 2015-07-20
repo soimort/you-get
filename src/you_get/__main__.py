@@ -89,3 +89,6 @@ def main(**kwargs):
     """
     from .common import main
     main()
+
+if __name__ == '__main__':
+    main()
