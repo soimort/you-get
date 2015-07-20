@@ -1,0 +1,10 @@
+---
+title: You-Get
+author: soimort
+date: 2015-07-20
+output-format: html5
+template: _templates/sm.html5
+github-user: soimort
+github-repo: you-get
+raw-options: ["-s", "--toc", "--output=index.html"]
+---
