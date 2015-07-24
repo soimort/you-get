@@ -69,7 +69,7 @@ class YouTube(VideoExtractor):
         return locals()['sig']
 
     def get_url_from_vid(vid):
-        return 'http://youtu.be/{}'.format(vid)
+        return 'https://youtu.be/{}'.format(vid)
 
     def get_vid_from_url(url):
         """Extracts video ID from URL.
@@ -93,7 +93,7 @@ class YouTube(VideoExtractor):
         if playlist_id is None:
             log.wtf('[Failed] Unsupported URL pattern.')
 
-        video_page = get_content('http://www.youtube.com/playlist?list=%s' % playlist_id)
+        video_page = get_content('https://www.youtube.com/playlist?list=%s' % playlist_id)
         from html.parser import HTMLParser
         videos = sorted([HTMLParser().unescape(video)
                          for video in re.findall(r'<a href="(/watch\?[^"]+)"', video_page)
@@ -116,7 +116,7 @@ class YouTube(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
-        video_info = parse.parse_qs(get_content('http://www.youtube.com/get_video_info?video_id={}'.format(self.vid)))
+        video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}'.format(self.vid)))
 
         if 'status' not in video_info:
             log.wtf('[Failed] Unknown status.')
@@ -128,23 +128,23 @@ class YouTube(VideoExtractor):
 
             else:
                 # Parse video page instead
-                video_page = get_content('http://www.youtube.com/watch?v=%s' % self.vid)
+                video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
 
                 self.title = ytplayer_config['args']['title']
-                self.html5player = 'http:' + ytplayer_config['assets']['js']
+                self.html5player = 'https:' + ytplayer_config['assets']['js']
                 stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
 
         elif video_info['status'] == ['fail']:
             if video_info['errorcode'] == ['150']:
-                video_page = get_content('http://www.youtube.com/watch?v=%s' % self.vid)
+                video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+});ytplayer', video_page).group(1))
 
                 if 'title' in ytplayer_config['args']:
                     # 150 Restricted from playback on certain sites
                     # Parse video page instead
                     self.title = ytplayer_config['args']['title']
-                    self.html5player = 'http:' + ytplayer_config['assets']['js']
+                    self.html5player = 'https:' + ytplayer_config['assets']['js']
                     stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                 else:
                     log.wtf('[Error] The uploader has not made this video available in your country.')
