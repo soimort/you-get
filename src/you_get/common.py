@@ -158,6 +158,12 @@ def get_decoded_html(url, faker = False):
     else:
         return data
 
+def get_location(url):
+    response = request.urlopen(url)
+    # urllib will follow redirections and it's too much code to tell urllib
+    # not to do that
+    return response.geturl()
+
 def get_content(url, headers={}, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
 
