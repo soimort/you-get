@@ -78,6 +78,8 @@ def netease_download_common(title, url_best, output_dir, info_only):
 
 
 def netease_download(url, output_dir = '.', merge = True, info_only = False):
+    if "163.fm" in url:
+        url = get_location(url)
     if "music.163.com" in url:
         netease_cloud_music_download(url,output_dir,merge,info_only)
     else:
