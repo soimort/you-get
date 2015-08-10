@@ -12,6 +12,10 @@ import hashlib
 
 '''
 Changelog:
+-> http://www.iqiyi.com/common/flashplayer/20150805/MainPlayer_5_2_26_c3_3_7.swf
+    former key still works until 20150809
+    In Zombie kcuf = [13, 3, 0, 15, 8, 2, 11, 7, 10, 1, 12, 9, 14, 6, 4, 5] ,which is construct in LogManager,CoreManager,impls.pub.setting,impls.pub.statistics,StageVideoManager
+              thd create a array of ['2', 'd', 'f', 'e', '0', 'c', '5', '3', '8', 'b', '9', '6', 'a', '7', '4', '1']
 -> http://www.iqiyi.com/common/flashplayer/20150710/MainPlayer_5_2_25_c3_3_5_1.swf
 
 -> http://www.iqiyi.com/common/flashplayer/20150703/MainPlayer_5_2_24_1_c3_3_3.swf
@@ -43,7 +47,7 @@ bid meaning for quality
 
 def mix(tvid):
     enc = []
-    enc.append('7c4d2505ad0544b88c7679c65d6748a1')
+    enc.append('65096542539c4e529c8ee97511cd979f')
     tm = str(randint(2000,4000))
     src = 'hsalf'
     enc.append(str(tm))
