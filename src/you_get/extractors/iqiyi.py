@@ -95,7 +95,7 @@ def getDispathKey(rid):
     return hashlib.new("md5",bytes(t+tp+rid,"utf-8")).hexdigest()
 
 
-def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
+def iqiyi_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     gen_uid=uuid4().hex
 
     html = get_html(url)
