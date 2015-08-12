@@ -12,6 +12,10 @@ import hashlib
 
 '''
 Changelog:
+-> http://www.iqiyi.com/common/flashplayer/20150810/MainPlayer_5_2_26_c3_3_7_1.swf
+   http://www.iqiyi.com/common/flashplayer/20150811/MainPlayer_5_2_26_c3_3_7_2.swf
+    some small changes in Zombie.bite function
+
 -> http://www.iqiyi.com/common/flashplayer/20150805/MainPlayer_5_2_26_c3_3_7.swf
     former key still works until 20150809
     In Zombie kcuf = [13, 3, 0, 15, 8, 2, 11, 7, 10, 1, 12, 9, 14, 6, 4, 5] ,which is construct in LogManager,CoreManager,impls.pub.setting,impls.pub.statistics,StageVideoManager
@@ -24,11 +28,6 @@ Changelog:
 -> http://www.iqiyi.com/common/flashplayer/20150618/MainPlayer_5_2_24_1_c3_3_2.swf
     In this version Z7elzzup.cexe,just use node.js to run this code(with some modification) and get innerkey.
 
--> http://www.iqiyi.com/common/flashplayer/20150612/MainPlayer_5_2_23_1_c3_2_6_5.swf
-    In this version do not directly use enc key
-    gen enc key (so called sc ) in DMEmagelzzup.mix(tvid) -> (tm->getTimer(),src='hsalf',sc)
-    encrypy alogrithm is md5(DMEmagelzzup.mix.genInnerKey +tm+tvid)
-    how to gen genInnerKey ,can see first 3 lin in mix function in this file
 '''
 
 '''
@@ -47,7 +46,7 @@ bid meaning for quality
 
 def mix(tvid):
     enc = []
-    enc.append('65096542539c4e529c8ee97511cd979f')
+    enc.append('3601ba290e4f4662848c710e2122007e')
     tm = str(randint(2000,4000))
     src = 'eknas'
     enc.append(str(tm))
