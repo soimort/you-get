@@ -84,7 +84,7 @@ def getVMS(tvid,vid,uid):
     vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=1702633101b340d8917a69cf8a4b8c7' +\
                 "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+tm+\
                 "&enc="+sc+\
-                "&qyid="+uid+"&tn="+str(random()) +"&um=0" +\
+                "&qyid="+uid+"&tn="+str(random()) +"&um=1" +\
                 "&authkey="+hashlib.new('md5',bytes(''+str(tm)+tvid,'utf-8')).hexdigest()
     return json.loads(get_content(vmsreq))
 
