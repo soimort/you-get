@@ -33,7 +33,6 @@ from .mtv81 import *
 from .netease import *
 from .nicovideo import *
 from .pptv import *
-from .qianmo import *
 from .qq import *
 from .sina import *
 from .sohu import *
