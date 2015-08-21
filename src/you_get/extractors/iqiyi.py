@@ -14,6 +14,7 @@ import hashlib
 Changelog:
 -> http://www.iqiyi.com/common/flashplayer/20150810/MainPlayer_5_2_26_c3_3_7_1.swf
    http://www.iqiyi.com/common/flashplayer/20150811/MainPlayer_5_2_26_c3_3_7_2.swf
+   http://www.iqiyi.com/common/flashplayer/20150820/MainPlayer_5_2_27_2_c3_3_7_3.swf
     some small changes in Zombie.bite function
 
 -> http://www.iqiyi.com/common/flashplayer/20150805/MainPlayer_5_2_26_c3_3_7.swf
@@ -46,7 +47,7 @@ bid meaning for quality
 
 def mix(tvid):
     enc = []
-    enc.append('3601ba290e4f4662848c710e2122007e')
+    enc.append('3cba91f1453145438ac5e4f5983bc086')
     tm = str(randint(2000,4000))
     src = 'eknas'
     enc.append(str(tm))
