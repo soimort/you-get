@@ -27,6 +27,7 @@ from .kuwo import *
 from .letv import *
 from .lizhi import *
 from .magisto import *
+from .miaopai import *
 from .miomio import *
 from .mixcloud import *
 from .mtv81 import *
