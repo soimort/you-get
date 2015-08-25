@@ -58,6 +58,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * NetEase (网易视频) <http://v.163.com>
 * NetEase Music (网易云音乐) <http://music.163.com>
 * PPTV <http://www.pptv.com>
+* QianMo (阡陌视频) <http://qianmo.com/>
 * QQ (腾讯视频) <http://v.qq.com>
 * Sina (新浪视频) <http://video.sina.com.cn>
 * Sohu (搜狐视频) <http://tv.sohu.com>

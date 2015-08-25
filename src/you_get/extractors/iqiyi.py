@@ -12,6 +12,15 @@ import hashlib
 
 '''
 Changelog:
+-> http://www.iqiyi.com/common/flashplayer/20150810/MainPlayer_5_2_26_c3_3_7_1.swf
+   http://www.iqiyi.com/common/flashplayer/20150811/MainPlayer_5_2_26_c3_3_7_2.swf
+   http://www.iqiyi.com/common/flashplayer/20150820/MainPlayer_5_2_27_2_c3_3_7_3.swf
+    some small changes in Zombie.bite function
+
+-> http://www.iqiyi.com/common/flashplayer/20150805/MainPlayer_5_2_26_c3_3_7.swf
+    former key still works until 20150809
+    In Zombie kcuf = [13, 3, 0, 15, 8, 2, 11, 7, 10, 1, 12, 9, 14, 6, 4, 5] ,which is construct in LogManager,CoreManager,impls.pub.setting,impls.pub.statistics,StageVideoManager
+              thd create a array of ['2', 'd', 'f', 'e', '0', 'c', '5', '3', '8', 'b', '9', '6', 'a', '7', '4', '1']
 -> http://www.iqiyi.com/common/flashplayer/20150710/MainPlayer_5_2_25_c3_3_5_1.swf
 
 -> http://www.iqiyi.com/common/flashplayer/20150703/MainPlayer_5_2_24_1_c3_3_3.swf
@@ -20,11 +29,6 @@ Changelog:
 -> http://www.iqiyi.com/common/flashplayer/20150618/MainPlayer_5_2_24_1_c3_3_2.swf
     In this version Z7elzzup.cexe,just use node.js to run this code(with some modification) and get innerkey.
 
--> http://www.iqiyi.com/common/flashplayer/20150612/MainPlayer_5_2_23_1_c3_2_6_5.swf
-    In this version do not directly use enc key
-    gen enc key (so called sc ) in DMEmagelzzup.mix(tvid) -> (tm->getTimer(),src='hsalf',sc)
-    encrypy alogrithm is md5(DMEmagelzzup.mix.genInnerKey +tm+tvid)
-    how to gen genInnerKey ,can see first 3 lin in mix function in this file
 '''
 
 '''
@@ -43,9 +47,9 @@ bid meaning for quality
 
 def mix(tvid):
     enc = []
-    enc.append('8e29ab5666d041c3a1ea76e06dabdffb')
+    enc.append('3cba91f1453145438ac5e4f5983bc086')
     tm = str(randint(2000,4000))
-    src = 'hsalf'
+    src = 'eknas'
     enc.append(str(tm))
     enc.append(tvid)
     sc = hashlib.new('md5',bytes("".join(enc),'utf-8')).hexdigest()
@@ -81,7 +85,7 @@ def getVMS(tvid,vid,uid):
     vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=1702633101b340d8917a69cf8a4b8c7' +\
                 "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+tm+\
                 "&enc="+sc+\
-                "&qyid="+uid+"&tn="+str(random()) +"&um=0" +\
+                "&qyid="+uid+"&tn="+str(random()) +"&um=1" +\
                 "&authkey="+hashlib.new('md5',bytes(''+str(tm)+tvid,'utf-8')).hexdigest()
     return json.loads(get_content(vmsreq))
 
@@ -92,7 +96,7 @@ def getDispathKey(rid):
     return hashlib.new("md5",bytes(t+tp+rid,"utf-8")).hexdigest()
 
 
-def iqiyi_download(url, output_dir = '.', merge = True, info_only = False):
+def iqiyi_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     gen_uid=uuid4().hex
 
     html = get_html(url)
