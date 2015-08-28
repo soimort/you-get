@@ -111,6 +111,10 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
     html = get_html(url)
 
     title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',r'<h1[^>]*>([^<>]+)</h1>'], html)
+    if title is None:
+        log.e('[Failed] Maybe the url was wrong, or it could not access by guest')
+        return
+
     title = unescape_html(title)
     title = escape_file_path(title)
 
