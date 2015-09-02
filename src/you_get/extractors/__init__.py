@@ -15,6 +15,7 @@ from .douyutv import *
 from .ehow import *
 from .facebook import *
 from .freesound import *
+from .funshion import *
 from .google import *
 from .ifeng import *
 from .instagram import *
