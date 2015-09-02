@@ -43,6 +43,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * DouyuTV (斗鱼) <http://www.douyutv.com>
 * eHow <http://www.ehow.com>
 * Facebook <http://facebook.com>
+* Fun.tv (风行, Funshion) <http://www.fun.tv/>
 * Google Drive <http://docs.google.com>
 * ifeng (凤凰视频) <http://v.ifeng.com>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
