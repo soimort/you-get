@@ -57,7 +57,8 @@ class Youku(VideoExtractor):
         """
         return match1(url, r'youku\.com/v_show/id_([a-zA-Z0-9=]+)') or \
           match1(url, r'player\.youku\.com/player\.php/sid/([a-zA-Z0-9=]+)/v\.swf') or \
-          match1(url, r'loader\.swf\?VideoIDS=([a-zA-Z0-9=]+)')
+          match1(url, r'loader\.swf\?VideoIDS=([a-zA-Z0-9=]+)') or \
+          match1(url, r'player\.youku\.com/embed/([a-zA-Z0-9=]+)')
 
     def get_playlist_id_from_url(url):
         """Extracts playlist ID from URL.
