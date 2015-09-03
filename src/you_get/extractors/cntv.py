@@ -13,7 +13,7 @@ def cntv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
     title = title or info['title']
     video = info['video']
     alternatives = [x for x in video.keys() if x.endswith('hapters')]
-    #assert alternatives in (['chapters'], ['chapters', 'lowChapters']), alternatives
+    #assert alternatives in (['chapters'], ['lowChapters', 'chapters'], ['chapters', 'lowChapters']), alternatives
     chapters = video['chapters'] if 'chapters' in video else video['lowChapters']
     urls = [x['url'] for x in chapters]
     ext = r1(r'\.([^.]+)$', urls[0])
