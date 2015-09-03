@@ -192,7 +192,8 @@ def get_content(url, headers={}, decoded=True):
 
     # Decode the response body
     if decoded:
-        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
+        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)') or \
+                  match1(str(data), r'charset=([\w-]+)')
         if charset is not None:
             data = data.decode(charset)
         else:
