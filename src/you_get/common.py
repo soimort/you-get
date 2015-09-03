@@ -1011,7 +1011,8 @@ def url_to_module(url):
         res = conn.getresponse()
         location = res.getheader('location')
         if location is None:
-            raise NotImplementedError(url)
+            from .extractors import embed
+            return embed, url
         else:
             return url_to_module(location)
 
