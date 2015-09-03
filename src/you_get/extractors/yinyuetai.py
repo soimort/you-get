@@ -4,15 +4,11 @@ __all__ = ['yinyuetai_download', 'yinyuetai_download_by_id']
 
 from ..common import *
 
-def yinyuetai_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    assert title
-    html = get_html('http://www.yinyuetai.com/insite/get-video-info?flex=true&videoId=' + id)
-
-    for quality in ['he\w*', 'hd\w*', 'hc\w*', '\w+']:
-        url = r1(r'(http://' + quality + '\.yinyuetai\.com/uploads/videos/common/\w+\.(?:flv|mp4)\?(?:sc=[a-f0-9]{16}|v=\d{12}))', html)
-        if url:
-            break
-    assert url
+def yinyuetai_download_by_id(vid, title=None, output_dir='.', merge=True, info_only=False):
+    video_info = json.loads(get_html('http://www.yinyuetai.com/insite/get-video-info?json=true&videoId=%s' % vid))
+    url_models = video_info['videoInfo']['coreVideoInfo']['videoUrlModels']
+    url_models = sorted(url_models, key=lambda i: i['qualityLevel'])
+    url = url_models[-1]['videoUrl']
     type = ext = r1(r'\.(flv|mp4)', url)
     _, _, size = url_info(url)
 
@@ -20,7 +16,7 @@ def yinyuetai_download_by_id(id, title = None, output_dir = '.', merge = True, i
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
-def yinyuetai_download(url, output_dir = '.', merge = True, info_only = False):
+def yinyuetai_download(url, output_dir='.', merge=True, info_only=False):
     id = r1(r'http://\w+.yinyuetai.com/video/(\d+)$', url.split('?')[0])
     assert id
     html = get_html(url, 'utf-8')
