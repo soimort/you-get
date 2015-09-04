@@ -21,13 +21,29 @@ youku_embed_patterns = [ 'youku\.com/v_show/id_([a-zA-Z0-9=]+)',
 """
 http://www.tudou.com/programs/view/html5embed.action?type=0&amp;code=3LS_URGvl54&amp;lcode=&amp;resourceId=0_06_05_99
 """
-tudou_embed_patterns = [ 'tudou\.com[a-zA-Z0-9\/\?=\&\.\;]+code=([[a-zA-Z0-9_]+)\&'
+tudou_embed_patterns = [ 'tudou\.com[a-zA-Z0-9\/\?=\&\.\;]+code=([a-zA-Z0-9_]+)\&'
                        ]
 
 """
 refer to http://open.tudou.com/wiki/video/info
 """
 tudou_api_patterns = [ ]
+
+
+"""
+v.qq.com
+"""
+qq_embed_patterns = [ 'v\.qq\.com[a-zA-Z0-9\/\?\.\;]+vid=([a-zA-Z0-9]+)',
+                      'v\.qq\.com[a-zA-Z0-9\/\?\.\;]+\/([a-zA-Z0-9]+)\.html',
+                      'TPout\.swf\?\&vid=([a-zA-Z0-9]+)'
+                    ]
+
+
+"""
+tv.sohu.com
+"""
+sohu_embed_patterns = [ 'tv\.sohu\.com[a-zA-Z0-9\/\?=]+\&vid=([a-zA-Z0-9]+)\&'
+                      ]
 
 def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwargs):
     content = get_content(url)
@@ -42,6 +58,11 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwa
     for vid in vids:
         found = True
         tudou_download_by_id(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+
+    vids = matchall(content, qq_embed_patterns)
+    for vid in vids:
+        found = True
+        qq_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     if not found:
         raise NotImplementedError(url)
