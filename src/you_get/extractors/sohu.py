@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-__all__ = ['sohu_download']
-
 from ..common import *
+from ..extractor import VideoExtractor
 
 import json
 import time
@@ -15,60 +14,85 @@ Changelog:
         new api
 '''
 
-def real_url(host,vid,tvid,new,clipURL,ck):
-    url = 'http://'+host+'/?prot=9&prod=flash&pt=1&file='+clipURL+'&new='+new +'&key='+ ck+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))+'&t='+str(random())
-    return json.loads(get_html(url))['url']
 
-def sohu_download(url, output_dir = '.', merge = True, info_only = False, extractor_proxy=None):
-    if re.match(r'http://share.vrs.sohu.com', url):
-        vid = r1('id=(\d+)', url)
-    else:
-        html = get_html(url)
-        vid = r1(r'\Wvid\s*[\:=]\s*[\'"]?(\d+)[\'"]?', html)
-    assert vid
+class Sohu(VideoExtractor):
+    name = "搜狐 (Sohu)"
 
-    if re.match(r'http://tv.sohu.com/', url):
-        if extractor_proxy:
-            set_proxy(tuple(extractor_proxy.split(":")))
-        info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
-        for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
-            hqvid = info['data'][qtyp]
-            if hqvid != 0 and hqvid != vid :
-                info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % hqvid))
-                break
-        if extractor_proxy:
-            unset_proxy()
-        host = info['allot']
-        prot = info['prot']
-        tvid = info['tvid']
-        urls = []
+    stream_types = [
+        {'id': 'oriVid', 'container': 'mp4', 'video_profile': '原画'},
+        {'id': 'superVid', 'container': 'mp4', 'video_profile': '超清'},
+        {'id': 'highVid', 'container': 'mp4', 'video_profile': '高清'},
+        {'id': 'norVid', 'container': 'mp4', 'video_profile': '标清'},
+        {'id': 'relativeId', 'container': 'mp4', 'video_profile': '当前'},
+    ]
+
+    realurls = { 'oriVid': [], 'superVid': [], 'highVid': [], 'norVid': [], 'relativeId': []}
+    vids = {}
+
+    def real_url(host, vid, tvid, new, clipURL, ck):
+        return 'http://'+host+'/?prot=9&prod=flash&pt=1&file='+clipURL+'&new='+new +'&key='+ ck+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))+'&t='+str(random())
+
+
+    def get_vid_from_url(url):
+        return match1(url, 'id=(\d+)')
+
+    def get_vid_from_content(content):
+        return match1(content, '\/([0-9]+)\/v\.swf')
+
+    def prepare(self, **kwargs):
+        assert self.url or self.vid
+
+        if self.url and not self.vid:
+            self.vid = self.__class__.get_vid_from_url(self.url) or \
+                       self.__class__.get_vid_from_content(str(get_decoded_html(self.url)))
+
+        info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % self.vid))
         data = info['data']
-        title = data['tvName']
-        size = sum(data['clipsBytes'])
-        assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
-        for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
-            clipURL = urlparse(clip).path
-            urls.append(real_url(host,hqvid,tvid,new,clipURL,ck))
-        # assert data['clipsURL'][0].endswith('.mp4')
+        self.title = data['tvName']
+        for stream in self.stream_types:
+            lvid = data[stream['id']]
+            if lvid != 0 and lvid != self.vid :
+                info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % lvid))
+                data = info['data']
+            host = info['allot']
+            prot = info['prot']
+            tvid = info['tvid']
+            size = sum(data['clipsBytes'])
+            assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
+            for new, clip, ck, in zip(data['su'], data['clipsURL'], data['ck']):
+                clipURL = urlparse(clip).path
+                self.realurls[stream['id']].append(self.__class__.real_url(host, lvid, tvid, new, clipURL, ck))
+            self.streams[stream['id']] = {'container': 'mp4', 'video_profile': stream['video_profile'], 'size' : size}
+            self.vids[stream['id']] = lvid
 
-    else:
-        info = json.loads(get_decoded_html('http://my.tv.sohu.com/play/videonew.do?vid=%s&referer=http://my.tv.sohu.com' % vid))
-        host = info['allot']
-        prot = info['prot']
-        tvid = info['tvid']
+    def extract(self, **kwargs):
+        if 'stream_id' in kwargs and kwargs['stream_id']:
+            # Extract the stream
+            stream_id = kwargs['stream_id']
+
+            if stream_id not in self.streams:
+                log.e('[Error] Invalid video format.')
+                log.e('Run \'-i\' command with no specific video format to view all available formats.')
+                exit(2)
+        else:
+            # Extract stream with the best quality
+            stream_id = self.streams_sorted[0]['id']
+
+        new_stream_id = stream_id
+        if self.vids[new_stream_id] == 0:
+            for stream in self.stream_types:
+                if self.vids[stream['id']] != 0:
+                    new_stream_id = stream['id']
+                    break
+
         urls = []
-        data = info['data']
-        title = data['tvName']
-        size = sum(map(int,data['clipsBytes']))
-        assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
-        for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
-            clipURL = urlparse(clip).path
-            urls.append(real_url(host,vid,tvid,new,clipURL,ck))
+        for url in self.realurls[new_stream_id]:
+            info = json.loads(get_html(url))
+            urls.append(info['url'])
+        self.streams[stream_id]['src'] = urls
 
-    print_info(site_info, title, 'mp4', size)
-    if not info_only:
-        download_urls(urls, title, 'mp4', size, output_dir, refer = url, merge = merge)
 
-site_info = "Sohu.com"
-download = sohu_download
+site = Sohu()
+download = site.download_by_url
+sohu_download_by_vid = site.download_by_vid
 download_playlist = playlist_not_supported('sohu')
