@@ -26,7 +26,6 @@ class Sohu(VideoExtractor):
     ]
 
     realurls = { 'oriVid': [], 'superVid': [], 'highVid': [], 'norVid': [], 'relativeId': []}
-    vids = { 'oriVid': 0, 'superVid': 0, 'highVid': 0, 'norVid': 0, 'relativeId': 0}
 
     def real_url(host, vid, tvid, new, clipURL, ck):
         return 'http://'+host+'/?prot=9&prod=flash&pt=1&file='+clipURL+'&new='+new +'&key='+ ck+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))+'&t='+str(random())
@@ -47,7 +46,6 @@ class Sohu(VideoExtractor):
             clipURL = urlparse(clip).path
             self.realurls[stream['id']].append(self.__class__.real_url(host, lvid, tvid, new, clipURL, ck))
         self.streams[stream['id']] = {'container': 'mp4', 'video_profile': stream['video_profile'], 'size' : size}
-        self.vids[stream['id']] = lvid
 
 
     def prepare(self, **kwargs):
@@ -62,7 +60,9 @@ class Sohu(VideoExtractor):
             self.title = data['tvName']
             for stream in self.stream_types:
                 lvid = data[stream['id']]
-                if lvid != 0 and lvid != self.vid :
+                if lvid == 0:
+                    continue
+                if lvid != self.vid :
                     info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % lvid))
                 self.parser_info(info, stream, lvid)
             return
@@ -89,15 +89,9 @@ class Sohu(VideoExtractor):
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
 
-        new_stream_id = stream_id
-        if self.vids[new_stream_id] == 0:
-            for stream in self.stream_types:
-                if self.vids[stream['id']] != 0:
-                    new_stream_id = stream['id']
-                    break
 
         urls = []
-        for url in self.realurls[new_stream_id]:
+        for url in self.realurls[stream_id]:
             info = json.loads(get_html(url))
             urls.append(info['url'])
         self.streams[stream_id]['src'] = urls
