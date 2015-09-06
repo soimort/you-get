@@ -43,6 +43,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * DouyuTV (斗鱼) <http://www.douyutv.com>
 * eHow <http://www.ehow.com>
 * Facebook <http://facebook.com>
+* Fun.tv (风行, Funshion) <http://www.fun.tv/>
 * Google Drive <http://docs.google.com>
 * ifeng (凤凰视频) <http://v.ifeng.com>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
@@ -61,6 +62,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * QianMo (阡陌视频) <http://qianmo.com/>
 * QQ (腾讯视频) <http://v.qq.com>
 * Sina (新浪视频) <http://video.sina.com.cn>
+* Weibo Miaopai (新浪微博秒拍视频) <http://video.weibo.com/>
 * Sohu (搜狐视频) <http://tv.sohu.com>
 * SongTaste <http://www.songtaste.com>
 * SoundCloud <http://soundcloud.com>

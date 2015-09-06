@@ -12,9 +12,9 @@ def cntv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
     info = json.loads(get_html('http://vdn.apps.cntv.cn/api/getHttpVideoInfo.do?pid=' + id))
     title = title or info['title']
     video = info['video']
-    alternatives = [x for x in video.keys() if x.startswith('chapters')]
-    #assert alternatives in (['chapters'], ['chapters', 'chapters2']), alternatives
-    chapters = video['chapters2'] if 'chapters2' in video else video['chapters']
+    alternatives = [x for x in video.keys() if x.endswith('hapters')]
+    #assert alternatives in (['chapters'], ['lowChapters', 'chapters'], ['chapters', 'lowChapters']), alternatives
+    chapters = video['chapters'] if 'chapters' in video else video['lowChapters']
     urls = [x['url'] for x in chapters]
     ext = r1(r'\.([^.]+)$', urls[0])
     assert ext in ('flv', 'mp4')
@@ -29,7 +29,7 @@ def cntv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
 
 def cntv_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://\w+\.cntv\.cn/(\w+/\w+/(classpage/video/)?)?\d+/\d+\.shtml', url) or re.match(r'http://\w+.cntv.cn/(\w+/)*VIDE\d+.shtml', url):
-        id = r1(r'<!--repaste.video.code.begin-->(\w+)<!--repaste.video.code.end-->', get_html(url))
+        id = r1(r'videoCenterId","(\w+)"', get_html(url))
     elif re.match(r'http://xiyou.cntv.cn/v-[\w-]+\.html', url):
         id = r1(r'http://xiyou.cntv.cn/v-([\w-]+)\.html', url)
     else:

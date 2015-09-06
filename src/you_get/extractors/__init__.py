@@ -15,6 +15,7 @@ from .douyutv import *
 from .ehow import *
 from .facebook import *
 from .freesound import *
+from .funshion import *
 from .google import *
 from .ifeng import *
 from .instagram import *
@@ -27,6 +28,7 @@ from .kuwo import *
 from .letv import *
 from .lizhi import *
 from .magisto import *
+from .miaopai import *
 from .miomio import *
 from .mixcloud import *
 from .mtv81 import *

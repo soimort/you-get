@@ -79,6 +79,24 @@ def match1(text, *patterns):
                 ret.append(match.group(1))
         return ret
 
+def matchall(text, patterns):
+    """Scans through a string for substrings matched some patterns.
+
+    Args:
+        text: A string to be scanned.
+        patterns: a list of regex pattern.
+
+    Returns:
+        a list if matched. empty if not.
+    """
+
+    ret = []
+    for pattern in patterns:
+        match = re.findall(pattern, text)
+        ret += match
+
+    return ret
+
 def launch_player(player, urls):
     import subprocess
     import shlex
@@ -922,7 +940,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
 
 def url_to_module(url):
-    from .extractors import netease, w56, acfun, baidu, baomihua, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, lizhi, magisto, miomio, mixcloud, mtv81, nicovideo, pptv, qianmo, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, twitter, vid48, videobam, vidto, vimeo, vine, vk, xiami, yinyuetai, youku, youtube, zhanqi
+    from .extractors import netease, w56, acfun, baidu, baomihua, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, funshion, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, lizhi, magisto, miaopai, miomio, mixcloud, mtv81, nicovideo, pptv, qianmo, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, twitter, vid48, videobam, vidto, vimeo, vine, vk, xiami, yinyuetai, youku, youtube, zhanqi
 
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
@@ -953,6 +971,7 @@ def url_to_module(url):
         'ehow': ehow,
         'facebook': facebook,
         'freesound': freesound,
+        'fun': funshion,
         'google': google,
         'iask': sina,
         'ifeng': ifeng,
@@ -991,6 +1010,7 @@ def url_to_module(url):
         'videobam': videobam,
         'vidto': vidto,
         'vimeo': vimeo,
+        'weibo': miaopai,
         'vine': vine,
         'vk': vk,
         'xiami': xiami,
@@ -1009,7 +1029,8 @@ def url_to_module(url):
         res = conn.getresponse()
         location = res.getheader('location')
         if location is None:
-            raise NotImplementedError(url)
+            from .extractors import embed
+            return embed, url
         else:
             return url_to_module(location)
 

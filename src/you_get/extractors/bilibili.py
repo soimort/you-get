@@ -121,7 +121,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False):
     id = id.split('&')[0]
     if t == 'cid':
         # Multi-P
-        cids = [id]
+        cids = []
         p = re.findall('<option value=\'([^\']*)\'>', html)
         if not p:
             bilibili_download_by_cid(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
