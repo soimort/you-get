@@ -47,6 +47,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Google Drive <http://docs.google.com>
 * ifeng (凤凰视频) <http://v.ifeng.com>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
+* iQilu (齐鲁网, 山东网络台) <http://v.iqilu.com>
 * Joy.cn (激动网) <http://www.joy.cn>
 * Khan Academy <http://www.khanacademy.org>
 * Ku6 (酷6网) <http://www.ku6.com>
