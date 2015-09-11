@@ -940,7 +940,7 @@ def script_main(script_name, download, download_playlist = None):
             sys.exit(1)
 
 def url_to_module(url):
-    from .extractors import netease, w56, acfun, baidu, baomihua, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, funshion, google, sina, ifeng, alive, instagram, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, lizhi, magisto, metacafe, miaopai, miomio, mixcloud, mtv81, nicovideo, pptv, qianmo, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, twitter, vid48, videobam, vidto, vimeo, vine, vk, xiami, yinyuetai, youku, youtube, zhanqi
+    from .extractors import netease, w56, acfun, baidu, baomihua, bilibili, blip, catfun, cntv, cbs, coursera, dailymotion, dongting, douban, douyutv, ehow, facebook, freesound, funshion, google, sina, ifeng, alive, instagram, iqilu, iqiyi, joy, jpopsuki, khan, ku6, kugou, kuwo, letv, lizhi, magisto, metacafe, miaopai, miomio, mixcloud, mtv81, nicovideo, pptv, qianmo, qq, sohu, songtaste, soundcloud, ted, theplatform, tudou, tucao, tumblr, twitter, vid48, videobam, vidto, vimeo, vine, vk, xiami, yinyuetai, youku, youtube, zhanqi
 
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
@@ -977,6 +977,7 @@ def url_to_module(url):
         'ifeng': ifeng,
         'in': alive,
         'instagram': instagram,
+        'iqilu': iqilu,
         'iqiyi': iqiyi,
         'joy': joy,
         'jpopsuki': jpopsuki,

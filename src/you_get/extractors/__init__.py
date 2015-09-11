@@ -19,6 +19,7 @@ from .funshion import *
 from .google import *
 from .ifeng import *
 from .instagram import *
+from .iqilu import *
 from .iqiyi import *
 from .joy import *
 from .jpopsuki import *
