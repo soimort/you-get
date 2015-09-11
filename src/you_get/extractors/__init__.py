@@ -46,6 +46,7 @@ from .theplatform import *
 from .tucao import *
 from .tudou import *
 from .tumblr import *
+from .tv66wz import *
 from .twitter import *
 from .vid48 import *
 from .videobam import *
