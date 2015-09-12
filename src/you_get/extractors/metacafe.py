@@ -8,7 +8,7 @@ from urllib.parse import unquote
 
 def metacafe_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://www.metacafe.com/watch/\w+', url):
-        html =get_content(url)
+        html = get_content(url)
         title = r1(r'<meta property="og:title" content="([^"]*)"', html)
         
         for i in html.split('&'):  #wont bother to use re

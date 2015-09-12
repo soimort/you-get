@@ -54,6 +54,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Kuwo (酷我音乐) <http://www.kuwo.cn>
 * LeTV (乐视网) <http://www.letv.com>
 * Lizhi.fm (荔枝FM) <http://www.lizhi.fm>
+* MiaoPai (秒拍视频) <http://www.miaopai.com>
 * Metacafe <http://www.metacafe.com>
 * MioMio <http://www.miomio.tv>
 * MTV 81 <http://www.mtv81.com>
