@@ -104,6 +104,14 @@ class Letv(VideoExtractor):
              size += tmp
              self.streams[stream_id]['size'] = size
 
+    def download_playlist_by_url(self, url, **kwargs):
+        self.url = url
+        html = get_content(self.url)
+
+        vids = matchall(html, ['vid="(\d+)"'])
+        for v in vids:
+            self.download_by_vid(v, **kwargs)
+
 
 def letvcloud_download_by_vu(vu, uu, title=None, output_dir='.', merge=True, info_only=False, **kwargs):
     from .letvcloud import letvcloud_download_by_vid
@@ -112,4 +120,4 @@ def letvcloud_download_by_vu(vu, uu, title=None, output_dir='.', merge=True, inf
 site = Letv()
 download = site.download_by_url
 letv_download_by_vid = site.download_by_vid
-download_playlist = playlist_not_supported('letv')
+download_playlist = site.download_playlist_by_url
