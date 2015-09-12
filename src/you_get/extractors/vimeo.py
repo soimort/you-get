@@ -11,7 +11,7 @@ def vimeo_download_by_channel(url, output_dir = '.', merge = False, info_only = 
     """str->None"""
     # https://vimeo.com/channels/464686
     channel_id = match1(url, r'http://vimeo.com/channels/(\w+)')
-    vimeo_download_by_channel_id(channel_id, output_dir = '.', merge = False, info_only = False)
+    vimeo_download_by_channel_id(channel_id, output_dir, merge, info_only)
 
 #----------------------------------------------------------------------
 def vimeo_download_by_channel_id(channel_id, output_dir = '.', merge = False, info_only = False):
@@ -25,7 +25,7 @@ def vimeo_download_by_channel_id(channel_id, output_dir = '.', merge = False, in
         id_list.append(match1(i['uri'], r'/videos/(\w+)'))
         
     for id in id_list:
-        vimeo_download_by_id(id)
+        vimeo_download_by_id(id, None, output_dir, merge, info_only)
 
 def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     video_page = get_content('http://player.vimeo.com/video/%s' % id, headers=fake_headers)
@@ -45,7 +45,7 @@ def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_
 
 def vimeo_download(url, output_dir = '.', merge = True, info_only = False):
     if re.match(r'http://vimeo.com/channels/\w+', url):
-        vimeo_download_by_channel(url, output_dir='.', merge=False, info_only=False)
+        vimeo_download_by_channel(url, output_dir, merge, info_only)
     else:
         id = r1(r'http://[\w.]*vimeo.com[/\w]*/(\d+)$', url)
         assert id
