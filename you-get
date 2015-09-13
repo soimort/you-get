@@ -11,7 +11,7 @@ else:
     # The application is not frozen
     # Change this bit to match where you store your data files:
     _filepath = os.path.dirname(os.path.realpath(__file__))
-sys.path.insert(1, os.path.join(_filepath, _srcdir))
+    sys.path.insert(1, os.path.join(_filepath, _srcdir))
 
 if sys.version_info[0] == 3:
     import you_get
