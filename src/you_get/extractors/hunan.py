@@ -47,6 +47,19 @@ class Hunantv(VideoExtractor):
                self.streams[lstream['name']] = {'container': 'fhv', 'video_profile': lstream['name'], 'size' : 0}
 
     def extract(self, **kwargs):
+        if 'info_only' in kwargs and kwargs['info_only']:
+          for lstream in self.lstreams:
+                meta = ''
+                while True:
+                    rn = randint(0, 99999999)
+                    meta = json.loads(get_html("{}&random={}".format((lstream['url']),rn)))
+                    if meta['status'] == 'ok':
+                        if meta['info'].startswith('http://pcfastvideo.imgo.tv/'):
+                            break
+                size = url_size(meta['info'])
+                self.streams[lstream['name']]['src'] = [meta['info']]
+                self.streams[lstream['name']]['size'] = size
+
         if 'stream_id' in kwargs and kwargs['stream_id']:
             # Extract the stream
             stream_id = kwargs['stream_id']
@@ -68,7 +81,9 @@ class Hunantv(VideoExtractor):
                     if meta['status'] == 'ok':
                         if meta['info'].startswith('http://pcfastvideo.imgo.tv/'):
                             break
+                size = url_size(meta['info'])
                 self.streams[stream_id]['src'] = [meta['info']]
+                self.streams[stream_id]['size'] = size
 
 site = Hunantv()
 download = site.download_by_url
