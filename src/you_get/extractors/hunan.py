@@ -61,10 +61,14 @@ class Hunantv(VideoExtractor):
 
         for lstream in self.lstreams:
             if stream_id == lstream['name']:
-                rn = randint(0, 99999999)
-                meta = json.loads(get_html("{}&random={}".format((lstream['url']),rn)))
-                if meta['status'] == 'ok':
-                    self.streams[stream_id]['src'] = [meta['info']]
+                meta = ''
+                while True:
+                    rn = randint(0, 99999999)
+                    meta = json.loads(get_html("{}&random={}".format((lstream['url']),rn)))
+                    if meta['status'] == 'ok':
+                        if meta['info'].startswith('http://pcfastvideo.imgo.tv/'):
+                            break
+                self.streams[stream_id]['src'] = [meta['info']]
 
 site = Hunantv()
 download = site.download_by_url
