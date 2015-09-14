@@ -1005,6 +1005,7 @@ def url_to_module(url):
         youku,
         youtube,
         zhanqi,
+        hunan
     )
 
     video_host = r1(r'https?://([^/]+)/', url)
@@ -1086,6 +1087,7 @@ def url_to_module(url):
         'youtu': youtube,
         'youtube': youtube,
         'zhanqi': zhanqi,
+        'hunantv': hunan,
     }
     if k in downloads:
         return downloads[k], url
