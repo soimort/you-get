@@ -86,6 +86,8 @@ class Youku(VideoExtractor):
             index = parse_query_param(video, 'f')
             try:
                 self.__class__().download_by_url(video, index=index, **kwargs)
+            except KeyboardInterrupt:
+                raise
             except:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 traceback.print_exception(exc_type, exc_value, exc_traceback)
