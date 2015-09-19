@@ -6,6 +6,7 @@ from ..extractor import VideoExtractor
 
 import base64
 import time
+import traceback
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
@@ -83,7 +84,13 @@ class Youku(VideoExtractor):
         self.p_playlist()
         for video in videos:
             index = parse_query_param(video, 'f')
-            self.__class__().download_by_url(video, index=index, **kwargs)
+            try:
+                self.__class__().download_by_url(video, index=index, **kwargs)
+            except KeyboardInterrupt:
+                raise
+            except:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_exception(exc_type, exc_value, exc_traceback)
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
