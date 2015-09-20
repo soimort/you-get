@@ -2,7 +2,7 @@
     "name": "you-get",
     "author": "Mort Yao",
     "author_email": "mort.yao@gmail.com",
-    "url": "http://www.soimort.org/you-get/",
+    "url": "https://you-get.org/",
     "license": "MIT",
 
     "description": "A YouTube/Youku/Niconico video downloader written in Python 3.",
@@ -24,6 +24,7 @@
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
         "Topic :: Internet",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Multimedia",
