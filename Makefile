@@ -1,4 +1,4 @@
-SETUP = python3 setup.py
+SETUP = ./setup.py
 
 .PHONY: default i test clean all html rst build sdist bdist bdist_egg bdist_wheel install rst release
 
