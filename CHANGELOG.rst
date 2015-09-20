@@ -1,6 +1,31 @@
 Changelog
 =========
 
+0.3.35
+------
+
+*Date: 2015-09-21*
+
+* New site support:
+    - 755 http://7gogo.jp/ (via #659 by @soimort)
+    - Funshion http://www.fun.tv/ (via #619 by @cnbeining)
+    - iQilu http://v.iqilu.com/ (via #636 by @cnbeining)
+    - Metacafe http://www.metacafe.com/ (via #620 by @cnbeining)
+    - Qianmo http://qianmo.com/ (via #600 by @cnbeining)
+    - Weibo Miaopai http://weibo.com/ (via #605 by @cnbeining)
+* Bug fixes:
+    - 163 (by @lilydjwg)
+    - CNTV (by @Red54)
+    - Dailymotion (by @jackyzy823 and @ddumitran)
+    - iQIYI (by @jackyzy823 and others)
+    - QQ (by @soimort)
+    - SoundCloud (by @soimort)
+    - Tudou (by @CzBiX)
+    - Vimeo channel (by @cnbeining)
+    - YinYueTai (by @soimort)
+    - Youku (by @junzh0u)
+    - Embedded Youku/Tudou player (by @zhangn1985)
+
 0.3.34
 ------
 
