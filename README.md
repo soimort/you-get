@@ -27,6 +27,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Twitter <http://twitter.com>
 * Youku (优酷) <http://www.youku.com>
 * YouTube <http://www.youtube.com>
+* 755 (ナナゴーゴー) <http://7gogo.jp>
 * AcFun <http://www.acfun.tv>
 * Alive.in.th <http://alive.in.th>
 * Baidu Music (百度音乐) <http://music.baidu.com>
@@ -43,9 +44,11 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * DouyuTV (斗鱼) <http://www.douyutv.com>
 * eHow <http://www.ehow.com>
 * Facebook <http://facebook.com>
+* Fun.tv (风行, Funshion) <http://www.fun.tv>
 * Google Drive <http://docs.google.com>
 * ifeng (凤凰视频) <http://v.ifeng.com>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
+* iQilu (齐鲁网, 山东网络台) <http://v.iqilu.com>
 * Joy.cn (激动网) <http://www.joy.cn>
 * Khan Academy <http://www.khanacademy.org>
 * Ku6 (酷6网) <http://www.ku6.com>
@@ -53,13 +56,16 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Kuwo (酷我音乐) <http://www.kuwo.cn>
 * LeTV (乐视网) <http://www.letv.com>
 * Lizhi.fm (荔枝FM) <http://www.lizhi.fm>
+* Metacafe <http://www.metacafe.com>
 * MioMio <http://www.miomio.tv>
 * MTV 81 <http://www.mtv81.com>
 * NetEase (网易视频) <http://v.163.com>
 * NetEase Music (网易云音乐) <http://music.163.com>
 * PPTV <http://www.pptv.com>
+* QianMo (阡陌视频) <http://qianmo.com>
 * QQ (腾讯视频) <http://v.qq.com>
 * Sina (新浪视频) <http://video.sina.com.cn>
+* Weibo Miaopai (新浪微博秒拍视频) <http://video.weibo.com>
 * Sohu (搜狐视频) <http://tv.sohu.com>
 * SongTaste <http://www.songtaste.com>
 * SoundCloud <http://soundcloud.com>
@@ -83,9 +89,8 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Python 3.2
 * Python 3.3
 * Python 3.4
+* Python 3.5
 * PyPy3
-
-`you-get` does not (and will never) work with Python 2.x.
 
 ### Dependencies (Optional but Recommended)
 
