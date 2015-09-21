@@ -961,6 +961,7 @@ def url_to_module(url):
     from .extractors import (
         acfun,
         alive,
+        archive,
         baidu,
         baomihua,
         bilibili,
@@ -1040,6 +1041,7 @@ def url_to_module(url):
         '163': netease,
         '56': w56,
         'acfun': acfun,
+        'archive': archive,
         'baidu': baidu,
         'baomihua': baomihua,
         'bilibili': bilibili,
