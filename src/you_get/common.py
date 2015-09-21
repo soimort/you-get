@@ -1118,8 +1118,10 @@ def url_to_module(url):
         if location is None:
             from .extractors import embed
             return embed, url
-        else:
+        elif location != url:
             return url_to_module(location)
+        else:
+            raise NotImplementedError(url)
 
 def any_download(url, **kwargs):
     m, url = url_to_module(url)
