@@ -46,12 +46,12 @@ bid meaning for quality
 '''
 def mix(tvid):
     enc = []
-    enc.append('013f0ed7eaa14e34aca83ff50a16ade7') 
+    enc.append('eac64f22daf001da6ba9aa8da4d501508bbe90a4d4091fea3b0582a85b38c2cc')
     tm = str(randint(2000,4000))
     src = 'eknas'
     enc.append(str(tm))
     enc.append(tvid)
-    sc = hashlib.new('md5',bytes("".join(enc),'utf-8')).hexdigest()
+    sc = hashlib.new('md5',bytes(("".join(enc))[1:64:2]+tm+tvid,'utf-8')).hexdigest()
     return tm,sc,src
 
 def getVRSXORCode(arg1,arg2):
@@ -113,7 +113,7 @@ class Iqiyi(VideoExtractor):
                 "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+tm+\
                 "&enc="+sc+\
                 "&qyid="+uid+"&tn="+str(random()) +"&um=1" +\
-                "&authkey="+hashlib.new('md5',bytes(''+str(tm)+tvid,'utf-8')).hexdigest()
+                "&authkey="+hashlib.new('md5',bytes(hashlib.new('md5', b'').hexdigest()+str(tm)+tvid,'utf-8')).hexdigest()
         return json.loads(get_content(vmsreq))
 
 
