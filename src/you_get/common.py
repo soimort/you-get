@@ -862,10 +862,11 @@ def script_main(script_name, download, download_playlist = None):
     -y | --extractor-proxy <HOST:PORT>       Use specific HTTP proxy for extracting stream data.
          --no-proxy                          Don't use any proxy. (ignore $http_proxy)
          --debug                             Show traceback on KeyboardInterrupt.
+         --json                              Output the information of videos in json text without downloading. 
     '''
 
     short_opts = 'Vhfiuc:nF:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'format=', 'stream=', 'itag=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -884,6 +885,7 @@ def script_main(script_name, download, download_playlist = None):
     global cookies_txt
     cookies_txt = None
 
+    json_output = False
     info_only = False
     playlist = False
     merge = True
@@ -906,6 +908,11 @@ def script_main(script_name, download, download_playlist = None):
         elif o in ('-i', '--info'):
             info_only = True
         elif o in ('-u', '--url'):
+            dry_run = True
+        elif o in ('--json', ):
+            json_output = True
+            # to fix extractors not use VideoExtractor
+            info_only = True
             dry_run = True
         elif o in ('-c', '--cookies'):
             from http import cookiejar
@@ -943,14 +950,14 @@ def script_main(script_name, download, download_playlist = None):
     try:
         if stream_id:
             if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only)
+                download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output)
             else:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only)
+                download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output)
         else:
             if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only)
+                download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output)
             else:
-                download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only)
+                download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output)
     except KeyboardInterrupt:
         if traceback:
             raise
