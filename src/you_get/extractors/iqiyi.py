@@ -45,14 +45,10 @@ bid meaning for quality
 
 '''
 def mix(tvid):
-    enc = []
-    enc.append('eac64f22daf001da6ba9aa8da4d501508bbe90a4d4091fea3b0582a85b38c2cc')
+    salt = 'a6f2a01ab9ad4510be0449fab528b82c'
     tm = str(randint(2000,4000))
-    src = 'eknas'
-    enc.append(str(tm))
-    enc.append(tvid)
-    sc = hashlib.new('md5',bytes(("".join(enc))[1:64:2]+tm+tvid,'utf-8')).hexdigest()
-    return tm,sc,src
+    sc = hashlib.new('md5', bytes(salt + tm + tvid, 'utf-8')).hexdigest()
+    return tm, sc, 'eknas'
 
 def getVRSXORCode(arg1,arg2):
     loc3=arg2 %3
