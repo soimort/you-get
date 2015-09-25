@@ -2,6 +2,7 @@
 
 from .common import match1, download_urls, parse_host, set_proxy, unset_proxy
 from .util import log
+from . import json_output
 
 class Extractor():
     def __init__(self, *args):
@@ -136,7 +137,9 @@ class VideoExtractor():
         print("videos:")
 
     def download(self, **kwargs):
-        if 'info_only' in kwargs and kwargs['info_only']:
+        if 'json_output' in kwargs and kwargs['json_output']:
+            json_output.output(self)
+        elif 'info_only' in kwargs and kwargs['info_only']:
             if 'stream_id' in kwargs and kwargs['stream_id']:
                 # Display the stream
                 stream_id = kwargs['stream_id']
