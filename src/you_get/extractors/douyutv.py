@@ -5,7 +5,7 @@ __all__ = ['douyutv_download']
 from ..common import *
 import json
 
-def douyutv_download(url, output_dir = '.', merge = True, info_only = False):
+def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     room_id = url[url.rfind('/')+1:]
 
     content = get_html("http://www.douyutv.com/api/client/room/"+room_id)

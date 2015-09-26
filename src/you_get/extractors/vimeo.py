@@ -7,7 +7,7 @@ from json import loads
 access_token = 'f6785418277b72c7c87d3132c79eec24'  #By Beining
 
 #----------------------------------------------------------------------
-def vimeo_download_by_channel(url, output_dir = '.', merge = False, info_only = False):
+def vimeo_download_by_channel(url, output_dir = '.', merge = False, info_only = False, **kwargs):
     """str->None"""
     # https://vimeo.com/channels/464686
     channel_id = match1(url, r'http://vimeo.com/channels/(\w+)')
@@ -43,7 +43,7 @@ def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge, faker = True)
 
-def vimeo_download(url, output_dir = '.', merge = True, info_only = False):
+def vimeo_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if re.match(r'http://vimeo.com/channels/\w+', url):
         vimeo_download_by_channel(url, output_dir, merge, info_only)
     else:

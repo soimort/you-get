@@ -51,7 +51,7 @@ def parse_item(item):
         #sina's result does not contains content-type
         return urls, ext, size
 
-def catfun_download(url, output_dir = '.', merge = True, info_only = False):
+def catfun_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     # html = get_content(url)
     title = match1(get_content(url), r'<h1 class="title">(.+?)</h1>')
     vid = match1(url, r"v\d+/cat(\d+)")

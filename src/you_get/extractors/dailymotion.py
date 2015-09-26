@@ -4,7 +4,7 @@ __all__ = ['dailymotion_download']
 
 from ..common import *
 
-def dailymotion_download(url, output_dir = '.', merge = True, info_only = False):
+def dailymotion_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     """Downloads Dailymotion videos by URL.
     """
 

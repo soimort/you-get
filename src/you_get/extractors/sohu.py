@@ -19,7 +19,7 @@ def real_url(host,vid,tvid,new,clipURL,ck):
     url = 'http://'+host+'/?prot=9&prod=flash&pt=1&file='+clipURL+'&new='+new +'&key='+ ck+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))+'&t='+str(random())
     return json.loads(get_html(url))['url']
 
-def sohu_download(url, output_dir = '.', merge = True, info_only = False, extractor_proxy=None):
+def sohu_download(url, output_dir = '.', merge = True, info_only = False, extractor_proxy=None, **kwargs):
     if re.match(r'http://share.vrs.sohu.com', url):
         vid = r1('id=(\d+)', url)
     else:

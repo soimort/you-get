@@ -23,7 +23,7 @@ def video_info(channel_id, program_id, volumn_id):
     
     return name, urls, hostpath
 
-def joy_download(url, output_dir = '.', merge = True, info_only = False):
+def joy_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     channel_id = r1(r'[^_]channelId\s*:\s*"([^\"]+)"', get_html(url))
     program_id = r1(r'[^_]programId\s*:\s*"([^\"]+)"', get_html(url))
     volumn_id = r1(r'[^_]videoId\s*:\s*"([^\"]+)"', get_html(url))

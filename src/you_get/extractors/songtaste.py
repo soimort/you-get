@@ -5,7 +5,7 @@ __all__ = ['songtaste_download']
 from ..common import *
 import urllib.error
 
-def songtaste_download(url, output_dir = '.', merge = True, info_only = False):
+def songtaste_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if re.match(r'http://www.songtaste.com/song/\d+', url):
         old_fake_headers = fake_headers
         id = r1(r'http://www.songtaste.com/song/(\d+)', url)

@@ -45,7 +45,7 @@ def dongting_download_song(sid, output_dir = '.', merge = True, info_only = Fals
         except:
             pass
 
-def dongting_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
+def dongting_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False, **kwargs):
     if re.match('http://www.dongting.com/\?song_id=\d+', url):
         id = r1(r'http://www.dongting.com/\?song_id=(\d+)', url)
         dongting_download_song(id, output_dir, merge, info_only)

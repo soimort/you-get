@@ -15,7 +15,7 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     if not info_only:
         download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
-def qq_download(url, output_dir='.', merge=True, info_only=False):
+def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     content = get_html(url)
     vid = match1(content, r'vid\s*:\s*"\s*([^"]+)"')
     title = match1(content, r'title\s*:\s*"\s*([^"]+)"')

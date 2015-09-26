@@ -88,7 +88,7 @@ def baidu_download_album(aid, output_dir = '.', merge = True, info_only = False)
 
         track_nr += 1
 
-def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
+def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False, **kwargs):
     if re.match(r'http://pan.baidu.com', url):
         html = get_html(url)
 

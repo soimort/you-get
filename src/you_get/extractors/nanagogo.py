@@ -4,7 +4,7 @@ __all__ = ['nanagogo_download']
 
 from ..common import *
 
-def nanagogo_download(url, output_dir='.', merge=True, info_only=False):
+def nanagogo_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
     title = r1(r'<meta property="og:title" content="([^"]*)"', html)
     postId = r1(r'postId\s*:\s*"([^"]*)"', html)

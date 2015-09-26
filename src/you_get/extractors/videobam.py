@@ -6,7 +6,7 @@ from ..common import *
 import urllib.error
 import json
 
-def videobam_download(url, output_dir = '.', merge = True, info_only = False):
+def videobam_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if re.match(r'http://videobam.com/\w+', url):
         #Todo: Change to re. way
         vid = url.split('/')[-1]

@@ -4,7 +4,7 @@ __all__ = ['twitter_download']
 
 from ..common import *
 
-def twitter_download(url, output_dir='.', merge=True, info_only=False):
+def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
     screen_name = r1(r'data-screen-name="([^"]*)"', html)
     item_id = r1(r'data-item-id="([^"]*)"', html)

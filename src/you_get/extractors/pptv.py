@@ -142,7 +142,7 @@ def pptv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
             #for key expired
             pptv_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 
-def pptv_download(url, output_dir = '.', merge = True, info_only = False):
+def pptv_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     assert re.match(r'http://v.pptv.com/show/(\w+)\.html$', url)
     html = get_html(url)
     id = r1(r'webcfg\s*=\s*{"id":\s*(\d+)', html)

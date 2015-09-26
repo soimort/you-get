@@ -16,7 +16,7 @@ def yinyuetai_download_by_id(vid, title=None, output_dir='.', merge=True, info_o
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
-def yinyuetai_download(url, output_dir='.', merge=True, info_only=False):
+def yinyuetai_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     id = r1(r'http://\w+.yinyuetai.com/video/(\d+)$', url.split('?')[0])
     assert id
     html = get_html(url, 'utf-8')

@@ -8,7 +8,7 @@ from .sina import sina_download_by_xml
 from .tudou import tudou_download_by_id
 from .youku import youku_download_by_vid
 
-def miomio_download(url, output_dir = '.', merge = True, info_only = False):
+def miomio_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html = get_html(url)
 
     title = r1(r'<meta name="description" content="([^"]*)"', html)

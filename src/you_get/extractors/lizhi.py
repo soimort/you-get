@@ -4,7 +4,7 @@ __all__ = ['lizhi_download']
 import json
 from ..common import *
 
-def lizhi_download_playlist(url, output_dir = '.', merge = True, info_only = False):
+def lizhi_download_playlist(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     # like this http://www.lizhi.fm/#/31365/
     #api desc: s->start l->length band->some radio
     #http://www.lizhi.fm/api/radio_audios?s=0&l=100&band=31365
@@ -22,7 +22,7 @@ def lizhi_download_playlist(url, output_dir = '.', merge = True, info_only = Fal
             download_urls([res_url], title, ext, size, output_dir, merge=merge ,refer = 'http://www.lizhi.fm',faker=True)    
     pass
 
-def lizhi_download(url, output_dir = '.', merge = True, info_only = False):
+def lizhi_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     # url like http://www.lizhi.fm/#/549759/18864883431656710
     api_id = match1(url,r'#/(\d+/\d+)')
     api_url = 'http://www.lizhi.fm/api/audio/'+api_id

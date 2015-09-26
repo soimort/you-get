@@ -9,7 +9,7 @@ def nicovideo_login(user, password):
     response = request.urlopen(request.Request("https://secure.nicovideo.jp/secure/login?site=niconico", headers=fake_headers, data=data.encode('utf-8')))
     return response.headers
 
-def nicovideo_download(url, output_dir='.', merge=True, info_only=False):
+def nicovideo_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     import ssl
     ssl_context = request.HTTPSHandler(
 context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))

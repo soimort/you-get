@@ -143,7 +143,7 @@ def xiami_download_album(aid, output_dir = '.', merge = True, info_only = False)
         
         track_nr += 1
 
-def xiami_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False):
+def xiami_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False, **kwargs):
     if re.match(r'http://www.xiami.com/album/\d+', url):
         id = r1(r'http://www.xiami.com/album/(\d+)', url)
         xiami_download_album(id, output_dir, merge, info_only)

@@ -24,7 +24,7 @@ def w56_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
     if not info_only:
         download_urls([url], title, ext, size, output_dir = output_dir, merge = merge)
 
-def w56_download(url, output_dir = '.', merge = True, info_only = False):
+def w56_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     id = r1(r'http://www.56.com/u\d+/v_(\w+).html', url)
     w56_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 

@@ -40,7 +40,7 @@ fmt_level = dict(
                 youtube_codecs],
         range(len(youtube_codecs))))
 
-def google_download(url, output_dir = '.', merge = True, info_only = False):
+def google_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     # Percent-encoding Unicode URL
     url = parse.quote(url, safe = ':/+%')
 

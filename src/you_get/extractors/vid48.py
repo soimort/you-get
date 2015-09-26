@@ -4,7 +4,7 @@ __all__ = ['vid48_download']
 
 from ..common import *
 
-def vid48_download(url, output_dir = '.', merge = True, info_only = False):
+def vid48_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     vid = r1(r'v=([^&]*)', url)
     p_url = "http://vid48.com/embed_player.php?vid=%s&autoplay=yes" % vid
     

@@ -17,7 +17,7 @@ def soundcloud_download_by_id(id, title = None, output_dir = '.', merge = True, 
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
-def soundcloud_download(url, output_dir = '.', merge = True, info_only = False):
+def soundcloud_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     metadata = get_html('https://api.soundcloud.com/resolve.json?url=' + url + '&client_id=b45b1aa10f1ac2941910a7f0d10f8e28')
     import json
     info = json.loads(metadata)

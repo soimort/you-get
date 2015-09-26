@@ -4,7 +4,7 @@ __all__ = ['iqilu_download']
 
 from ..common import *
 
-def iqilu_download(url, output_dir = '.', merge = False, info_only = False):
+def iqilu_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
     ''''''
     if re.match(r'http://v.iqilu.com/\w+', url):
         

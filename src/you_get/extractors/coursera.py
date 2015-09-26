@@ -22,7 +22,7 @@ def coursera_login(user, password, csrf_token):
     
     return response.headers
 
-def coursera_download(url, output_dir = '.', merge = True, info_only = False):
+def coursera_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     course_code = r1(r'coursera.org/([^/]+)', url)
     url = "http://class.coursera.org/%s/lecture/index" % course_code
     

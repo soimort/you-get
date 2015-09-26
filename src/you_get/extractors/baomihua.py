@@ -6,7 +6,7 @@ from ..common import *
 
 import urllib
 
-def baomihua_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
+def baomihua_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False, **kwargs):
     html = get_html('http://play.baomihua.com/getvideourl.aspx?flvid=%s' % id)
     host = r1(r'host=([^&]*)', html)
     assert host

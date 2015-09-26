@@ -6,7 +6,7 @@ from ..common import *
 
 import json
 
-def blip_download(url, output_dir = '.', merge = True, info_only = False):
+def blip_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     p_url = url + "?skin=json&version=2&no_wrap=1"
     html = get_html(p_url)
     metadata = json.loads(html)

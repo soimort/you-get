@@ -6,7 +6,7 @@ from ..common import *
 
 import re
 
-def tumblr_download(url, output_dir = '.', merge = True, info_only = False):
+def tumblr_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html = parse.unquote(get_html(url)).replace('\/', '/')
     feed = r1(r'<meta property="og:type" content="tumblr-feed:(\w+)" />', html)
 

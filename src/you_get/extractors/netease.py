@@ -77,7 +77,7 @@ def netease_download_common(title, url_best, output_dir, info_only):
         download_urls([url_best], title, ext, size, output_dir)
 
 
-def netease_download(url, output_dir = '.', merge = True, info_only = False):
+def netease_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if "163.fm" in url:
         url = get_location(url)
     if "music.163.com" in url:

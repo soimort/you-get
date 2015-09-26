@@ -107,7 +107,7 @@ def bilibili_download_by_cid(id, title, output_dir='.', merge=True, info_only=Fa
     if not info_only:
         download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
-def bilibili_download(url, output_dir='.', merge=True, info_only=False):
+def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
 
     title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',r'<h1[^>]*>([^<>]+)</h1>'], html)

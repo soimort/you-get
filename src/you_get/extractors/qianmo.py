@@ -6,7 +6,7 @@ from ..common import *
 import urllib.error
 import json
 
-def qianmo_download(url, output_dir = '.', merge = False, info_only = False):
+def qianmo_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
     if re.match(r'http://qianmo.com/\w+', url):
         html = get_html(url)
         match = re.search(r'(.+?)var video =(.+?);', html)

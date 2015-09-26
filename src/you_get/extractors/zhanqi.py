@@ -5,7 +5,7 @@ __all__ = ['zhanqi_download']
 from ..common import *
 import re
 
-def zhanqi_download(url, output_dir = '.', merge = True, info_only = False):
+def zhanqi_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html = get_content(url)
     video_type_patt = r'VideoType":"([^"]+)"'
     video_type = match1(html, video_type_patt)

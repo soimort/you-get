@@ -7,7 +7,7 @@ import urllib.error
 import json
 
 #----------------------------------------------------------------------
-def funshion_download(url, output_dir = '.', merge = False, info_only = False):
+def funshion_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
     """"""
     if re.match(r'http://www.fun.tv/vplay/v-(\w+)', url):  #single video
         funshion_download_by_url(url, output_dir = '.', merge = False, info_only = False)
