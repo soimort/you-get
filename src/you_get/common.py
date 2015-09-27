@@ -12,8 +12,10 @@ from urllib import request, parse
 from .version import __version__
 from .util import log
 from .util.strings import get_filename, unescape_html
+from . import json_output as json_output_
 
 dry_run = False
+json_output = False
 force = False
 player = None
 extractor_proxy = None
@@ -519,6 +521,9 @@ def get_output_filename(urls, title, ext, output_dir, merge):
 
 def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
     assert urls
+    if json_output:
+        json_output_.download_urls(urls=urls, title=title, ext=ext, total_size=total_size, refer=refer)
+        return
     if dry_run:
         print('Real URLs:\n%s' % '\n'.join(urls))
         return
@@ -724,6 +729,9 @@ def playlist_not_supported(name):
     return f
 
 def print_info(site_info, title, type, size):
+    if json_output:
+        json_output_.print_info(site_info=site_info, title=title, type=type, size=size)
+        return
     if type:
         type = type.lower()
     if type in ['3gp']:
@@ -880,12 +888,12 @@ def script_main(script_name, download, download_playlist = None):
 
     global force
     global dry_run
+    global json_output
     global player
     global extractor_proxy
     global cookies_txt
     cookies_txt = None
 
-    json_output = False
     info_only = False
     playlist = False
     merge = True
@@ -912,8 +920,8 @@ def script_main(script_name, download, download_playlist = None):
         elif o in ('--json', ):
             json_output = True
             # to fix extractors not use VideoExtractor
-            info_only = True
             dry_run = True
+            info_only = False
         elif o in ('-c', '--cookies'):
             from http import cookiejar
             cookies_txt = cookiejar.MozillaCookieJar(a)
