@@ -109,11 +109,9 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
         params.append(output + '.txt')
         params += ['-c', 'copy', output]
 
-        if subprocess.call(params) == 0:
-            os.remove(output + '.txt')
-            return True
-        else:
-            raise
+        subprocess.check_call(params)
+        os.remove(output + '.txt')
+        return True
 
     for file in files:
         if os.path.isfile(file):
