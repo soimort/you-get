@@ -21,7 +21,7 @@ def get_srt_lock_json(id):
     url = 'http://comment.acfun.tv/%s_lock.json' % id
     return get_html(url)
 
-def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only=False):
+def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only=False, **kwargs):
     info = json.loads(get_html('http://www.acfun.tv/video/getVideo.aspx?id=' + vid))
     sourceType = info['sourceType']
     sourceId = info['sourceId']
@@ -109,7 +109,7 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
         #except:
             #pass
 
-def acfun_download(url, output_dir = '.', merge = True, info_only = False ,**kwargs):
+def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     assert re.match(r'http://[^\.]+.acfun.[^\.]+/\D/\D\D(\d+)', url)
     html = get_html(url)
 
