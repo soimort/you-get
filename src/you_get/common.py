@@ -148,12 +148,17 @@ def undeflate(data):
     decompressobj = zlib.decompressobj(-zlib.MAX_WBITS)
     return decompressobj.decompress(data)+decompressobj.flush()
 
+
 # DEPRECATED in favor of get_content()
-def get_response(url, faker = False):
+def get_response(url, faker=False):
     if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        response = request.urlopen(request.Request(url, headers=fake_headers), None)
     else:
-        response = request.urlopen(url)
+        try:
+            response = request.urlopen(url)
+        except UnicodeEncodeError:
+            url = url.encode('ascii', 'ignore').decode('ascii')
+            response = request.urlopen(url)
 
     data = response.read()
     if response.info().get('Content-Encoding') == 'gzip':
