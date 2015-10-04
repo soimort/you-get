@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 PROJ_NAME = 'you-get'
 PACKAGE_NAME = 'you_get'
