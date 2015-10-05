@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.3.36
+------
+
+*Date: 2015-10-05*
+
+* New command-line option: --json
+* New site support:
+    - Internet Archive
+* Bug fixes:
+    - iQIYI
+    - SoundCloud
+
 0.3.35
 ------
 
