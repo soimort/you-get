@@ -8,6 +8,7 @@ import platform
 import re
 import sys
 from urllib import request, parse
+from http import cookiejar
 
 from .version import __version__
 from .util import log
@@ -19,6 +20,7 @@ json_output = False
 force = False
 player = None
 extractor_proxy = None
+cookies = None
 cookies_txt = None
 
 fake_headers = {
@@ -861,7 +863,7 @@ def script_main(script_name, download, download_playlist = None):
     -f | --force                             Force overwriting existed files.
     -i | --info                              Display the information of videos without downloading.
     -u | --url                               Display the real URLs of videos without downloading.
-    -c | --cookies                           Load NetScape's cookies.txt file.
+    -c | --cookies                           Load Mozilla cookies.sqlite file.
     -n | --no-merge                          Don't merge video parts.
     -F | --format <STREAM_ID>                Video format code.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
@@ -891,8 +893,8 @@ def script_main(script_name, download, download_playlist = None):
     global json_output
     global player
     global extractor_proxy
+    global cookies
     global cookies_txt
-    cookies_txt = None
 
     info_only = False
     playlist = False
@@ -923,9 +925,25 @@ def script_main(script_name, download, download_playlist = None):
             dry_run = True
             info_only = False
         elif o in ('-c', '--cookies'):
-            from http import cookiejar
-            cookies_txt = cookiejar.MozillaCookieJar(a)
-            cookies_txt.load()
+            #cookies_txt = cookiejar.MozillaCookieJar(a)
+            #cookies_txt.load()
+            import sqlite3
+            cookies = cookiejar.MozillaCookieJar(a)
+            con = sqlite3.connect(a)
+            cur = con.cursor()
+            cur.execute("SELECT host, path, isSecure, expiry, name, value FROM moz_cookies")
+            for item in cur.fetchall():
+                c = cookiejar.Cookie(0, item[4], item[5],
+                                     None, False,
+                                     item[0],
+                                     item[0].startswith('.'),
+                                     item[0].startswith('.'),
+                                     item[1], False,
+                                     item[2],
+                                     item[3], item[3]=="",
+                                     None, None, {})
+                cookies.set_cookie(c)
+
         elif o in ('-l', '--playlist'):
             playlist = True
         elif o in ('-n', '--no-merge'):
