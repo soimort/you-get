@@ -108,6 +108,9 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
         download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
 def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    opener = request.build_opener(request.HTTPCookieProcessor(cookies))
+    request.install_opener(opener)
+
     html = get_html(url)
 
     title = r1_of([r'<meta name="description" content="(.+)"',
