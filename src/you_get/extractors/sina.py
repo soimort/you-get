@@ -70,6 +70,8 @@ def sina_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             vids = match1(video_page, r'[^\w]vid\s*:\s*\'([^\']+)\'').split('|')
             vid = vids[-1]
 
+    if vid is None:
+        vid = match1(video_page, r'vid:(\d+)')
     if vid:
         title = match1(video_page, r'title\s*:\s*\'([^\']+)\'')
         sina_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
