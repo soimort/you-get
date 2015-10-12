@@ -15,6 +15,7 @@ from .douban import *
 from .douyutv import *
 from .ehow import *
 from .facebook import *
+from .flickr import *
 from .freesound import *
 from .funshion import *
 from .google import *

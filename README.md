@@ -15,6 +15,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 ### Supported Sites
 
 * Dailymotion <http://dailymotion.com>
+* Flickr <http://www.flickr.com>
 * Freesound <http://www.freesound.org>
 * Google+ <http://plus.google.com>
 * Instagram <http://instagram.com>
