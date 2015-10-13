@@ -55,6 +55,7 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False, **kwa
 
     tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
+# obsolete?
 def parse_playlist(url):
     aid = r1('http://www.tudou.com/playlist/p/a(\d+)(?:i\d+)?\.html', url)
     html = get_decoded_html(url)
@@ -73,8 +74,14 @@ def parse_playlist(url):
     url = 'http://www.tudou.com/playlist/service/getAlbumItems.html?aid='+aid
     return [(atitle + '-' + x['title'], str(x['itemId'])) for x in json.loads(get_html(url))['message']]
 
+def parse_plist(url):
+    html = get_decoded_html(url)
+    lcode = r1(r"lcode:\s*'([^']+)'", html)
+    plist_info = json.loads(get_content('http://www.tudou.com/crp/plist.action?lcode=' + lcode))
+    return ([(item['kw'], item['iid']) for item in plist_info['items']])
+
 def tudou_download_playlist(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    videos = parse_playlist(url)
+    videos = parse_plist(url)
     for i, (title, id) in enumerate(videos):
         print('Processing %s of %s videos...' % (i + 1, len(videos)))
         tudou_download_by_iid(id, title, output_dir = output_dir, merge = merge, info_only = info_only)
