@@ -46,6 +46,7 @@ from .sina import *
 from .sohu import *
 from .songtaste import *
 from .soundcloud import *
+from .suntv import *
 from .theplatform import *
 from .tucao import *
 from .tudou import *
