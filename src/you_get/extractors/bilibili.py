@@ -143,7 +143,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
     else:
         raise NotImplementedError(flashvars)
 
-    if not info_only:
+    if not info_only and not dry_run:
         title = get_filename(title)
         print('Downloading %s ...\n' % (title + '.cmt.xml'))
         xml = get_srt_xml(id)

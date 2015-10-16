@@ -870,7 +870,7 @@ def script_main(script_name, download, download_playlist = None):
     -y | --extractor-proxy <HOST:PORT>       Use specific HTTP proxy for extracting stream data.
          --no-proxy                          Don't use any proxy. (ignore $http_proxy)
          --debug                             Show traceback on KeyboardInterrupt.
-         --json                              Output the information of videos in json text without downloading. 
+         --json                              Output the information of videos in json text without downloading.
     '''
 
     short_opts = 'Vhfiuc:nF:o:p:x:y:'
