@@ -21,7 +21,6 @@ force = False
 player = None
 extractor_proxy = None
 cookies = None
-cookies_txt = None
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -152,6 +151,11 @@ def undeflate(data):
 
 # DEPRECATED in favor of get_content()
 def get_response(url, faker = False):
+    # install cookies
+    if cookies:
+        opener = request.build_opener(request.HTTPCookieProcessor(cookies))
+        request.install_opener(opener)
+
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
     else:
@@ -199,8 +203,8 @@ def get_content(url, headers={}, decoded=True):
     """
 
     req = request.Request(url, headers=headers)
-    if cookies_txt:
-        cookies_txt.add_cookie_header(req)
+    if cookies:
+        cookies.add_cookie_header(req)
         req.headers.update(req.unredirected_hdrs)
     response = request.urlopen(req)
     data = response.read()
@@ -894,7 +898,6 @@ def script_main(script_name, download, download_playlist = None):
     global player
     global extractor_proxy
     global cookies
-    global cookies_txt
 
     info_only = False
     playlist = False
@@ -925,24 +928,26 @@ def script_main(script_name, download, download_playlist = None):
             dry_run = True
             info_only = False
         elif o in ('-c', '--cookies'):
-            #cookies_txt = cookiejar.MozillaCookieJar(a)
-            #cookies_txt.load()
-            import sqlite3
-            cookies = cookiejar.MozillaCookieJar(a)
-            con = sqlite3.connect(a)
-            cur = con.cursor()
-            cur.execute("SELECT host, path, isSecure, expiry, name, value FROM moz_cookies")
-            for item in cur.fetchall():
-                c = cookiejar.Cookie(0, item[4], item[5],
-                                     None, False,
-                                     item[0],
-                                     item[0].startswith('.'),
-                                     item[0].startswith('.'),
-                                     item[1], False,
-                                     item[2],
-                                     item[3], item[3]=="",
-                                     None, None, {})
-                cookies.set_cookie(c)
+            try:
+                cookies = cookiejar.MozillaCookieJar(a)
+                cookies.load()
+            except:
+                import sqlite3
+                cookies = cookiejar.MozillaCookieJar()
+                con = sqlite3.connect(a)
+                cur = con.cursor()
+                cur.execute("SELECT host, path, isSecure, expiry, name, value FROM moz_cookies")
+                for item in cur.fetchall():
+                    c = cookiejar.Cookie(0, item[4], item[5],
+                                         None, False,
+                                         item[0],
+                                         item[0].startswith('.'),
+                                         item[0].startswith('.'),
+                                         item[1], False,
+                                         item[2],
+                                         item[3], item[3]=="",
+                                         None, None, {})
+                    cookies.set_cookie(c)
 
         elif o in ('-l', '--playlist'):
             playlist = True
