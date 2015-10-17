@@ -481,7 +481,7 @@ class PiecesProgressBar:
 
     def update(self):
         self.displayed = True
-        bar = '{0:>5}%[{1:<40}] {2}/{3}'.format('?', '?' * 40, self.current_piece, self.total_pieces)
+        bar = '{0:>5}%[{1:<40}] {2}/{3}'.format('', '█' * 40, self.current_piece, self.total_pieces)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
@@ -653,13 +653,11 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
         launch_player(player, urls)
         return
 
-    assert ext in ('ts')
-
     title = tr(get_filename(title))
 
-    filename = '%s.%s' % (title, 'ts')
+    filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
-    if total_size:
+    if total_size and ext in ('ts'):
         if not force and os.path.exists(filepath[:-3] + '.mkv'):
             print('Skipping %s: file already exists' % filepath[:-3] + '.mkv')
             print()
