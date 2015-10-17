@@ -1138,7 +1138,7 @@ def url_to_module(url):
         'soundcloud': soundcloud,
         'ted': ted,
         'theplatform': theplatform,
-        "tucao":tucao,
+        'tucao': tucao,
         'tudou': tudou,
         'tumblr': tumblr,
         'twitter': twitter,

@@ -71,7 +71,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Sohu (搜狐视频) <http://tv.sohu.com>
 * SongTaste <http://www.songtaste.com>
 * SoundCloud <http://soundcloud.com>
-* SunTV (阳光卫视) <http://www.isuntv.com/>
+* SunTV (阳光卫视) <http://www.isuntv.com>
 * TED <http://www.ted.com>
 * Tudou (土豆) <http://www.tudou.com>
 * Tumblr <http://www.tumblr.com>
