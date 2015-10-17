@@ -127,14 +127,13 @@ class VideoExtractor():
         elif stream_id == []:
             print("streams:             # Available quality and codecs")
             # Print DASH streams
-            for stream in self.dash_streams:
-                self.p_stream(stream)
+            if self.dash_streams:
+                print("    [ DASH ] %s" % ('_' * 36))
+                for stream in self.dash_streams:
+                    self.p_stream(stream)
             # Print all other available streams
-            flag = True
+            print("    [ DEFAULT ] %s" % ('_' * 33))
             for stream in self.streams_sorted:
-                if flag:
-                    print("    # default%s" % ('_' * 36))
-                    flag = False
                 self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
 
         if self.audiolang:
