@@ -237,7 +237,7 @@ Download options (use with URLs):
     -f | --force                             Force overwriting existed files.
     -i | --info                              Display the information of videos without downloading.
     -u | --url                               Display the real URLs of videos without downloading.
-    -c | --cookies                           Load NetScape's cookies.txt file.
+    -c | --cookies                           Load cookies.txt or cookies.sqlite.
     -n | --no-merge                          Don't merge video parts.
     -F | --format <STREAM_ID>                Video format code.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
@@ -246,6 +246,7 @@ Download options (use with URLs):
     -y | --extractor-proxy <HOST:PORT>       Use specific HTTP proxy for extracting stream data.
          --no-proxy                          Don't use any proxy. (ignore $http_proxy)
          --debug                             Show traceback on KeyboardInterrupt.
+         --json                              Output the information of videos in json text without downloading.
 ```
 
 ## License
