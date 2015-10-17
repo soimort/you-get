@@ -110,10 +110,8 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
 def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_content(url)
 
-    title = r1_of([r'<meta name="description" content="(.+)"',
-                   r'<meta name="title" content="([^<>]{1,999})" />',
+    title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',
                    r'<h1[^>]*>([^<>]+)</h1>'], html)
-    title = title.split('\r')[0]
     title = unescape_html(title)
     title = escape_file_path(title)
 
