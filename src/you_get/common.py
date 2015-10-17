@@ -525,7 +525,7 @@ def get_output_filename(urls, title, ext, output_dir, merge):
                 merged_ext = 'ts'
     return '%s.%s' % (title, merged_ext)
 
-def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
+def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, **kwargs):
     assert urls
     if json_output:
         json_output_.download_urls(urls=urls, title=title, ext=ext, total_size=total_size, refer=refer)
@@ -580,7 +580,17 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
         if not merge:
             print()
             return
-        if ext in ['flv', 'f4v']:
+
+        if 'av' in kwargs and kwargs['av']:
+            from .processor.ffmpeg import has_ffmpeg_installed
+            if has_ffmpeg_installed():
+                from .processor.ffmpeg import ffmpeg_concat_av
+                ret = ffmpeg_concat_av(parts, output_filepath, ext)
+                print('Done.')
+                if ret == 0:
+                    for part in parts: os.remove(part)
+
+        elif ext in ['flv', 'f4v']:
             try:
                 from .processor.ffmpeg import has_ffmpeg_installed
                 if has_ffmpeg_installed():
@@ -589,6 +599,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_flv import concat_flv
                     concat_flv(parts, output_filepath)
+                print('Done.')
             except:
                 raise
             else:
@@ -604,6 +615,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_mp4 import concat_mp4
                     concat_mp4(parts, output_filepath)
+                print('Done.')
             except:
                 raise
             else:
@@ -619,12 +631,12 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_ts import concat_ts
                     concat_ts(parts, output_filepath)
+                print('Done.')
             except:
                 raise
             else:
                 for part in parts:
                     os.remove(part)
-
 
         else:
             print("Can't merge %s files" % ext)
