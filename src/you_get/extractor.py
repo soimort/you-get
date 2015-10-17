@@ -24,6 +24,7 @@ class VideoExtractor():
         self.streams_sorted = []
         self.audiolang = None
         self.password_protected = False
+        self.dash_streams = {}
 
         if args:
             self.url = args[0]
@@ -73,7 +74,11 @@ class VideoExtractor():
         #raise NotImplementedError()
 
     def p_stream(self, stream_id):
-        stream = self.streams[stream_id]
+        if stream_id in self.streams:
+            stream = self.streams[stream_id]
+        else:
+            stream = self.dash_streams[stream_id]
+
         if 'itag' in stream:
             print("    - itag:          %s" % log.sprint(stream_id, log.NEGATIVE))
         else:
@@ -120,8 +125,14 @@ class VideoExtractor():
             self.p_stream(stream_id)
 
         elif stream_id == []:
-            # Print all available streams
             print("streams:             # Available quality and codecs")
+            # Print DASH streams
+            if self.dash_streams:
+                print("    [ DASH ] %s" % ('_' * 36))
+                for stream in self.dash_streams:
+                    self.p_stream(stream)
+            # Print all other available streams
+            print("    [ DEFAULT ] %s" % ('_' * 33))
             for stream in self.streams_sorted:
                 self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
 
@@ -168,11 +179,22 @@ class VideoExtractor():
             else:
                 self.p_i(stream_id)
 
-            urls = self.streams[stream_id]['src']
+            if stream_id in self.streams:
+                urls = self.streams[stream_id]['src']
+                ext = self.streams[stream_id]['container']
+                total_size = self.streams[stream_id]['size']
+            else:
+                urls = self.dash_streams[stream_id]['src']
+                ext = self.dash_streams[stream_id]['container']
+                total_size = self.dash_streams[stream_id]['size']
+
             if not urls:
                 log.wtf('[Failed] Cannot extract video source.')
             # For legacy main()
-            download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'], output_dir=kwargs['output_dir'], merge=kwargs['merge'])
+            download_urls(urls, self.title, ext, total_size,
+                          output_dir=kwargs['output_dir'],
+                          merge=kwargs['merge'],
+                          av=stream_id in self.dash_streams)
             # For main_dev()
             #download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'])
 
