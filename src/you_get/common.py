@@ -867,7 +867,7 @@ def script_main(script_name, download, download_playlist = None):
     -f | --force                             Force overwriting existed files.
     -i | --info                              Display the information of videos without downloading.
     -u | --url                               Display the real URLs of videos without downloading.
-    -c | --cookies                           Load Mozilla cookies.sqlite file.
+    -c | --cookies                           Load cookies.txt or cookies.sqlite.
     -n | --no-merge                          Don't merge video parts.
     -F | --format <STREAM_ID>                Video format code.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
