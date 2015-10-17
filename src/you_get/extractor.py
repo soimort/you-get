@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from .common import match1, download_urls, parse_host, set_proxy, unset_proxy
+from .common import match1, download_urls, get_filename, parse_host, set_proxy, unset_proxy
 from .util import log
 from . import json_output
+import os
 
 class Extractor():
     def __init__(self, *args):
@@ -25,6 +26,7 @@ class VideoExtractor():
         self.audiolang = None
         self.password_protected = False
         self.dash_streams = {}
+        self.caption_tracks = {}
 
         if args:
             self.url = args[0]
@@ -195,6 +197,15 @@ class VideoExtractor():
                           output_dir=kwargs['output_dir'],
                           merge=kwargs['merge'],
                           av=stream_id in self.dash_streams)
+            for lang in self.caption_tracks:
+                filename = '%s.%s.srt' % (get_filename(self.title), lang)
+                print('Saving %s ...' % filename, end="", flush=True)
+                srt = self.caption_tracks[lang]
+                with open(os.path.join(kwargs['output_dir'], filename),
+                          'w', encoding='utf-8') as x:
+                    x.write(srt)
+                print('Done.')
+
             # For main_dev()
             #download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'])
 
