@@ -21,6 +21,7 @@ _*/
 *.mpg
 *.ts
 *.webm
+*.srt
 README.html
 README.rst
 
