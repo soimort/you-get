@@ -126,6 +126,10 @@ class YouTube(VideoExtractor):
                 self.title = parse.unquote_plus(video_info['title'][0])
                 stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
 
+                # Parse video page (for DASH)
+                video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
+                ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
+
             else:
                 # Parse video page instead
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
@@ -193,14 +197,15 @@ class YouTube(VideoExtractor):
                     dash_webm_a_size = burls[0].getAttribute('yt:contentLength')
                 elif mimeType == 'video/mp4':
                     for rep in aset.getElementsByTagName('Representation'):
+                        w = int(rep.getAttribute('width'))
                         h = int(rep.getAttribute('height'))
-                        if h >= 1080:
+                        if w > 1280:
                             itag = rep.getAttribute('id')
                             burls = rep.getElementsByTagName('BaseURL')
                             dash_url = burls[0].firstChild.nodeValue
                             dash_size = burls[0].getAttribute('yt:contentLength')
                             self.dash_streams[itag] = {
-                                'quality': 'hd%s' % h,
+                                'quality': '%s x %s' % (w, h),
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
@@ -210,14 +215,15 @@ class YouTube(VideoExtractor):
                             }
                 elif mimeType == 'video/webm':
                     for rep in aset.getElementsByTagName('Representation'):
+                        w = int(rep.getAttribute('width'))
                         h = int(rep.getAttribute('height'))
-                        if h >= 1080:
+                        if w > 1280:
                             itag = rep.getAttribute('id')
                             burls = rep.getElementsByTagName('BaseURL')
                             dash_url = burls[0].firstChild.nodeValue
                             dash_size = burls[0].getAttribute('yt:contentLength')
                             self.dash_streams[itag] = {
-                                'quality': 'hd%s' % h,
+                                'quality': '%s x %s' % (w, h),
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
