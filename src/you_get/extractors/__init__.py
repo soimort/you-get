@@ -20,6 +20,7 @@ from .flickr import *
 from .freesound import *
 from .funshion import *
 from .google import *
+from .heavymusic import *
 from .ifeng import *
 from .instagram import *
 from .iqilu import *
