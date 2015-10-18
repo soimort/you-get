@@ -17,16 +17,11 @@ def yinyuetai_download_by_id(vid, title=None, output_dir='.', merge=True, info_o
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
 def yinyuetai_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    playlist = r1(r'http://\w+.yinyuetai.com/playlist/(\d+)', url)
-    if playlist:
-        html = get_html(url)
-        data_ids = re.findall(r'data-index="\d+"\s*data-id=(\d+)', html)
-        for data_id in data_ids:
-            yinyuetai_download('http://v.yinyuetai.com/video/' + data_id,
-                               output_dir=output_dir, merge=merge, info_only=info_only)
+    id = r1(r'http://\w+.yinyuetai.com/video/(\d+)', url)
+    if not id:
+        yinyuetai_download_playlist(url, output_dir=output_dir, merge=merge, info_only=info_only)
         return
 
-    id = r1(r'http://\w+.yinyuetai.com/video/(\d+)', url)
     html = get_html(url, 'utf-8')
     title = r1(r'<meta property="og:title"\s+content="([^"]+)"/>', html) or r1(r'<title>(.*)', html)
     assert title
@@ -34,6 +29,14 @@ def yinyuetai_download(url, output_dir='.', merge=True, info_only=False, **kwarg
     title = escape_file_path(title)
     yinyuetai_download_by_id(id, title, output_dir, merge=merge, info_only=info_only)
 
+def yinyuetai_download_playlist(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    playlist = r1(r'http://\w+.yinyuetai.com/playlist/(\d+)', url)
+    html = get_html(url)
+    data_ids = re.findall(r'data-index="\d+"\s*data-id=(\d+)', html)
+    for data_id in data_ids:
+        yinyuetai_download('http://v.yinyuetai.com/video/' + data_id,
+                           output_dir=output_dir, merge=merge, info_only=info_only)
+
 site_info = "YinYueTai.com"
 download = yinyuetai_download
-download_playlist = playlist_not_supported('yinyuetai')
+download_playlist = yinyuetai_download_playlist
