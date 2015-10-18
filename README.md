@@ -18,6 +18,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Flickr <http://www.flickr.com>
 * Freesound <http://www.freesound.org>
 * Google+ <http://plus.google.com>
+* Heavy Music Archive <http://www.heavy-music.ru>
 * Instagram <http://instagram.com>
 * JPopsuki <http://jpopsuki.tv>
 * Magisto <http://www.magisto.com>
