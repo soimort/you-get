@@ -449,13 +449,13 @@ class SimpleProgressBar:
         dots = bar_size * int(percent) // 100
         plus = int(percent) - dots // bar_size * 100
         if plus > 0.8:
-            plus = '='
+            plus = '█'
         elif plus > 0.4:
             plus = '>'
         else:
             plus = ''
-        bar = '=' * dots + plus
-        bar = '{0:>5}% ({1:>5}/{2:<5}MB) [{3:<40}] {4}/{5}'.format(percent, round(self.received / 1048576, 1), round(self.total_size / 1048576, 1), bar, self.current_piece, self.total_pieces)
+        bar = '█' * dots + plus
+        bar = '{0:>5}% ({1:>5}/{2:<5}MB) |{3:<40}| {4}/{5}'.format(percent, round(self.received / 1048576, 1), round(self.total_size / 1048576, 1), bar, self.current_piece, self.total_pieces)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
@@ -481,7 +481,7 @@ class PiecesProgressBar:
 
     def update(self):
         self.displayed = True
-        bar = '{0:>5}%[{1:<40}] {2}/{3}'.format('', '█' * 40, self.current_piece, self.total_pieces)
+        bar = '{0:>5}%|{1:<40}| {2}/{3}'.format('', '█' * 40, self.current_piece, self.total_pieces)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
