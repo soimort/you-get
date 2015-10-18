@@ -4,6 +4,7 @@ from .acfun import *
 from .alive import *
 from .archive import *
 from .baidu import *
+from .bandcamp import *
 from .bilibili import *
 from .blip import *
 from .catfun import *
