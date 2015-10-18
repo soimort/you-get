@@ -46,9 +46,23 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         j = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
         netease_song_download(j["songs"][0], output_dir=output_dir, info_only=info_only)
 
+        l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
+        netease_lyric_download(j["songs"][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
+
     elif "mv" in url:
         j = loads(get_content("http://music.163.com/api/mv/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
         netease_video_download(j['data'], output_dir=output_dir, info_only=info_only)
+
+def netease_lyric_download(song, lyric, output_dir='.', info_only=False):
+    if info_only: return
+
+    title = "%s. %s" % (song['position'], song['name'])
+    filename = '%s.lrc' % get_filename(title)
+    print('Saving %s ...' % filename, end="", flush=True)
+    with open(os.path.join(output_dir, filename),
+              'w', encoding='utf-8') as x:
+        x.write(lyric)
+        print('Done.')
 
 def netease_video_download(vinfo, output_dir='.', info_only=False):
     title = "%s - %s" % (vinfo['name'], vinfo['artistName'])
