@@ -3,6 +3,8 @@
 from ..common import *
 from ..extractor import VideoExtractor
 
+from xml.dom.minidom import parseString
+
 class YouTube(VideoExtractor):
     name = "YouTube"
 
@@ -178,9 +180,40 @@ class YouTube(VideoExtractor):
                 'container': mime_to_container(metadata['type'][0].split(';')[0]),
             }
 
+        # Prepare caption tracks
+        try:
+            caption_tracks = ytplayer_config['args']['caption_tracks'].split(',')
+            for ct in caption_tracks:
+                for i in ct.split('&'):
+                    [k, v] = i.split('=')
+                    if k == 'lc': lang = v
+                    if k == 'u': ttsurl = parse.unquote_plus(v)
+                tts_xml = parseString(get_content(ttsurl))
+                transcript = tts_xml.getElementsByTagName('transcript')[0]
+                texts = transcript.getElementsByTagName('text')
+                srt = ""; seq = 0
+                for text in texts:
+                    seq += 1
+                    start = float(text.getAttribute('start'))
+                    if text.getAttribute('dur'):
+                        dur = float(text.getAttribute('dur'))
+                    else: dur = 1.0 # could be ill-formed XML
+                    finish = start + dur
+                    m, s = divmod(start, 60); h, m = divmod(m, 60)
+                    start = '{:0>2}:{:0>2}:{:06.3f}'.format(int(h), int(m), s).replace('.', ',')
+                    m, s = divmod(finish, 60); h, m = divmod(m, 60)
+                    finish = '{:0>2}:{:0>2}:{:06.3f}'.format(int(h), int(m), s).replace('.', ',')
+                    content = text.firstChild.nodeValue
+
+                    srt += '%s\n' % str(seq)
+                    srt += '%s --> %s\n' % (start, finish)
+                    srt += '%s\n\n' % content
+
+                self.caption_tracks[lang] = srt
+        except: pass
+
         # Prepare DASH streams
         try:
-            from xml.dom.minidom import parseString
             dashmpd = ytplayer_config['args']['dashmpd']
             dash_xml = parseString(get_content(dashmpd))
             for aset in dash_xml.getElementsByTagName('AdaptationSet'):
