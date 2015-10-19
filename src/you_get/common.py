@@ -84,6 +84,7 @@ import os
 import platform
 import re
 import sys
+import time
 from urllib import request, parse
 from http import cookiejar
 from importlib import import_module
@@ -517,6 +518,8 @@ class SimpleProgressBar:
         self.total_pieces = total_pieces
         self.current_piece = 1
         self.received = 0
+        self.speed = ''
+        self.last_updated = time.time()
 
     def update(self):
         self.displayed = True
@@ -533,12 +536,20 @@ class SimpleProgressBar:
         else:
             plus = ''
         bar = '█' * dots + plus
-        bar = '{0:>5}% ({1:>5}/{2:<5}MB) |{3:<40}| {4}/{5}'.format(percent, round(self.received / 1048576, 1), round(self.total_size / 1048576, 1), bar, self.current_piece, self.total_pieces)
+        bar = '{0:>5}% ({1:>5}/{2:<5}MB) ├{3:─<40}┤[{4}/{5}] {6}'.format(percent, round(self.received / 1048576, 1), round(self.total_size / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
     def update_received(self, n):
         self.received += n
+        bytes_ps = n / (time.time() - self.last_updated)
+        if bytes_ps >= 1048576:
+            self.speed = '{:5.1f} MB/s'.format(bytes_ps / 1048576)
+        elif bytes_ps >= 1024:
+            self.speed = '{:5.1f} kB/s'.format(bytes_ps / 1024)
+        else:
+            self.speed = '{:6.0f} B/s'.format(bytes_ps)
+        self.last_updated = time.time()
         self.update()
 
     def update_piece(self, n):
@@ -559,7 +570,7 @@ class PiecesProgressBar:
 
     def update(self):
         self.displayed = True
-        bar = '{0:>5}%|{1:<40}| {2}/{3}'.format('', '█' * 40, self.current_piece, self.total_pieces)
+        bar = '{0:>5}%[{1:<40}] {2}/{3}'.format('', '=' * 40, self.current_piece, self.total_pieces)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
@@ -621,8 +632,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             total_size = urls_size(urls)
         except:
             import traceback
-            import sys
-            traceback.print_exc(file = sys.stdout)
+            traceback.print_exc(file=sys.stdout)
             pass
 
     title = tr(get_filename(title))
