@@ -28,6 +28,10 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
 
         for i in j['album']['songs']:
             netease_song_download(i, output_dir=new_dir, info_only=info_only)
+            try: # download lyrics
+                l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
+                netease_lyric_download(i, l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
+            except: pass
 
     elif "playlist" in url:
         j = loads(get_content("http://music.163.com/api/playlist/detail?id=%s&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
@@ -41,13 +45,18 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
 
         for i in j['result']['tracks']:
             netease_song_download(i, output_dir=new_dir, info_only=info_only)
+            try: # download lyrics
+                l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
+                netease_lyric_download(i, l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
+            except: pass
 
     elif "song" in url:
         j = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
         netease_song_download(j["songs"][0], output_dir=output_dir, info_only=info_only)
-
-        l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
-        netease_lyric_download(j["songs"][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
+        try: # download lyrics
+            l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
+            netease_lyric_download(j["songs"][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
+        except: pass
 
     elif "mv" in url:
         j = loads(get_content("http://music.163.com/api/mv/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
