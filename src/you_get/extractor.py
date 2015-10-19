@@ -106,7 +106,11 @@ class VideoExtractor():
         print()
 
     def p_i(self, stream_id):
-        stream = self.streams[stream_id]
+        if stream_id in self.streams:
+            stream = self.streams[stream_id]
+        else:
+            stream = self.dash_streams[stream_id]
+
         print("    - title:         %s" % self.title)
         print("       size:         %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
         print("        url:         %s" % self.url)
