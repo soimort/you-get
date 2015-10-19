@@ -90,7 +90,7 @@ from http import cookiejar
 from importlib import import_module
 
 from .version import __version__
-from .util import log
+from .util import log, term
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
 
@@ -512,6 +512,9 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
     os.rename(temp_filepath, filepath)
 
 class SimpleProgressBar:
+    bar = '{0:>5}% ({1:>5}/{2:<5}MB) ├{3:─<' + str(bar_size) + '}┤[{4}/{5}] {6}'
+    bar_size = term.get_terminal_size()[1] - 42
+
     def __init__(self, total_size, total_pieces = 1):
         self.displayed = False
         self.total_size = total_size
@@ -523,7 +526,7 @@ class SimpleProgressBar:
 
     def update(self):
         self.displayed = True
-        bar_size = 40
+        bar_size = self.bar_size
         percent = round(self.received * 100 / self.total_size, 1)
         if percent > 100:
             percent = 100
@@ -536,7 +539,7 @@ class SimpleProgressBar:
         else:
             plus = ''
         bar = '█' * dots + plus
-        bar = '{0:>5}% ({1:>5}/{2:<5}MB) ├{3:─<40}┤[{4}/{5}] {6}'.format(percent, round(self.received / 1048576, 1), round(self.total_size / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
+        bar = self.bar.format(percent, round(self.received / 1048576, 1), round(self.total_size / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
@@ -544,11 +547,11 @@ class SimpleProgressBar:
         self.received += n
         bytes_ps = n / (time.time() - self.last_updated)
         if bytes_ps >= 1048576:
-            self.speed = '{:5.1f} MB/s'.format(bytes_ps / 1048576)
+            self.speed = '{:6.1f} MB/s'.format(bytes_ps / 1048576)
         elif bytes_ps >= 1024:
-            self.speed = '{:5.1f} kB/s'.format(bytes_ps / 1024)
+            self.speed = '{:6.1f} kB/s'.format(bytes_ps / 1024)
         else:
-            self.speed = '{:6.0f} B/s'.format(bytes_ps)
+            self.speed = '{:7.0f} B/s'.format(bytes_ps)
         self.last_updated = time.time()
         self.update()
 
