@@ -4,8 +4,7 @@
 __all__ = ['baidu_download']
 
 from ..common import *
-
-from urllib import parse
+from .embed import *
 
 def baidu_get_song_data(sid):
     data = json.loads(get_html('http://music.baidu.com/data/music/fmlink?songIds=%s' % sid, faker = True))['data']
@@ -110,6 +109,26 @@ def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info
     elif re.match('http://music.baidu.com/song/\d+', url):
         id = r1(r'http://music.baidu.com/song/(\d+)', url)
         baidu_download_song(id, output_dir, merge, info_only)
+
+    elif re.match('http://tieba.baidu.com/', url):
+        try:
+            # embedded videos
+            embed_download(url, output_dir, merge=merge, info_only=info_only)
+        except:
+            # images
+            html = get_html(url)
+            title = r1(r'title:"([^"]+)"', html)
+            items = re.findall(r'//imgsrc.baidu.com/forum/w[^"]+/([^/"]+)', html)
+            urls = ['http://imgsrc.baidu.com/forum/pic/item/' + i
+                    for i in set(items)]
+
+            ext = 'jpg'
+            size = sum([int(get_head(i)['Content-Length']) for i in urls])
+            print_info(site_info, title, ext, size)
+
+            if not info_only:
+                download_urls(urls, title, ext, size,
+                              output_dir=output_dir, merge=False)
 
 site_info = "Baidu.com"
 download = baidu_download
