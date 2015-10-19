@@ -9,6 +9,15 @@ import hashlib
 import base64
 import os
 
+def netease_hymn():
+    return """
+    player's Game Over,
+    u can abandon.
+    u get pissed,
+    get pissed,
+    Hallelujah my King!
+    errr oh! fuck ohhh!!!!
+    """
 
 def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=False):
     rid = match1(url, r'id=(.*)')
@@ -139,12 +148,12 @@ def netease_download(url, output_dir = '.', merge = True, info_only = False, **k
 
 
 def encrypted_id(dfsId):
-    dfsId = str(dfsId)
-    byte1 = bytearray('3go8&$8*3*3h0k(2)2', encoding='ascii')
-    byte2 = bytearray(dfsId, encoding='ascii')
-    byte1_len = len(byte1)
+    x = [ord(i[0]) for i in netease_hymn().split()]
+    y = ''.join([chr(i - 61) if i > 96 else chr(i + 32) for i in x])
+    byte1 = bytearray(y, encoding='ascii')
+    byte2 = bytearray(str(dfsId), encoding='ascii')
     for i in range(len(byte2)):
-        byte2[i] = byte2[i] ^ byte1[i % byte1_len]
+        byte2[i] ^= byte1[i % len(byte1)]
     m = hashlib.md5()
     m.update(byte2)
     result = base64.b64encode(m.digest()).decode('ascii')
