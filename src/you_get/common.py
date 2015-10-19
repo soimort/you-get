@@ -1107,12 +1107,10 @@ def url_to_module(url):
         conn.request("HEAD", video_url)
         res = conn.getresponse()
         location = res.getheader('location')
-        if location is None:
-            return import_module('you_get.extractors.embed'), url
-        elif location != url:
+        if location and location != url and not location.startswith('/'):
             return url_to_module(location)
         else:
-            raise NotImplementedError(url)
+            return import_module('you_get.extractors.universal'), url
 
 def any_download(url, **kwargs):
     m, url = url_to_module(url)
