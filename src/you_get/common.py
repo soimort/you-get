@@ -320,6 +320,12 @@ def url_size(url, faker = False):
 def urls_size(urls):
     return sum(map(url_size, urls))
 
+def get_head(url):
+    req = request.Request(url)
+    req.get_method = lambda : 'HEAD'
+    res = request.urlopen(req)
+    return dict(res.headers)
+
 def url_info(url, faker = False):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
