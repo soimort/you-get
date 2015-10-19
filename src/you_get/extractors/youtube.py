@@ -131,6 +131,7 @@ class YouTube(VideoExtractor):
                 # Parse video page (for DASH)
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
+                self.html5player = 'https:' + ytplayer_config['assets']['js']
 
             else:
                 # Parse video page instead
