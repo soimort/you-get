@@ -553,11 +553,11 @@ class SimpleProgressBar:
         self.received += n
         bytes_ps = n / (time.time() - self.last_updated)
         if bytes_ps >= 1048576:
-            self.speed = '{:6.1f} MB/s'.format(bytes_ps / 1048576)
+            self.speed = '{:4.0f} MB/s'.format(bytes_ps / 1048576)
         elif bytes_ps >= 1024:
-            self.speed = '{:6.1f} kB/s'.format(bytes_ps / 1024)
+            self.speed = '{:4.0f} kB/s'.format(bytes_ps / 1024)
         else:
-            self.speed = '{:7.0f} B/s'.format(bytes_ps)
+            self.speed = '{:4.0f}  B/s'.format(bytes_ps)
         self.last_updated = time.time()
         self.update()
 
