@@ -895,7 +895,7 @@ def print_info(site_info, title, type, size):
     else:
         type_info = "Unknown type (%s)" % type
 
-    print("Video Site:", site_info)
+    print("Site:      ", site_info)
     print("Title:     ", unescape_html(tr(title)))
     print("Type:      ", type_info)
     print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
