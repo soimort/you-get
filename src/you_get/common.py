@@ -101,6 +101,7 @@ force = False
 player = None
 extractor_proxy = None
 cookies = None
+output_filename = None
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -610,6 +611,10 @@ class DummyProgressBar:
         pass
 
 def get_output_filename(urls, title, ext, output_dir, merge):
+    # lame hack for the --output-filename option
+    global output_filename
+    if output_filename: return output_filename
+
     merged_ext = ext
     if (len(urls) > 1) and merge:
         from .processor.ffmpeg import has_ffmpeg_installed
@@ -999,6 +1004,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     -c | --cookies                           Load cookies.txt or cookies.sqlite.
     -n | --no-merge                          Don't merge video parts.
     -F | --format <STREAM_ID>                Video format code.
+    -O | --output-filename <FILE>            Set the output filename.
     -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
     -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer.
     -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
@@ -1008,8 +1014,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
          --json                              Output the information of videos in json text without downloading.
     '''
 
-    short_opts = 'Vhfiuc:nF:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
+    short_opts = 'Vhfiuc:nF:O:o:p:x:y:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -1027,6 +1033,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     global player
     global extractor_proxy
     global cookies
+    global output_filename
 
     info_only = False
     playlist = False
@@ -1093,6 +1100,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
             traceback = True
         elif o in ('-F', '--format', '--stream', '--itag'):
             stream_id = a
+        elif o in ('-O', '--output-filename'):
+            output_filename = a
         elif o in ('-o', '--output-dir'):
             output_dir = a
         elif o in ('-p', '--player'):
