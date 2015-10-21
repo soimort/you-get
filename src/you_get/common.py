@@ -1125,10 +1125,29 @@ def script_main(script_name, download, download_playlist = None):
         else:
             sys.exit(1)
 
+def google_search(url):
+    keywords = r1(r'https?://(.*)', url)
+    url = 'https://www.google.com/search?tbm=vid&q=%s' % parse.quote(keywords)
+    page = get_content(url, headers=fake_headers)
+    videos = re.findall(r'<a href="([^"]+)" onmousedown="[^"]+">([^<]+)<', page)
+    durs = re.findall(r'<span class="vdur _dwc">[^<]+(\d+:\d+)', page)
+    print("Google Videos search:")
+    for v in zip(videos, durs):
+        print("- video:  %s [%s]" % (unescape_html(v[0][1]), v[1]))
+        print("# you-get %s" % log.sprint(v[0][0], log.UNDERLINE))
+        print()
+    print("Best matched result:")
+    return(videos[0][0])
+
 def url_to_module(url):
-    video_host = r1(r'https?://([^/]+)/', url)
-    video_url = r1(r'https?://[^/]+(.*)', url)
-    assert video_host and video_url, 'invalid url: ' + url
+    try:
+        video_host = r1(r'https?://([^/]+)/', url)
+        video_url = r1(r'https?://[^/]+(.*)', url)
+        assert video_host and video_url
+    except:
+        url = google_search(url)
+        video_host = r1(r'https?://([^/]+)/', url)
+        video_url = r1(r'https?://[^/]+(.*)', url)
 
     if video_host.endswith('.com.cn'):
         video_host = video_host[:-3]
