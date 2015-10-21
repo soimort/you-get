@@ -61,6 +61,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * LeTV (乐视网) <http://www.letv.com>
 * Lizhi.fm (荔枝FM) <http://www.lizhi.fm>
 * Metacafe <http://www.metacafe.com>
+* MiaoPai (秒拍视频) <http://www.miaopai.com>
 * MioMio <http://www.miomio.tv>
 * MTV 81 <http://www.mtv81.com>
 * NetEase (网易视频) <http://v.163.com>

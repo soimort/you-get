@@ -71,6 +71,7 @@ SITES = {
     'vk'         : 'vk',
     'xiami'      : 'xiami',
     'yinyuetai'  : 'yinyuetai',
+    'miaopai': 'yixia_miaopai',
     'youku'      : 'youku',
     'youtu'      : 'youtube',
     'youtube'    : 'youtube',
