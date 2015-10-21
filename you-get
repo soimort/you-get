@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# This file is Python 2 compliant.
-
 import os, sys
 
 _srcdir = 'src/'
@@ -17,8 +15,7 @@ if sys.version_info[0] == 3:
     import you_get
     if __name__ == '__main__':
         you_get.main(repo_path=_filepath)
-else:
+else: # Python 2
     from you_get.util import log
-    log.wtf("""
-    [Fatal] Python 3 is required.
-    If Python 3 is already installed on your machine, try to run this script using 'python3 you-get'.""")
+    log.e("[fatal] Python 3 is required!")
+    log.wtf("try to run this script using 'python3 you-get'.")
