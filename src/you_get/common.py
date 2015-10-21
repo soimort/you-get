@@ -1128,6 +1128,22 @@ def script_main(script_name, download, download_playlist, **kwargs):
             raise
         else:
             sys.exit(1)
+    except:
+        if not traceback:
+            log.e('[error] oops, something went wrong.')
+            log.e('don\'t panic, c\'est la vie. please try the following steps:')
+            log.e('  (1) Rule out any network problem.')
+            log.e('  (2) Make sure you-get is up-to-date.')
+            log.e('  (3) Check if the issue is already known, on')
+            log.e('        https://github.com/soimort/you-get/wiki/Known-Bugs')
+            log.e('        https://github.com/soimort/you-get/issues')
+            log.e('  (4) Run the command with \'--debug\' option,')
+            log.e('      and report this issue with the full output.')
+        else:
+            version()
+            log.i(args)
+            raise
+        sys.exit(1)
 
 def google_search(url):
     keywords = r1(r'https?://(.*)', url)
