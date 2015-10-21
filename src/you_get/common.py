@@ -91,6 +91,7 @@ from importlib import import_module
 
 from .version import __version__
 from .util import log, term
+from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
 
@@ -981,8 +982,11 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         else:
             download(url, **kwargs)
 
-def script_main(script_name, download, download_playlist = None):
-    version = 'You-Get %s, a video downloader.' % __version__
+def script_main(script_name, download, download_playlist, **kwargs):
+    def version():
+        log.i('version %s' % get_version(kwargs['repo_path']
+            if 'repo_path' in kwargs else __version__))
+
     help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
     help += '''\nStartup options:
     -V | --version                           Display the version and exit.
@@ -1035,10 +1039,10 @@ def script_main(script_name, download, download_playlist = None):
     traceback = False
     for o, a in opts:
         if o in ('-V', '--version'):
-            print(version)
+            version()
             sys.exit()
         elif o in ('-h', '--help'):
-            print(version)
+            version()
             print(help)
             sys.exit()
         elif o in ('-f', '--force'):
@@ -1125,10 +1129,29 @@ def script_main(script_name, download, download_playlist = None):
         else:
             sys.exit(1)
 
+def google_search(url):
+    keywords = r1(r'https?://(.*)', url)
+    url = 'https://www.google.com/search?tbm=vid&q=%s' % parse.quote(keywords)
+    page = get_content(url, headers=fake_headers)
+    videos = re.findall(r'<a href="([^"]+)" onmousedown="[^"]+">([^<]+)<', page)
+    durs = re.findall(r'<span class="vdur _dwc">[^<]+(\d+:\d+)', page)
+    print("Google Videos search:")
+    for v in zip(videos, durs):
+        print("- video:  %s [%s]" % (unescape_html(v[0][1]), v[1]))
+        print("# you-get %s" % log.sprint(v[0][0], log.UNDERLINE))
+        print()
+    print("Best matched result:")
+    return(videos[0][0])
+
 def url_to_module(url):
-    video_host = r1(r'https?://([^/]+)/', url)
-    video_url = r1(r'https?://[^/]+(.*)', url)
-    assert video_host and video_url, 'invalid url: ' + url
+    try:
+        video_host = r1(r'https?://([^/]+)/', url)
+        video_url = r1(r'https?://[^/]+(.*)', url)
+        assert video_host and video_url
+    except:
+        url = google_search(url)
+        video_host = r1(r'https?://([^/]+)/', url)
+        video_url = r1(r'https?://[^/]+(.*)', url)
 
     if video_host.endswith('.com.cn'):
         video_host = video_host[:-3]
@@ -1157,5 +1180,5 @@ def any_download_playlist(url, **kwargs):
     m, url = url_to_module(url)
     m.download_playlist(url, **kwargs)
 
-def main():
-    script_main('you-get', any_download, any_download_playlist)
+def main(**kwargs):
+    script_main('you-get', any_download, any_download_playlist, **kwargs)
