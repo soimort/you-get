@@ -29,12 +29,12 @@ def vimeo_download_by_channel_id(channel_id, output_dir = '.', merge = False, in
 
 def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     html = get_content('https://vimeo.com/' + id)
-    config_url = unescape_html(r1(r'data-config-url="([^"]+)"', html))
 
-    if config_url:
+    try:
+        config_url = unescape_html(r1(r'data-config-url="([^"]+)"', html))
         video_page = get_content(config_url, headers=fake_headers)
         title = r1(r'"title":"([^"]+)"', video_page)
-    else:
+    except:
         video_page = get_content('http://player.vimeo.com/video/%s' % id, headers=fake_headers)
         title = r1(r'<title>([^<]+)</title>', video_page)
 
