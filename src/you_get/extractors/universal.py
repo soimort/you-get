@@ -27,14 +27,25 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
             page_title = unescape_html(page_title)
 
         # most common media file extensions on the Internet
-        media_exts = ['flv', 'mp3', 'mp4', 'webm']
+        media_exts = ['\.flv', '\.mp3', '\.mp4', '\.webm',
+                      '[-_]1\d\d\d\.jpg', '[-_][6-9]\d\d\.jpg', # tumblr
+                      '[-_]1\d\d\dx[6-9]\d\d\.jpg',
+                      's1600/[\w%]+\.jpg', # blogger
+                      'img[6-9]\d\d/[\w%]+\.jpg' # oricon?
+        ]
 
         urls = []
         for i in media_exts:
-            urls += re.findall(r'(https?://[^;"\'\\]+\.' + i + r'[^;"\'\\]*)', page)
+            urls += re.findall(r'(https?://[^;"\'\\]+' + i + r'[^;"\'\\]*)', page)
 
-            q_urls = re.findall(r'(https?%3A%2F%2F[^;&]+\.' + i + r'[^;&]*)', page)
-            urls += [parse.unquote(url) for url in q_urls]
+            p_urls = re.findall(r'(https?%3A%2F%2F[^;&]+' + i + r'[^;&]*)', page)
+            urls += [parse.unquote(url) for url in p_urls]
+
+            q_urls = re.findall(r'(https?:\\\\/\\\\/[^;"\']+' + i + r'[^;"\']*)', page)
+            urls += [url.replace('\\\\/', '/') for url in q_urls]
+
+        # a link href to an image is often an interesting one
+        urls += re.findall(r'href="(https?://[^"]+\.jpg)"', page)
 
         # have some candy!
         candies = []
@@ -51,6 +62,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         for candy in candies:
             try:
                 mime, ext, size = url_info(candy['url'], faker=True)
+                if not size: size = float('Int')
             except:
                 continue
             else:
