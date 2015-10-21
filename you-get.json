@@ -1,38 +1,39 @@
 {
-    "name": "you-get",
-    "author": "Mort Yao",
-    "author_email": "mort.yao@gmail.com",
-    "url": "https://you-get.org/",
-    "license": "MIT",
+  "name": "you-get",
+  "author": "Mort Yao",
+  "author_email": "mort.yao@gmail.com",
+  "url": "https://you-get.org/",
+  "license": "MIT",
 
-    "description": "A YouTube/Youku/Niconico video downloader written in Python 3.",
-    "keywords": "video download youtube youku niconico",
+  "description": "Dumb downloader that scrapes the web",
+  "keywords": "video download youtube youku niconico",
 
-    "classifiers": [
-        "Development Status :: 3 - Alpha",
-        "Environment :: Console",
-        "Environment :: Web Environment",
-        "Intended Audience :: End Users/Desktop",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Natural Language :: English",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.0",
-        "Programming Language :: Python :: 3.1",
-        "Programming Language :: Python :: 3.2",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Topic :: Internet",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Multimedia",
-        "Topic :: Multimedia :: Video",
-        "Topic :: Utilities"
-        ],
+  "classifiers": [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.0",
+    "Programming Language :: Python :: 3.1",
+    "Programming Language :: Python :: 3.2",
+    "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: 3.5",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Multimedia",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Utilities"
+  ],
 
-    "console_scripts": [
-        "you-get = you_get.__main__:main"
-        ]
+  "console_scripts": [
+    "you-get = you_get.__main__:main"
+  ]
 }
