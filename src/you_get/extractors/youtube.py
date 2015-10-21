@@ -276,13 +276,15 @@ class YouTube(VideoExtractor):
                 for stream in streams: # audio
                     if stream['type'].startswith('audio/mp4'):
                         dash_mp4_a_url = stream['url']
-                        sig = self.__class__.decipher(self.js, stream['s'])
-                        dash_mp4_a_url += '&signature={}'.format(sig)
+                        if 's' in stream:
+                            sig = self.__class__.decipher(self.js, stream['s'])
+                            dash_mp4_a_url += '&signature={}'.format(sig)
                         dash_mp4_a_size = stream['clen']
                     elif stream['type'].startswith('audio/webm'):
                         dash_webm_a_url = stream['url']
-                        sig = self.__class__.decipher(self.js, stream['s'])
-                        dash_webm_a_url += '&signature={}'.format(sig)
+                        if 's' in stream:
+                            sig = self.__class__.decipher(self.js, stream['s'])
+                            dash_webm_a_url += '&signature={}'.format(sig)
                         dash_webm_a_size = stream['clen']
                 for stream in streams: # video
                     if 'size' in stream:
