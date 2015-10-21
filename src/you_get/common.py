@@ -345,7 +345,10 @@ def url_info(url, faker = False):
         'video/x-flv': 'flv',
         'video/x-ms-asf': 'asf',
         'audio/mp4': 'mp4',
-        'audio/mpeg': 'mp3'
+        'audio/mpeg': 'mp3',
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/gif': 'gif',
     }
     if type in mapping:
         ext = mapping[type]
