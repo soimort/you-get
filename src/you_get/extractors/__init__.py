@@ -41,6 +41,7 @@ from .mtv81 import *
 from .nanagogo import *
 from .netease import *
 from .nicovideo import *
+from .pixnet import *
 from .pptv import *
 from .qianmo import *
 from .qq import *

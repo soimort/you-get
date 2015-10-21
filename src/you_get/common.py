@@ -48,6 +48,7 @@ SITES = {
     'mtv81'      : 'mtv81',
     '7gogo'      : 'nanagogo',
     'nicovideo'  : 'nicovideo',
+    'pixnet'     : 'pixnet',
     'pptv'       : 'pptv',
     'qianmo'     : 'qianmo',
     'qq'         : 'qq',
