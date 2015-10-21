@@ -866,6 +866,13 @@ def print_info(site_info, title, type, size):
     elif type in ['webm']:
         type = 'video/webm'
 
+    elif type in ['jpg']:
+        type = 'image/jpeg'
+    elif type in ['png']:
+        type = 'image/png'
+    elif type in ['gif']:
+        type = 'image/gif'
+
     if type in ['video/3gpp']:
         type_info = "3GPP multimedia file (%s)" % type
     elif type in ['video/x-flv', 'video/f4v']:
@@ -892,6 +899,14 @@ def print_info(site_info, title, type, size):
         type_info = "MPEG-4 audio (%s)" % type
     elif type in ['audio/mpeg']:
         type_info = "MP3 (%s)" % type
+
+    elif type in ['image/jpeg']:
+        type_info = "JPEG Image (%s)" % type
+    elif type in ['image/png']:
+        type_info = "Portable Network Graphics (%s)" % type
+    elif type in ['image/gif']:
+        type_info = "Graphics Interchange Format (%s)" % type
+
     else:
         type_info = "Unknown type (%s)" % type
 
