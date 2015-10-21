@@ -69,18 +69,23 @@ class Youku(VideoExtractor):
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
 
-        playlist_id = self.__class__.get_playlist_id_from_url(self.url)
-        if playlist_id is None:
-            log.wtf('[Failed] Unsupported URL pattern.')
+        try:
+            playlist_id = self.__class__.get_playlist_id_from_url(self.url)
+            assert playlist_id
 
-        video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
-        videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
+            video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
+            videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
 
-        for extra_page_url in set(re.findall('href="(http://www\.youku\.com/playlist_show/id_%s_[^?"]+)' % playlist_id, video_page)):
-            extra_page = get_content(extra_page_url)
-            videos |= set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
+            for extra_page_url in set(re.findall('href="(http://www\.youku\.com/playlist_show/id_%s_[^?"]+)' % playlist_id, video_page)):
+                extra_page = get_content(extra_page_url)
+                videos |= set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
 
-        self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
+        except:
+            video_page = get_content(url)
+            videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
+
+        self.title = r1(r'<meta name="title" content="([^"]+)"', video_page) or \
+                     r1(r'<title>([^<]+)', video_page)
         self.p_playlist()
         for video in videos:
             index = parse_query_param(video, 'f')
