@@ -987,32 +987,35 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
 
 def script_main(script_name, download, download_playlist, **kwargs):
     def version():
-        log.i('version %s' % get_version(kwargs['repo_path']
+        log.i('version %s, a tiny downloader that scrapes the web.'
+              % get_version(kwargs['repo_path']
             if 'repo_path' in kwargs else __version__))
 
-    help = 'Usage: %s [OPTION]... [URL]...\n' % script_name
-    help += '''\nStartup options:
-    -V | --version                           Display the version and exit.
-    -h | --help                              Print this help and exit.
-    '''
-    help += '''\nDownload options (use with URLs):
-    -f | --force                             Force overwriting existed files.
-    -i | --info                              Display the information of videos without downloading.
-    -u | --url                               Display the real URLs of videos without downloading.
-    -c | --cookies                           Load cookies.txt or cookies.sqlite.
-    -n | --no-merge                          Don't merge video parts.
-    -F | --format <STREAM_ID>                Video format code.
-    -O | --output-filename <FILE>            Set the output filename.
-    -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
-    -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer.
-    -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
-    -y | --extractor-proxy <HOST:PORT>       Use specific HTTP proxy for extracting stream data.
-         --no-proxy                          Don't use any proxy. (ignore $http_proxy)
-         --debug                             Show traceback on KeyboardInterrupt.
-         --json                              Output the information of videos in json text without downloading.
+    help = 'Usage: %s [OPTION]... [URL]...\n\n' % script_name
+    help += '''Startup options:
+    -V | --version                      Print version and exit.
+    -h | --help                         Print help and exit.
+    \n'''
+    help += '''Dry-run options: (no actual downloading)
+    -i | --info                         Print extracted information.
+    -u | --url                          Print extracted information with URLs.
+         --json                         Print extracted URLs in JSON format.
+    \n'''
+    help += '''Download options:
+    -n | --no-merge                     Do not merge video parts.
+    -f | --force                        Force overwriting existed files.
+    -F | --format <STREAM_ID>           Set video format to STREAM_ID.
+    -O | --output-filename <FILE>       Set output filename.
+    -o | --output-dir <PATH>            Set output directory.
+    -p | --player <PLAYER [OPTIONS]>    Stream extracted URL to a PLAYER.
+    -c | --cookies <COOKIES_FILE>       Load cookies.txt or cookies.sqlite.
+    -x | --http-proxy <HOST:PORT>       Use an HTTP proxy for downloading.
+    -y | --extractor-proxy <HOST:PORT>  Use an HTTP proxy for extracting only.
+         --no-proxy                     Never use a proxy.
+    -d | --debug                        Show traceback for debugging.
     '''
 
-    short_opts = 'Vhfiuc:nF:O:o:p:x:y:'
+    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:'
     opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
     if download_playlist:
         short_opts = 'l' + short_opts
@@ -1094,7 +1097,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
             merge = False
         elif o in ('--no-proxy',):
             proxy = ''
-        elif o in ('--debug',):
+        elif o in ('-d', '--debug'):
             traceback = True
         elif o in ('-F', '--format', '--stream', '--itag'):
             stream_id = a
