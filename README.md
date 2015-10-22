@@ -1,258 +1,411 @@
 # You-Get
 
-[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get) [![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get)
+[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[You-Get](http://www.soimort.org/you-get) is a video downloader for [YouTube](http://www.youtube.com), [Youku](http://www.youku.com), [niconico](http://www.nicovideo.jp) and a few other sites.
+[You-Get](https://you-get.org/) is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.
 
-`you-get` is a command-line program, written completely in Python 3. Its prospective users are those who prefer CLI over GUI. With `you-get`, downloading a video is just one command away:
+Here's how you use `you-get` to download a video from [this web page](http://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-free-society):
 
-    $ you-get http://youtu.be/sGwy8DsUJ4M
+```console
+$ you-get http://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-free-society
+Site:       fsf.org
+Title:      TEDxGE2014_Stallman05_LQ
+Type:       WebM video (video/webm)
+Size:       27.12 MiB (28435804 Bytes)
 
-Fork me on GitHub: <https://github.com/soimort/you-get>
+Downloading TEDxGE2014_Stallman05_LQ.webm ...
+100.0% ( 27.1/27.1 MB) ├████████████████████████████████████████┤[1/1]   12 MB/s
+```
 
-## Features
+And here's why you might want to use it:
 
-### Supported Sites
+* You enjoyed something on the Internet, and just want to download them for your own pleasure.
+* You watch your favorite videos online from your computer, but you are prohibited from saving them. You feel that you have no control over your own computer. (And it's not how an open Web is supposed to work.)
+* You want to get rid of any closed-source technology or proprietary JavaScript code, and disallow things like Flash running on your computer.
+* You are an adherent of hacker culture and free software.
 
-* Dailymotion <http://dailymotion.com>
-* Flickr <http://www.flickr.com>
-* Freesound <http://www.freesound.org>
-* Google+ <http://plus.google.com>
-* Heavy Music Archive <http://www.heavy-music.ru>
-* Instagram <http://instagram.com>
-* JPopsuki <http://jpopsuki.tv>
-* Magisto <http://www.magisto.com>
-* Mixcloud <http://www.mixcloud.com>
-* Niconico (ニコニコ動画) <http://www.nicovideo.jp>
-* Vimeo <http://vimeo.com>
-* Vine <http://vine.co>
-* Twitter <http://twitter.com>
-* Youku (优酷) <http://www.youku.com>
-* YouTube <http://www.youtube.com>
-* 755 (ナナゴーゴー) <http://7gogo.jp>
-* AcFun <http://www.acfun.tv>
-* Alive.in.th <http://alive.in.th>
-* Baidu Music (百度音乐) <http://music.baidu.com>
-* Baidu Wangpan (百度网盘) <http://pan.baidu.com>
-* Bandcamp <http://bandcamp.com>
-* Baomihua (爆米花) <http://video.baomihua.com>
-* bilibili <http://www.bilibili.com>
-* CBS <http://www.cbs.com>
-* CNTV (中国网络电视台) <http://www.cntv.cn>
-* Dongting (天天动听) <http://www.dongting.com>
-* Douban (豆瓣) <http://douban.com>
-* DouyuTV (斗鱼) <http://www.douyutv.com>
-* eHow <http://www.ehow.com>
-* Facebook <http://facebook.com>
-* Fun.tv (风行, Funshion) <http://www.fun.tv>
-* Google Drive <http://docs.google.com>
-* ifeng (凤凰视频) <http://v.ifeng.com>
-* Interest.me (CJ E&M) <http://interest.me>
-* Internet Archive <http://archive.org>
-* iQIYI (爱奇艺) <http://www.iqiyi.com>
-* iQilu (齐鲁网, 山东网络台) <http://v.iqilu.com>
-* Joy.cn (激动网) <http://www.joy.cn>
-* Khan Academy <http://www.khanacademy.org>
-* Ku6 (酷6网) <http://www.ku6.com>
-* Kugou (酷狗音乐) <http://www.kugou.com>
-* Kuwo (酷我音乐) <http://www.kuwo.cn>
-* LeTV (乐视网) <http://www.letv.com>
-* Lizhi.fm (荔枝FM) <http://www.lizhi.fm>
-* Metacafe <http://www.metacafe.com>
-* MiaoPai (秒拍视频) <http://www.miaopai.com>
-* MioMio <http://www.miomio.tv>
-* MTV 81 <http://www.mtv81.com>
-* NetEase (网易视频) <http://v.163.com>
-* NetEase Music (网易云音乐) <http://music.163.com>
-* Pixnet <http://www.pixnet.net>
-* PPTV <http://www.pptv.com>
-* QianMo (阡陌视频) <http://qianmo.com>
-* QQ (腾讯视频) <http://v.qq.com>
-* Sina (新浪视频) <http://video.sina.com.cn>
-* Weibo Miaopai (新浪微博秒拍视频) <http://video.weibo.com>
-* Sohu (搜狐视频) <http://tv.sohu.com>
-* SoundCloud <http://soundcloud.com>
-* SunTV (阳光卫视) <http://www.isuntv.com>
-* TED <http://www.ted.com>
-* Tudou (土豆) <http://www.tudou.com>
-* Tumblr <http://www.tumblr.com>
-* Veoh <http://www.veoh.com>
-* VK <http://vk.com>
-* 56 (56网) <http://www.56.com>
-* Xiami (虾米) <http://www.xiami.com>
-* YinYueTai (音悦台) <http://www.yinyuetai.com>
-* Zhanqi (战旗TV) <http://www.zhanqi.tv/lives>
+What `you-get` can do for you:
 
-## Prerequisites
+* Download videos / audios from popular websites such as YouTube, Youku, Niconico, and a bunch more. (See the [full list of supported sites](#supported-sites))
+* Stream an online video in your media player. No web browser, no more ads.
+* Download images (of interest) by scraping a web page.
+* Download arbitrary non-HTML contents, i.e., binary files.
 
-### Python 3
+Interested? [Install it](#installation) now and [get started by examples](#getting-started).
 
-`you-get` is known to work with:
-
-* Python 3.2
-* Python 3.3
-* Python 3.4
-* Python 3.5
-* PyPy3
-
-### Dependencies (Optional but Recommended)
-
-* [FFmpeg](http://ffmpeg.org) or [Libav](http://libav.org/)
-    * For video and audio processing.
-* [RTMPDump](http://rtmpdump.mplayerhq.hu/)
-    * For RTMP stream processing.
+Are you a Python programmer? Then check out [the source](https://github.com/soimort/you-get) and fork it!
 
 ## Installation
 
-You don't have to learn the Python programming language to use this tool. However, you need to make sure that Python 3 (with pip) is installed on your system.
+### Prerequisites
 
-On Linux and BSD, installation made easy with your package manager:
+* **[Python 3](https://www.python.org/downloads/)**
+* **[FFmpeg](https://www.ffmpeg.org/)** (strongly recommended) or [Libav](https://libav.org/)
+* (Optional) [RTMPDump](https://rtmpdump.mplayerhq.hu/)
 
-* Find and install packages: `python3` and `python3-pip` (if your distro did not make Python 3 the default, e.g., Debian)
-* Or packages: `python` and `python-pip` (if your distro made Python 3 the default, e.g., Arch)
+### Option 1. Install the official release
 
-On other systems (which tend to have quite evil user experience), please read the documentation and ask Google for help:
+The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager. Note that you must use the Python 3 version of `pip`:
 
-* <https://www.python.org/downloads/>
-* <https://pip.pypa.io/en/latest/installing.html>
+    $ pip3 install you-get
 
-### 1. Using Pip (Standard Method)
+### Option 2. Download from GitHub
 
-    $ [sudo] pip3 install you-get
+You may either download the [stable](https://github.com/soimort/you-get/archive/master.zip) (identical with the latest release on PyPI) or the [develop](https://github.com/soimort/you-get/archive/develop.zip) (more hotfixes, unstable features) branch of `you-get`. Unzip it, and put the directory containing the `you-get` script into your `PATH`.
 
-Check if the installation is successful:
+Alternatively, run
 
-    $ you-get -V
+```
+$ make install
+```
 
-### 2. Downloading from PyPI
+to install `you-get` to a permanent path.
 
-You can also download the Python wheel for each release from [PyPI](https://pypi.python.org/pypi/you-get).
+### Option 3. Git clone
 
-If you choose to download the wheel from a PyPI mirror or elsewhere, remember to verify the signature of the package. For example:
+This is the recommended way for all developers, even if you don't often code in Python.
 
-    $ gpg --verify you_get-0.3.30-py3-none-any.whl.asc you_get-0.3.30-py3-none-any.whl
+```
+$ git clone git://github.com/soimort/you-get.git
+```
 
-### 3. Downloading from GitHub
-
-Download it [here](https://github.com/soimort/you-get/zipball/master) or:
-
-    $ wget -O you-get.zip https://github.com/soimort/you-get/zipball/master
-    $ unzip you-get.zip
-
-Use the raw script without installation:
-
-    $ cd soimort-you-get-*/
-    $ ./you-get -V
-
-To install the package into the system path, execute:
-
-    $ [sudo] make install
-
-Check if the installation is successful:
-
-    $ you-get -V
-
-### 4. Using Git (Recommended for Developers and Advanced Users)
-
-    $ git clone git://github.com/soimort/you-get.git
-
-Use the raw script without installation:
-
-    $ cd you-get/
-    $ ./you-get -V
-
-To install the package into the system path, execute:
-
-    $ [sudo] make install
-
-Check if the installation is successful:
-
-    $ you-get -V
+Then put the cloned directory into your `PATH`, or run `make install` to install `you-get` to a permanent path.
 
 ## Upgrading
 
-### 1. Using Pip
+Based on which option you chose to install `you-get`, you may upgrade it via:
 
-    $ [sudo] pip3 install --upgrade you-get
+```
+$ pip3 install --upgrade you-get
+```
+
+or download the latest release via:
+
+```
+$ you-get https://github.com/soimort/you-get/archive/master.zip
+```
 
 ## Getting Started
 
-Display the information of a video without downloading:
+### Download a video
 
-    $ you-get -i 'http://www.youtube.com/watch?v=sGwy8DsUJ4M'
-
-Download a video:
-
-    $ you-get 'http://www.youtube.com/watch?v=sGwy8DsUJ4M'
-
-Download multiple videos:
-
-    $ you-get 'http://www.youtube.com/watch?v=sGwy8DsUJ4M' 'http://www.youtube.com/watch?v=8bQlxQJEzLk'
-
-By default, program will skip any video that already exists in the local directory when downloading. If a temporary file (ends with a `.download` extension in its file name) is found, program will resume the download from last session.
-
-To enforce re-downloading of videos, use option `-f`: (this will overwrite any existing video or temporary file)
-
-    $ you-get -f 'http://www.youtube.com/watch?v=sGwy8DsUJ4M'
-
-Set the output directory for downloaded files:
-
-    $ you-get -o ~/Downloads 'http://www.youtube.com/watch?v=sGwy8DsUJ4M'
-
-Use a specific HTTP proxy for downloading:
-
-    $ you-get -x 127.0.0.1:8087 'http://www.youtube.com/watch?v=sGwy8DsUJ4M'
-
-By default, the system proxy setting (i.e. environment variable `http_proxy` on *nix) is applied. To disable any proxy, use option `--no-proxy`:
-
-    $ you-get --no-proxy 'http://www.youtube.com/watch?v=sGwy8DsUJ4M'
-
-Watch a video in your media player of choice: (this is just a trick to let you get rid of annoying ads on the video site)
-
-    $ you-get -p vlc 'http://www.youtube.com/watch?v=sGwy8DsUJ4M'
-
-## FAQ
-
-**Q**: Some videos on Youku are restricted to mainland China visitors. Is it possible to bypass this restriction and download those videos?
-
-**A**: Thanks to [Unblock Youku](https://github.com/zhuzhuor/Unblock-Youku), it is now possible to access such videos from an oversea IP address. You can simply use `you-get` with option `-y proxy.uku.im:8888`.
-
-**Q**: Will you release an executable version / Windows Installer package?
-
-**A**: Yes, it's on my to-do list.
-
-## Command-Line Options
-
-For a complete list of available options, see:
+When you get a video of interest, you might want to use the `--info`/`-i` option to see all available quality and formats:
 
 ```
-$ you-get --help
-Usage: you-get [OPTION]... [URL]...
+$ you-get -i 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+site:                YouTube
+title:               Me at the zoo
+streams:             # Available quality and codecs
+    [ DEFAULT ] _________________________________
+    - itag:          43
+      container:     webm
+      quality:       medium
+      size:          0.5 MiB (564215 bytes)
+    # download-with: you-get --itag=43 [URL]
 
-Startup options:
-    -V | --version                           Display the version and exit.
-    -h | --help                              Print this help and exit.
+    - itag:          18
+      container:     mp4
+      quality:       medium
+    # download-with: you-get --itag=18 [URL]
 
-Download options (use with URLs):
-    -f | --force                             Force overwriting existed files.
-    -i | --info                              Display the information of videos without downloading.
-    -u | --url                               Display the real URLs of videos without downloading.
-    -c | --cookies                           Load cookies.txt or cookies.sqlite.
-    -n | --no-merge                          Don't merge video parts.
-    -F | --format <STREAM_ID>                Video format code.
-    -o | --output-dir <PATH>                 Set the output directory for downloaded videos.
-    -p | --player <PLAYER [options]>         Directly play the video with PLAYER like vlc/smplayer.
-    -x | --http-proxy <HOST:PORT>            Use specific HTTP proxy for downloading.
-    -y | --extractor-proxy <HOST:PORT>       Use specific HTTP proxy for extracting stream data.
-         --no-proxy                          Don't use any proxy. (ignore $http_proxy)
-         --debug                             Show traceback on KeyboardInterrupt.
-         --json                              Output the information of videos in json text without downloading.
+    - itag:          5
+      container:     flv
+      quality:       small
+    # download-with: you-get --itag=5 [URL]
+
+    - itag:          36
+      container:     3gp
+      quality:       small
+    # download-with: you-get --itag=36 [URL]
+
+    - itag:          17
+      container:     3gp
+      quality:       small
+    # download-with: you-get --itag=17 [URL]
 ```
 
-## License
+The format marked with `DEFAULT` is the one you will get by default. If that looks cool to you, download it:
 
-You-Get is licensed under the [MIT license](https://raw.github.com/soimort/you-get/master/LICENSE.txt).
+```
+$ you-get 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+site:                YouTube
+title:               Me at the zoo
+stream:
+    - itag:          43
+      container:     webm
+      quality:       medium
+      size:          0.5 MiB (564215 bytes)
+    # download-with: you-get --itag=43 [URL]
 
-## Reporting an Issue / Contributing
+Downloading zoo.webm ...
+100.0% (  0.5/0.5  MB) ├████████████████████████████████████████┤[1/1]    7 MB/s
 
-Please read [CONTRIBUTING.md](https://github.com/soimort/you-get/blob/master/CONTRIBUTING.md) first.
+Saving Me at the zoo.en.srt ...Done.
+```
+
+(If a YouTube video has any closed captions, they will be downloaded together with the video file, in SubRip subtitle format.)
+
+Or, if you prefer another format (mp4), just use whatever the option `you-get` shows to you:
+
+```
+$ you-get --itag=18 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+```
+
+**Note:**
+
+* At this point, format selection has not been generally implemented for most of our supported sites; in that case, the default format to download is the one with the highest quality.
+* `ffmpeg` is a required dependency, for downloading and joining videos streamed in multiple parts (e.g. on some sites like Youku), and for YouTube videos of 1080p or high resolution.
+* If you don't want `you-get` to join video parts after downloading them, use the `--no-merge`/`-n` option.
+
+### Download anything else
+
+If you already have the URL of the exact resource you want, you can download it directly with:
+
+```
+$ you-get https://stallman.org/rms.jpg
+Site:       stallman.org
+Title:      rms
+Type:       JPEG Image (image/jpeg)
+Size:       0.06 MiB (66482 Bytes)
+
+Downloading rms.jpg ...
+100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  127 kB/s
+```
+
+Otherwise, `you-get` will scrape the web page and try to figure out if there's anything interesting to you:
+
+```
+$ you-get http://www.wired.com/2012/11/time-lapse-within-worlds/
+Site:       wired.com
+Title:      Geminid-Meteor-over-Castle-Lake
+Type:       JPEG Image (image/jpeg)
+Size:       0.09 MiB (95581 Bytes)
+
+Downloading Geminid-Meteor-over-Castle-Lake.jpg ...
+100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  606 kB/s
+
+Site:       wired.com
+Title:      Star-Trails-over-Mount-Shasta
+Type:       JPEG Image (image/jpeg)
+Size:       0.1 MiB (108263 Bytes)
+
+Downloading Star-Trails-over-Mount-Shasta.jpg ...
+100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  615 kB/s
+
+Site:       wired.com
+Title:      Milky-Way-and-Lyrid-Meteor-over-Crater-Lake
+Type:       JPEG Image (image/jpeg)
+Size:       0.1 MiB (104196 Bytes)
+
+Downloading Milky-Way-and-Lyrid-Meteor-over-Crater-Lake.jpg ...
+100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  643 kB/s
+
+Site:       wired.com
+Title:      Aurora-over-Crater-Lake
+Type:       JPEG Image (image/jpeg)
+Size:       0.08 MiB (87666 Bytes)
+
+Downloading Aurora-over-Crater-Lake.jpg ...
+100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  365 kB/s
+```
+
+**Note:**
+
+* This feature is an experimental one and far from perfect. It works best on scraping large-sized images from popular websites like Tumblr and Blogger, but there is really no universal pattern that can apply to any site on the Internet.
+
+### Search on Google Videos and download
+
+You can pass literally anything to `you-get`. If it isn't a valid URL, `you-get` will do a Google search and download the most relevant video for you. (It might not be exactly the thing you wish to see, but still very likely.)
+
+```
+$ you-get "Richard Stallman eats"
+```
+
+### Pause and resume a download
+
+You may use <kbd>Ctrl</kbd>+<kbd>C</kbd> to interrupt a download.
+
+A temporary `.download` file is kept in the output directory. Next time you run `you-get` with the same arguments, the download progress will resume from the last session. In case the file is completely downloaded (the temporary `.download` extension is gone), `you-get` will just skip the download.
+
+To enforce re-downloading, use the `--force`/`-f` option. (**Warning:** doing so will overwrite any existing file or temporary file with the same name!)
+
+### Set the path and name of downloaded file
+
+Use the `--output-dir`/`-o` option to set the path, and `--output-filename`/`-O` to set the name of the downloaded file:
+
+```
+$ you-get -o ~/Videos -O zoo.webm 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+```
+
+**Tips:**
+
+* These options are helpful if you encounter problems with the default video titles, which may contain special characters that do not play well with your current shell / operating system / filesystem.
+* These options are also helpful if you write a script to batch download files and put them into designated folders with designated names.
+
+### Proxy settings
+
+You may specify an HTTP proxy for `you-get` to use, via the `--http-proxy`/`-x` option:
+
+```
+$ you-get -x 127.0.0.1:8087 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+```
+
+However, the system proxy setting (i.e. the environment variable `http_proxy`) is applied by default. To disable any proxy, use the `--no-proxy` option.
+
+**Tips:**
+
+* If you need to use proxies a lot (in case your network is blocking certain sites), you might want to use `you-get` with [proxychains](https://github.com/rofl0r/proxychains-ng) and set `alias you-get="proxychains -q you-get"` (in Bash).
+* For some websites (e.g. Youku), if you need access to some videos that are only available in mainland China, there is an option of using a specific proxy to extract video information from the site: `--extractor-proxy`/`-y`.
+You may use `-y proxy.uku.im:8888` (thanks to the [Unblock Youku](https://github.com/zhuzhuor/Unblock-Youku) project).
+
+### Watch a video
+
+Use the `--player`/`-p` option to feed the video into your media player of choice, e.g. `mplayer` or `vlc`, instead of downloading it:
+
+```
+$ you-get -p vlc 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+```
+
+Or, if you prefer to watch the video in a browser, just without ads or comment section:
+
+```
+$ you-get -p chromium 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+```
+
+**Tips:**
+
+* It is possible to use the `-p` option to start another download manager, e.g., `you-get -p uget-gtk 'https://www.youtube.com/watch?v=jNQXAC9IVRw'`, though they may not play together very well.
+
+### Load cookies
+
+Not all videos are publicly available to anyone. If you need to log in your account to access something (e.g., a private video), it would be unavoidable to feed the browser cookies to `you-get` via the `--cookies`/`-c` option.
+
+**Note:**
+
+* As of now, we are supporting two formats of browser cookies: Mozilla `cookies.sqlite` and Netscape `cookies.txt`.
+
+### Reuse extracted data
+
+Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the page. Use `--json` to get an abstract of extracted data in the JSON format.
+
+**Warning:**
+
+* For the time being, this feature has **NOT** been stabilized and the JSON schema may have breaking changes in the future.
+
+## Supported Sites
+
+| Site | URL | Videos? | Images? | Audios? |
+| :--: | :-- | :-----: | :-----: | :-----: |
+| **YouTube** | https://www.youtube.com/    |✓| | |
+| **Twitter** | https://twitter.com/        |✓|✓| |
+| VK          | http://vk.com/              |✓| | |
+| Vine        | https://vine.co/            |✓| | |
+| Vimeo       | https://vimeo.com/          |✓| | |
+| Vidto       | http://vidto.me/            |✓| | |
+| Veoh        | http://www.veoh.com/        |✓| | |
+| **Tumblr**  | https://www.tumblr.com/     |✓|✓|✓|
+| TED         | http://www.ted.com/         |✓| | |
+| SoundCloud  | https://soundcloud.com/     | | |✓|
+| MTV81       | http://www.mtv81.com/       |✓| | |
+| Mixcloud    | https://www.mixcloud.com/   | | |✓|
+| Metacafe    | http://www.metacafe.com/    |✓| | |
+| Magisto     | http://www.magisto.com/     |✓| | |
+| Khan Academy | https://www.khanacademy.org/ |✓| | |
+| JPopsuki TV | http://www.jpopsuki.tv/     |✓| | |
+| Internet Archive | https://archive.org/   |✓| | |
+| **Instagram** | https://instagram.com/    |✓|✓| |
+| Heavy Music Archive | http://www.heavy-music.ru/ | | |✓|
+| **Google+** | https://plus.google.com/    |✓|✓| |
+| Freesound   | http://www.freesound.org/   | | |✓|
+| Flickr      | https://www.flickr.com/     |✓|✓| |
+| Facebook    | https://www.facebook.com/   |✓| | |
+| eHow        | http://www.ehow.com/        |✓| | |
+| Dailymotion | http://www.dailymotion.com/ |✓| | |
+| CBS         | http://www.cbs.com/         |✓| | |
+| Bandcamp    | http://bandcamp.com/        | | |✓|
+| AliveThai   | http://alive.in.th/         |✓| | |
+| interest.me | http://ch.interest.me/tvn   |✓| | |
+| **755<br/>ナナゴーゴー** | http://7gogo.jp/     |✓|✓| |
+| **niconico<br/>ニコニコ動画** | http://www.nicovideo.jp/ |✓| | |
+| **163<br/>网易视频<br/>网易云音乐** | http://v.163.com/<br/>http://music.163.com/ |✓| |✓|
+| 56网     | http://www.56.com/          |✓| | |
+| **AcFun** | http://www.acfun.tv/       |✓| | |
+| **Baidu<br/>百度贴吧** | http://tieba.baidu.com/ |✓|✓| |
+| 爆米花网 | http://www.baomihua.com/    |✓| | |
+| **bilibili<br/>哔哩哔哩** | http://www.bilibili.com/ |✓| | |
+| 豆瓣     | http://www.douban.com/      | | |✓|
+| 斗鱼     | http://www.douyutv.com/     |✓| | |
+| 凤凰视频 |  http://v.ifeng.com/        |✓| | |
+| 风行网   | http://www.fun.tv/          |✓| | |
+| iQIYI<br/>爱奇艺 | http://www.iqiyi.com/ |✓| | |
+| 激动网   | http://www.joy.cn/          |✓| | |
+| 酷6网    | http://www.ku6.com/         |✓| | |
+| 酷狗音乐 | http://www.kugou.com/       | | |✓|
+| 酷我音乐 | http://www.kuwo.cn/         | | |✓|
+| 乐视网   | http://www.letv.com/        |✓| | |
+| 荔枝FM   | http://www.lizhi.fm/        | | |✓|
+| 秒拍     | http://www.miaopai.com/     |✓| | |
+| MioMio弹幕网 | http://www.miomio.tv/   |✓| | |
+| 痞客邦   | https://www.pixnet.net/     |✓| | |
+| PPTV聚力 | http://www.pptv.com/        |✓| | |
+| 齐鲁网   | http://v.iqilu.com/         |✓| | |
+| QQ<br/>腾讯视频 | http://v.qq.com/     |✓| | |
+| 阡陌视频 | http://qianmo.com/          |✓| | |
+| Sina<br/>新浪视频<br/>微博秒拍视频 | http://video.sina.com.cn/<br/>http://video.weibo.com/ |✓| | |
+| Sohu<br/>搜狐视频 | http://tv.sohu.com/ |✓| | |
+| 天天动听 | http://www.dongting.com/    | | |✓|
+| **Tudou<br/>土豆** | http://www.tudou.com/ |✓| | |
+| 虾米     | http://www.xiami.com/       | | |✓|
+| 阳光卫视 | http://www.isuntv.com/      |✓| | |
+| **音悦Tai** | http://www.yinyuetai.com/ |✓| | |
+| **Youku<br/>优酷** | http://www.youku.com/ |✓| | |
+| 战旗TV   | http://www.zhanqi.tv/lives  |✓| | |
+| 央视网   | http://www.cntv.cn/         |✓| | |
+
+For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
+
+### Known bugs
+
+If something is broken and `you-get` can't get you things you want, don't panic. (Yes, this happens all the time!)
+
+Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>, and search on the [list of open issues](https://github.com/soimort/you-get/issues). If it has not been reported yet, open a new issue, with detailed command-line output attached.
+
+## Getting Involved
+
+You can reach us on the Gitter channel [#soimort/you-get](https://gitter.im/soimort/you-get) (here's how you [set up your IRC client](http://irc.gitter.im) for Gitter). If you have a quick question regarding `you-get`, ask it there.
+
+All kinds of pull requests are welcome. However, there are a few guidelines to follow:
+
+* The [`develop`](https://github.com/soimort/you-get/tree/develop) branch is where your pull request should go.
+* Remember to rebase.
+* Document your PR clearly, and if applicable, provide some sample links for reviewers to test with.
+* Write well-formatted, easy-to-understand commit messages. If you don't know how, look at existing ones.
+* We will not ask you to sign a CLA, but you must assure that your code can be legally redistributed (under the terms of the MIT license).
+
+## Legal Issues
+
+This software is distributed under the [MIT license](https://raw.github.com/soimort/you-get/master/LICENSE.txt).
+
+In particular, please be aware that
+
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Translated to human words:
+
+*In case your use of the software forms the basis of copyright infringement, or you use the software for any other illegal purposes, the authors cannot take any responsibility for you.*
+
+We only ship the code here, and how you are going to use it is left to your own discretion.
+
+## Authors
+
+Made by [@soimort](https://github.com/soimort), who is in turn powered by :coffee:, :pizza: and :ramen:.
+
+You can find the [list of all contributors](https://github.com/soimort/you-get/graphs/contributors) here.
