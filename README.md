@@ -79,6 +79,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * TED <http://www.ted.com>
 * Tudou (土豆) <http://www.tudou.com>
 * Tumblr <http://www.tumblr.com>
+* Veoh <http://www.veoh.com>
 * VID48 <http://vid48.com>
 * VideoBam <http://videobam.com>
 * VK <http://vk.com>
