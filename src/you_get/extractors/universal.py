@@ -30,6 +30,8 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         media_exts = ['\.flv', '\.mp3', '\.mp4', '\.webm',
                       '[-_]1\d\d\d\.jpg', '[-_][6-9]\d\d\.jpg', # tumblr
                       '[-_]1\d\d\dx[6-9]\d\d\.jpg',
+                      '[-_][6-9]\d\dx1\d\d\d\.jpg',
+                      '[-_][6-9]\d\dx[6-9]\d\d\.jpg',
                       's1600/[\w%]+\.jpg', # blogger
                       'img[6-9]\d\d/[\w%]+\.jpg' # oricon?
         ]
