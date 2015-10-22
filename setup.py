@@ -28,7 +28,7 @@ setup(
     description = proj_info['description'],
     keywords = proj_info['keywords'],
 
-    long_description = README + '\n\n' + CHANGELOG,
+    long_description = README,
 
     packages = find_packages('src'),
     package_dir = {'' : 'src'},

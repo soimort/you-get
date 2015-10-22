@@ -61,14 +61,13 @@ target/
 # Misc
 _*
 *_
-README.html
-README.rst
 *.3gp
 *.asf
 *.download
 *.f4v
 *.flv
 *.gif
+*.html
 *.jpg
 *.lrc
 *.mkv
