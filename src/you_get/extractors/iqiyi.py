@@ -25,7 +25,7 @@ Changelog:
      add
      callpropvoid        QName(PackageNamespace(""), "trace"), 1
    ```
- 
+
 -> http://www.iqiyi.com/common/flashplayer/20150820/MainPlayer_5_2_27_2_c3_3_7_3.swf
     some small changes in Zombie.bite function
 
@@ -45,7 +45,7 @@ bid meaning for quality
 
 '''
 def mix(tvid):
-    salt = '97596c0abee04ab49ba25564161ad225'
+    salt = '2c76de15dcb44bd28ff0927d50d31620'
     tm = str(randint(2000,4000))
     sc = hashlib.new('md5', bytes(salt + tm + tvid, 'utf-8')).hexdigest()
     return tm, sc, 'eknas'
@@ -126,7 +126,9 @@ class Iqiyi(VideoExtractor):
         self.gen_uid=uuid4().hex
         info = self.getVMS()
 
-        assert info["code"] == "A000000"
+        if info["code"] != "A000000":
+            log.e("[error] outdated iQIYI key")
+            log.wtf("is your you-get up-to-date?")
 
         self.title = info["data"]["vi"]["vn"]
 
