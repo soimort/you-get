@@ -6,11 +6,8 @@ from .archive import *
 from .baidu import *
 from .bandcamp import *
 from .bilibili import *
-from .blip import *
-from .catfun import *
 from .cbs import *
 from .cntv import *
-from .coursera import *
 from .dailymotion import *
 from .douban import *
 from .douyutv import *
@@ -47,7 +44,6 @@ from .qianmo import *
 from .qq import *
 from .sina import *
 from .sohu import *
-from .songtaste import *
 from .soundcloud import *
 from .suntv import *
 from .theplatform import *
@@ -56,8 +52,6 @@ from .tudou import *
 from .tumblr import *
 from .twitter import *
 from .veoh import *
-from .vid48 import *
-from .videobam import *
 from .vimeo import *
 from .vine import *
 from .vk import *
