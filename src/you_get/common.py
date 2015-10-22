@@ -26,6 +26,7 @@ SITES = {
     'ifeng'      : 'ifeng',
     'in'         : 'alive',
     'instagram'  : 'instagram',
+    'interest'   : 'interest',
     'iqilu'      : 'iqilu',
     'iqiyi'      : 'iqiyi',
     'isuntv'     : 'suntv',

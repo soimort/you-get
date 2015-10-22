@@ -37,11 +37,8 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Bandcamp <http://bandcamp.com>
 * Baomihua (爆米花) <http://video.baomihua.com>
 * bilibili <http://www.bilibili.com>
-* Blip <http://blip.tv>
-* Catfun (喵星球) <http://www.catfun.tv>
 * CBS <http://www.cbs.com>
 * CNTV (中国网络电视台) <http://www.cntv.cn>
-* Coursera <https://www.coursera.org>
 * Dongting (天天动听) <http://www.dongting.com>
 * Douban (豆瓣) <http://douban.com>
 * DouyuTV (斗鱼) <http://www.douyutv.com>
@@ -50,6 +47,7 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Fun.tv (风行, Funshion) <http://www.fun.tv>
 * Google Drive <http://docs.google.com>
 * ifeng (凤凰视频) <http://v.ifeng.com>
+* Interest.me (CJ E&M) <http://interest.me>
 * Internet Archive <http://archive.org>
 * iQIYI (爱奇艺) <http://www.iqiyi.com>
 * iQilu (齐鲁网, 山东网络台) <http://v.iqilu.com>
@@ -73,15 +71,12 @@ Fork me on GitHub: <https://github.com/soimort/you-get>
 * Sina (新浪视频) <http://video.sina.com.cn>
 * Weibo Miaopai (新浪微博秒拍视频) <http://video.weibo.com>
 * Sohu (搜狐视频) <http://tv.sohu.com>
-* SongTaste <http://www.songtaste.com>
 * SoundCloud <http://soundcloud.com>
 * SunTV (阳光卫视) <http://www.isuntv.com>
 * TED <http://www.ted.com>
 * Tudou (土豆) <http://www.tudou.com>
 * Tumblr <http://www.tumblr.com>
 * Veoh <http://www.veoh.com>
-* VID48 <http://vid48.com>
-* VideoBam <http://videobam.com>
 * VK <http://vk.com>
 * 56 (56网) <http://www.56.com>
 * Xiami (虾米) <http://www.xiami.com>
