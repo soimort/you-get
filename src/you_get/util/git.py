@@ -28,6 +28,7 @@ def get_version(repo_path):
         raw, err = q.communicate()
         c_master = int(raw.decode('ascii'))
         cc = c_head - c_master
+        assert cc
         return '%s.%s.%s' % (major, minor, cc)
     except:
         return __version__

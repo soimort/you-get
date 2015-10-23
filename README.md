@@ -298,71 +298,71 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 
 | Site | URL | Videos? | Images? | Audios? |
 | :--: | :-- | :-----: | :-----: | :-----: |
-| **YouTube** | https://www.youtube.com/    |✓| | |
-| **Twitter** | https://twitter.com/        |✓|✓| |
-| VK          | http://vk.com/              |✓| | |
-| Vine        | https://vine.co/            |✓| | |
-| Vimeo       | https://vimeo.com/          |✓| | |
-| Vidto       | http://vidto.me/            |✓| | |
-| Veoh        | http://www.veoh.com/        |✓| | |
-| **Tumblr**  | https://www.tumblr.com/     |✓|✓|✓|
-| TED         | http://www.ted.com/         |✓| | |
-| SoundCloud  | https://soundcloud.com/     | | |✓|
-| MTV81       | http://www.mtv81.com/       |✓| | |
-| Mixcloud    | https://www.mixcloud.com/   | | |✓|
-| Metacafe    | http://www.metacafe.com/    |✓| | |
-| Magisto     | http://www.magisto.com/     |✓| | |
-| Khan Academy | https://www.khanacademy.org/ |✓| | |
-| JPopsuki TV | http://www.jpopsuki.tv/     |✓| | |
-| Internet Archive | https://archive.org/   |✓| | |
-| **Instagram** | https://instagram.com/    |✓|✓| |
-| Heavy Music Archive | http://www.heavy-music.ru/ | | |✓|
-| **Google+** | https://plus.google.com/    |✓|✓| |
-| Freesound   | http://www.freesound.org/   | | |✓|
-| Flickr      | https://www.flickr.com/     |✓|✓| |
-| Facebook    | https://www.facebook.com/   |✓| | |
-| eHow        | http://www.ehow.com/        |✓| | |
-| Dailymotion | http://www.dailymotion.com/ |✓| | |
-| CBS         | http://www.cbs.com/         |✓| | |
-| Bandcamp    | http://bandcamp.com/        | | |✓|
-| AliveThai   | http://alive.in.th/         |✓| | |
-| interest.me | http://ch.interest.me/tvn   |✓| | |
-| **755<br/>ナナゴーゴー** | http://7gogo.jp/     |✓|✓| |
-| **niconico<br/>ニコニコ動画** | http://www.nicovideo.jp/ |✓| | |
-| **163<br/>网易视频<br/>网易云音乐** | http://v.163.com/<br/>http://music.163.com/ |✓| |✓|
-| 56网     | http://www.56.com/          |✓| | |
-| **AcFun** | http://www.acfun.tv/       |✓| | |
-| **Baidu<br/>百度贴吧** | http://tieba.baidu.com/ |✓|✓| |
-| 爆米花网 | http://www.baomihua.com/    |✓| | |
-| **bilibili<br/>哔哩哔哩** | http://www.bilibili.com/ |✓| | |
-| 豆瓣     | http://www.douban.com/      | | |✓|
-| 斗鱼     | http://www.douyutv.com/     |✓| | |
-| 凤凰视频 |  http://v.ifeng.com/        |✓| | |
-| 风行网   | http://www.fun.tv/          |✓| | |
-| iQIYI<br/>爱奇艺 | http://www.iqiyi.com/ |✓| | |
-| 激动网   | http://www.joy.cn/          |✓| | |
-| 酷6网    | http://www.ku6.com/         |✓| | |
-| 酷狗音乐 | http://www.kugou.com/       | | |✓|
-| 酷我音乐 | http://www.kuwo.cn/         | | |✓|
-| 乐视网   | http://www.letv.com/        |✓| | |
-| 荔枝FM   | http://www.lizhi.fm/        | | |✓|
-| 秒拍     | http://www.miaopai.com/     |✓| | |
-| MioMio弹幕网 | http://www.miomio.tv/   |✓| | |
-| 痞客邦   | https://www.pixnet.net/     |✓| | |
-| PPTV聚力 | http://www.pptv.com/        |✓| | |
-| 齐鲁网   | http://v.iqilu.com/         |✓| | |
-| QQ<br/>腾讯视频 | http://v.qq.com/     |✓| | |
-| 阡陌视频 | http://qianmo.com/          |✓| | |
-| Sina<br/>新浪视频<br/>微博秒拍视频 | http://video.sina.com.cn/<br/>http://video.weibo.com/ |✓| | |
-| Sohu<br/>搜狐视频 | http://tv.sohu.com/ |✓| | |
-| 天天动听 | http://www.dongting.com/    | | |✓|
-| **Tudou<br/>土豆** | http://www.tudou.com/ |✓| | |
-| 虾米     | http://www.xiami.com/       | | |✓|
-| 阳光卫视 | http://www.isuntv.com/      |✓| | |
-| **音悦Tai** | http://www.yinyuetai.com/ |✓| | |
-| **Youku<br/>优酷** | http://www.youku.com/ |✓| | |
-| 战旗TV   | http://www.zhanqi.tv/lives  |✓| | |
-| 央视网   | http://www.cntv.cn/         |✓| | |
+| **YouTube** | <https://www.youtube.com/>    |✓| | |
+| **Twitter** | <https://twitter.com/>        |✓|✓| |
+| VK          | <http://vk.com/>              |✓| | |
+| Vine        | <https://vine.co/>            |✓| | |
+| Vimeo       | <https://vimeo.com/>          |✓| | |
+| Vidto       | <http://vidto.me/>            |✓| | |
+| Veoh        | <http://www.veoh.com/>        |✓| | |
+| **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
+| TED         | <http://www.ted.com/>         |✓| | |
+| SoundCloud  | <https://soundcloud.com/>     | | |✓|
+| MTV81       | <http://www.mtv81.com/>       |✓| | |
+| Mixcloud    | <https://www.mixcloud.com/>   | | |✓|
+| Metacafe    | <http://www.metacafe.com/>    |✓| | |
+| Magisto     | <http://www.magisto.com/>     |✓| | |
+| Khan Academy | <https://www.khanacademy.org/> |✓| | |
+| JPopsuki TV | <http://www.jpopsuki.tv/>     |✓| | |
+| Internet Archive | <https://archive.org/>   |✓| | |
+| **Instagram** | <https://instagram.com/>    |✓|✓| |
+| Heavy Music Archive | <http://www.heavy-music.ru/> | | |✓|
+| **Google+** | <https://plus.google.com/>    |✓|✓| |
+| Freesound   | <http://www.freesound.org/>   | | |✓|
+| Flickr      | <https://www.flickr.com/>     |✓|✓| |
+| Facebook    | <https://www.facebook.com/>   |✓| | |
+| eHow        | <http://www.ehow.com/>        |✓| | |
+| Dailymotion | <http://www.dailymotion.com/> |✓| | |
+| CBS         | <http://www.cbs.com/>         |✓| | |
+| Bandcamp    | <http://bandcamp.com/>        | | |✓|
+| AliveThai   | <http://alive.in.th/>         |✓| | |
+| interest.me | <http://ch.interest.me/tvn>   |✓| | |
+| **755<br/>ナナゴーゴー** | <http://7gogo.jp/> |✓|✓| |
+| **niconico<br/>ニコニコ動画** | <http://www.nicovideo.jp/> |✓| | |
+| **163<br/>网易视频<br/>网易云音乐** | <http://v.163.com/><br/><http://music.163.com/> |✓| |✓|
+| 56网     | <http://www.56.com/>           |✓| | |
+| **AcFun** | <http://www.acfun.tv/>        |✓| | |
+| **Baidu<br/>百度贴吧** | <http://tieba.baidu.com/> |✓|✓| |
+| 爆米花网 | <http://www.baomihua.com/>     |✓| | |
+| **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
+| 豆瓣     | <http://www.douban.com/>       | | |✓|
+| 斗鱼     | <http://www.douyutv.com/>      |✓| | |
+| 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
+| 风行网   | <http://www.fun.tv/>           |✓| | |
+| iQIYI<br/>爱奇艺 | <http://www.iqiyi.com/> |✓| | |
+| 激动网   | <http://www.joy.cn/>           |✓| | |
+| 酷6网    | <http://www.ku6.com/>          |✓| | |
+| 酷狗音乐 | <http://www.kugou.com/>        | | |✓|
+| 酷我音乐 | <http://www.kuwo.cn/>          | | |✓|
+| 乐视网   | <http://www.letv.com/>         |✓| | |
+| 荔枝FM   | <http://www.lizhi.fm/>         | | |✓|
+| 秒拍     | <http://www.miaopai.com/>      |✓| | |
+| MioMio弹幕网 | <http://www.miomio.tv/>    |✓| | |
+| 痞客邦   | <https://www.pixnet.net/>      |✓| | |
+| PPTV聚力 | <http://www.pptv.com/>         |✓| | |
+| 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
+| QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
+| 阡陌视频 | <http://qianmo.com/>           |✓| | |
+| Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
+| Sohu<br/>搜狐视频 | <http://tv.sohu.com/> |✓| | |
+| 天天动听 | <http://www.dongting.com/>     | | |✓|
+| **Tudou<br/>土豆** | <http://www.tudou.com/> |✓| | |
+| 虾米     | <http://www.xiami.com/>        | | |✓|
+| 阳光卫视 | <http://www.isuntv.com/>       |✓| | |
+| **音悦Tai** | <http://www.yinyuetai.com/> |✓| | |
+| **Youku<br/>优酷** | <http://www.youku.com/> |✓| | |
+| 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
+| 央视网   | <http://www.cntv.cn/>          |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
