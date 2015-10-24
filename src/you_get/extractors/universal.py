@@ -28,12 +28,12 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
         # most common media file extensions on the Internet
         media_exts = ['\.flv', '\.mp3', '\.mp4', '\.webm',
-                      '[-_]1\d\d\d\.jpg', '[-_][6-9]\d\d\.jpg', # tumblr
-                      '[-_]1\d\d\dx[6-9]\d\d\.jpg',
-                      '[-_][6-9]\d\dx1\d\d\d\.jpg',
-                      '[-_][6-9]\d\dx[6-9]\d\d\.jpg',
-                      's1600/[\w%]+\.jpg', # blogger
-                      'img[6-9]\d\d/[\w%]+\.jpg' # oricon?
+                      '[-_]1\d\d\d\.jpe?g', '[-_][6-9]\d\d\.jpe?g', # tumblr
+                      '[-_]1\d\d\dx[6-9]\d\d\.jpe?g',
+                      '[-_][6-9]\d\dx1\d\d\d\.jpe?g',
+                      '[-_][6-9]\d\dx[6-9]\d\d\.jpe?g',
+                      's1600/[\w%]+\.jpe?g', # blogger
+                      'img[6-9]\d\d/[\w%]+\.jpe?g' # oricon?
         ]
 
         urls = []
@@ -47,7 +47,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
             urls += [url.replace('\\\\/', '/') for url in q_urls]
 
         # a link href to an image is often an interesting one
-        urls += re.findall(r'href="(https?://[^"]+\.jpg)"', page)
+        urls += re.findall(r'href="(https?://[^"]+\.jpe?g)"', page)
 
         # have some candy!
         candies = []
