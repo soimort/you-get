@@ -42,7 +42,7 @@ fmt_level = dict(
 
 def google_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     # Percent-encoding Unicode URL
-    url = parse.quote(url, safe = ':/+%')
+    url = parse.quote(url, safe = ':/+%?=')
 
     service = url.split('/')[2].split('.')[0]
 
