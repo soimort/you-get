@@ -12,6 +12,7 @@ SITES = {
     'cntv'       : 'cntv',
     'cbs'        : 'cbs',
     'dailymotion': 'dailymotion',
+    'dilidili'   : 'dilidili',
     'dongting'   : 'dongting',
     'douban'     : 'douban',
     'douyutv'    : 'douyutv',

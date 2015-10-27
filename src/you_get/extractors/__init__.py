@@ -9,6 +9,7 @@ from .bilibili import *
 from .cbs import *
 from .cntv import *
 from .dailymotion import *
+from .dilidili import *
 from .douban import *
 from .douyutv import *
 from .ehow import *
