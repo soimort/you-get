@@ -55,7 +55,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         candies = []
         for url in set(urls):
             filename = parse.unquote(url.split('/')[-1])
-            if len(filename) >= 8:
+            if len(filename) >= 5:
                 title = '.'.join(filename.split('.')[:-1])
             else:
                 title = page_title
