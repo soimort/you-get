@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.111
+project-version: 0.4.125
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.111.tar.gz
+download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.125.tar.gz
 download-checksum-type: MD5SUM
-download-checksum-data: 03a0734ca8e450f495f002c2304a9597
-download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.111.tar.gz.asc
+download-checksum-data: 317f237ec4af0710ac6307a99261ee1c
+download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.125.tar.gz.asc
 
 ---
 # You-Get
@@ -50,6 +50,8 @@ What `you-get` can do for you:
 Interested? [Install it](#installation) now and [get started by examples](#getting-started).
 
 Are you a Python programmer? Then check out [the source](https://github.com/soimort/you-get) and fork it!
+
+![](http://i.imgur.com/GfthFAz.png)
 
 ## Installation
 
@@ -191,38 +193,19 @@ Downloading rms.jpg ...
 Otherwise, `you-get` will scrape the web page and try to figure out if there's anything interesting to you:
 
 ```
-$ you-get http://www.wired.com/2012/11/time-lapse-within-worlds/
-Site:       wired.com
-Title:      Geminid-Meteor-over-Castle-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.09 MiB (95581 Bytes)
+$ you-get http://kopasas.tumblr.com/post/69361932517
+Site:       Tumblr.com
+Title:      kopasas
+Type:       Unknown type (None)
+Size:       0.51 MiB (536583 Bytes)
 
-Downloading Geminid-Meteor-over-Castle-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  606 kB/s
+Site:       Tumblr.com
+Title:      tumblr_mxhg13jx4n1sftq6do1_1280
+Type:       Portable Network Graphics (image/png)
+Size:       0.51 MiB (536583 Bytes)
 
-Site:       wired.com
-Title:      Star-Trails-over-Mount-Shasta
-Type:       JPEG Image (image/jpeg)
-Size:       0.1 MiB (108263 Bytes)
-
-Downloading Star-Trails-over-Mount-Shasta.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  615 kB/s
-
-Site:       wired.com
-Title:      Milky-Way-and-Lyrid-Meteor-over-Crater-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.1 MiB (104196 Bytes)
-
-Downloading Milky-Way-and-Lyrid-Meteor-over-Crater-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  643 kB/s
-
-Site:       wired.com
-Title:      Aurora-over-Crater-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.08 MiB (87666 Bytes)
-
-Downloading Aurora-over-Crater-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  365 kB/s
+Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
+100.0% (  0.5/0.5  MB) ├████████████████████████████████████████┤[1/1]   22 MB/s
 ```
 
 **Note:**
@@ -349,6 +332,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Baidu<br/>百度贴吧** | <http://tieba.baidu.com/> |✓|✓| |
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
 | **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
+| Dilidili | <http://www.dilidili.com/>     |✓| | |
 | 豆瓣     | <http://www.douban.com/>       | | |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |

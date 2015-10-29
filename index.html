@@ -27,7 +27,7 @@
   <a href="https://you-get.org/"><img src="images/logo.jpg"/></a>
   <div id="desc">
     <h1>You-Get</h1>
-    <h2>version 0.4.111</h2>
+    <h2>version 0.4.125</h2>
     <a href="https://github.com/soimort/you-get">Star <i class="fa fa-github-square fa-2x"></i></a>
     <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.111.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
     <div id="msg">
@@ -85,6 +85,10 @@ Downloading TEDxGE2014_Stallman05_LQ.webm ...
 </ul>
 <p>Interested? <a href="#installation">Install it</a> now and <a href="#getting-started">get started by examples</a>.</p>
 <p>Are you a Python programmer? Then check out <a href="https://github.com/soimort/you-get">the source</a> and fork it!</p>
+<div class="figure">
+<img src="http://i.imgur.com/GfthFAz.png" alt="" />
+
+</div>
 <h2 id="installation">Installation</h2>
 <h3 id="prerequisites">Prerequisites</h3>
 <ul>
@@ -177,38 +181,19 @@ Size:       0.06 MiB (66482 Bytes)
 Downloading rms.jpg ...
 100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  127 kB/s</code></pre>
 <p>Otherwise, <code>you-get</code> will scrape the web page and try to figure out if there's anything interesting to you:</p>
-<pre><code>$ you-get http://www.wired.com/2012/11/time-lapse-within-worlds/
-Site:       wired.com
-Title:      Geminid-Meteor-over-Castle-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.09 MiB (95581 Bytes)
+<pre><code>$ you-get http://kopasas.tumblr.com/post/69361932517
+Site:       Tumblr.com
+Title:      kopasas
+Type:       Unknown type (None)
+Size:       0.51 MiB (536583 Bytes)
 
-Downloading Geminid-Meteor-over-Castle-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  606 kB/s
+Site:       Tumblr.com
+Title:      tumblr_mxhg13jx4n1sftq6do1_1280
+Type:       Portable Network Graphics (image/png)
+Size:       0.51 MiB (536583 Bytes)
 
-Site:       wired.com
-Title:      Star-Trails-over-Mount-Shasta
-Type:       JPEG Image (image/jpeg)
-Size:       0.1 MiB (108263 Bytes)
-
-Downloading Star-Trails-over-Mount-Shasta.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  615 kB/s
-
-Site:       wired.com
-Title:      Milky-Way-and-Lyrid-Meteor-over-Crater-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.1 MiB (104196 Bytes)
-
-Downloading Milky-Way-and-Lyrid-Meteor-over-Crater-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  643 kB/s
-
-Site:       wired.com
-Title:      Aurora-over-Crater-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.08 MiB (87666 Bytes)
-
-Downloading Aurora-over-Crater-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  365 kB/s</code></pre>
+Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
+100.0% (  0.5/0.5  MB) ├████████████████████████████████████████┤[1/1]   22 MB/s</code></pre>
 <p><strong>Note:</strong></p>
 <ul>
 <li>This feature is an experimental one and far from perfect. It works best on scraping large-sized images from popular websites like Tumblr and Blogger, but there is really no universal pattern that can apply to any site on the Internet.</li>
@@ -530,195 +515,202 @@ Downloading Aurora-over-Crater-Lake.jpg ...
 <td align="center"></td>
 </tr>
 <tr class="even">
+<td align="center">Dilidili</td>
+<td align="left"><a href="http://www.dilidili.com/" class="uri">http://www.dilidili.com/</a></td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
 <td align="center">豆瓣</td>
 <td align="left"><a href="http://www.douban.com/" class="uri">http://www.douban.com/</a></td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">斗鱼</td>
 <td align="left"><a href="http://www.douyutv.com/" class="uri">http://www.douyutv.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">凤凰视频</td>
 <td align="left"><a href="http://v.ifeng.com/" class="uri">http://v.ifeng.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">风行网</td>
 <td align="left"><a href="http://www.fun.tv/" class="uri">http://www.fun.tv/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">iQIYI<br/>爱奇艺</td>
 <td align="left"><a href="http://www.iqiyi.com/" class="uri">http://www.iqiyi.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">激动网</td>
 <td align="left"><a href="http://www.joy.cn/" class="uri">http://www.joy.cn/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">酷6网</td>
 <td align="left"><a href="http://www.ku6.com/" class="uri">http://www.ku6.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">酷狗音乐</td>
 <td align="left"><a href="http://www.kugou.com/" class="uri">http://www.kugou.com/</a></td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">酷我音乐</td>
 <td align="left"><a href="http://www.kuwo.cn/" class="uri">http://www.kuwo.cn/</a></td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">乐视网</td>
 <td align="left"><a href="http://www.letv.com/" class="uri">http://www.letv.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">荔枝FM</td>
 <td align="left"><a href="http://www.lizhi.fm/" class="uri">http://www.lizhi.fm/</a></td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">秒拍</td>
 <td align="left"><a href="http://www.miaopai.com/" class="uri">http://www.miaopai.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">MioMio弹幕网</td>
 <td align="left"><a href="http://www.miomio.tv/" class="uri">http://www.miomio.tv/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">痞客邦</td>
 <td align="left"><a href="https://www.pixnet.net/" class="uri">https://www.pixnet.net/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">PPTV聚力</td>
 <td align="left"><a href="http://www.pptv.com/" class="uri">http://www.pptv.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">齐鲁网</td>
 <td align="left"><a href="http://v.iqilu.com/" class="uri">http://v.iqilu.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">QQ<br/>腾讯视频</td>
 <td align="left"><a href="http://v.qq.com/" class="uri">http://v.qq.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">阡陌视频</td>
 <td align="left"><a href="http://qianmo.com/" class="uri">http://qianmo.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">Sina<br/>新浪视频<br/>微博秒拍视频</td>
 <td align="left"><a href="http://video.sina.com.cn/" class="uri">http://video.sina.com.cn/</a><br/><a href="http://video.weibo.com/" class="uri">http://video.weibo.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">Sohu<br/>搜狐视频</td>
 <td align="left"><a href="http://tv.sohu.com/" class="uri">http://tv.sohu.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">天天动听</td>
 <td align="left"><a href="http://www.dongting.com/" class="uri">http://www.dongting.com/</a></td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center"><strong>Tudou<br/>土豆</strong></td>
 <td align="left"><a href="http://www.tudou.com/" class="uri">http://www.tudou.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">虾米</td>
 <td align="left"><a href="http://www.xiami.com/" class="uri">http://www.xiami.com/</a></td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">阳光卫视</td>
 <td align="left"><a href="http://www.isuntv.com/" class="uri">http://www.isuntv.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center"><strong>音悦Tai</strong></td>
 <td align="left"><a href="http://www.yinyuetai.com/" class="uri">http://www.yinyuetai.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center"><strong>Youku<br/>优酷</strong></td>
 <td align="left"><a href="http://www.youku.com/" class="uri">http://www.youku.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">战旗TV</td>
 <td align="left"><a href="http://www.zhanqi.tv/lives" class="uri">http://www.zhanqi.tv/lives</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">央视网</td>
 <td align="left"><a href="http://www.cntv.cn/" class="uri">http://www.cntv.cn/</a></td>
 <td align="center">✓</td>
