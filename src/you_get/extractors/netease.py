@@ -164,7 +164,7 @@ def encrypted_id(dfsId):
 
 def make_url(dfsId):
     encId = encrypted_id(dfsId)
-    mp3_url = "http://m1.music.126.net/%s/%s.mp3" % (encId, dfsId)
+    mp3_url = "http://m2.music.126.net/%s/%s.mp3" % (encId, dfsId)
     return mp3_url
 
 
