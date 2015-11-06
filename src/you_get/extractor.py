@@ -135,7 +135,9 @@ class VideoExtractor():
             # Print DASH streams
             if self.dash_streams:
                 print("    [ DASH ] %s" % ('_' * 36))
-                for stream in self.dash_streams:
+                itags = sorted(self.dash_streams,
+                               key=lambda i: -self.dash_streams[i]['size'])
+                for stream in itags:
                     self.p_stream(stream)
             # Print all other available streams
             print("    [ DEFAULT ] %s" % ('_' * 33))

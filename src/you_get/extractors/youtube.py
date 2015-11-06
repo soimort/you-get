@@ -241,38 +241,36 @@ class YouTube(VideoExtractor):
                     for rep in aset.getElementsByTagName('Representation'):
                         w = int(rep.getAttribute('width'))
                         h = int(rep.getAttribute('height'))
-                        if w > 1280:
-                            itag = rep.getAttribute('id')
-                            burls = rep.getElementsByTagName('BaseURL')
-                            dash_url = burls[0].firstChild.nodeValue
-                            dash_size = burls[0].getAttribute('yt:contentLength')
-                            self.dash_streams[itag] = {
-                                'quality': '%sx%s' % (w, h),
-                                'itag': itag,
-                                'type': mimeType,
-                                'mime': mimeType,
-                                'container': 'mp4',
-                                'src': [dash_url, dash_mp4_a_url],
-                                'size': int(dash_size) + int(dash_mp4_a_size)
-                            }
+                        itag = rep.getAttribute('id')
+                        burls = rep.getElementsByTagName('BaseURL')
+                        dash_url = burls[0].firstChild.nodeValue
+                        dash_size = burls[0].getAttribute('yt:contentLength')
+                        self.dash_streams[itag] = {
+                            'quality': '%sx%s' % (w, h),
+                            'itag': itag,
+                            'type': mimeType,
+                            'mime': mimeType,
+                            'container': 'mp4',
+                            'src': [dash_url, dash_mp4_a_url],
+                            'size': int(dash_size) + int(dash_mp4_a_size)
+                        }
                 elif mimeType == 'video/webm':
                     for rep in aset.getElementsByTagName('Representation'):
                         w = int(rep.getAttribute('width'))
                         h = int(rep.getAttribute('height'))
-                        if w > 1280:
-                            itag = rep.getAttribute('id')
-                            burls = rep.getElementsByTagName('BaseURL')
-                            dash_url = burls[0].firstChild.nodeValue
-                            dash_size = burls[0].getAttribute('yt:contentLength')
-                            self.dash_streams[itag] = {
-                                'quality': '%sx%s' % (w, h),
-                                'itag': itag,
-                                'type': mimeType,
-                                'mime': mimeType,
-                                'container': 'webm',
-                                'src': [dash_url, dash_webm_a_url],
-                                'size': int(dash_size) + int(dash_webm_a_size)
-                            }
+                        itag = rep.getAttribute('id')
+                        burls = rep.getElementsByTagName('BaseURL')
+                        dash_url = burls[0].firstChild.nodeValue
+                        dash_size = burls[0].getAttribute('yt:contentLength')
+                        self.dash_streams[itag] = {
+                            'quality': '%sx%s' % (w, h),
+                            'itag': itag,
+                            'type': mimeType,
+                            'mime': mimeType,
+                            'container': 'webm',
+                            'src': [dash_url, dash_webm_a_url],
+                            'size': int(dash_size) + int(dash_webm_a_size)
+                        }
         except:
             # VEVO
             self.js = get_content(self.html5player)
@@ -296,8 +294,7 @@ class YouTube(VideoExtractor):
                         dash_webm_a_size = stream['clen']
                 for stream in streams: # video
                     if 'size' in stream:
-                        w = int(r1(r'(\d+)x\d+', stream['size']))
-                        if w > 1280 and stream['type'].startswith('video/mp4'):
+                        if stream['type'].startswith('video/mp4'):
                             mimeType = 'video/mp4'
                             dash_url = stream['url']
                             sig = self.__class__.decipher(self.js, stream['s'])
@@ -313,7 +310,7 @@ class YouTube(VideoExtractor):
                                 'src': [dash_url, dash_mp4_a_url],
                                 'size': int(dash_size) + int(dash_mp4_a_size)
                             }
-                        elif w > 1280 and stream['type'].startswith('video/webm'):
+                        elif stream['type'].startswith('video/webm'):
                             mimeType = 'video/webm'
                             dash_url = stream['url']
                             sig = self.__class__.decipher(self.js, stream['s'])
