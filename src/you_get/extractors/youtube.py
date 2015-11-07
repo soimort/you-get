@@ -297,8 +297,9 @@ class YouTube(VideoExtractor):
                         if stream['type'].startswith('video/mp4'):
                             mimeType = 'video/mp4'
                             dash_url = stream['url']
-                            sig = self.__class__.decipher(self.js, stream['s'])
-                            dash_url += '&signature={}'.format(sig)
+                            if 's' in stream:
+                                sig = self.__class__.decipher(self.js, stream['s'])
+                                dash_url += '&signature={}'.format(sig)
                             dash_size = stream['clen']
                             itag = stream['itag']
                             self.dash_streams[itag] = {
@@ -313,8 +314,9 @@ class YouTube(VideoExtractor):
                         elif stream['type'].startswith('video/webm'):
                             mimeType = 'video/webm'
                             dash_url = stream['url']
-                            sig = self.__class__.decipher(self.js, stream['s'])
-                            dash_url += '&signature={}'.format(sig)
+                            if 's' in stream:
+                                sig = self.__class__.decipher(self.js, stream['s'])
+                                dash_url += '&signature={}'.format(sig)
                             dash_size = stream['clen']
                             itag = stream['itag']
                             self.dash_streams[itag] = {
@@ -345,10 +347,10 @@ class YouTube(VideoExtractor):
 
         if stream_id in self.streams:
             src = self.streams[stream_id]['url']
-            if self.streams[stream_id]['sig'] is not None:
+            if 'sig' in self.streams[stream_id]:
                 sig = self.streams[stream_id]['sig']
                 src += '&signature={}'.format(sig)
-            elif self.streams[stream_id]['s'] is not None:
+            elif 's' in self.streams[stream_id]:
                 if not hasattr(self, 'js'):
                     self.js = get_content(self.html5player)
                 s = self.streams[stream_id]['s']
