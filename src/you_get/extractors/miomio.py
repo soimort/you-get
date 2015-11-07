@@ -21,6 +21,7 @@ def miomio_download(url, output_dir = '.', merge = True, info_only = False, **kw
     elif t == 'tudou':
         tudou_download_by_id(id, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif t == 'sina' or t == 'video':
+        fake_headers['Referer'] = url
         url = "http://www.miomio.tv/mioplayer/mioplayerconfigfiles/sina.php?vid=" + id
         xml_data = get_content(url, headers=fake_headers, decoded=True)
         url_list = sina_xml_to_url_list(xml_data)
