@@ -347,10 +347,10 @@ class YouTube(VideoExtractor):
 
         if stream_id in self.streams:
             src = self.streams[stream_id]['url']
-            if 'sig' in self.streams[stream_id]:
+            if self.streams[stream_id]['sig'] is not None:
                 sig = self.streams[stream_id]['sig']
                 src += '&signature={}'.format(sig)
-            elif 's' in self.streams[stream_id]:
+            elif self.streams[stream_id]['s'] is not None:
                 if not hasattr(self, 'js'):
                     self.js = get_content(self.html5player)
                 s = self.streams[stream_id]['s']
