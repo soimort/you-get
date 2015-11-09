@@ -43,17 +43,23 @@ Are you a Python programmer? Then check out [the source](https://github.com/soim
 
 ### Prerequisites
 
+The following dependencies are required and must be installed separately, unless you are using a pre-built package on Windows:
+
 * **[Python 3](https://www.python.org/downloads/)**
 * **[FFmpeg](https://www.ffmpeg.org/)** (strongly recommended) or [Libav](https://libav.org/)
 * (Optional) [RTMPDump](https://rtmpdump.mplayerhq.hu/)
 
-### Option 1. Install the official release
+### Option 1: Install via pip
 
-The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager. Note that you must use the Python 3 version of `pip`:
+The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi/you-get), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager. Note that you must use the Python 3 version of `pip`:
 
     $ pip3 install you-get
 
-### Option 2. Download from GitHub
+### Option 2: Use a pre-built package (Windows only)
+
+Download the `exe` (standalone) or `7z` (all dependencies included) from: <https://github.com/soimort/you-get/releases/latest>.
+
+### Option 3: Download from GitHub
 
 You may either download the [stable](https://github.com/soimort/you-get/archive/master.zip) (identical with the latest release on PyPI) or the [develop](https://github.com/soimort/you-get/archive/develop.zip) (more hotfixes, unstable features) branch of `you-get`. Unzip it, and put the directory containing the `you-get` script into your `PATH`.
 
@@ -65,7 +71,7 @@ $ make install
 
 to install `you-get` to a permanent path.
 
-### Option 3. Git clone
+### Option 4: Git clone
 
 This is the recommended way for all developers, even if you don't often code in Python.
 
