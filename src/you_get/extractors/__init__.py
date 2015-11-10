@@ -40,6 +40,7 @@ from .mtv81 import *
 from .nanagogo import *
 from .netease import *
 from .nicovideo import *
+from .pinterest import *
 from .pixnet import *
 from .pptv import *
 from .qianmo import *
