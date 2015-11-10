@@ -35,10 +35,12 @@ def nanagogo_download(url, output_dir='.', merge=True, info_only=False, **kwargs
 
                 elif 'image' in item:
                     url = item['image']
-                    filename = parse.unquote(url.split('/')[-1])
-                    name = '.'.join(filename.split('.')[:-1])
-                    ext = filename.split('.')[-1]
-                    size = int(get_head(url)['Content-Length'])
+                    name = title
+                    #filename = parse.unquote(url.split('/')[-1])
+                    #name = '.'.join(filename.split('.')[:-1])
+                    #ext = filename.split('.')[-1]
+                    #size = int(get_head(url)['Content-Length'])
+                    _, ext, size = url_info(url)
                     images.append({'title': name,
                                    'url': url,
                                    'ext': ext,
