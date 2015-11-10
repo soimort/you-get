@@ -297,6 +297,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
 | TED         | <http://www.ted.com/>         |✓| | |
 | SoundCloud  | <https://soundcloud.com/>     | | |✓|
+| Pinterest   | <https://www.pinterest.com/>  | |✓| |
 | MTV81       | <http://www.mtv81.com/>       |✓| | |
 | Mixcloud    | <https://www.mixcloud.com/>   | | |✓|
 | Metacafe    | <http://www.metacafe.com/>    |✓| | |
