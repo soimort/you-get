@@ -6,6 +6,7 @@ from .letv import letvcloud_download_by_vu
 from .qq import qq_download_by_vid
 from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_id
+from .yinyuetai import yinyuetai_download_by_id
 from .youku import youku_download_by_vid
 
 """
@@ -30,6 +31,8 @@ refer to http://open.tudou.com/wiki/video/info
 """
 tudou_api_patterns = [ ]
 
+yinyuetai_embed_patterns = [ 'player\.yinyuetai\.com/video/swf/(\d+)' ]
+
 def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwargs):
     content = get_content(url)
     found = False
@@ -43,6 +46,11 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwa
     for vid in set(vids):
         found = True
         tudou_download_by_id(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+
+    vids = matchall(content, yinyuetai_embed_patterns)
+    for vid in vids:
+        found = True
+        yinyuetai_download_by_id(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     if not found:
         raise NotImplementedError(url)
