@@ -49,7 +49,7 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
     if service == 'plus': # Google Plus
 
         if not re.search(r'plus.google.com/photos/[^/]*/albums/\d+/\d+', url):
-            html = get_html(url)
+            html = get_html(parse.unquote(url))
             url = "https://plus.google.com/" + r1(r'"(photos/\d+/albums/\d+/\d+)', html)
             title = r1(r'<title>([^<\n]+)', html)
         else:
