@@ -3,10 +3,13 @@
 __all__ = ['tumblr_download']
 
 from ..common import *
-
-import re
+from .universal import *
 
 def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    if re.match(r'https?://\d+\.media\.tumblr\.com/', url):
+        universal_download(url, output_dir, merge=merge, info_only=info_only)
+        return
+
     html = parse.unquote(get_html(url)).replace('\/', '/')
     feed = r1(r'<meta property="og:type" content="tumblr-feed:(\w+)" />', html)
 
