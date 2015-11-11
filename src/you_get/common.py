@@ -45,6 +45,7 @@ SITES = {
     'miomio'     : 'miomio',
     'mixcloud'   : 'mixcloud',
     'mtv81'      : 'mtv81',
+    'musicplayon': 'musicplayon',
     '7gogo'      : 'nanagogo',
     'nicovideo'  : 'nicovideo',
     'pinterest'  : 'pinterest',

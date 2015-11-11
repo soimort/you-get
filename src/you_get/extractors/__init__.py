@@ -37,6 +37,7 @@ from .miaopai import *
 from .miomio import *
 from .mixcloud import *
 from .mtv81 import *
+from .musicplayon import *
 from .nanagogo import *
 from .netease import *
 from .nicovideo import *
