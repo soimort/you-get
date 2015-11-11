@@ -24,7 +24,7 @@ def get_srt_lock_json(id):
 def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only=False, **kwargs):
     info = json.loads(get_html('http://www.acfun.tv/video/getVideo.aspx?id=' + vid))
     sourceType = info['sourceType']
-    sourceId = info['sourceId']
+    if 'sourceId' in info: sourceId = info['sourceId']
     # danmakuId = info['danmakuId']
     if sourceType == 'sina':
         sina_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
@@ -36,6 +36,13 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
         qq_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'letv':
         letvcloud_download_by_vu(sourceId, '2d8c027396', title, output_dir=output_dir, merge=merge, info_only=info_only)
+    elif sourceType == 'zhuzhan':
+        videoList = info['videoList']
+        playUrl = videoList[-1]['playUrl']
+        mime, ext, size = url_info(playUrl)
+        print_info(site_info, title, mime, size)
+        if not info_only:
+            download_urls([playUrl], title, ext, size, output_dir, merge=merge)
     else:
         raise NotImplementedError(sourceType)
 
@@ -59,7 +66,7 @@ def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only
 # protected static const VIDEO_PARSE_API:String = "http://jiexi.acfun.info/index.php?vid=";
 # protected static var VIDEO_RATES_CODE:Array = ["C40","C30","C20","C10"];
 # public static var VIDEO_RATES_STRING:Array = ["原画","超清","高清","流畅"];
-# Sometimes may find C80 but size smaller than C30 
+# Sometimes may find C80 but size smaller than C30
 
 
 #def acfun_download_by_vid(vid, title=None, output_dir='.', merge=True, info_only=False ,**kwargs):
@@ -122,7 +129,7 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if videos is not None:
         for video in videos:
             p_vid = video[0]
-            p_title = title + " - " + video[1]
+            p_title = title + " - " + video[1] if video[1] != '删除标签' else title
             acfun_download_by_vid(p_vid, p_title, output_dir=output_dir, merge=merge, info_only=info_only ,**kwargs)
     else:
         # Useless - to be removed?
