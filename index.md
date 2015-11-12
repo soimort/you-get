@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.136
+project-version: 0.4.156
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.136.tar.gz
+download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.156.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: d99c7d6fa3ed615271e6b2a871f8e7cd103a27e6
-download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.136.tar.gz.asc
+download-checksum-data: 8b9d59ab1b033e96bc4b2cdf12ba76f64c000468
+download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.156.tar.gz.asc
 
 ---
 # You-Get
@@ -311,6 +311,8 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
 | TED         | <http://www.ted.com/>         |✓| | |
 | SoundCloud  | <https://soundcloud.com/>     | | |✓|
+| Pinterest   | <https://www.pinterest.com/>  | |✓| |
+| MusicPlayOn | <http://en.musicplayon.com/>  |✓| | |
 | MTV81       | <http://www.mtv81.com/>       |✓| | |
 | Mixcloud    | <https://www.mixcloud.com/>   | | |✓|
 | Metacafe    | <http://www.metacafe.com/>    |✓| | |
