@@ -34,16 +34,15 @@ def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_
         config_url = unescape_html(r1(r'data-config-url="([^"]+)"', html))
         video_page = get_content(config_url, headers=fake_headers)
         title = r1(r'"title":"([^"]+)"', video_page)
+        info = loads(video_page)
     except:
         video_page = get_content('http://player.vimeo.com/video/%s' % id, headers=fake_headers)
         title = r1(r'<title>([^<]+)</title>', video_page)
+        info = loads(match1(video_page, r'var t=(\{[^;]+\});'))
 
-    info = dict(re.findall(r'"([^"]+)":\{[^{]+"url":"([^"]+)"', video_page))
-    for quality in ['hd', 'sd', 'mobile']:
-        if quality in info:
-            url = info[quality]
-            break
-    assert url
+    streams = info['request']['files']['progressive']
+    streams = sorted(streams, key=lambda i: i['height'])
+    url = streams[-1]['url']
 
     type, ext, size = url_info(url, faker=True)
 
