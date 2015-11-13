@@ -11,20 +11,20 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
     item_id = r1(r'data-item-id="([^"]*)"', html)
     page_title = "{} [{}]".format(screen_name, item_id)
 
-    icards = r1(r'data-src="([^"]*)"', html)
-    if icards:
-        html = get_html("https://twitter.com" + icards)
-        data_player_config = r1(r'data-player-config="([^"]*)"', html)
-        if data_player_config is None:
-            vine_src = r1(r'<iframe src="([^"]*)"', html)
-            vine_download(vine_src, output_dir=output_dir, merge=merge, info_only=info_only)
-            return
-        data = json.loads(unescape_html(data_player_config))
-        source = data['playlist'][0]['source']
-    else:
-        source = r1(r'<source video-src="([^"]*)"', html)
-
     try: # extract video
+        icards = r1(r'data-src="([^"]*)"', html)
+        if icards:
+            card = get_html("https://twitter.com" + icards)
+            data_player_config = r1(r'data-player-config="([^"]*)"', card)
+            if data_player_config is None:
+                vine_src = r1(r'<iframe src="([^"]*)"', card)
+                vine_download(vine_src, output_dir=output_dir, merge=merge, info_only=info_only)
+                return
+            data = json.loads(unescape_html(data_player_config))
+            source = data['playlist'][0]['source']
+        else:
+            source = r1(r'<source video-src="([^"]*)"', card)
+
         mime, ext, size = url_info(source)
 
         print_info(site_info, page_title, mime, size)
