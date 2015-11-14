@@ -122,8 +122,11 @@ class Iqiyi(VideoExtractor):
 
         if self.url and not self.vid:
             html = get_html(self.url)
-            tvid = r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tvid=([^&]+)', self.url)
-            videoid = r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=([^&]+)', self.url)
+            tvid = r1(r'#curid=(.+)_', self.url)
+            videoid = r1(r'#curid=.+_(.*)$', self.url)  #修正同一个节目的不同选集默认下载第一个选集的bug,前提是选不同选集时网址会变
+            if not tvid and not videoid:
+                tvid = r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tvid=([^&]+)', self.url)
+                videoid = r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=([^&]+)', self.url)
             self.vid = (tvid, videoid)
 
         self.gen_uid=uuid4().hex
