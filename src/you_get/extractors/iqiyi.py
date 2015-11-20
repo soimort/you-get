@@ -119,8 +119,12 @@ class Iqiyi(VideoExtractor):
 
         if self.url and not self.vid:
             html = get_html(self.url)
-            tvid = r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tvid=([^&]+)', self.url)
-            videoid = r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=([^&]+)', self.url)
+            tvid = r1(r'#curid=(.+)_', self.url) or \
+                   r1(r'tvid=([^&]+)', self.url) or \
+                   r1(r'data-player-tvid="([^"]+)"', html)
+            videoid = r1(r'#curid=.+_(.*)$', self.url) or \
+                      r1(r'vid=([^&]+)', self.url) or \
+                      r1(r'data-player-videoid="([^"]+)"', html)
             self.vid = (tvid, videoid)
 
         self.gen_uid=uuid4().hex
