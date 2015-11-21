@@ -105,8 +105,22 @@ class YouTube(VideoExtractor):
         from html.parser import HTMLParser
         videos = sorted([HTMLParser().unescape(video)
                          for video in re.findall(r'<a href="(/watch\?[^"]+)"', video_page)
-                            if parse_query_param(video, 'index')],
+                         if parse_query_param(video, 'index')],
                         key=lambda video: parse_query_param(video, 'index'))
+
+        # Parse browse_ajax page for more videos to load
+        load_more_href = match1(video_page, r'data-uix-load-more-href="([^"]+)"')
+        while load_more_href:
+            browse_ajax = get_content('https://www.youtube.com/%s' % load_more_href)
+            browse_data = json.loads(browse_ajax)
+            load_more_widget_html = browse_data['load_more_widget_html']
+            content_html = browse_data['content_html']
+            vs = set(re.findall(r'href="(/watch\?[^"]+)"', content_html))
+            videos += sorted([HTMLParser().unescape(video)
+                              for video in list(vs)
+                              if parse_query_param(video, 'index')])
+            load_more_href = match1(load_more_widget_html, r'data-uix-load-more-href="([^"]+)"')
+
         self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
         self.p_playlist()
         for video in videos:
