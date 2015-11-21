@@ -1142,7 +1142,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
             raise
         else:
             sys.exit(1)
-    except:
+    except Exception:
         if not traceback:
             log.e('[error] oops, something went wrong.')
             log.e('don\'t panic, c\'est la vie. please try the following steps:')
