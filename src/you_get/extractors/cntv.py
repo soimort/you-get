@@ -22,10 +22,11 @@ def cntv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
     for url in urls:
         _, _, temp = url_info(url)
         size += temp
-    
+
     print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls(urls, title, ext, size, output_dir = output_dir, merge = merge)
+        # avoid corrupted files - don't merge
+        download_urls(urls, title, ext, size, output_dir = output_dir, merge = False)
 
 def cntv_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if re.match(r'http://tv\.cntv\.cn/video/(\w+)/(\w+)', url):
@@ -36,7 +37,7 @@ def cntv_download(url, output_dir = '.', merge = True, info_only = False, **kwar
         id = r1(r'http://xiyou.cntv.cn/v-([\w-]+)\.html', url)
     else:
         raise NotImplementedError(url)
-    
+
     cntv_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 
 site_info = "CNTV.com"
