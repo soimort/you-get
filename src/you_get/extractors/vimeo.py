@@ -50,10 +50,10 @@ def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_
         download_urls([url], title, ext, size, output_dir, merge = merge, faker = True)
 
 def vimeo_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    if re.match(r'http://vimeo.com/channels/\w+', url):
+    if re.match(r'https?://vimeo.com/channels/\w+', url):
         vimeo_download_by_channel(url, output_dir, merge, info_only)
     else:
-        id = r1(r'http://[\w.]*vimeo.com[/\w]*/(\d+)$', url)
+        id = r1(r'https?://[\w.]*vimeo.com[/\w]*/(\d+)$', url)
         assert id
 
         vimeo_download_by_id(id, None, output_dir = output_dir, merge = merge, info_only = info_only)
