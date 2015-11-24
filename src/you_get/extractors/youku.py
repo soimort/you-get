@@ -11,13 +11,17 @@ import traceback
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
 
+    # Last updated: 2015-11-24
     stream_types = [
-        {'id': 'hd3', 'container': 'flv', 'video_profile': '1080P'},
-        {'id': 'hd2', 'container': 'flv', 'video_profile': '超清'},
-        {'id': 'mp4', 'container': 'mp4', 'video_profile': '高清'},
-        {'id': 'flvhd', 'container': 'flv', 'video_profile': '高清'},
-        {'id': 'flv', 'container': 'flv', 'video_profile': '标清'},
-        {'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
+        {'id': 'mp4hd3', 'alias-of' : 'hd3'},
+        {'id': 'hd3',    'container': 'flv', 'video_profile': '1080P'},
+        {'id': 'mp4hd2', 'alias-of' : 'hd2'},
+        {'id': 'hd2',    'container': 'flv', 'video_profile': '超清'},
+        {'id': 'mp4hd',  'alias-of' : 'mp4'},
+        {'id': 'mp4',    'container': 'mp4', 'video_profile': '高清'},
+        {'id': 'flvhd',  'container': 'flv', 'video_profile': '标清'},
+        {'id': 'flv',    'container': 'flv', 'video_profile': '标清'},
+        {'id': '3gphd',  'container': '3gp', 'video_profile': '标清（3GP）'},
     ]
 
     def generate_ep(vid, ep):
@@ -107,40 +111,30 @@ class Youku(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
-        meta = json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/%s/Pf/4/ctype/12/ev/1' % self.vid))
-        if not meta['data']:
+        api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
+        try:
+            meta = json.loads(get_html(api_url))
+            data = meta['data']
+        except:
             log.wtf('[Failed] Video not found.')
-        metadata0 = meta['data'][0]
+        # TBD: error code? password protected?
 
-        if 'error_code' in metadata0 and metadata0['error_code']:
-            if metadata0['error_code'] == -8:
-                log.w('[Warning] This video can only be streamed within Mainland China!')
-                log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
-            elif metadata0['error_code'] == -6:
-                log.w('[Warning] This video is password protected.')
-                self.password_protected = True
+        self.title = data['video']['title']
+        self.ep = data['security']['encrypt_string']
+        self.ip = data['security']['ip']
 
-        self.title = metadata0['title']
-
-        self.ep = metadata0['ep']
-        self.ip = metadata0['ip']
-
-        if 'dvd' in metadata0 and 'audiolang' in metadata0['dvd']:
-            self.audiolang = metadata0['dvd']['audiolang']
-            for i in self.audiolang:
-                i['url'] = 'http://v.youku.com/v_show/id_{}'.format(i['vid'])
-
-        for stream_type in self.stream_types:
-            if stream_type['id'] in metadata0['streamsizes']:
-                stream_id = stream_type['id']
-                stream_size = int(metadata0['streamsizes'][stream_id])
-                self.streams[stream_id] = {'container': stream_type['container'], 'video_profile': stream_type['video_profile'], 'size': stream_size}
-
-        if not self.streams:
-            for stream_type in self.stream_types:
-                if stream_type['id'] in metadata0['streamtypes_o']:
-                    stream_id = stream_type['id']
-                    self.streams[stream_id] = {'container': stream_type['container'], 'video_profile': stream_type['video_profile']}
+        stream_types = dict([(i['id'], i) for i in self.stream_types])
+        for stream in data['stream']:
+            stream_id = stream['stream_type']
+            if stream_id in stream_types:
+                if 'alias-of' in stream_types[stream_id]:
+                    stream_id = stream_types[stream_id]['alias-of']
+                self.streams[stream_id] = {
+                    'container': stream_types[stream_id]['container'],
+                    'video_profile': stream_types[stream_id]['video_profile'],
+                    'size': stream['size']
+                }
+            # TBD: self.audio_lang['url']
 
     def extract(self, **kwargs):
         if 'stream_id' in kwargs and kwargs['stream_id']:
