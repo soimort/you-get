@@ -115,9 +115,13 @@ class Youku(VideoExtractor):
         try:
             meta = json.loads(get_html(api_url))
             data = meta['data']
+            assert 'stream' in data
         except:
-            log.wtf('[Failed] Video not found.')
-        # TBD: error code? password protected?
+            if 'error' in data:
+                log.wtf('[Failed] ' + data['error']['note'])
+            else:
+                log.wtf('[Failed] Video not found.')
+        # TBD: password protected?
 
         self.title = data['video']['title']
         self.ep = data['security']['encrypt_string']
