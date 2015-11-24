@@ -138,7 +138,12 @@ class Youku(VideoExtractor):
                     'video_profile': stream_types[stream_id]['video_profile'],
                     'size': stream['size']
                 }
-            # TBD: self.audio_lang['url']
+
+        # Audio languages
+        if 'dvd' in data and 'audiolang' in data['dvd']:
+            self.audiolang = data['dvd']['audiolang']
+            for i in self.audiolang:
+                i['url'] = 'http://v.youku.com/v_show/id_{}'.format(i['vid'])
 
     def extract(self, **kwargs):
         if 'stream_id' in kwargs and kwargs['stream_id']:
