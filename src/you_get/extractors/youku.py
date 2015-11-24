@@ -118,10 +118,17 @@ class Youku(VideoExtractor):
             assert 'stream' in data
         except:
             if 'error' in data:
-                log.wtf('[Failed] ' + data['error']['note'])
+                if data['error']['code'] == -202:
+                    # Password protected
+                    self.password_protected = True
+                    self.password = input(log.sprint('Password: ', log.YELLOW))
+                    api_url += '&pwd={}'.format(self.password)
+                    meta = json.loads(get_html(api_url))
+                    data = meta['data']
+                else:
+                    log.wtf('[Failed] ' + data['error']['note'])
             else:
                 log.wtf('[Failed] Video not found.')
-        # TBD: password protected?
 
         self.title = data['video']['title']
         self.ep = data['security']['encrypt_string']
@@ -175,8 +182,7 @@ class Youku(VideoExtractor):
 
         if not kwargs['info_only']:
             if self.password_protected:
-                password = input(log.sprint('Password: ', log.YELLOW))
-                m3u8_url += '&password={}'.format(password)
+                m3u8_url += '&password={}'.format(self.password)
 
             m3u8 = get_html(m3u8_url)
 
