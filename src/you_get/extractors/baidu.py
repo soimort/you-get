@@ -5,6 +5,7 @@ __all__ = ['baidu_download']
 
 from ..common import *
 from .embed import *
+from .universal import *
 
 def baidu_get_song_data(sid):
     data = json.loads(get_html('http://music.baidu.com/data/music/fmlink?songIds=%s' % sid, faker = True))['data']
@@ -88,7 +89,11 @@ def baidu_download_album(aid, output_dir = '.', merge = True, info_only = False)
         track_nr += 1
 
 def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info_only = False, **kwargs):
-    if re.match(r'http://pan.baidu.com', url):
+    if re.match(r'http://imgsrc.baidu.com', url):
+        universal_download(url, output_dir, merge=merge, info_only=info_only)
+        return
+
+    elif re.match(r'http://pan.baidu.com', url):
         html = get_html(url)
 
         title = r1(r'server_filename="([^"]+)"', html)
