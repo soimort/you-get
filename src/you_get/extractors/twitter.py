@@ -23,7 +23,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             data = json.loads(unescape_html(data_player_config))
             source = data['playlist'][0]['source']
         else:
-            source = r1(r'<source video-src="([^"]*)"', card)
+            source = r1(r'<source video-src="([^"]*)"', html)
 
         mime, ext, size = url_info(source)
 
