@@ -7,7 +7,7 @@ import pdb
 import time
 
 
-def vidto_download(url, output_dir='.', merge=True, info_only=False):
+def vidto_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_content(url)
     params = {}
     r = re.findall(

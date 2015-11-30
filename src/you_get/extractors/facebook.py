@@ -6,15 +6,15 @@ from ..common import *
 import json
 
 
-def facebook_download(url, output_dir='.', merge=True, info_only=False):
+def facebook_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
 
     title = r1(r'<title id="pageTitle">(.+) \| Facebook</title>', html)
     s2 = parse.unquote(unicodize(r1(r'\["params","([^"]*)"\]', html)))
     data = json.loads(s2)
-    video_data = data["video_data"][0]
+    video_data = data["video_data"]["progressive"]
     for fmt in ["hd_src", "sd_src"]:
-        src = video_data[fmt]
+        src = video_data[0][fmt]
         if src:
             break
 

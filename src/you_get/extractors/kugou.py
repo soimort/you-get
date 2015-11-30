@@ -8,7 +8,7 @@ from base64 import b64decode
 import re
 import hashlib
 
-def kugou_download(url, output_dir=".", merge=True, info_only=False):
+def kugou_download(url, output_dir=".", merge=True, info_only=False, **kwargs):
     if url.lower().find("5sing")!=-1:
         #for 5sing.kugou.com
         html=get_html(url)
@@ -39,7 +39,7 @@ def kugou_download_by_hash(title,hash_val,output_dir = '.', merge = True, info_o
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge=merge)
 
-def kugou_download_playlist(url, output_dir = '.', merge = True, info_only = False):
+def kugou_download_playlist(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html=get_html(url)
     pattern=re.compile('title="(.*?)".* data="(\w*)\|.*?"')
     pairs=pattern.findall(html)

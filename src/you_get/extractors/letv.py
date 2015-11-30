@@ -9,13 +9,13 @@ import base64, hashlib, urllib, time, re
 
 from ..common import *
 
-#@DEPRECATED 
+#@DEPRECATED
 def get_timestamp():
     tn = random.random()
     url = 'http://api.letv.com/time?tn={}'.format(tn)
     result = get_content(url)
     return json.loads(result)['stime']
-#@DEPRECATED 
+#@DEPRECATED
 def get_key(t):
     for s in range(0, 8):
         e = 1 & t
@@ -50,7 +50,7 @@ def decode(data):
 
 
 
-  
+
 def video_info(vid,**kwargs):
     url = 'http://api.letv.com/mms/out/video/playJson?id={}&platid=1&splatid=101&format=1&tkey={}&domain=www.letv.com'.format(vid,calcTimeKey(int(time.time())))
     r = get_content(url, decoded=False)
@@ -119,15 +119,9 @@ def letvcloud_download_by_vu(vu, uu, title=None, output_dir='.', merge=True, inf
         download_urls(urls, title, ext, size, output_dir=output_dir, merge=merge)
 
 def letvcloud_download(url, output_dir='.', merge=True, info_only=False):
-    for i in url.split('&'):
-        if 'vu=' in i:
-            vu = i[3:]
-        if 'uu=' in i:
-            uu = i[3:]
-    if len(vu) == 0:
-        raise ValueError('Cannot get vu!')
-    if len(uu) == 0:
-        raise ValueError('Cannot get uu!')
+    qs = parse.urlparse(url).query
+    vu = match1(qs, r'vu=([\w]+)')
+    uu = match1(qs, r'uu=([\w]+)')
     title = "LETV-%s" % vu
     letvcloud_download_by_vu(vu, uu, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 

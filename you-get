@@ -1,24 +1,15 @@
 #!/usr/bin/env python
-# This file is Python 2 compliant.
-
 import os, sys
 
 _srcdir = 'src/'
-if getattr(sys, 'frozen', False):
-    # The application is frozen
-    _filepath = os.path.dirname(os.path.realpath(sys.executable))
-else:
-    # The application is not frozen
-    # Change this bit to match where you store your data files:
-    _filepath = os.path.dirname(os.path.realpath(__file__))
+_filepath = os.path.dirname(sys.argv[0])
 sys.path.insert(1, os.path.join(_filepath, _srcdir))
 
 if sys.version_info[0] == 3:
     import you_get
     if __name__ == '__main__':
         you_get.main(repo_path=_filepath)
-else:
+else: # Python 2
     from you_get.util import log
-    log.wtf("""
-    [Fatal] Python 3 is required.
-    If Python 3 is already installed on your machine, try to run this script using 'python3 you-get'.""")
+    log.e("[fatal] Python 3 is required!")
+    log.wtf("try to run this script using 'python3 you-get'.")

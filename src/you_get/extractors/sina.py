@@ -58,7 +58,7 @@ def sina_download_by_vkey(vkey, title=None, output_dir='.', merge=True, info_onl
     if not info_only:
         download_urls([url], title, 'flv', size, output_dir = output_dir, merge = merge)
 
-def sina_download(url, output_dir='.', merge=True, info_only=False):
+def sina_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     """Downloads Sina videos by URL.
     """
 
@@ -70,6 +70,8 @@ def sina_download(url, output_dir='.', merge=True, info_only=False):
             vids = match1(video_page, r'[^\w]vid\s*:\s*\'([^\']+)\'').split('|')
             vid = vids[-1]
 
+    if vid is None:
+        vid = match1(video_page, r'vid:(\d+)')
     if vid:
         title = match1(video_page, r'title\s*:\s*\'([^\']+)\'')
         sina_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)

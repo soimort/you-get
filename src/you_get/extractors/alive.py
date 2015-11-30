@@ -4,7 +4,7 @@ __all__ = ['alive_download']
 
 from ..common import *
 
-def alive_download(url, output_dir = '.', merge = True, info_only = False):
+def alive_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html = get_html(url)
     
     title = r1(r'<meta property="og:title" content="([^"]+)"', html)

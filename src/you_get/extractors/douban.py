@@ -5,7 +5,7 @@ __all__ = ['douban_download']
 import urllib.request, urllib.parse
 from ..common import *
 
-def douban_download(url, output_dir = '.', merge = True, info_only = False):
+def douban_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html = get_html(url)
     if 'subject' in url:
         titles = re.findall(r'data-title="([^"]*)">', html)
