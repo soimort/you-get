@@ -2,7 +2,7 @@
 
 from ..common import *
 
-def theplatform_download_by_pid(pid, title, output_dir='.', merge=True, info_only=False):
+def theplatform_download_by_pid(pid, title, output_dir='.', merge=True, info_only=False, **kwargs):
     smil_url = "http://link.theplatform.com/s/dJ5BDC/%s/meta.smil?format=smil&mbr=true" % pid
     smil = get_content(smil_url)
     smil_base = unescape_html(match1(smil, r'<meta base="([^"]+)"'))

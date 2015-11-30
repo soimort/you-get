@@ -20,6 +20,7 @@ _help = """Usage: {} [OPTION]... [URL]...
 TODO
 """.format(script_name)
 
+# TBD
 def main_dev(**kwargs):
     """Main entry point.
     you-get-dev
@@ -88,4 +89,7 @@ def main(**kwargs):
     you-get (legacy)
     """
     from .common import main
+    main(**kwargs)
+
+if __name__ == '__main__':
     main()

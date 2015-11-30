@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # This file is Python 2 compliant.
 
-from .. import __name__ as library_name
+from ..version import script_name
 
 import os, sys
 
@@ -10,7 +10,8 @@ IS_ANSI_TERMINAL = os.getenv('TERM') in (
     'linux',
     'screen',
     'vt100',
-    'xterm')
+    'xterm',
+)
 
 # ANSI escape code
 # See <http://en.wikipedia.org/wiki/ANSI_escape_code>
@@ -70,7 +71,7 @@ def print_err(text, *colors):
 
 def print_log(text, *colors):
     """Print a log message to standard error."""
-    sys.stderr.write(sprint("{}: {}".format(library_name, text), *colors) + "\n")
+    sys.stderr.write(sprint("{}: {}".format(script_name, text), *colors) + "\n")
 
 def i(message):
     """Print a normal log message."""

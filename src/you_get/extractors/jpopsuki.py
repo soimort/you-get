@@ -4,7 +4,7 @@ __all__ = ['jpopsuki_download']
 
 from ..common import *
 
-def jpopsuki_download(url, output_dir='.', merge=True, info_only=False):
+def jpopsuki_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url, faker=True)
     
     title = r1(r'<meta name="title" content="([^"]*)"', html)

@@ -28,7 +28,7 @@ setup(
     description = proj_info['description'],
     keywords = proj_info['keywords'],
 
-    long_description = README + '\n\n' + CHANGELOG,
+    long_description = README,
 
     packages = find_packages('src'),
     package_dir = {'' : 'src'},
@@ -36,7 +36,7 @@ setup(
     test_suite = 'tests',
 
     platforms = 'any',
-    zip_safe = False,
+    zip_safe = True,
     include_package_data = True,
 
     classifiers = proj_info['classifiers'],

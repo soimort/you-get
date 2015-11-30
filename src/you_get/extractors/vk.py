@@ -4,7 +4,7 @@ __all__ = ['vk_download']
 
 from ..common import *
 
-def vk_download(url, output_dir='.', merge=True, info_only=False):
+def vk_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     video_page = get_content(url)
     title = unescape_html(r1(r'"title":"([^"]+)"', video_page))
     info = dict(re.findall(r'\\"url(\d+)\\":\\"([^"]+)\\"', video_page))

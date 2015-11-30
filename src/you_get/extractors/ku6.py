@@ -26,7 +26,7 @@ def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
     if not info_only:
         download_urls(urls, title, ext, size, output_dir, merge = merge)
 
-def ku6_download(url, output_dir = '.', merge = True, info_only = False):
+def ku6_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     patterns = [r'http://v.ku6.com/special/show_\d+/(.*)\.\.\.html',
             r'http://v.ku6.com/show/(.*)\.\.\.html',
             r'http://my.ku6.com/watch\?.*v=(.*)\.\..*']
