@@ -6,27 +6,16 @@ from ..extractor import VideoExtractor
 
 import base64
 import time
-<<<<<<< HEAD
+import traceback
 import urllib.parse
 import math
 import pdb
-=======
-import traceback
->>>>>>> 370b183d816ebd4b56fc176a4fdad52a8188f7a8
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
 
     # Last updated: 2015-11-24
     stream_types = [
-<<<<<<< HEAD
-        {'id': 'hd3', 'container': 'flv', 'video_profile': '1080P'},
-        {'id': 'hd2', 'container': 'flv', 'video_profile': '超清'},
-        {'id': 'mp4', 'container': 'mp4', 'video_profile': '高清'},
-        {'id': 'flvhd', 'container': 'flv', 'video_profile': '高清'},
-        {'id': 'flv', 'container': 'flv', 'video_profile': '标清'},
-        {'id': '3gphd', 'container': 'mp4', 'video_profile': '高清（3GP）'},
-=======
         {'id': 'mp4hd3', 'alias-of' : 'hd3'},
         {'id': 'hd3',    'container': 'flv', 'video_profile': '1080P'},
         {'id': 'mp4hd2', 'alias-of' : 'hd2'},
@@ -35,10 +24,10 @@ class Youku(VideoExtractor):
         {'id': 'mp4',    'container': 'mp4', 'video_profile': '高清'},
         {'id': 'flvhd',  'container': 'flv', 'video_profile': '标清'},
         {'id': 'flv',    'container': 'flv', 'video_profile': '标清'},
-        {'id': '3gphd',  'container': '3gp', 'video_profile': '标清（3GP）'},
->>>>>>> 370b183d816ebd4b56fc176a4fdad52a8188f7a8
+        {'id': '3gphd',  'container': 'mp4', 'video_profile': '标清（3GP）'},
     ]
-    #{'id': '3gphd', 'container': '3gp', 'video_profile': '高清（3GP）'},
+
+
     def trans_e(a, c):
         f = h = 0
         b = list(range(256))
@@ -60,93 +49,41 @@ class Youku(VideoExtractor):
 
         return result
 
-    def generate_ep_prepare(streamfileids,seed,ep):  #execute once
-        f_code_1 = 'becaf9be'
-        def trans_e(a, c):
-            f = h = 0
-            b = list(range(256))
-            result = ''
-            while h < 256:
-                f = (f + b[h] + ord(a[h % len(a)])) % 256
-                b[h], b[f] = b[f], b[h]
-                h += 1
-            q = f = h = 0
-            while q < len(c):
-                h = (h + 1) % 256
-                f = (f + b[h]) % 256
-                b[h], b[f] = b[f], b[h]
-                if isinstance(c[q], int):
-                    result += chr(c[q] ^ b[(b[h] + b[f]) % 256])
-                else:
-                    result += chr(ord(c[q]) ^ b[(b[h] + b[f]) % 256])
-                q += 1
-
-            return result
-
-        def getFileIdMixed(seed):
-            mixed=[]
-            source = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOP' +'QRSTUVWXYZ/\\:._-1234567890'
-            len1 = len(source)
-            for i in range(0,len1):
-                seed = (seed * 211 + 30031) % 65536;
-                index = math.floor(seed / 65536 * len(source));
-                mixed += source[index]
-                source = source.replace(source[index], '');
-            return mixed
-
-        def getFileId(fileId,seed):
-            mixed = getFileIdMixed(seed)
-            ids = fileId.split('*')
-            len1 = len(ids) - 1
-            realId = ''
-            for i in range(0,len1):
-                idx = int(ids[i])
-                realId += mixed[idx]
-            return realId
-
-
-
-        e_code = trans_e(f_code_1, base64.b64decode(bytes(ep, 'ascii')))
-
-        sid, token = e_code.split('_')
-        fileId0 = getFileId(streamfileids, seed)
-
-        return fileId0,sid,token
-
-    def generate_ep(no,fileId0,sid,token):
-        def trans_e(a, c):
-            f = h = 0
-            b = list(range(256))
-            result = ''
-            while h < 256:
-                f = (f + b[h] + ord(a[h % len(a)])) % 256
-                b[h], b[f] = b[f], b[h]
-                h += 1
-            q = f = h = 0
-            while q < len(c):
-                h = (h + 1) % 256
-                f = (f + b[h]) % 256
-                b[h], b[f] = b[f], b[h]
-                if isinstance(c[q], int):
-                    result += chr(c[q] ^ b[(b[h] + b[f]) % 256])
-                else:
-                    result += chr(ord(c[q]) ^ b[(b[h] + b[f]) % 256])
-                q += 1
-
-            return result
-
+    def generate_ep(no,streamfileids,sid,token):
         f_code_2 = 'bf7e5f01'
+
+        def trans_e(a, c):
+            f = h = 0
+            b = list(range(256))
+            result = ''
+            while h < 256:
+                f = (f + b[h] + ord(a[h % len(a)])) % 256
+                b[h], b[f] = b[f], b[h]
+                h += 1
+            q = f = h = 0
+            while q < len(c):
+                h = (h + 1) % 256
+                f = (f + b[h]) % 256
+                b[h], b[f] = b[f], b[h]
+                if isinstance(c[q], int):
+                    result += chr(c[q] ^ b[(b[h] + b[f]) % 256])
+                else:
+                    result += chr(ord(c[q]) ^ b[(b[h] + b[f]) % 256])
+                q += 1
+
+            return result
+
 
         number = hex(int(str(no),10))[2:].upper()
         if len(number) == 1:
             number = '0' + number
-        fileId = fileId0[0:8] + number + fileId0[10:]
+        fileId = streamfileids[0:8] + number + streamfileids[10:]
 
         ep = urllib.parse.quote(base64.b64encode(''.join(trans_e(f_code_2,sid+'_'+fileId+'_'+token)).encode('latin1')),safe='~()*!.\'')
         return fileId,ep
-
     def parse_m3u8(m3u8):
         return re.findall('(http://[^\r]+)\r',m3u8)
+#        return re.findall(r'(http://[^?]+)\?ts_start=0', m3u8)
 
     def get_vid_from_url(url):
         """Extracts video ID from URL.
@@ -193,6 +130,7 @@ class Youku(VideoExtractor):
                 traceback.print_exception(exc_type, exc_value, exc_traceback)
 
     def prepare(self, **kwargs):
+        self.streams_parameter = {}
         assert self.url or self.vid
 
         if self.url and not self.vid:
@@ -202,44 +140,13 @@ class Youku(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
-<<<<<<< HEAD
-        meta = json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/%s/Pf/4/ctype/12/ev/1' % self.vid))
-        if not meta['data']:
-            log.wtf('[Failed] Video not found.')
-        metadata0 = meta['data'][0]
-
-        if 'error_code' in metadata0 and metadata0['error_code']:
-            if metadata0['error_code'] == -6:
-                log.w('[Warning] This video is password protected.')
-                self.password_protected = True
-                password = input(log.sprint('Password: ', log.YELLOW))
-                meta = json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/%s/Pf/4/ctype/12/ev/1/password/' % self.vid + password))
-                if not meta['data']:
-                    log.wtf('[Failed] Video not found.')
-                metadata0 = meta['data'][0]
-
-        if 'error_code' in metadata0 and metadata0['error_code']:
-            if metadata0['error_code'] == -8 or metadata0['error_code'] == -26:
-                log.w('[Warning] This video can only be streamed within Mainland China!')
-                log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
-            else:
-                log.w(metadata0['error'])
-
-        self.title = metadata0['title']
-        self.metadata = metadata0
-        self.ep = metadata0['ep']
-        self.ip = metadata0['ip']
-##
-        self.seed = metadata0['seed']
-
-##
-        if 'dvd' in metadata0 and 'audiolang' in metadata0['dvd']:
-            self.audiolang = metadata0['dvd']['audiolang']
-=======
         api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
+        api_url1 = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
         try:
             meta = json.loads(get_html(api_url))
+            meta1 = json.loads(get_html(api_url1))
             data = meta['data']
+            data1 = meta1['data']
             assert 'stream' in data
         except:
             if 'error' in data:
@@ -248,7 +155,10 @@ class Youku(VideoExtractor):
                     self.password_protected = True
                     self.password = input(log.sprint('Password: ', log.YELLOW))
                     api_url += '&pwd={}'.format(self.password)
+                    api_url1 += '&pwd={}'.format(self.password)
+                    meta1 = json.loads(get_html(api_url1))
                     meta = json.loads(get_html(api_url))
+                    data1 = meta1['data']
                     data = meta['data']
                 else:
                     log.wtf('[Failed] ' + data['error']['note'])
@@ -260,6 +170,18 @@ class Youku(VideoExtractor):
         self.ip = data['security']['ip']
 
         stream_types = dict([(i['id'], i) for i in self.stream_types])
+
+        for stream in data1['stream']:
+            stream_id = stream['stream_type']
+            if stream_id in stream_types:
+                if 'alias-of' in stream_types[stream_id]:
+                    stream_id = stream_types[stream_id]['alias-of']
+                if stream_id not in self.streams_parameter:
+                    self.streams_parameter[stream_id] = {
+                            'fileid': stream['stream_fileid'],
+                            'segs': stream['segs']
+                            }
+
         for stream in data['stream']:
             stream_id = stream['stream_type']
             if stream_id in stream_types:
@@ -270,11 +192,15 @@ class Youku(VideoExtractor):
                     'video_profile': stream_types[stream_id]['video_profile'],
                     'size': stream['size']
                 }
+                if stream_id not in self.streams_parameter:
+                    self.streams_parameter[stream_id] = {
+                            'fileid': stream['stream_fileid'],
+                            'segs': stream['segs']
+                            }
 
         # Audio languages
         if 'dvd' in data and 'audiolang' in data['dvd']:
             self.audiolang = data['dvd']['audiolang']
->>>>>>> 370b183d816ebd4b56fc176a4fdad52a8188f7a8
             for i in self.audiolang:
                 i['url'] = 'http://v.youku.com/v_show/id_{}'.format(i['vid'])
 
@@ -291,22 +217,23 @@ class Youku(VideoExtractor):
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
 
-        container = self.streams[stream_id]['container']
-        self.streamfileids = self.metadata['streamfileids'][stream_id]
+        f_code_1 = 'becaf9be'
+        e_code = self.__class__.trans_e(f_code_1, base64.b64decode(bytes(self.ep, 'ascii')))
 
-        fileId0,sid,token = self.__class__.generate_ep_prepare(self.streamfileids,self.seed,self.ep)
+        sid, token = e_code.split('_')
+
         m3u8 = ''
-        stream_list=self.metadata['segs'][stream_id]
-        for nu in range(0,len(stream_list)):
-            k = stream_list[nu]['k']
+        segs = self.streams_parameter[stream_id]['segs']
+        streamfileid = self.streams_parameter[stream_id]['fileid']
+        for no in range(0,len(segs)):
+            k = segs[no]['key']
             if k == -1:
                 log.e('Error')
                 exit()
-            no = stream_list[nu]['no']
-            fileId,ep  = self.__class__.generate_ep(no,fileId0,sid,token)
-            #pdb.set_trace()
+            fileId,ep  = self.__class__.generate_ep(no,streamfileid ,sid,token)
+#            pdb.set_trace()
             m3u8  += 'http://k.youku.com/player/getFlvPath/sid/'+ sid
-            m3u8+='_00/st/'+ container
+            m3u8+='_00/st/'+ self.streams[stream_id]['container']
             m3u8+='/fileid/'+ fileId
             m3u8+='?K='+ k
             m3u8+='&ctype=12&ev=1&token='+ token
@@ -314,17 +241,20 @@ class Youku(VideoExtractor):
             m3u8+='&ep='+ ep+'\r\n'
 
         if not kwargs['info_only']:
-<<<<<<< HEAD
-=======
-            if self.password_protected:
-                m3u8_url += '&password={}'.format(self.password)
-
-            m3u8 = get_html(m3u8_url)
-
->>>>>>> 370b183d816ebd4b56fc176a4fdad52a8188f7a8
             self.streams[stream_id]['src'] = self.__class__.parse_m3u8(m3u8)
             if not self.streams[stream_id]['src'] and self.password_protected:
                 log.e('[Failed] Wrong password.')
+
+
+#        if not kwargs['info_only']:
+#            if self.password_protected:
+#                m3u8_url += '&password={}'.format(self.password)
+#
+#            m3u8 = get_html(m3u8_url)
+#
+#            self.streams[stream_id]['src'] = self.__class__.parse_m3u8(m3u8)
+#            if not self.streams[stream_id]['src'] and self.password_protected:
+#                log.e('[Failed] Wrong password.')
 
 site = Youku()
 download = site.download_by_url
