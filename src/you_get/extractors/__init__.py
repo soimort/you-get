@@ -62,7 +62,7 @@ from .vk import *
 from .w56 import *
 from .xiami import *
 from .yinyuetai import *
-from .yixia_miaopai import *
+from .yixia import *
 from .youku import *
 from .youtube import *
 from .ted import *
