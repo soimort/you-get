@@ -10,12 +10,6 @@ import traceback
 import urllib.parse
 import math
 import pdb
-<<<<<<< HEAD
-=======
-import traceback
->>>>>>> fc93524... [youku] gracefully handle single failure
-=======
->>>>>>> d27d2f8... support full length of youku's videos
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
@@ -30,16 +24,7 @@ class Youku(VideoExtractor):
         {'id': 'mp4',    'container': 'mp4', 'video_profile': '高清'},
         {'id': 'flvhd',  'container': 'flv', 'video_profile': '标清'},
         {'id': 'flv',    'container': 'flv', 'video_profile': '标清'},
-<<<<<<< HEAD
-<<<<<<< HEAD
-        {'id': '3gphd',  'container': '3gp', 'video_profile': '标清（3GP）'},
->>>>>>> c0b856a... [youku] fix #771
-=======
         {'id': '3gphd',  'container': 'mp4', 'video_profile': '标清（3GP）'},
->>>>>>> d27d2f8... support full length of youku's videos
-=======
-        {'id': '3gphd',  'container': 'mp4', 'video_profile': '标清（3GP）'},
->>>>>>> d27d2f876d552fc50c58773959a9b0d0f3bc2099
     ]
 
 
@@ -119,7 +104,6 @@ class Youku(VideoExtractor):
         try:
             playlist_id = self.__class__.get_playlist_id_from_url(self.url)
             assert playlist_id
-<<<<<<< HEAD
 
             video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
             videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
@@ -128,16 +112,6 @@ class Youku(VideoExtractor):
                 extra_page = get_content(extra_page_url)
                 videos |= set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
 
-=======
-
-            video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
-            videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
-
-            for extra_page_url in set(re.findall('href="(http://www\.youku\.com/playlist_show/id_%s_[^?"]+)' % playlist_id, video_page)):
-                extra_page = get_content(extra_page_url)
-                videos |= set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
-
->>>>>>> d27d2f876d552fc50c58773959a9b0d0f3bc2099
         except:
             video_page = get_content(url)
             videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
@@ -167,33 +141,6 @@ class Youku(VideoExtractor):
                 exit(0)
 
         api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
-<<<<<<< HEAD
-<<<<<<< HEAD
-        try:
-            meta = json.loads(get_html(api_url))
-            data = meta['data']
-            assert 'stream' in data
-        except:
-<<<<<<< HEAD
-            log.wtf('[Failed] Video not found.')
-<<<<<<< HEAD
-        metadata0 = meta['data'][0]
-
-        if 'error_code' in metadata0 and metadata0['error_code']:
-            if metadata0['error_code'] == -6:
-                log.w('[Warning] This video is password protected.')
-                self.password_protected = True
-                password = input(log.sprint('Password: ', log.YELLOW))
-                meta = json.loads(get_html('http://v.youku.com/player/getPlayList/VideoIDS/%s/Pf/4/ctype/12/ev/1/password/' % self.vid + password))
-                if not meta['data']:
-                    log.wtf('[Failed] Video not found.')
-                metadata0 = meta['data'][0]
-
-        if 'error_code' in metadata0 and metadata0['error_code']:
-            if metadata0['error_code'] == -8 or metadata0['error_code'] == -26:
-                log.w('[Warning] This video can only be streamed within Mainland China!')
-                log.w('Use \'-y\' to specify a proxy server for extracting stream data.\n')
-=======
         api_url1 = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
         try:
             meta = json.loads(get_html(api_url))
@@ -215,7 +162,6 @@ class Youku(VideoExtractor):
                     data = meta['data']
                 else:
                     log.wtf('[Failed] ' + data['error']['note'])
->>>>>>> d27d2f876d552fc50c58773959a9b0d0f3bc2099
             else:
                 log.wtf('[Failed] Video not found.')
 
@@ -258,101 +204,6 @@ class Youku(VideoExtractor):
             for i in self.audiolang:
                 i['url'] = 'http://v.youku.com/v_show/id_{}'.format(i['vid'])
 
-<<<<<<< HEAD
-        for stream_type in self.stream_types:
-            if stream_type['id'] in metadata0['streamsizes']:
-                stream_id = stream_type['id']
-                stream_size = int(metadata0['streamsizes'][stream_id])
-                self.streams[stream_id] = {'container': stream_type['container'], 'video_profile': stream_type['video_profile'], 'size': stream_size}
-
-        if not self.streams:
-            for stream_type in self.stream_types:
-                if stream_type['id'] in metadata0['streamtypes_o']:
-                    stream_id = stream_type['id']
-                    self.streams[stream_id] = {'container': stream_type['container'], 'video_profile': stream_type['video_profile']}
-=======
-        # TBD: error code? password protected?
-=======
-=======
-        api_url1 = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
-        try:
-            meta = json.loads(get_html(api_url))
-            meta1 = json.loads(get_html(api_url1))
-            data = meta['data']
-            data1 = meta1['data']
-            assert 'stream' in data
-        except:
->>>>>>> d27d2f8... support full length of youku's videos
-            if 'error' in data:
-                if data['error']['code'] == -202:
-                    # Password protected
-                    self.password_protected = True
-                    self.password = input(log.sprint('Password: ', log.YELLOW))
-                    api_url += '&pwd={}'.format(self.password)
-                    api_url1 += '&pwd={}'.format(self.password)
-                    meta1 = json.loads(get_html(api_url1))
-                    meta = json.loads(get_html(api_url))
-                    data1 = meta1['data']
-                    data = meta['data']
-                else:
-                    log.wtf('[Failed] ' + data['error']['note'])
-            else:
-                log.wtf('[Failed] Video not found.')
-<<<<<<< HEAD
-        # TBD: password protected?
->>>>>>> 7fd4fac... [youku] print error message
-=======
->>>>>>> d41b8a2... [youku] handle password-protected videos, fix #73 (again)
-
-        self.title = data['video']['title']
-        self.ep = data['security']['encrypt_string']
-        self.ip = data['security']['ip']
-
-        stream_types = dict([(i['id'], i) for i in self.stream_types])
-
-        for stream in data1['stream']:
-            stream_id = stream['stream_type']
-            if stream_id in stream_types:
-                if 'alias-of' in stream_types[stream_id]:
-                    stream_id = stream_types[stream_id]['alias-of']
-                if stream_id not in self.streams_parameter:
-                    self.streams_parameter[stream_id] = {
-                            'fileid': stream['stream_fileid'],
-                            'segs': stream['segs']
-                            }
-
-        for stream in data['stream']:
-            stream_id = stream['stream_type']
-            if stream_id in stream_types:
-                if 'alias-of' in stream_types[stream_id]:
-                    stream_id = stream_types[stream_id]['alias-of']
-                self.streams[stream_id] = {
-                    'container': stream_types[stream_id]['container'],
-                    'video_profile': stream_types[stream_id]['video_profile'],
-                    'size': stream['size']
-                }
-<<<<<<< HEAD
-<<<<<<< HEAD
-            # TBD: self.audio_lang['url']
->>>>>>> c0b856a... [youku] fix #771
-=======
-=======
-                if stream_id not in self.streams_parameter:
-                    self.streams_parameter[stream_id] = {
-                            'fileid': stream['stream_fileid'],
-                            'segs': stream['segs']
-                            }
->>>>>>> d27d2f8... support full length of youku's videos
-
-        # Audio languages
-        if 'dvd' in data and 'audiolang' in data['dvd']:
-            self.audiolang = data['dvd']['audiolang']
-            for i in self.audiolang:
-                i['url'] = 'http://v.youku.com/v_show/id_{}'.format(i['vid'])
->>>>>>> 6fdb9ca... [youku] add support for audio languages, fix #369 (again)
-
-=======
->>>>>>> d27d2f876d552fc50c58773959a9b0d0f3bc2099
     def extract(self, **kwargs):
         if 'stream_id' in kwargs and kwargs['stream_id']:
             # Extract the stream
@@ -390,17 +241,6 @@ class Youku(VideoExtractor):
             m3u8+='&ep='+ ep+'\r\n'
 
         if not kwargs['info_only']:
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            if self.password_protected:
-                m3u8_url += '&password={}'.format(self.password)
-
-            m3u8 = get_html(m3u8_url)
-
->>>>>>> d41b8a2... [youku] handle password-protected videos, fix #73 (again)
-=======
->>>>>>> d27d2f8... support full length of youku's videos
             self.streams[stream_id]['src'] = self.__class__.parse_m3u8(m3u8)
             if not self.streams[stream_id]['src'] and self.password_protected:
                 log.e('[Failed] Wrong password.')
