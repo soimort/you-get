@@ -105,7 +105,6 @@ class Youku(VideoExtractor):
             playlist_id = self.__class__.get_playlist_id_from_url(self.url)
             assert playlist_id
 
-
             video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
             videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
 
@@ -205,7 +204,6 @@ class Youku(VideoExtractor):
             for i in self.audiolang:
                 i['url'] = 'http://v.youku.com/v_show/id_{}'.format(i['vid'])
 
-
     def extract(self, **kwargs):
         if 'stream_id' in kwargs and kwargs['stream_id']:
             # Extract the stream
@@ -248,6 +246,15 @@ class Youku(VideoExtractor):
                 log.e('[Failed] Wrong password.')
 
 
+#        if not kwargs['info_only']:
+#            if self.password_protected:
+#                m3u8_url += '&password={}'.format(self.password)
+#
+#            m3u8 = get_html(m3u8_url)
+#
+#            self.streams[stream_id]['src'] = self.__class__.parse_m3u8(m3u8)
+#            if not self.streams[stream_id]['src'] and self.password_protected:
+#                log.e('[Failed] Wrong password.')
 
 site = Youku()
 download = site.download_by_url
