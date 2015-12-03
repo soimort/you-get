@@ -1,81 +1,83 @@
 #!/usr/bin/env python
 
 SITES = {
-    '163'        : 'netease',
-    '56'         : 'w56',
-    'acfun'      : 'acfun',
-    'archive'    : 'archive',
-    'baidu'      : 'baidu',
-    'bandcamp'   : 'bandcamp',
-    'baomihua'   : 'baomihua',
-    'bilibili'   : 'bilibili',
-    'cntv'       : 'cntv',
-    'cbs'        : 'cbs',
-    'dailymotion': 'dailymotion',
-    'dilidili'   : 'dilidili',
-    'dongting'   : 'dongting',
-    'douban'     : 'douban',
-    'douyutv'    : 'douyutv',
-    'ehow'       : 'ehow',
-    'facebook'   : 'facebook',
-    'flickr'     : 'flickr',
-    'freesound'  : 'freesound',
-    'fun'        : 'funshion',
-    'google'     : 'google',
-    'heavy-music': 'heavymusic',
-    'iask'       : 'sina',
-    'ifeng'      : 'ifeng',
-    'in'         : 'alive',
-    'instagram'  : 'instagram',
-    'interest'   : 'interest',
-    'iqilu'      : 'iqilu',
-    'iqiyi'      : 'iqiyi',
-    'isuntv'     : 'suntv',
-    'joy'        : 'joy',
-    'jpopsuki'   : 'jpopsuki',
-    'kankanews'  : 'bilibili',
-    'khanacademy': 'khan',
-    'ku6'        : 'ku6',
-    'kugou'      : 'kugou',
-    'kuwo'       : 'kuwo',
-    'letv'       : 'letv',
-    'lizhi'      : 'lizhi',
-    'magisto'    : 'magisto',
-    'metacafe'   : 'metacafe',
-    'miomio'     : 'miomio',
-    'mixcloud'   : 'mixcloud',
-    'mtv81'      : 'mtv81',
-    'musicplayon': 'musicplayon',
-    '7gogo'      : 'nanagogo',
-    'nicovideo'  : 'nicovideo',
-    'pinterest'  : 'pinterest',
-    'pixnet'     : 'pixnet',
-    'pptv'       : 'pptv',
-    'qianmo'     : 'qianmo',
-    'qq'         : 'qq',
-    'sina'       : 'sina',
-    'smgbb'      : 'bilibili',
-    'sohu'       : 'sohu',
-    'soundcloud' : 'soundcloud',
-    'ted'        : 'ted',
-    'theplatform': 'theplatform',
-    'tucao'      : 'tucao',
-    'tudou'      : 'tudou',
-    'tumblr'     : 'tumblr',
-    'twitter'    : 'twitter',
-    'vidto'      : 'vidto',
-    'vimeo'      : 'vimeo',
-    'weibo'      : 'miaopai',
-    'veoh'       : 'veoh',
-    'vine'       : 'vine',
-    'vk'         : 'vk',
-    'xiami'      : 'xiami',
-    'yinyuetai'  : 'yinyuetai',
-    'miaopai'    : 'yixia_miaopai',
-    'youku'      : 'youku',
-    'youtu'      : 'youtube',
-    'youtube'    : 'youtube',
-    'zhanqi'     : 'zhanqi',
+    '163'              : 'netease',
+    '56'               : 'w56',
+    'acfun'            : 'acfun',
+    'archive'          : 'archive',
+    'baidu'            : 'baidu',
+    'bandcamp'         : 'bandcamp',
+    'baomihua'         : 'baomihua',
+    'bilibili'         : 'bilibili',
+    'cntv'             : 'cntv',
+    'cbs'              : 'cbs',
+    'dailymotion'      : 'dailymotion',
+    'dilidili'         : 'dilidili',
+    'dongting'         : 'dongting',
+    'douban'           : 'douban',
+    'douyutv'          : 'douyutv',
+    'ehow'             : 'ehow',
+    'facebook'         : 'facebook',
+    'fc2'              : 'fc2video',
+    'flickr'           : 'flickr',
+    'freesound'        : 'freesound',
+    'fun'              : 'funshion',
+    'google'           : 'google',
+    'heavy-music'      : 'heavymusic',
+    'iask'             : 'sina',
+    'ifeng'            : 'ifeng',
+    'in'               : 'alive',
+    'instagram'        : 'instagram',
+    'interest'         : 'interest',
+    'iqilu'            : 'iqilu',
+    'iqiyi'            : 'iqiyi',
+    'isuntv'           : 'suntv',
+    'joy'              : 'joy',
+    'jpopsuki'         : 'jpopsuki',
+    'kankanews'        : 'bilibili',
+    'khanacademy'      : 'khan',
+    'ku6'              : 'ku6',
+    'kugou'            : 'kugou',
+    'kuwo'             : 'kuwo',
+    'letv'             : 'letv',
+    'lizhi'            : 'lizhi',
+    'magisto'          : 'magisto',
+    'metacafe'         : 'metacafe',
+    'miomio'           : 'miomio',
+    'mixcloud'         : 'mixcloud',
+    'mtv81'            : 'mtv81',
+    'musicplayon'      : 'musicplayon',
+    '7gogo'            : 'nanagogo',
+    'nicovideo'        : 'nicovideo',
+    'pinterest'        : 'pinterest',
+    'pixnet'           : 'pixnet',
+    'pptv'             : 'pptv',
+    'qianmo'           : 'qianmo',
+    'qq'               : 'qq',
+    'sina'             : 'sina',
+    'smgbb'            : 'bilibili',
+    'sohu'             : 'sohu',
+    'soundcloud'       : 'soundcloud',
+    'ted'              : 'ted',
+    'theplatform'      : 'theplatform',
+    'tucao'            : 'tucao',
+    'tudou'            : 'tudou',
+    'tumblr'           : 'tumblr',
+    'twitter'          : 'twitter',
+    'vidto'            : 'vidto',
+    'vimeo'            : 'vimeo',
+    'weibo'            : 'miaopai',
+    'veoh'             : 'veoh',
+    'vine'             : 'vine',
+    'vk'               : 'vk',
+    'xiami'            : 'xiami',
+    'xiaojiadianvideo' : 'fc2video',
+    'yinyuetai'        : 'yinyuetai',
+    'miaopai'          : 'yixia_miaopai',
+    'youku'            : 'youku',
+    'youtu'            : 'youtube',
+    'youtube'          : 'youtube',
+    'zhanqi'           : 'zhanqi',
 }
 
 import getopt
@@ -308,9 +310,11 @@ def get_content(url, headers={}, decoded=True):
 
     return data
 
-def url_size(url, faker = False):
+def url_size(url, faker = False, headers = {}):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
+    elif headers:
+        response = request.urlopen(request.Request(url, headers = headers), None)
     else:
         response = request.urlopen(url)
 
@@ -323,15 +327,20 @@ def url_size(url, faker = False):
 def urls_size(urls):
     return sum(map(url_size, urls))
 
-def get_head(url):
-    req = request.Request(url)
+def get_head(url, headers = {}):
+    if headers:
+        req = request.Request(url, headers = headers)
+    else:
+        req = request.Request(url)
     req.get_method = lambda : 'HEAD'
     res = request.urlopen(req)
     return dict(res.headers)
 
-def url_info(url, faker = False):
+def url_info(url, faker = False, headers = {}):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
+    elif headers:
+        response = request.urlopen(request.Request(url, headers = headers), None)
     else:
         response = request.urlopen(request.Request(url))
 
@@ -376,19 +385,21 @@ def url_info(url, faker = False):
 
     return type, ext, size
 
-def url_locations(urls, faker = False):
+def url_locations(urls, faker = False, headers = {}):
     locations = []
     for url in urls:
         if faker:
             response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        elif headers:
+            response = request.urlopen(request.Request(url, headers = headers), None)
         else:
             response = request.urlopen(request.Request(url))
 
         locations.append(response.url)
     return locations
 
-def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
-    file_size = url_size(url, faker = faker)
+def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
+    file_size = url_size(url, faker = faker, headers = headers)
 
     if os.path.exists(filepath):
         if not force and file_size == os.path.getsize(filepath):
@@ -423,6 +434,8 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
     if received < file_size:
         if faker:
             headers = fake_headers
+        elif headers:
+            headers = headers
         else:
             headers = {}
         if received:
@@ -465,7 +478,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False):
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
     os.rename(temp_filepath, filepath)
 
-def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False):
+def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
     if os.path.exists(filepath):
         if not force:
             if not is_part:
@@ -498,6 +511,8 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
 
     if faker:
         headers = fake_headers
+    elif headers:
+        headers = headers
     else:
         headers = {}
     if received:
@@ -634,7 +649,7 @@ def get_output_filename(urls, title, ext, output_dir, merge):
                 merged_ext = 'ts'
     return '%s.%s' % (title, merged_ext)
 
-def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, **kwargs):
+def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
     assert urls
     if json_output:
         json_output_.download_urls(urls=urls, title=title, ext=ext, total_size=total_size, refer=refer)
@@ -671,7 +686,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
     if len(urls) == 1:
         url = urls[0]
         print('Downloading %s ...' % tr(output_filename))
-        url_save(url, output_filepath, bar, refer = refer, faker = faker)
+        url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers)
         bar.done()
     else:
         parts = []
@@ -682,7 +697,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             parts.append(filepath)
             #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
-            url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker)
+            url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers)
         bar.done()
 
         if not merge:
@@ -751,7 +766,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     print()
 
-def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False):
+def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}):
     assert urls
     if dry_run:
         print('Real URLs:\n%s\n' % urls)
@@ -780,7 +795,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
         print('Downloading %s ...' % tr(filename))
         filepath = os.path.join(output_dir, filename)
         parts.append(filepath)
-        url_save_chunked(url, filepath, bar, refer = refer, faker = faker)
+        url_save_chunked(url, filepath, bar, refer = refer, faker = faker, headers = headers)
         bar.done()
 
         if not merge:
@@ -808,7 +823,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
             parts.append(filepath)
             #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
-            url_save_chunked(url, filepath, bar, refer = refer, is_part = True, faker = faker)
+            url_save_chunked(url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers)
         bar.done()
 
         if not merge:
