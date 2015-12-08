@@ -79,6 +79,7 @@ SITES = {
 }
 
 import getopt
+import http
 import json
 import locale
 import os
@@ -231,16 +232,28 @@ def undeflate(data):
     decompressobj = zlib.decompressobj(-zlib.MAX_WBITS)
     return decompressobj.decompress(data)+decompressobj.flush()
 
-# DEPRECATED in favor of get_content()
-def get_response(url, faker = False):
-    # install cookies
-    if cookies:
-        opener = request.build_opener(request.HTTPCookieProcessor(cookies))
-        request.install_opener(opener)
+cj = http.cookiejar.CookieJar()
+def getOpener(head):
+    pro = request.HTTPCookieProcessor(cj)
+    opener = request.build_opener(pro)
+    header = []
+    for key, value in head.items():
+        elem = (key, value)
+        header.append(elem)
+    opener.addheaders = header
+    return opener
 
+# DEPRECATED in favor of get_content()
+def get_response(url, faker = False, youku_url=None):
     if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        if youku_url:
+            fake_headers['Referer'] = youku_url
+        opener = getOpener(fake_headers)
+        response = opener.open(url)
     else:
+        if cookies:
+            opener = request.build_opener(request.HTTPCookieProcessor(cookies))
+            request.install_opener(opener)
         response = request.urlopen(url)
 
     data = response.read()
@@ -252,8 +265,8 @@ def get_response(url, faker = False):
     return response
 
 # DEPRECATED in favor of get_content()
-def get_html(url, encoding = None, faker = False):
-    content = get_response(url, faker).data
+def get_html(url, encoding = None, faker = False, youku_url=None):
+    content = get_response(url, faker, youku_url).data
     return str(content, 'utf-8', 'ignore')
 
 # DEPRECATED in favor of get_content()

@@ -113,7 +113,7 @@ class Youku(VideoExtractor):
 
         api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
         try:
-            meta = json.loads(get_html(api_url))
+            meta = json.loads(get_html(api_url, faker=True, youku_url=self.url))
             data = meta['data']
             assert 'stream' in data
         except:
@@ -184,7 +184,7 @@ class Youku(VideoExtractor):
             if self.password_protected:
                 m3u8_url += '&password={}'.format(self.password)
 
-            m3u8 = get_html(m3u8_url)
+            m3u8 = get_html(m3u8_url, faker=True)
 
             self.streams[stream_id]['src'] = self.__class__.parse_m3u8(m3u8)
             if not self.streams[stream_id]['src'] and self.password_protected:
