@@ -251,6 +251,9 @@ def get_response(url, faker = False, youku_url=None):
         opener = getOpener(fake_headers)
         response = opener.open(url)
     else:
+        if cookies:
+            opener = request.build_opener(request.HTTPCookieProcessor(cookies))
+            request.install_opener(opener)
         response = request.urlopen(url)
 
     data = response.read()
