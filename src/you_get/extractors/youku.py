@@ -141,7 +141,7 @@ class Youku(VideoExtractor):
             data = meta['data']
             data1 = meta1['data']
             assert 'stream' in data
-        except:
+        except AssertionError:
             if 'error' in data:
                 if data['error']['code'] == -202:
                     # Password protected
