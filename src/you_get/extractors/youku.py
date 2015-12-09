@@ -173,13 +173,12 @@ class Youku(VideoExtractor):
 
         stream_types = dict([(i['id'], i) for i in self.stream_types])
         self.streams_parameter = {}
+        audio_lang = data1['stream'][0]['audio_lang']
         for stream in data1['stream']:
             stream_id = stream['stream_type']
-            if stream_id in stream_types:
+            if stream_id in stream_types and stream['audio_lang'] == audio_lang:
                 if 'alias-of' in stream_types[stream_id]:
                     stream_id = stream_types[stream_id]['alias-of']
-                if stream_id in self.streams:
-                    break # for multi-lang tracks, stop after the first stream
                 self.streams[stream_id] = {
                     'container': stream_types[stream_id]['container'],
                     'video_profile': stream_types[stream_id]['video_profile'],
