@@ -179,7 +179,7 @@ class Youku(VideoExtractor):
                 if 'alias-of' in stream_types[stream_id]:
                     stream_id = stream_types[stream_id]['alias-of']
                 if stream_id in self.streams:
-                    break
+                    break # for multi-lang tracks, stop after the first stream
                 self.streams[stream_id] = {
                     'container': stream_types[stream_id]['container'],
                     'video_profile': stream_types[stream_id]['video_profile'],
