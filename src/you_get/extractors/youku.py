@@ -228,7 +228,8 @@ class Youku(VideoExtractor):
                 K     = k,
                 ep    = parse.unquote(ep),
                 oip   = str(self.ip),
-                token = token
+                token = token,
+                yxon  = 1
             ))
             u = 'http://k.youku.com/player/getFlvPath/sid/{sid}_00' \
                 '/st/{container}/fileid/{fileid}?{q}'.format(
@@ -237,12 +238,10 @@ class Youku(VideoExtractor):
                 fileid    = fileid,
                 q         = q
             )
-            ksegs.append(u)
+            ksegs += [i['server'] for i in json.loads(get_content(u))]
 
         if not kwargs['info_only']:
             self.streams[stream_id]['src'] = ksegs
-            if not self.streams[stream_id]['src'] and self.password_protected:
-                log.e('[Failed] Wrong password.')
 
 site = Youku()
 download = site.download_by_url
