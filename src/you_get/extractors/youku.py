@@ -237,7 +237,7 @@ class Youku(VideoExtractor):
                 fileid    = fileid,
                 q         = q
             )
-            ksegs.append(u)
+            ksegs.append(json.loads(get_html(u+"&yxon=1"))[0]['server'])
 
         if not kwargs['info_only']:
             self.streams[stream_id]['src'] = ksegs
