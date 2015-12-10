@@ -11,28 +11,9 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
     item_id = r1(r'data-item-id="([^"]*)"', html)
     page_title = "{} [{}]".format(screen_name, item_id)
 
-    try: # extract video
-        icards = r1(r'data-src="([^"]*)"', html)
-        if icards:
-            card = get_html("https://twitter.com" + icards)
-            data_player_config = r1(r'data-player-config="([^"]*)"', card)
-            if data_player_config is None:
-                vine_src = r1(r'<iframe src="([^"]*)"', card)
-                vine_download(vine_src, output_dir=output_dir, merge=merge, info_only=info_only)
-                return
-            data = json.loads(unescape_html(data_player_config))
-            source = data['playlist'][0]['source']
-        else:
-            source = r1(r'<source video-src="([^"]*)"', html)
-
-        mime, ext, size = url_info(source)
-
-        print_info(site_info, page_title, mime, size)
-        if not info_only:
-            download_urls([source], page_title, ext, size, output_dir, merge=merge)
-
-    except: # extract images
-        urls = re.findall(r'property="og:image"\s*content="([^"]+)"', html)
+    try: # extract images
+        urls = re.findall(r'property="og:image"\s*content="([^"]+:large)"', html)
+        assert urls
         images = []
         for url in urls:
             url = ':'.join(url.split(':')[:-1]) + ':orig'
@@ -56,6 +37,26 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                 print_info(site_info, title, ext, size)
                 download_urls([url], title, ext, size,
                               output_dir=output_dir)
+
+    except: # extract video
+        icards = r1(r'data-src="([^"]*)"', html)
+        if icards:
+            card = get_html("https://twitter.com" + icards)
+            data_player_config = r1(r'data-player-config="([^"]*)"', card)
+            if data_player_config is None:
+                vine_src = r1(r'<iframe src="([^"]*)"', card)
+                vine_download(vine_src, output_dir=output_dir, merge=merge, info_only=info_only)
+                return
+            data = json.loads(unescape_html(data_player_config))
+            source = data['playlist'][0]['source']
+        else:
+            source = r1(r'<source video-src="([^"]*)"', html)
+
+        mime, ext, size = url_info(source)
+
+        print_info(site_info, page_title, mime, size)
+        if not info_only:
+            download_urls([source], page_title, ext, size, output_dir, merge=merge)
 
 site_info = "Twitter.com"
 download = twitter_download
