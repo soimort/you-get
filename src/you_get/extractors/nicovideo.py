@@ -20,7 +20,7 @@ context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
     import netrc, getpass
     try:
         info = netrc.netrc().authenticators('nicovideo')
-    except FileNotFoundError:
+    except:
         info = None
     if info is None:
         user = input("User:     ")
