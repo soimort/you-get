@@ -322,11 +322,8 @@ def url_size(url, faker = False, headers = {}):
     size = response.headers['content-length']
     return int(size) if size!=None else float('inf')
 
-# TO BE DEPRECATED
-# urls_size() does not have a faker
-# also it takes too long time
-def urls_size(urls):
-    return sum(map(url_size, urls))
+def urls_size(urls, faker = False, headers = {}):
+    return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
 def get_head(url, headers = {}):
     if headers:
@@ -665,7 +662,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     if not total_size:
         try:
-            total_size = urls_size(urls)
+            total_size = urls_size(urls, faker=faker, headers=headers)
         except:
             import traceback
             traceback.print_exc(file=sys.stdout)
