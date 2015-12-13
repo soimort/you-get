@@ -310,6 +310,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Google+** | <https://plus.google.com/>    |✓|✓| |
 | Freesound   | <http://www.freesound.org/>   | | |✓|
 | Flickr      | <https://www.flickr.com/>     |✓|✓| |
+| FC2 Video   | <http://video.fc2.com/>       |✓| | |
 | Facebook    | <https://www.facebook.com/>   |✓| | |
 | eHow        | <http://www.ehow.com/>        |✓| | |
 | Dailymotion | <http://www.dailymotion.com/> |✓| | |
