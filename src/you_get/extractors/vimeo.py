@@ -7,16 +7,16 @@ from json import loads
 access_token = 'f6785418277b72c7c87d3132c79eec24'  #By Beining
 
 #----------------------------------------------------------------------
-def vimeo_download_by_channel(url, output_dir = '.', merge = False, info_only = False, **kwargs):
+def vimeo_download_by_channel(url, output_dir='.', merge=False, info_only=False, **kwargs):
     """str->None"""
     # https://vimeo.com/channels/464686
     channel_id = match1(url, r'http://vimeo.com/channels/(\w+)')
     vimeo_download_by_channel_id(channel_id, output_dir, merge, info_only)
 
 #----------------------------------------------------------------------
-def vimeo_download_by_channel_id(channel_id, output_dir = '.', merge = False, info_only = False):
+def vimeo_download_by_channel_id(channel_id, output_dir='.', merge=False, info_only=False):
     """str/int->None"""
-    html = get_content('https://api.vimeo.com/channels/{channel_id}/videos?access_token={access_token}'.format(channel_id = channel_id, access_token = access_token))
+    html = get_content('https://api.vimeo.com/channels/{channel_id}/videos?access_token={access_token}'.format(channel_id=channel_id, access_token=access_token))
     data = loads(html)
     id_list = []
 
@@ -27,14 +27,19 @@ def vimeo_download_by_channel_id(channel_id, output_dir = '.', merge = False, in
     for id in id_list:
         vimeo_download_by_id(id, None, output_dir, merge, info_only)
 
-def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
+def vimeo_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False, **kwargs):
     try:
+        # normal Vimeo video
         html = get_content('https://vimeo.com/' + id)
         config_url = unescape_html(r1(r'data-config-url="([^"]+)"', html))
         video_page = get_content(config_url, headers=fake_headers)
         title = r1(r'"title":"([^"]+)"', video_page)
         info = loads(video_page)
     except:
+        # embedded player - referer may be required
+        if 'referer' in kwargs:
+            fake_headers['Referer'] = kwargs['referer']
+
         video_page = get_content('http://player.vimeo.com/video/%s' % id, headers=fake_headers)
         title = r1(r'<title>([^<]+)</title>', video_page)
         info = loads(match1(video_page, r'var t=(\{[^;]+\});'))
@@ -47,16 +52,16 @@ def vimeo_download_by_id(id, title = None, output_dir = '.', merge = True, info_
 
     print_info(site_info, title, type, size)
     if not info_only:
-        download_urls([url], title, ext, size, output_dir, merge = merge, faker = True)
+        download_urls([url], title, ext, size, output_dir, merge=merge, faker=True)
 
-def vimeo_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+def vimeo_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if re.match(r'https?://vimeo.com/channels/\w+', url):
         vimeo_download_by_channel(url, output_dir, merge, info_only)
     else:
-        id = r1(r'https?://[\w.]*vimeo.com[/\w]*/(\d+)$', url)
+        id = r1(r'https?://[\w.]*vimeo.com[/\w]*/(\d+)', url)
         assert id
 
-        vimeo_download_by_id(id, None, output_dir = output_dir, merge = merge, info_only = info_only)
+        vimeo_download_by_id(id, None, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
 
 site_info = "Vimeo.com"
 download = vimeo_download
