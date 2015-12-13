@@ -30,14 +30,14 @@ def fc2video_download_by_upid(upid, output_dir = '.', merge = True, info_only = 
     }
     api_base = 'http://video.fc2.com/ginfo.php?upid={upid}&mimi={mimi}'.format(upid = upid, mimi = makeMimi(upid))
     html = get_content(api_base, headers=fake_headers)
-    
+
     video_url = match1(html, r'filepath=(.+)&sec')
     video_url = video_url.replace('&mid', '?mid')
-    
-    title = match1(html, r'&title=(.+)&seek_image')
-    
+
+    title = match1(html, r'&title=([^&]+)')
+
     type, ext, size = url_info(video_url, headers=fake_headers)
-    
+
     print_info(site_info, title, type, size)
     if not info_only:
         download_urls([video_url], title, ext, size, output_dir, merge=merge, headers = fake_headers)
@@ -53,7 +53,7 @@ def fc2video_download(url, output_dir = '.', merge = True, info_only = False, **
     if not ('fc2.com' in hostname or 'xiaojiadianvideo.asia' in hostname):
         return False
     upid = match1(url, r'.+/content/(\w+)')
-    
+
     fc2video_download_by_upid(upid, output_dir, merge, info_only)
 
 site_info = "FC2Video"
