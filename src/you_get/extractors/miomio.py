@@ -25,15 +25,15 @@ def miomio_download(url, output_dir = '.', merge = True, info_only = False, **kw
         url = "http://www.miomio.tv/mioplayer/mioplayerconfigfiles/sina.php?vid=" + id
         xml_data = get_content(url, headers=fake_headers, decoded=True)
         url_list = sina_xml_to_url_list(xml_data)
-        
+
         size_full = 0
         for url in url_list:
-            type_, ext, size = url_info(url)
+            type_, ext, size = url_info(url, headers=fake_headers)
             size_full += size
-        
+
         print_info(site_info, title, type_, size_full)
         if not info_only:
-            download_urls([url], title, ext, total_size=None, output_dir=output_dir, merge=merge)        
+            download_urls(url_list, title, ext, total_size=size_full, output_dir=output_dir, merge=merge, headers=fake_headers)
     else:
         raise NotImplementedError(flashvars)
 
