@@ -66,6 +66,14 @@ class Youku(VideoExtractor):
     def parse_m3u8(m3u8):
         return re.findall(r'(http://[^?]+)\?ts_start=0', m3u8)
 
+    def oset(xs):
+        """Turns a list into an ordered set. (removes duplicates)"""
+        mem = set()
+        for x in xs:
+            if x not in mem:
+                mem.add(x)
+                yield(x)
+
     def get_vid_from_url(url):
         """Extracts video ID from URL.
         """
@@ -87,12 +95,12 @@ class Youku(VideoExtractor):
             assert playlist_id
 
             video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
-            videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
+            videos = Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
 
             # Parse multi-page playlists
-            for extra_page_url in set(re.findall('href="(http://www\.youku\.com/playlist_show/id_%s_[^?"]+)' % playlist_id, video_page)):
+            for extra_page_url in Youku.oset(re.findall('href="(http://www\.youku\.com/playlist_show/id_%s_[^?"]+)' % playlist_id, video_page)):
                 extra_page = get_content(extra_page_url)
-                videos |= set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
+                videos |= Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
 
         except:
             # Show full list of episodes
@@ -101,7 +109,7 @@ class Youku(VideoExtractor):
                 url = 'http://www.youku.com/show_episode/id_%s' % ep_id
 
             video_page = get_content(url)
-            videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
+            videos = Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
 
         self.title = r1(r'<meta name="title" content="([^"]+)"', video_page) or \
                      r1(r'<title>([^<]+)', video_page)
