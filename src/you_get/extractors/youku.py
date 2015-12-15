@@ -89,11 +89,17 @@ class Youku(VideoExtractor):
             video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
             videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
 
+            # Parse multi-page playlists
             for extra_page_url in set(re.findall('href="(http://www\.youku\.com/playlist_show/id_%s_[^?"]+)' % playlist_id, video_page)):
                 extra_page = get_content(extra_page_url)
                 videos |= set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
 
         except:
+            # Show full list of episodes
+            if match1(url, r'youku\.com/show_page/id_([a-zA-Z0-9=]+)'):
+                ep_id = match1(url, r'youku\.com/show_page/id_([a-zA-Z0-9=]+)')
+                url = 'http://www.youku.com/show_episode/id_%s' % ep_id
+
             video_page = get_content(url)
             videos = set(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
 
