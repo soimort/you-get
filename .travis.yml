@@ -8,6 +8,7 @@ python:
   - "nightly"
   - "pypy3"
 script: make test
+sudo: false
 notifications:
   webhooks:
     urls:
