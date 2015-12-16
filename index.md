@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.192
+project-version: 0.4.210
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.192.tar.gz
+download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.210.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 2c11d327f50332b9edfd1ef76c11e72455b70dc3
-download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.192.tar.gz.asc
+download-checksum-data: 73dfc60aae214e9f675a6a32623c7ff9aeebfafc
+download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.210.tar.gz.asc
 
 ---
 # You-Get
@@ -261,7 +261,6 @@ However, the system proxy setting (i.e. the environment variable `http_proxy`) i
 
 * If you need to use proxies a lot (in case your network is blocking certain sites), you might want to use `you-get` with [proxychains](https://github.com/rofl0r/proxychains-ng) and set `alias you-get="proxychains -q you-get"` (in Bash).
 * For some websites (e.g. Youku), if you need access to some videos that are only available in mainland China, there is an option of using a specific proxy to extract video information from the site: `--extractor-proxy`/`-y`.
-You may use `-y proxy.uku.im:8888` (thanks to the [Unblock Youku](https://github.com/zhuzhuor/Unblock-Youku) project).
 
 ### Watch a video
 
@@ -325,6 +324,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Google+** | <https://plus.google.com/>    |✓|✓| |
 | Freesound   | <http://www.freesound.org/>   | | |✓|
 | Flickr      | <https://www.flickr.com/>     |✓|✓| |
+| FC2 Video   | <http://video.fc2.com/>       |✓| | |
 | Facebook    | <https://www.facebook.com/>   |✓| | |
 | eHow        | <http://www.ehow.com/>        |✓| | |
 | Dailymotion | <http://www.dailymotion.com/> |✓| | |
