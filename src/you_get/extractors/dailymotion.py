@@ -10,7 +10,8 @@ def dailymotion_download(url, output_dir = '.', merge = True, info_only = False,
 
     html = get_content(url)
     info = json.loads(match1(html, r'qualities":({.+?}),"'))
-    title = match1(html, r'"video_title"\s*:\s*"(.+?)",')
+    title = match1(html, r'"video_title"\s*:\s*"([^"]+)"') or \
+            match1(html, r'"title"\s*:\s*"([^"]+)"')
 
     for quality in ['720','480','380','240','auto']:
         try:
