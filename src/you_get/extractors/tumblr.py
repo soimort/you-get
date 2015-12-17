@@ -15,7 +15,7 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = parse.unquote(get_html(url)).replace('\/', '/')
     feed = r1(r'<meta property="og:type" content="tumblr-feed:(\w+)" />', html)
 
-    if feed in ['photo', 'photoset'] or feed is None:
+    if feed in ['photo', 'photoset', 'entry'] or feed is None:
         # try to extract photos
         page_title = r1(r'<meta name="description" content="([^"\n]+)', html) or \
                      r1(r'<meta property="og:description" content="([^"\n]+)', html) or \
