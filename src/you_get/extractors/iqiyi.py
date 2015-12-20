@@ -45,7 +45,7 @@ bid meaning for quality
 
 '''
 def mix(tvid):
-    salt = '6967d2088d8843eea0ee38ad1a6f9173'
+    salt = 'd7184ccc20a84a9d8be798087386b6b8'
     tm = str(randint(2000,4000))
     sc = hashlib.new('md5', bytes(salt + tm + tvid, 'utf-8')).hexdigest()
     return tm, sc, 'eknas'
