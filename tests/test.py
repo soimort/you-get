@@ -15,7 +15,6 @@ class YouGetTests(unittest.TestCase):
         magisto.download("http://www.magisto.com/album/video/f3x9AAQORAkfDnIFDA", info_only=True)
 
     def test_mixcloud(self):
-        mixcloud.download("http://www.mixcloud.com/beatbopz/beat-bopz-disco-mix/", info_only=True)
         mixcloud.download("http://www.mixcloud.com/DJVadim/north-america-are-you-ready/", info_only=True)
 
     def test_vimeo(self):
