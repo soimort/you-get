@@ -40,7 +40,7 @@ bdist_wheel:
 	$(SETUP) bdist_wheel
 
 install:
-	$(SETUP) install --user
+	$(SETUP) install --user --prefix=
 
 release:
 	zenity --question
