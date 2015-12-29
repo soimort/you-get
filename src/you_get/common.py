@@ -63,6 +63,7 @@ SITES = {
     'tucao'            : 'tucao',
     'tudou'            : 'tudou',
     'tumblr'           : 'tumblr',
+    'twimg'            : 'twitter',
     'twitter'          : 'twitter',
     'vidto'            : 'vidto',
     'vimeo'            : 'vimeo',

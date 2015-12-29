@@ -7,8 +7,10 @@ from .vine import vine_download
 
 def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
-    screen_name = r1(r'data-screen-name="([^"]*)"', html)
-    item_id = r1(r'data-item-id="([^"]*)"', html)
+    screen_name = r1(r'data-screen-name="([^"]*)"', html) or \
+        r1(r'<meta name="twitter:title" content="([^"]*)"', html)
+    item_id = r1(r'data-item-id="([^"]*)"', html) or \
+        r1(r'<meta name="twitter:site:id" content="([^"]*)"', html)
     page_title = "{} [{}]".format(screen_name, item_id)
 
     try: # extract images
@@ -48,9 +50,17 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                 vine_download(vine_src, output_dir=output_dir, merge=merge, info_only=info_only)
                 return
             data = json.loads(unescape_html(data_player_config))
-            source = data['playlist'][0]['source']
+            if 'playlist' in data:
+                source = data['playlist'][0]['source']
+            else:
+                vmap = get_content(data['vmapUrl'])
+                source = r1(r'<!\[CDATA\[(.*)\]\]>', vmap)
         else:
             source = r1(r'<source video-src="([^"]*)"', html)
+            if not source:
+                vmap_url = r1(r'<meta name="twitter:amplify:vmap" content="([^"]+)"', html)
+                vmap = get_content(vmap_url)
+                source = r1(r'<!\[CDATA\[(.*)\]\]>', vmap)
 
         mime, ext, size = url_info(source)
 
