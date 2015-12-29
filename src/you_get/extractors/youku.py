@@ -141,7 +141,7 @@ class Youku(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
-        get_content(self.url)
+        get_content("http://v.youku.com/v_show/")
         api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
         api_url1 = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
         try:
