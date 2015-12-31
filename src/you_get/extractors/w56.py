@@ -16,7 +16,7 @@ def w56_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
     files = [x for x in info['rfiles'] if x['type'] in hd_types]
     assert len(files) == 1
     size = int(files[0]['filesize'])
-    url = files[0]['url']
+    url = files[0]['url'] + '&prod=56'
     ext = 'mp4'
 
     print_info(site_info, title, ext, size)
