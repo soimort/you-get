@@ -298,6 +298,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Vine        | <https://vine.co/>            |✓| | |
 | Vimeo       | <https://vimeo.com/>          |✓| | |
 | Vidto       | <http://vidto.me/>            |✓| | |
+| Videomega   | <http://videomega.tv/>        |✓| | |
 | Veoh        | <http://www.veoh.com/>        |✓| | |
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
 | TED         | <http://www.ted.com/>         |✓| | |
