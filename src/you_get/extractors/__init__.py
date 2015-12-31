@@ -58,6 +58,7 @@ from .tudou import *
 from .tumblr import *
 from .twitter import *
 from .veoh import *
+from .videomega import *
 from .vimeo import *
 from .vine import *
 from .vk import *

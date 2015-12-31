@@ -66,6 +66,7 @@ SITES = {
     'tumblr'           : 'tumblr',
     'twimg'            : 'twitter',
     'twitter'          : 'twitter',
+    'videomega'        : 'videomega',
     'vidto'            : 'vidto',
     'vimeo'            : 'vimeo',
     'weibo'            : 'miaopai',
