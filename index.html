@@ -27,12 +27,12 @@
   <a href="https://you-get.org/"><img src="images/logo.jpg"/></a>
   <div id="desc">
     <h1>You-Get</h1>
-    <h2>version 0.4.217</h2>
+    <h2>version 0.4.232</h2>
     <a href="https://github.com/soimort/you-get">Star <i class="fa fa-github-square fa-2x"></i></a>
-    <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.217.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
+    <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.232.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
     <div id="msg">
-      <span id="checksum" onmouseover="this.innerHTML='7117e87c948aab40fc1d3c6328b893c7b52dc676'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
-      <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.217.tar.gz.asc">PGP SIGNATURE</a>
+      <span id="checksum" onmouseover="this.innerHTML='83e0f1f71f8545d621181c5f5a6fb4f3230716fd'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
+      <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.232.tar.gz.asc">PGP SIGNATURE</a>
     </div>
   </div>
 </nav>
@@ -100,14 +100,17 @@ Downloading TEDxGE2014_Stallman05_LQ.webm ...
 <h3 id="option-1-install-via-pip">Option 1: Install via pip</h3>
 <p>The official release of <code>you-get</code> is distributed on <a href="https://pypi.python.org/pypi/you-get">PyPI</a>, and can be installed easily from a PyPI mirror via the <a href="https://en.wikipedia.org/wiki/Pip_(package_manager)">pip</a> package manager. Note that you must use the Python 3 version of <code>pip</code>:</p>
 <pre><code>$ pip3 install you-get</code></pre>
-<h3 id="option-2-use-a-pre-built-package-windows-only">Option 2: Use a pre-built package (Windows only)</h3>
+<h3 id="option-2-install-via-antigen">Option 2: Install via <a href="https://github.com/zsh-users/antigen">Antigen</a></h3>
+<p>Add the following line to your <code>.zshrc</code>:</p>
+<pre><code>antigen bundle soimort/you-get</code></pre>
+<h3 id="option-3-use-a-pre-built-package-windows-only">Option 3: Use a pre-built package (Windows only)</h3>
 <p>Download the <code>exe</code> (standalone) or <code>7z</code> (all dependencies included) from: <a href="https://github.com/soimort/you-get/releases/latest" class="uri">https://github.com/soimort/you-get/releases/latest</a>.</p>
-<h3 id="option-3-download-from-github">Option 3: Download from GitHub</h3>
+<h3 id="option-4-download-from-github">Option 4: Download from GitHub</h3>
 <p>You may either download the <a href="https://github.com/soimort/you-get/archive/master.zip">stable</a> (identical with the latest release on PyPI) or the <a href="https://github.com/soimort/you-get/archive/develop.zip">develop</a> (more hotfixes, unstable features) branch of <code>you-get</code>. Unzip it, and put the directory containing the <code>you-get</code> script into your <code>PATH</code>.</p>
 <p>Alternatively, run</p>
 <pre><code>$ make install</code></pre>
 <p>to install <code>you-get</code> to a permanent path.</p>
-<h3 id="option-4-git-clone">Option 4: Git clone</h3>
+<h3 id="option-5-git-clone">Option 5: Git clone</h3>
 <p>This is the recommended way for all developers, even if you don't often code in Python.</p>
 <pre><code>$ git clone git://github.com/soimort/you-get.git</code></pre>
 <p>Then put the cloned directory into your <code>PATH</code>, or run <code>make install</code> to install <code>you-get</code> to a permanent path.</p>
@@ -308,100 +311,114 @@ Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
 <td align="center"></td>
 </tr>
 <tr class="odd">
+<td align="center">Videomega</td>
+<td align="left"><a href="http://videomega.tv/" class="uri">http://videomega.tv/</a></td>
+<td align="center">✓</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
 <td align="center">Veoh</td>
 <td align="left"><a href="http://www.veoh.com/" class="uri">http://www.veoh.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center"><strong>Tumblr</strong></td>
 <td align="left"><a href="https://www.tumblr.com/" class="uri">https://www.tumblr.com/</a></td>
 <td align="center">✓</td>
 <td align="center">✓</td>
 <td align="center">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">TED</td>
 <td align="left"><a href="http://www.ted.com/" class="uri">http://www.ted.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">SoundCloud</td>
 <td align="left"><a href="https://soundcloud.com/" class="uri">https://soundcloud.com/</a></td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">Pinterest</td>
 <td align="left"><a href="https://www.pinterest.com/" class="uri">https://www.pinterest.com/</a></td>
 <td align="center"></td>
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">MusicPlayOn</td>
 <td align="left"><a href="http://en.musicplayon.com/" class="uri">http://en.musicplayon.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">MTV81</td>
 <td align="left"><a href="http://www.mtv81.com/" class="uri">http://www.mtv81.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">Mixcloud</td>
 <td align="left"><a href="https://www.mixcloud.com/" class="uri">https://www.mixcloud.com/</a></td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">Metacafe</td>
 <td align="left"><a href="http://www.metacafe.com/" class="uri">http://www.metacafe.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">Magisto</td>
 <td align="left"><a href="http://www.magisto.com/" class="uri">http://www.magisto.com/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">Khan Academy</td>
 <td align="left"><a href="https://www.khanacademy.org/" class="uri">https://www.khanacademy.org/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">JPopsuki TV</td>
 <td align="left"><a href="http://www.jpopsuki.tv/" class="uri">http://www.jpopsuki.tv/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">Internet Archive</td>
 <td align="left"><a href="https://archive.org/" class="uri">https://archive.org/</a></td>
 <td align="center">✓</td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center"><strong>Instagram</strong></td>
 <td align="left"><a href="https://instagram.com/" class="uri">https://instagram.com/</a></td>
 <td align="center">✓</td>
+<td align="center">✓</td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td align="center">Imgur</td>
+<td align="left"><a href="http://imgur.com/" class="uri">http://imgur.com/</a></td>
+<td align="center"></td>
 <td align="center">✓</td>
 <td align="center"></td>
 </tr>
