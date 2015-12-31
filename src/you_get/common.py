@@ -26,6 +26,7 @@ SITES = {
     'heavy-music'      : 'heavymusic',
     'iask'             : 'sina',
     'ifeng'            : 'ifeng',
+    'imgur'            : 'imgur',
     'in'               : 'alive',
     'instagram'        : 'instagram',
     'interest'         : 'interest',
