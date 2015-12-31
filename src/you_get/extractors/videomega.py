@@ -29,14 +29,8 @@ class Videomega(VideoExtractor):
         self.title = match1(content, r'<title>(.*)</title>')
         js = match1(content, r'(eval.*)')
         t = match1(js, r'\$\("\d+"\)\.\d+\("\d+","([^"]+)"\)')
-        t = re.sub(r'(\w)', r'{\1}', t) \
-              .replace('a', '10') \
-              .replace('b', '11') \
-              .replace('c', '12') \
-              .replace('d', '13') \
-              .replace('e', '14') \
-              .replace('f', '15') \
-              .replace('g', '16')
+        t = re.sub(r'(\w)', r'{\1}', t)
+        t = t.translate({87 + i: str(i) for i in range(10, 36)})
         s = match1(js, r"'([^']+)'\.split").split('|')
         self.streams['original'] = {
             'url': t.format(*s)
