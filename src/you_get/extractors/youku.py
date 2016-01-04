@@ -143,7 +143,10 @@ class Youku(VideoExtractor):
                 exit(0)
 
         api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
-        api_url1 = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
+        if hasattr(self, "err_code") and self.err_code == 404:
+            api_url1 = api_url
+        else:
+            api_url1 = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
         try:
             meta = json.loads(get_content(
                 api_url,
@@ -188,6 +191,7 @@ class Youku(VideoExtractor):
 
         stream_types = dict([(i['id'], i) for i in self.stream_types])
         self.streams_parameter = {}
+        self.streams = {}
         audio_lang = data1['stream'][0]['audio_lang']
         for stream in data1['stream']:
             stream_id = stream['stream_type']
@@ -254,7 +258,29 @@ class Youku(VideoExtractor):
                 fileid    = fileid,
                 q         = q
             )
-            ksegs += [i['server'] for i in json.loads(get_content(u))]
+            try:
+                ksegs += [i['server'] for i in json.loads(get_content(u))]
+            except error.HTTPError as err:
+                if err.code == 404:
+                    self.err_code = 404
+                    #copy from extractor.download_by_vid
+                    if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
+                        set_proxy(parse_host(kwargs['extractor_proxy']))
+                    self.prepare(**kwargs)
+                    if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
+                        unset_proxy()
+
+                    try:
+                        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
+                    except:
+                        self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
+
+                    self.extract(**kwargs)
+                    return
+                else:
+                    raise
+            except:
+                raise
 
         if not kwargs['info_only']:
             self.streams[stream_id]['src'] = ksegs

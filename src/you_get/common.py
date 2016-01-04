@@ -92,7 +92,7 @@ import platform
 import re
 import sys
 import time
-from urllib import request, parse
+from urllib import request, parse, error
 from http import cookiejar
 from importlib import import_module
 
