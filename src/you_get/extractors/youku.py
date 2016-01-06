@@ -188,6 +188,7 @@ class Youku(VideoExtractor):
 
         stream_types = dict([(i['id'], i) for i in self.stream_types])
         self.streams_parameter = {}
+        self.streams_fallback_parameter = {}
         audio_lang = data1['stream'][0]['audio_lang']
         for stream in data1['stream']:
             stream_id = stream['stream_type']
@@ -200,6 +201,15 @@ class Youku(VideoExtractor):
                     'size': stream['size']
                 }
                 self.streams_parameter[stream_id] = {
+                    'fileid': stream['stream_fileid'],
+                    'segs': stream['segs']
+                }
+        for stream in data['stream']:
+            stream_id = stream['stream_type']
+            if stream_id in stream_types and stream['audio_lang'] == audio_lang:
+                if 'alias-of' in stream_types[stream_id]:
+                    stream_id = stream_types[stream_id]['alias-of']
+                self.streams_fallback_parameter[stream_id] = {
                     'fileid': stream['stream_fileid'],
                     'segs': stream['segs']
                 }
@@ -229,32 +239,43 @@ class Youku(VideoExtractor):
         )
         sid, token = e_code.split('_')
 
-        segs = self.streams_parameter[stream_id]['segs']
-        streamfileid = self.streams_parameter[stream_id]['fileid']
+        sp = self.streams_parameter
+        while True:
+            try:
+                segs = sp[stream_id]['segs']
+                streamfileid = sp[stream_id]['fileid']
 
-        ksegs = []
-        for no in range(0, len(segs)):
-            k = segs[no]['key']
-            assert k != -1
-            fileid, ep = self.__class__.generate_ep(no, streamfileid,
-                                                    sid, token)
-            q = parse.urlencode(dict(
-                ctype = 12,
-                ev    = 1,
-                K     = k,
-                ep    = parse.unquote(ep),
-                oip   = str(self.ip),
-                token = token,
-                yxon  = 1
-            ))
-            u = 'http://k.youku.com/player/getFlvPath/sid/{sid}_00' \
-                '/st/{container}/fileid/{fileid}?{q}'.format(
-                sid       = sid,
-                container = self.streams[stream_id]['container'],
-                fileid    = fileid,
-                q         = q
-            )
-            ksegs += [i['server'] for i in json.loads(get_content(u))]
+                ksegs = []
+                for no in range(0, len(segs)):
+                    k = segs[no]['key']
+                    assert k != -1
+                    fileid, ep = self.__class__.generate_ep(no, streamfileid,
+                                                            sid, token)
+                    q = parse.urlencode(dict(
+                        ctype = 12,
+                        ev    = 1,
+                        K     = k,
+                        ep    = parse.unquote(ep),
+                        oip   = str(self.ip),
+                        token = token,
+                        yxon  = 1
+                    ))
+                    u = 'http://k.youku.com/player/getFlvPath/sid/{sid}_00' \
+                        '/st/{container}/fileid/{fileid}?{q}'.format(
+                        sid       = sid,
+                        container = self.streams[stream_id]['container'],
+                        fileid    = fileid,
+                        q         = q
+                    )
+                    ksegs += [i['server'] for i in json.loads(get_content(u))]
+            except error.HTTPError:
+                # Use fallback stream data in case of HTTP 404
+                sp = self.streams_fallback_parameter
+            except KeyError:
+                # Move on to next stream if best quality not available
+                del self.streams_sorted[0]
+                stream_id = self.streams_sorted[0]['id']
+            else: break
 
         if not kwargs['info_only']:
             self.streams[stream_id]['src'] = ksegs
