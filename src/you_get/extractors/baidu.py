@@ -129,8 +129,8 @@ def baidu_download(url, output_dir = '.', stream_type = None, merge = True, info
                     for i in set(items)]
 
             # handle albums
-            kw = r1(r'kw=([^&]+)', html)
-            tid = r1(r'tid=(\d+)', html)
+            kw = r1(r'kw=([^&]+)', html) or r1(r"kw:'([^']+)'", html)
+            tid = r1(r'tid=(\d+)', html) or r1(r"tid:'([^']+)'", html)
             album_url = 'http://tieba.baidu.com/photo/g/bw/picture/list?kw=%s&tid=%s' % (kw, tid)
             album_info = json.loads(get_content(album_url))
             for i in album_info['data']['pic_list']:
