@@ -19,7 +19,7 @@ def netease_hymn():
     errr oh! fuck ohhh!!!!
     """
 
-def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=False):
+def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     rid = match1(url, r'id=(.*)')
     if rid is None:
         rid = match1(url, r'/(\d+)/?$')
@@ -38,6 +38,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         for i in j['album']['songs']:
             netease_song_download(i, output_dir=new_dir, info_only=info_only)
             try: # download lyrics
+                assert kwargs['caption']
                 l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
                 netease_lyric_download(i, l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
             except: pass
@@ -55,6 +56,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         for i in j['result']['tracks']:
             netease_song_download(i, output_dir=new_dir, info_only=info_only)
             try: # download lyrics
+                assert kwargs['caption']
                 l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
                 netease_lyric_download(i, l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
             except: pass
@@ -63,6 +65,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         j = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
         netease_song_download(j["songs"][0], output_dir=output_dir, info_only=info_only)
         try: # download lyrics
+            assert kwargs['caption']
             l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
             netease_lyric_download(j["songs"][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
         except: pass
@@ -113,7 +116,7 @@ def netease_download(url, output_dir = '.', merge = True, info_only = False, **k
     if "163.fm" in url:
         url = get_location(url)
     if "music.163.com" in url:
-        netease_cloud_music_download(url,output_dir,merge,info_only)
+        netease_cloud_music_download(url, output_dir, merge, info_only, **kwargs)
     else:
         html = get_decoded_html(url)
 
