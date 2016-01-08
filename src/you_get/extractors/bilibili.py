@@ -154,6 +154,9 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         raise NotImplementedError(flashvars)
 
     if not info_only and not dry_run:
+        if not kwargs['caption']:
+            print('Skipping danmaku.')
+            return
         title = get_filename(title)
         print('Downloading %s ...\n' % (title + '.cmt.xml'))
         xml = get_srt_xml(cid)
