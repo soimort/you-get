@@ -1023,6 +1023,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
     \n'''
     help += '''Download options:
     -n | --no-merge                     Do not merge video parts.
+         --no-caption                   Do not download captions.
+                                        (subtitles, lyrics, danmaku, ...)
     -f | --force                        Force overwriting existed files.
     -F | --format <STREAM_ID>           Set video format to STREAM_ID.
     -O | --output-filename <FILE>       Set output filename.
@@ -1036,7 +1038,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     '''
 
     short_opts = 'Vhfiuc:ndF:O:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -1058,6 +1060,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
 
     info_only = False
     playlist = False
+    caption = True
     merge = True
     stream_id = None
     lang = None
@@ -1113,6 +1116,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
 
         elif o in ('-l', '--playlist'):
             playlist = True
+        elif o in ('--no-caption'):
+            caption = False
         elif o in ('-n', '--no-merge'):
             merge = False
         elif o in ('--no-proxy',):
@@ -1145,14 +1150,14 @@ def script_main(script_name, download, download_playlist, **kwargs):
     try:
         if stream_id:
             if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output)
+                download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
             else:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output)
+                download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
         else:
             if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output)
+                download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
             else:
-                download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output)
+                download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
     except KeyboardInterrupt:
         if traceback:
             raise
