@@ -82,3 +82,4 @@ _*
 
 .idea/
 !plugin-chrome/icon.png
+!plugin-chrome/popup.html
