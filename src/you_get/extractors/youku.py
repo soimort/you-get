@@ -130,7 +130,7 @@ class Youku(VideoExtractor):
             context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
         cookie_handler = request.HTTPCookieProcessor()
         opener = request.build_opener(ssl_context, cookie_handler)
-        opener.addheaders = [('Cookie','r={}'.format(time.time()))]
+        opener.addheaders = [('Cookie','__ysuid={}'.format(time.time()))]
         request.install_opener(opener)
 
         assert self.url or self.vid
@@ -268,8 +268,9 @@ class Youku(VideoExtractor):
                         q         = q
                     )
                     ksegs += [i['server'] for i in json.loads(get_content(u))]
-            except error.HTTPError:
+            except error.HTTPError as e:
                 # Use fallback stream data in case of HTTP 404
+                log.e('[Error] ' + str(e))
                 sp = self.streams_fallback_parameter
             except KeyError:
                 # Move on to next stream if best quality not available
