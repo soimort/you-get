@@ -129,7 +129,15 @@ class Youku(VideoExtractor):
         ssl_context = request.HTTPSHandler(
             context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
         cookie_handler = request.HTTPCookieProcessor()
-        opener = request.build_opener(ssl_context, cookie_handler)
+        if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
+            proxy = parse_host(kwargs['extractor_proxy'])
+            proxy_handler = request.ProxyHandler({
+                'http': '%s:%s' % proxy,
+                'https': '%s:%s' % proxy,
+            })
+        else:
+            proxy_handler = request.ProxyHandler({})
+        opener = request.build_opener(ssl_context, cookie_handler, proxy_handler)
         opener.addheaders = [('Cookie','__ysuid={}'.format(time.time()))]
         request.install_opener(opener)
 
@@ -267,6 +275,7 @@ class Youku(VideoExtractor):
                         fileid    = fileid,
                         q         = q
                     )
+                    # unset_proxy()  also strips cookies,because k.youku.com doesn't need cookies('r') for now
                     ksegs += [i['server'] for i in json.loads(get_content(u))]
             except error.HTTPError as e:
                 # Use fallback stream data in case of HTTP 404
