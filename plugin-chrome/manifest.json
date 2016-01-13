@@ -11,6 +11,6 @@
   },
   "permissions": [
     "activeTab",
-    "https://ajax.googleapis.com/"
+    "http://127.0.0.1:5000/"
   ]
 }

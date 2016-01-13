@@ -47,18 +47,23 @@ function getCurrentTabUrl(callback) {
   // alert(url); // Shows "undefined", because chrome.tabs.query is async.
 }
 
-function youGetPlay(url) {
-  var getUrl = 'http://127.0.0.1:5000/play/' + '?url=' + encodeURIComponent(url);
+
+function youGetAction(url, type) {
+  var getUrl = 'http://127.0.0.1:5000/action/' + '?type=' + type + '&url=' + encodeURIComponent(url);
   var x = new XMLHttpRequest();
   x.open('GET', getUrl);
   x.send();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById("play").addEventListener('click', function() {
-    getCurrentTabUrl(function(url) {
-      youGetPlay(url);
+  var items = document.querySelectorAll("ul li");
+  [].forEach.call(items, function(element){
+    element.addEventListener('click', function(){
+      getCurrentTabUrl(function(url) {
+        //console.log(element.attributes);
+        youGetAction(url, element.getAttribute('you_get'));
+      });
     });
-  })
+  });
 })
 
