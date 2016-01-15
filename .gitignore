@@ -79,7 +79,4 @@ _*
 *.ts
 *.webm
 *.xml
-
 .idea/
-!plugin-chrome/icon.png
-!plugin-chrome/popup.html
