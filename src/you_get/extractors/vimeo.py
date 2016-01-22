@@ -59,6 +59,9 @@ def vimeo_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         vimeo_download_by_channel(url, output_dir, merge, info_only)
     else:
         id = r1(r'https?://[\w.]*vimeo.com[/\w]*/(\d+)', url)
+        if id is None:
+            video_page = get_content(url, headers=fake_headers)
+            id = r1(r'"clip_id":(\d+)', video_page)
         assert id
 
         vimeo_download_by_id(id, None, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
