@@ -16,9 +16,14 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
         download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
 def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    content = get_html(url)
-    vid = match1(content, r'vid\s*:\s*"\s*([^"]+)"')
-    title = match1(content, r'title\s*:\s*"\s*([^"]+)"')
+    if 'iframe/player.html' in url:
+        vid = match1(url, r'\bvid=(\w+)')
+        # for embedded URLs; don't know what the title is
+        title = vid
+    else:
+        content = get_html(url)
+        vid = match1(content, r'vid\s*:\s*"\s*([^"]+)"')
+        title = match1(content, r'title\s*:\s*"\s*([^"]+)"')
 
     qq_download_by_vid(vid, title, output_dir, merge, info_only)
 
