@@ -691,11 +691,13 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
     if len(urls) == 1:
         url = urls[0]
         print('Downloading %s ...' % tr(output_filename))
+        bar.update()
         url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers)
         bar.done()
     else:
         parts = []
         print('Downloading %s.%s ...' % (tr(title), ext))
+        bar.update()
         for i, url in enumerate(urls):
             filename = '%s[%02d].%s' % (title, i, ext)
             filepath = os.path.join(output_dir, filename)
