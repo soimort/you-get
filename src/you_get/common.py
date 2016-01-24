@@ -540,8 +540,7 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
     os.rename(temp_filepath, filepath)
 
 class SimpleProgressBar:
-    # minus the size of all statically known size in self.bar
-    bar_size = term.get_terminal_size()[1] - 38
+    term_size = term.get_terminal_size()[1]
 
     def __init__(self, total_size, total_pieces = 1):
         self.displayed = False
@@ -553,8 +552,10 @@ class SimpleProgressBar:
         self.last_updated = time.time()
 
         total_pieces_len = len(str(total_pieces))
+        # 38 is the size of all statically known size in self.bar
+        self.bar_size = self.term_size - 38 - 2*total_pieces_len
         self.bar = '{0:>5}%% ({1:>5}/{2:<5}MB) ├{3:─<%s}┤[{4:>%s}/{5:>%s}] {6}' % (
-            self.bar_size - 2*total_pieces_len, total_pieces_len, total_pieces_len)
+            self.bar_size, total_pieces_len, total_pieces_len)
 
     def update(self):
         self.displayed = True
