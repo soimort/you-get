@@ -170,11 +170,9 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
         params.append(output + '.txt')
         params += ['-c', 'copy', output]
 
-        if subprocess.call(params) == 0:
-            os.remove(output + '.txt')
-            return True
-        else:
-            raise
+        subprocess.check_call(params)
+        os.remove(output + '.txt')
+        return True
 
     for file in files:
         if os.path.isfile(file):
@@ -196,9 +194,7 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
     else:
         params += ['-c', 'copy', '-absf', 'aac_adtstoasc', output]
 
-    if subprocess.call(params) == 0:
-        for file in files:
-            os.remove(file + '.ts')
-        return True
-    else:
-        raise
+    subprocess.check_call(params)
+    for file in files:
+        os.remove(file + '.ts')
+    return True
