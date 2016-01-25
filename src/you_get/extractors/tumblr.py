@@ -6,6 +6,7 @@ from ..common import *
 from .universal import *
 from .dailymotion import dailymotion_download
 from .vimeo import vimeo_download
+from .vine import vine_download
 
 def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if re.match(r'https?://\d+\.media\.tumblr\.com/', url):
@@ -74,6 +75,9 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             return
         elif re.search(r'dailymotion\.com', iframe_url):
             dailymotion_download(iframe_url, output_dir, merge=merge, info_only=info_only, **kwargs)
+            return
+        elif re.search(r'vine\.co', iframe_url):
+            vine_download(iframe_url, output_dir, merge=merge, info_only=info_only, **kwargs)
             return
         else:
             iframe_html = get_content(iframe_url)
