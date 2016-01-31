@@ -16,14 +16,14 @@ def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **
             'User-Agent': 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
         }
         webpage_url = re.search(r'(http://video.weibo.com/show\?fid=\d{4}:\w{32})\w*', url).group(1) + '&type=mp4'  #mobile
-        
+
         #grab download URL
         a = get_content(webpage_url, headers= fake_headers_mobile , decoded=True)
         url = match1(a, r'<video src="(.*?)\"\W')
-        
+
         #grab title
         b = get_content(webpage_url)  #normal
-        title = match1(b, r'<meta name="description" content="(.*?)\"\W')
+        title = match1(b, r'<meta name="description" content="([\s\S]*?)\"\W')
 
         type_, ext, size = url_info(url)
         print_info(site_info, title, type_, size)
