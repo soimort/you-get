@@ -348,6 +348,7 @@ def url_info(url, faker = False, headers = {}):
     headers = response.headers
 
     type = headers['content-type']
+    if type == 'image/jpg; charset=UTF-8' or type == 'image/jpg' : type = 'audio/mpeg'    #fix for netease
     mapping = {
         'video/3gpp': '3gp',
         'video/f4v': 'flv',
