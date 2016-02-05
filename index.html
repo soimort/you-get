@@ -27,12 +27,12 @@
   <a href="https://you-get.org/"><img src="images/logo.jpg"/></a>
   <div id="desc">
     <h1>You-Get</h1>
-    <h2>version 0.4.266</h2>
+    <h2>version 0.4.272</h2>
     <a href="https://github.com/soimort/you-get">Star <i class="fa fa-github-square fa-2x"></i></a>
-    <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.266.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
+    <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.272.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
     <div id="msg">
-      <span id="checksum" onmouseover="this.innerHTML='1a178f1d691050a2e21ee141282b8c8fd52caa11'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
-      <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.266.tar.gz.asc">PGP SIGNATURE</a>
+      <span id="checksum" onmouseover="this.innerHTML='1a9336fe0be1c2cc9c768fd218d2c208e61314e8'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
+      <a href="https://pypi.python.org/packages/source/y/you-get/you-get-0.4.272.tar.gz.asc">PGP SIGNATURE</a>
     </div>
   </div>
 </nav>
@@ -108,12 +108,14 @@ Downloading TEDxGE2014_Stallman05_LQ.webm ...
 <h3 id="option-4-download-from-github">Option 4: Download from GitHub</h3>
 <p>You may either download the <a href="https://github.com/soimort/you-get/archive/master.zip">stable</a> (identical with the latest release on PyPI) or the <a href="https://github.com/soimort/you-get/archive/develop.zip">develop</a> (more hotfixes, unstable features) branch of <code>you-get</code>. Unzip it, and put the directory containing the <code>you-get</code> script into your <code>PATH</code>.</p>
 <p>Alternatively, run</p>
-<pre><code>$ make install</code></pre>
+<pre><code>$ [sudo] python3 setup.py install</code></pre>
+<p>Or</p>
+<pre><code>$ python3 setup.py install --user</code></pre>
 <p>to install <code>you-get</code> to a permanent path.</p>
 <h3 id="option-5-git-clone">Option 5: Git clone</h3>
 <p>This is the recommended way for all developers, even if you don't often code in Python.</p>
 <pre><code>$ git clone git://github.com/soimort/you-get.git</code></pre>
-<p>Then put the cloned directory into your <code>PATH</code>, or run <code>make install</code> to install <code>you-get</code> to a permanent path.</p>
+<p>Then put the cloned directory into your <code>PATH</code>, or run <code>./setup.py install</code> to install <code>you-get</code> to a permanent path.</p>
 <h2 id="upgrading">Upgrading</h2>
 <p>Based on which option you chose to install <code>you-get</code>, you may upgrade it via:</p>
 <pre><code>$ pip3 install --upgrade you-get</code></pre>

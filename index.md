@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.266
+project-version: 0.4.272
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.266.tar.gz
+download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.272.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 1a178f1d691050a2e21ee141282b8c8fd52caa11
-download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.266.tar.gz.asc
+download-checksum-data: 1a9336fe0be1c2cc9c768fd218d2c208e61314e8
+download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.272.tar.gz.asc
 
 ---
 # You-Get
@@ -86,7 +86,13 @@ You may either download the [stable](https://github.com/soimort/you-get/archive/
 Alternatively, run
 
 ```
-$ make install
+$ [sudo] python3 setup.py install
+```
+
+Or
+
+```
+$ python3 setup.py install --user
 ```
 
 to install `you-get` to a permanent path.
@@ -99,7 +105,7 @@ This is the recommended way for all developers, even if you don't often code in 
 $ git clone git://github.com/soimort/you-get.git
 ```
 
-Then put the cloned directory into your `PATH`, or run `make install` to install `you-get` to a permanent path.
+Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
 
 ## Upgrading
 
