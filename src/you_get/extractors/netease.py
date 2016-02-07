@@ -129,17 +129,10 @@ def netease_download(url, output_dir = '.', merge = True, info_only = False, **k
         src = r1(r'<source src="([^"]+)"', html) or r1(r'<source type="[^"]+" src="([^"]+)"', html)
 
         if src:
-            sd_url = r1(r'(.+)-mobile.mp4', src) + ".flv"
-            _, _, sd_size = url_info(sd_url)
-
-            hd_url = re.sub('/SD/', '/HD/', sd_url)
-            _, _, hd_size = url_info(hd_url)
-
-            if hd_size > sd_size:
-                url, size = hd_url, hd_size
-            else:
-                url, size = sd_url, sd_size
-            ext = 'flv'
+            url = src
+            _, ext, size = url_info(src)
+            #sd_url = r1(r'(.+)-mobile.mp4', src) + ".flv"
+            #hd_url = re.sub('/SD/', '/HD/', sd_url)
 
         else:
             url = (r1(r'["\'](.+)-list.m3u8["\']', html) or r1(r'["\'](.+).m3u8["\']', html)) + ".mp4"
