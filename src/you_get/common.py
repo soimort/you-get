@@ -556,15 +556,15 @@ class SimpleProgressBar:
         # 38 is the size of all statically known size in self.bar
         total_str = '%5s' % round(self.total_size / 1048576, 1)
         total_str_width = max(len(total_str), 5)
-        self.bar_size = self.term_size - 28 - 2*total_pieces_len - 2*total_str_width
-        self.bar = '{:>5}%% ({:>%s}/%sMB) ├{:─<%s}┤[{:>%s}/{:>%s}] {}' % (
+        self.bar_size = self.term_size - 27 - 2*total_pieces_len - 2*total_str_width
+        self.bar = '{:>4}%% ({:>%s}/%sMB) ├{:─<%s}┤[{:>%s}/{:>%s}] {}' % (
             total_str_width, total_str, self.bar_size, total_pieces_len, total_pieces_len)
 
     def update(self):
         self.displayed = True
         bar_size = self.bar_size
         percent = round(self.received * 100 / self.total_size, 1)
-        if percent > 100:
+        if percent >= 100:
             percent = 100
         dots = bar_size * int(percent) // 100
         plus = int(percent) - dots // bar_size * 100
