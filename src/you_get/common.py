@@ -541,8 +541,7 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
     os.rename(temp_filepath, filepath)
 
 class SimpleProgressBar:
-    bar_size = term.get_terminal_size()[1] - 42
-    bar = '{0:>5}% ({1:>5}/{2:<5}MB) ├{3:─<' + str(bar_size) + '}┤[{4}/{5}] {6}'
+    term_size = term.get_terminal_size()[1]
 
     def __init__(self, total_size, total_pieces = 1):
         self.displayed = False
@@ -552,6 +551,12 @@ class SimpleProgressBar:
         self.received = 0
         self.speed = ''
         self.last_updated = time.time()
+
+        total_pieces_len = len(str(total_pieces))
+        # 38 is the size of all statically known size in self.bar
+        self.bar_size = self.term_size - 38 - 2*total_pieces_len
+        self.bar = '{0:>5}%% ({1:>5}/{2:<5}MB) ├{3:─<%s}┤[{4:>%s}/{5:>%s}] {6}' % (
+            self.bar_size, total_pieces_len, total_pieces_len)
 
     def update(self):
         self.displayed = True
@@ -688,11 +693,13 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
     if len(urls) == 1:
         url = urls[0]
         print('Downloading %s ...' % tr(output_filename))
+        bar.update()
         url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers)
         bar.done()
     else:
         parts = []
         print('Downloading %s.%s ...' % (tr(title), ext))
+        bar.update()
         for i, url in enumerate(urls):
             filename = '%s[%02d].%s' % (title, i, ext)
             filepath = os.path.join(output_dir, filename)
