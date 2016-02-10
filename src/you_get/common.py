@@ -554,9 +554,11 @@ class SimpleProgressBar:
 
         total_pieces_len = len(str(total_pieces))
         # 38 is the size of all statically known size in self.bar
-        self.bar_size = self.term_size - 38 - 2*total_pieces_len
-        self.bar = '{0:>5}%% ({1:>5}/{2:<5}MB) ├{3:─<%s}┤[{4:>%s}/{5:>%s}] {6}' % (
-            self.bar_size, total_pieces_len, total_pieces_len)
+        total_str = '%5s' % round(self.total_size / 1048576, 1)
+        total_str_width = max(len(total_str), 5)
+        self.bar_size = self.term_size - 28 - 2*total_pieces_len - 2*total_str_width
+        self.bar = '{:>5}%% ({:>%s}/%sMB) ├{:─<%s}┤[{:>%s}/{:>%s}] {}' % (
+            total_str_width, total_str, self.bar_size, total_pieces_len, total_pieces_len)
 
     def update(self):
         self.displayed = True
@@ -573,7 +575,7 @@ class SimpleProgressBar:
         else:
             plus = ''
         bar = '█' * dots + plus
-        bar = self.bar.format(percent, round(self.received / 1048576, 1), round(self.total_size / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
+        bar = self.bar.format(percent, round(self.received / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
