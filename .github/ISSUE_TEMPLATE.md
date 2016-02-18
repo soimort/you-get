@@ -1,17 +1,17 @@
-In case of any encountered problem, always check your network status first. That is, please ensure the video you want to download can be streamed properly in your web browser.
+Please make sure these boxes are checked before submitting your issue – thank you!
 
-* Keep in mind that some videos on some hosting sites may have a region restriction, e.g., Youku is blocking access to some videos from IP addresses outside mainland China, and YouTube is also blocking some videos in Germany.
+- [ ] You can actually watch the video in your browser, but not download them with `you-get`.
+- [ ] Your `you-get` is up-to-date.
+- [ ] The issue is not yet reported on <https://github.com/soimort/you-get/issues> or <https://github.com/soimort/you-get/wiki/Known-Bugs>.
+- [ ] The issue (or question) is really about `you-get`, not about some other code or project.
 
-Please include:
+Run the command with the `--debug` option, and paste the full output inside the fences:
 
-* Your exact command line, like `you-get -i "www.youtube.com/watch?v=sGwy8DsUJ4M"`. A common mistake is not to escape the `&`. Putting URLs in quotes should solve this problem.
+```
+[PASTE IN ME]
+```
 
-* Your full console output.
+If there's anything else you would like to say (e.g. in case your issue is not about downloading a specific video; it might as well be a general discussion or proposal for a new feature), fill in the box below; otherwise, you may want to post an emoji or meme instead:
 
-* If you executed the command and got no response, please re-run the command with `--debug`, kill the process with keyboard shortcut `Ctrl-C` and include the full console output.
-
-* The output of `you-get --version`, or `git rev-parse HEAD` -- if you are using a Git version (but always remember to keep up-to-date!)
-
-* The output of `python --version`.
-
-* If possible, you may include your IP address and proxy setting information as well.
+> [WRITE SOMETHING]
+> [OR HAVE SOME :icecream:!]
