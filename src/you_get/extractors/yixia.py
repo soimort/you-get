@@ -52,7 +52,7 @@ def yixia_download(url, output_dir = '.', merge = True, info_only = False, **kwa
         site_info = "Yixia Miaopai"
         
         if re.match(r'http://www.miaopai.com/show/channel/\w+', url):  #PC
-            scid = match1(url, r'http://www.miaopai.com/show/channel/(\w+)')
+            scid = match1(url, r'http://www.miaopai.com/show/channel/(.+)\.htm')
         elif re.match(r'http://www.miaopai.com/show/\w+', url):  #PC
             scid = match1(url, r'http://www.miaopai.com/show/(.+)\.htm')
         elif re.match(r'http://m.miaopai.com/show/channel/\w+', url):  #Mobile
