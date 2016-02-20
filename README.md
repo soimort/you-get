@@ -359,6 +359,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
 | QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
 | 阡陌视频 | <http://qianmo.com/>           |✓| | |
+| THVideo  | <http://thvideo.tv/>           |✓| | |
 | Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
 | Sohu<br/>搜狐视频 | <http://tv.sohu.com/> |✓| | |
 | 天天动听 | <http://www.dongting.com/>     | | |✓|
