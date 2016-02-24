@@ -5,10 +5,12 @@ __all__ = ['qq_download']
 from ..common import *
 
 def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
-    api = "http://vv.video.qq.com/geturl?otype=json&vid=%s" % vid
+    api = "http://h5vv.video.qq.com/getinfo?otype=json&vid=%s" % vid
     content = get_html(api)
     output_json = json.loads(match1(content, r'QZOutputJson=(.*)')[:-1])
-    url = output_json['vd']['vi'][0]['url']
+    url = output_json['vl']['vi'][0]['ul']['ui'][0]['url']
+    fvkey = output_json['vl']['vi'][0]['fvkey']
+    url = '%s/%s.mp4?vkey=%s' % ( url, vid, fvkey )
     _, ext, size = url_info(url, faker=True)
 
     print_info(site_info, title, ext, size)
