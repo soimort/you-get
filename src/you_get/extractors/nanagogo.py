@@ -15,6 +15,7 @@ def nanagogo_download(url, output_dir='.', merge=True, info_only=False, **kwargs
     for i in info['data']['posts']['post']['body']:
         if 'image' in i:
             image_url = i['image']
+            if image_url[:2] == '//': continue # skip stamp images
             _, ext, size = url_info(image_url)
             items.append({'title': title,
                           'url':   image_url,
