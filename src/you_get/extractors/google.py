@@ -48,45 +48,50 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
 
     if service == 'plus': # Google Plus
 
-        if not re.search(r'plus.google.com/photos/[^/]*/albums/\d+/\d+', url):
-            html = get_html(parse.unquote(url))
-            url = "https://plus.google.com/" + r1(r'"(photos/\d+/albums/\d+/\d+)', html)
-            title = r1(r'<title>([^<\n]+)', html)
-        else:
-            title = None
-
-        html = get_html(url)
-        temp = re.findall(r'\[(\d+),\d+,\d+,"([^"]+)"\]', html)
-        temp = sorted(temp, key = lambda x : fmt_level[x[0]])
-        real_urls = [unicodize(i[1]) for i in temp if i[0] == temp[0][0]]
-
-        if title is None:
-            post_url = r1(r'"(https://plus.google.com/[^/]+/posts/[^"]*)"', html)
-            post_author = r1(r'/\+([^/]+)/posts', post_url)
-            if post_author:
-                post_url = "https://plus.google.com/+%s/posts/%s" % (parse.quote(post_author), r1(r'posts/(.+)', post_url))
-            post_html = get_html(post_url)
-            title = r1(r'<title[^>]*>([^<\n]+)', post_html)
-
-        if title is None:
-            response = request.urlopen(request.Request(real_url))
-            if response.headers['content-disposition']:
-                filename = parse.unquote(r1(r'filename="?(.+)"?', response.headers['content-disposition'])).split('.')
-                title = ''.join(filename[:-1])
+        # attempt to extract images first
+        html = get_html(parse.unquote(url))
+        real_urls = []
+        for src in re.findall(r'src="([^"]+)"[^>]*itemprop="image"', html):
+            t = src.split('/')
+            t[0], t[-2] = t[0] or 'https:', 's0-d'
+            u = '/'.join(t)
+            real_urls.append(u)
+        post_date = r1(r'"(20\d\d-[01]\d-[0123]\d)"', html)
+        post_id = r1(r'/posts/([^"]+)', html)
+        title = post_date + "_" + post_id
 
         if not real_urls:
-            # extract the image
-            # FIXME: download multple images / albums
-            real_urls = [r1(r'<meta property="og:image" content="([^"]+)', html)]
-            post_date = r1(r'"(20\d\d-[01]\d-[0123]\d)"', html)
-            post_id = r1(r'/posts/([^"]+)', html)
-            title = post_date + "_" + post_id
+
+            if not re.search(r'plus.google.com/photos/[^/]*/albums/\d+/\d+', url):
+                html = get_html(parse.unquote(url))
+                url = "https://plus.google.com/" + r1(r'"(photos/\d+/albums/\d+/\d+)', html)
+                title = r1(r'<title>([^<\n]+)', html)
+            else:
+                title = None
+
+            html = get_html(url)
+            temp = re.findall(r'\[(\d+),\d+,\d+,"([^"]+)"\]', html)
+            temp = sorted(temp, key = lambda x : fmt_level[x[0]])
+            real_urls = [unicodize(i[1]) for i in temp if i[0] == temp[0][0]]
+
+            if title is None:
+                post_url = r1(r'"(https://plus.google.com/[^/]+/posts/[^"]*)"', html)
+                post_author = r1(r'/\+([^/]+)/posts', post_url)
+                if post_author:
+                    post_url = "https://plus.google.com/+%s/posts/%s" % (parse.quote(post_author), r1(r'posts/(.+)', post_url))
+                post_html = get_html(post_url)
+                title = r1(r'<title[^>]*>([^<\n]+)', post_html)
+
+            if title is None:
+                response = request.urlopen(request.Request(real_url))
+                if response.headers['content-disposition']:
+                    filename = parse.unquote(r1(r'filename="?(.+)"?', response.headers['content-disposition'])).split('.')
+                    title = ''.join(filename[:-1])
 
         for (i, real_url) in enumerate(real_urls):
             title_i = "%s[%s]" % (title, i) if len(real_urls) > 1 else title
             type, ext, size = url_info(real_url)
-            if ext is None:
-                ext = 'mp4'
+            if ext is None: ext = 'mp4'
 
             print_info(site_info, title_i, ext, size)
             if not info_only:
