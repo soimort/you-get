@@ -64,33 +64,28 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
         post_id = r1(r'/posts/([^"]+)', html)
         title = post_date + "_" + post_id
 
-        if not real_urls:
-
-            if not re.search(r'plus.google.com/photos/[^/]*/albums/\d+/\d+', url):
-                html = get_html(parse.unquote(url))
-                url = "https://plus.google.com/" + r1(r'"(photos/\d+/albums/\d+/\d+)', html)
-                title = r1(r'<title>([^<\n]+)', html)
-            else:
-                title = None
-
+        try:
+            url = "https://plus.google.com/" + r1(r'"(photos/\d+/albums/\d+/\d+)', html)
             html = get_html(url)
             temp = re.findall(r'\[(\d+),\d+,\d+,"([^"]+)"\]', html)
             temp = sorted(temp, key = lambda x : fmt_level[x[0]])
-            real_urls = [unicodize(i[1]) for i in temp if i[0] == temp[0][0]]
+            urls = [unicodize(i[1]) for i in temp if i[0] == temp[0][0]]
+            assert urls
+            real_urls = urls # Look ma, there's really a video!
 
-            if title is None:
-                post_url = r1(r'"(https://plus.google.com/[^/]+/posts/[^"]*)"', html)
-                post_author = r1(r'/\+([^/]+)/posts', post_url)
-                if post_author:
-                    post_url = "https://plus.google.com/+%s/posts/%s" % (parse.quote(post_author), r1(r'posts/(.+)', post_url))
-                post_html = get_html(post_url)
-                title = r1(r'<title[^>]*>([^<\n]+)', post_html)
+            post_url = r1(r'"(https://plus.google.com/[^/]+/posts/[^"]*)"', html)
+            post_author = r1(r'/\+([^/]+)/posts', post_url)
+            if post_author:
+                post_url = "https://plus.google.com/+%s/posts/%s" % (parse.quote(post_author), r1(r'posts/(.+)', post_url))
+            post_html = get_html(post_url)
+            title = r1(r'<title[^>]*>([^<\n]+)', post_html)
 
             if title is None:
                 response = request.urlopen(request.Request(real_url))
                 if response.headers['content-disposition']:
                     filename = parse.unquote(r1(r'filename="?(.+)"?', response.headers['content-disposition'])).split('.')
                     title = ''.join(filename[:-1])
+        except: pass
 
         for (i, real_url) in enumerate(real_urls):
             title_i = "%s[%s]" % (title, i) if len(real_urls) > 1 else title
