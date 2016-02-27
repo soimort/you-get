@@ -56,6 +56,8 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
             t[0], t[-2] = t[0] or 'https:', 's0-d'
             u = '/'.join(t)
             real_urls.append(u)
+        if real_urls is None:
+            real_urls = [r1(r'<meta property="og:image" content="([^"]+)', html)]
         post_date = r1(r'"(20\d\d-[01]\d-[0123]\d)"', html)
         post_id = r1(r'/posts/([^"]+)', html)
         title = post_date + "_" + post_id
