@@ -67,21 +67,26 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if not real_url:
         real_url = r1(r'<source src="([^"]*)"', html)
     if not real_url:
-        iframe_url = r1(r'<iframe[^>]+src=[\'"]([^\'"]*)[\'"]', html)
-        if iframe_url[:2] == '//': iframe_url = 'http:' + iframe_url
-        if re.search(r'player\.vimeo\.com', iframe_url):
-            vimeo_download(iframe_url, output_dir, merge=merge, info_only=info_only,
-                           referer='http://tumblr.com/', **kwargs)
-            return
-        elif re.search(r'dailymotion\.com', iframe_url):
-            dailymotion_download(iframe_url, output_dir, merge=merge, info_only=info_only, **kwargs)
-            return
-        elif re.search(r'vine\.co', iframe_url):
-            vine_download(iframe_url, output_dir, merge=merge, info_only=info_only, **kwargs)
-            return
+        iframe_url = r1(r'<[^>]+tumblr_video_container[^>]+><iframe[^>]+src=[\'"]([^\'"]*)[\'"]', html)
+        if len(iframe_url) > 0:
+            iframe_html = get_content(iframe_url, headers=fake_headers)
+            real_url = r1(r'<video[^>]*>[\n ]*<source[^>]+src=[\'"]([^\'"]*)[\'"]', iframe_html)
         else:
-            iframe_html = get_content(iframe_url)
-            real_url = r1(r'<source src="([^"]*)"', iframe_html)
+            iframe_url = r1(r'<iframe[^>]+src=[\'"]([^\'"]*)[\'"]', html)
+            if iframe_url[:2] == '//': iframe_url = 'http:' + iframe_url
+            if re.search(r'player\.vimeo\.com', iframe_url):
+                vimeo_download(iframe_url, output_dir, merge=merge, info_only=info_only,
+                               referer='http://tumblr.com/', **kwargs)
+                return
+            elif re.search(r'dailymotion\.com', iframe_url):
+                dailymotion_download(iframe_url, output_dir, merge=merge, info_only=info_only, **kwargs)
+                return
+            elif re.search(r'vine\.co', iframe_url):
+                vine_download(iframe_url, output_dir, merge=merge, info_only=info_only, **kwargs)
+                return
+            else:
+                iframe_html = get_content(iframe_url)
+                real_url = r1(r'<source src="([^"]*)"', iframe_html)
 
     title = unescape_html(r1(r'<meta property="og:title" content="([^"]*)" />', html) or
         r1(r'<meta property="og:description" content="([^"]*)" />', html) or
