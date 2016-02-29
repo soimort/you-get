@@ -5,7 +5,7 @@ __all__ = ['miaopai_download']
 from ..common import *
 import urllib.error
 
-def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
+def miaopai_download_by_url(url, output_dir = '.', merge = False, info_only = False, **kwargs):
     '''Source: Android mobile'''
     if re.match(r'http://video.weibo.com/show\?fid=(\d{4}:\w{32})\w*', url):
         fake_headers_mobile = {
@@ -30,6 +30,14 @@ def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **
         if not info_only:
             download_urls([url], title, ext, total_size=None, output_dir=output_dir, merge=merge)
 
+#----------------------------------------------------------------------
+def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
+    """"""
+    if re.match(r'http://video.weibo.com/show\?fid=(\d{4}:\w{32})\w*', url):
+        miaopai_download_by_url(url, output_dir, merge, info_only)
+    elif re.match(r'http://weibo.com/p/230444\w+', url):
+        _fid = match1(url, r'http://weibo.com/p/230444(\w+)')
+        miaopai_download_by_url('http://video.weibo.com/show?fid=1034:{_fid}'.format(_fid = _fid))
 
 site_info = "miaopai"
 download = miaopai_download
