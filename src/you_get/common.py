@@ -1129,7 +1129,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
 
         elif o in ('-l', '--playlist'):
             playlist = True
-        elif o in ('--no-caption'):
+        elif o in ('--no-caption',):
             caption = False
         elif o in ('-n', '--no-merge'):
             merge = False
