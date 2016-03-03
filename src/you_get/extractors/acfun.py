@@ -4,7 +4,7 @@ __all__ = ['acfun_download']
 
 from ..common import *
 
-from .letv import letvcloud_download_by_vu
+from .le import letvcloud_download_by_vu
 from .qq import qq_download_by_vid
 from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_iid

@@ -130,14 +130,12 @@ def letv_download(url, output_dir='.', merge=True, info_only=False ,**kwargs):
         letvcloud_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
         html = get_content(url)
-        #to get title
-        if re.match(r'http://www.letv.com/ptv/vplay/(\d+).html', url):
-            vid = match1(url, r'http://www.letv.com/ptv/vplay/(\d+).html')
-        else:
-            vid = match1(html, r'vid="(\d+)"')
+        vid = match1(url, r'http://www.letv.com/ptv/vplay/(\d+).html') or \
+            match1(url, r'http://www.le.com/ptv/vplay/(\d+).html') or \
+            match1(html, r'vid="(\d+)"')
         title = match1(html,r'name="irTitle" content="(.*?)"')
         letv_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only,**kwargs)
 
-site_info = "LeTV.com"
+site_info = "Le.com"
 download = letv_download
 download_playlist = playlist_not_supported('letv')

@@ -31,7 +31,7 @@ from .jpopsuki import *
 from .ku6 import *
 from .kugou import *
 from .kuwo import *
-from .letv import *
+from .le import *
 from .lizhi import *
 from .magisto import *
 from .metacafe import *
