@@ -3,8 +3,13 @@
 __all__ = ['nanagogo_download']
 
 from ..common import *
+from .universal import *
 
 def nanagogo_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    if re.match(r'https?://stat.7gogo.jp', url):
+        universal_download(url, output_dir, merge=merge, info_only=info_only)
+        return
+
     talk_id = r1(r'7gogo.jp/([^/]+)/', url)
     post_id = r1(r'7gogo.jp/[^/]+/(\d+)', url)
     title = '%s_%s' % (talk_id, post_id)
