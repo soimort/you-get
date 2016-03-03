@@ -112,6 +112,8 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
 
     title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',
                    r'<h1[^>]*>([^<>]+)</h1>'], html)
+    if not title:
+        log.wtf('[Failed] Video does not exist. Try to login with --cookies.')
     title = unescape_html(title)
     title = escape_file_path(title)
 
