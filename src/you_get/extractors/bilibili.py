@@ -99,9 +99,12 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
 
     type_ = ''
     size = 0
-    for url in urls:
-        _, type_, temp = url_info(url)
-        size += temp or 0
+    try:
+        for url in urls:
+            _, type_, temp = url_info(url)
+            size += temp or 0
+    except:
+        log.wtf('[Failed] DNS not resolved. Please change your DNS server settings.')
 
     print_info(site_info, title, type_, size)
     if not info_only:
