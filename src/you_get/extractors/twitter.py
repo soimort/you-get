@@ -41,26 +41,25 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                               output_dir=output_dir)
 
     except: # extract video
-        icards = r1(r'data-src="([^"]*)"', html)
-        if icards:
-            card = get_html("https://twitter.com" + icards)
-            data_player_config = r1(r'data-player-config="([^"]*)"', card)
-            if data_player_config is None:
-                vine_src = r1(r'<iframe src="([^"]*)"', card)
-                vine_download(vine_src, output_dir=output_dir, merge=merge, info_only=info_only)
-                return
-            data = json.loads(unescape_html(data_player_config))
-            if 'playlist' in data:
-                source = data['playlist'][0]['source']
-            else:
-                vmap = get_content(data['vmapUrl'])
-                source = r1(r'<!\[CDATA\[(.*)\]\]>', vmap)
-        else:
-            source = r1(r'<source video-src="([^"]*)"', html)
-            if not source:
-                vmap_url = r1(r'<meta name="twitter:amplify:vmap" content="([^"]+)"', html)
-                vmap = get_content(vmap_url)
-                source = r1(r'<!\[CDATA\[(.*)\]\]>', vmap)
+        # always use i/cards or videos url
+        if not re.match(r'https?://twitter.com/i/', url):
+            url = r1(r'<meta\s*property="og:video:url"\s*content="([^"]+)"', html)
+            html = get_content(url)
+
+        data_config = r1(r'data-config="([^"]*)"', html) or \
+            r1(r'data-player-config="([^"]*)"', html)
+        i = json.loads(unescape_html(data_config))
+        if 'video_url' in i:
+            source = i['video_url']
+            if not item_id: page_title = i['tweet_id']
+        elif 'playlist' in i:
+            source = i['playlist'][0]['source']
+            if not item_id: page_title = i['playlist'][0]['contentId']
+        elif 'vmap_url' in i:
+            vmap_url = i['vmap_url']
+            vmap = get_content(vmap_url)
+            source = r1(r'<MediaFile>\s*<!\[CDATA\[(.*)\]\]>', vmap)
+            if not item_id: page_title = i['tweet_id']
 
         mime, ext, size = url_info(source)
 
