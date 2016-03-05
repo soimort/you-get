@@ -126,8 +126,8 @@ if sys.stdout.isatty():
 else:
     default_encoding = locale.getpreferredencoding().lower()
 
-def maybe_print(s):
-    try: print(s)
+def maybe_print(*s):
+    try: print(*s)
     except: pass
 
 def tr(s):
