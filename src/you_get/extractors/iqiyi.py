@@ -135,6 +135,7 @@ class Iqiyi(VideoExtractor):
             log.wtf("is your you-get up-to-date?")
 
         self.title = info["data"]["vi"]["vn"]
+        self.title = self.title.replace('\u200b', '')
 
         # data.vp = json.data.vp
         #  data.vi = json.data.vi
