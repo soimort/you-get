@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.306
+project-version: 0.4.324
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.306.tar.gz
+download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.324.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: d16eb5fc1cf391db738a7883a6413e327c78dbf1
-download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.306.tar.gz.asc
+download-checksum-data: fecdd036da5a89ee2a8a75c98123614d6d6ff2c2
+download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.324.tar.gz.asc
 
 ---
 # You-Get
@@ -333,6 +333,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | JPopsuki TV | <http://www.jpopsuki.tv/>     |✓| | |
 | Internet Archive | <https://archive.org/>   |✓| | |
 | **Instagram** | <https://instagram.com/>    |✓|✓| |
+| InfoQ       | <http://www.infoq.com/presentations/> |✓| | |
 | Imgur       | <http://imgur.com/>           | |✓| |
 | Heavy Music Archive | <http://www.heavy-music.ru/> | | |✓|
 | **Google+** | <https://plus.google.com/>    |✓|✓| |
@@ -364,7 +365,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 酷6网    | <http://www.ku6.com/>          |✓| | |
 | 酷狗音乐 | <http://www.kugou.com/>        | | |✓|
 | 酷我音乐 | <http://www.kuwo.cn/>          | | |✓|
-| 乐视网   | <http://www.letv.com/>         |✓| | |
+| 乐视网   | <http://www.le.com/>           |✓| | |
 | 荔枝FM   | <http://www.lizhi.fm/>         | | |✓|
 | 秒拍     | <http://www.miaopai.com/>      |✓| | |
 | MioMio弹幕网 | <http://www.miomio.tv/>    |✓| | |
@@ -373,6 +374,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
 | QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
 | 阡陌视频 | <http://qianmo.com/>           |✓| | |
+| THVideo  | <http://thvideo.tv/>           |✓| | |
 | Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
 | Sohu<br/>搜狐视频 | <http://tv.sohu.com/> |✓| | |
 | 天天动听 | <http://www.dongting.com/>     | | |✓|
