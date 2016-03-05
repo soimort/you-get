@@ -112,7 +112,14 @@ class Iqiyi(VideoExtractor):
                 "&authkey="+hashlib.new('md5',bytes(hashlib.new('md5', b'').hexdigest()+str(tm)+tvid,'utf-8')).hexdigest()
         return json.loads(get_content(vmsreq))
 
+    def download_playlist_by_url(self, url, **kwargs):
+        self.url = url
 
+        video_page = get_content(url)
+        videos = set(re.findall(r'<a href="(http://www\.iqiyi\.com/v_[^"]+)"', video_page))
+
+        for video in videos:
+            self.__class__().download_by_url(video, **kwargs)
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
@@ -127,8 +134,12 @@ class Iqiyi(VideoExtractor):
                       r1(r'data-player-videoid="([^"]+)"', html)
             self.vid = (tvid, videoid)
 
-        self.gen_uid=uuid4().hex
-        info = self.getVMS()
+        self.gen_uid = uuid4().hex
+        try:
+            info = self.getVMS()
+        except:
+            self.download_playlist_by_url(self.url, **kwargs)
+            exit(0)
 
         if info["code"] != "A000000":
             log.e("[error] outdated iQIYI key")
@@ -201,4 +212,4 @@ class Iqiyi(VideoExtractor):
 site = Iqiyi()
 download = site.download_by_url
 iqiyi_download_by_vid = site.download_by_vid
-download_playlist = playlist_not_supported('iqiyi')
+download_playlist = site.download_playlist_by_url
