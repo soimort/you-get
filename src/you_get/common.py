@@ -126,6 +126,10 @@ if sys.stdout.isatty():
 else:
     default_encoding = locale.getpreferredencoding().lower()
 
+def maybe_print(s):
+    try: print(s)
+    except: pass
+
 def tr(s):
     if default_encoding == 'utf-8':
         return s
@@ -953,8 +957,8 @@ def print_info(site_info, title, type, size):
     else:
         type_info = "Unknown type (%s)" % type
 
-    print("Site:      ", site_info)
-    print("Title:     ", unescape_html(tr(title)))
+    maybe_print("Site:      ", site_info)
+    maybe_print("Title:     ", unescape_html(tr(title)))
     print("Type:      ", type_info)
     print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     print()
