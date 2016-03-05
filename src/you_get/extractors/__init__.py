@@ -22,6 +22,7 @@ from .google import *
 from .heavymusic import *
 from .ifeng import *
 from .imgur import *
+from .infoq import *
 from .instagram import *
 from .interest import *
 from .iqilu import *

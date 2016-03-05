@@ -28,6 +28,7 @@ SITES = {
     'ifeng'            : 'ifeng',
     'imgur'            : 'imgur',
     'in'               : 'alive',
+    'infoq'            : 'infoq',
     'instagram'        : 'instagram',
     'interest'         : 'interest',
     'iqilu'            : 'iqilu',
@@ -365,6 +366,7 @@ def url_info(url, faker = False, headers = {}):
         'image/jpeg': 'jpg',
         'image/png': 'png',
         'image/gif': 'gif',
+        'application/pdf': 'pdf',
     }
     if type in mapping:
         ext = mapping[type]
