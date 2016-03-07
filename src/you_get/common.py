@@ -75,6 +75,7 @@ SITES = {
     'weibo'            : 'miaopai',
     'veoh'             : 'veoh',
     'vine'             : 'vine',
+    'vlook'            : 'vlook',
     'vk'               : 'vk',
     'xiami'            : 'xiami',
     'xiaokaxiu'        : 'yixia',
