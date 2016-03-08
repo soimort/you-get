@@ -40,11 +40,9 @@ class Infoq(VideoExtractor):
         ]
         request.install_opener(opener)
 
-        self.streams = {
-            'video'  : { 'url': s },
-            'audio'  : { 'url': mp3 },
-            'slides' : { 'url': pdf }
-        }
+        if s: self.streams['video'] = {'url': s }
+        if mp3: self.streams['audio'] = { 'url': mp3 }
+        if pdf: self.streams['slides'] = { 'url': pdf }
 
     def extract(self, **kwargs):
         for i in self.streams:

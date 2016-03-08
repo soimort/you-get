@@ -2,7 +2,8 @@ Please make sure these boxes are checked before submitting your issue – thank 
 
 - [ ] You can actually watch the video in your browser or mobile application, but not download them with `you-get`.
 - [ ] Your `you-get` is up-to-date.
-- [ ] The issue is not yet reported on <https://github.com/soimort/you-get/issues> or <https://github.com/soimort/you-get/wiki/Known-Bugs>. If so, please add your comments under the existing issue.
+- [ ] I have read <https://github.com/soimort/you-get/wiki/FAQ> and tried to do so.
+- [ ] The issue is not yet reported on <https://github.com/soimort/you-get/issues> or  <https://github.com/soimort/you-get/wiki/Known-Bugs>. If so, please add your comments under the existing issue.
 - [ ] The issue (or question) is really about `you-get`, not about some other code or project.
 
 Run the command with the `--debug` option, and paste the full output inside the fences:
@@ -22,7 +23,8 @@ If there's anything else you would like to say (e.g. in case your issue is not a
 
 - [ ] 你可以在浏览器或移动端中观看视频，但不能使用`you-get`下载.
 - [ ] 您的`you-get`为最新版.
-- [ ] 您的问题没有在<https://github.com/soimort/you-get/issues> 或 <https://github.com/soimort/you-get/wiki/Known-Bugs> 报告，否则请在原有issue下报告.
+- [ ] 我已经阅读并按 <https://github.com/soimort/you-get/wiki/FAQ> 中的指引进行了操作.
+- [ ] 您的问题没有在<https://github.com/soimort/you-get/issues> , <https://github.com/soimort/you-get/wiki/FAQ> 或 <https://github.com/soimort/you-get/wiki/Known-Bugs> 报告，否则请在原有issue下报告.
 - [ ] 本问题确实关于`you-get`, 而不是其他项目.
 
 请使用`--debug`运行，并将输出粘贴在下面:
