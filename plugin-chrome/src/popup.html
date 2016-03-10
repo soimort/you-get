@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+ This page is shown when the extension button is clicked, because the
+ "browser_action" field in manifest.json contains the "default_popup" key with
+ value "popup.html".
+ -->
+<html>
+  <head>
+    <title>Getting Started Extension's Popup</title>
+    <style>
+      body, div, ul, li {
+        margin: 0px;
+        padding: 0px;
+      }
+      body {
+        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        font-size: 100%;
+      }
+      li {
+        list-style-type: none;
+      }
+      li:hover{background-color:#aaaaaa}
+      a:link, a:visited, a:hover, a:active {color:#00BFFF;}
+    </style>
+
+    <!--
+      - JavaScript and HTML must be in separate files: see our Content Security
+      - Policy documentation[1] for details and explanation.
+      -
+      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
+     -->
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <div class="actions">
+      <ul>
+        <li you_get="download"><a href="#">Download</a></li>
+        <li you_get="play"><a href="#">Play</a></li>
+      </ul>
+    </div>
+  </body>
+</html>
+

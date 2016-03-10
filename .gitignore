@@ -79,3 +79,4 @@ _*
 *.ts
 *.webm
 *.xml
+.idea/
