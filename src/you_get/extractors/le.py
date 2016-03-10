@@ -131,6 +131,8 @@ def letv_sports_download_by_liveid(liveid, title=None, output_dir='.', merge=Tru
     For Letv sports."""
     api_endpoint = 'http://static.api.sports.letv.com/sms/app/v1/play/live?caller=1003&ostype=un&termid=2&hwtype=iphone&splatid=1031&from=8&platid=10&liveid={liveid}&version=1.0&flag=34557879234sdf'.format(liveid = liveid)
     quality_list = ['flv_1080p3m', 'flv_720p', 'flv_1300', 'flv_1000', 'flv_350']  #for Alphago vs Lee
+    a = get_content(api_endpoint)
+    b = json.loads(a)
     for i in quality_list:
         if i in b['data']['infos']:
             stream_url = b['data']['infos'][i]['url']
