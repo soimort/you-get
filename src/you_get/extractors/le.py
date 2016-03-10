@@ -125,9 +125,28 @@ def letvcloud_download(url, output_dir='.', merge=True, info_only=False):
     title = "LETV-%s" % vu
     letvcloud_download_by_vu(vu, uu, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
+#----------------------------------------------------------------------
+def letv_sports_download_by_liveid(liveid, title=None, output_dir='.', merge=True, info_only=False):
+    """int->?
+    For Letv sports."""
+    api_endpoint = 'http://static.api.sports.letv.com/sms/app/v1/play/live?caller=1003&ostype=un&termid=2&hwtype=iphone&splatid=1031&from=8&platid=10&liveid={liveid}&version=1.0&flag=34557879234sdf'.format(liveid = liveid)
+    quality_list = ['flv_1080p3m', 'flv_720p', 'flv_1300', 'flv_1000', 'flv_350']  #for Alphago vs Lee
+    for i in quality_list:
+        if i in b['data']['infos']:
+            stream_url = b['data']['infos'][i]['url']
+            break
+    download_m3u_urls(stream_url, title, ext, size, output_dir=output_dir, merge=merge)  #TODO
+
 def letv_download(url, output_dir='.', merge=True, info_only=False ,**kwargs):
     if re.match(r'http://yuntv.letv.com/', url):
         letvcloud_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
+    elif re.match('http://sports.letv.com/.+', url):
+        #If in URL
+        if re.match( r'http://sports.letv.com/match/(\d+).html#live/(\d+)', url):
+            liveid = re.match( r'http://sports.letv.com/match/(\d+).html#live/(\d+)', url).groups()[1]
+            letv_sports_download_by_liveid(liveid, title, ext, size, output_dir=output_dir, merge=merge)
+        #If not in URL
+        #TODO
     else:
         html = get_content(url)
         vid = match1(url, r'http://www.letv.com/ptv/vplay/(\d+).html') or \
