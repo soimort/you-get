@@ -24,6 +24,7 @@ SITES = {
     'fun'              : 'funshion',
     'google'           : 'google',
     'heavy-music'      : 'heavymusic',
+    'huaban'           : 'huaban',
     'iask'             : 'sina',
     'ifeng'            : 'ifeng',
     'imgur'            : 'imgur',

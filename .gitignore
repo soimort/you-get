@@ -79,3 +79,5 @@ _*
 *.ts
 *.webm
 *.xml
+/.env
+/.idea
