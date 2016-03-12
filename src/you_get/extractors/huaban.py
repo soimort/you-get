@@ -47,8 +47,8 @@ class Pin:
 
     def __init__(self, pin_json):
         img_file = pin_json['file']
-        self.key = img_file['key']
-        self.url = urlparse.urljoin(self.host, self.key)
+        self.id = pin_json['pin_id']
+        self.url = urlparse.urljoin(self.host, img_file['key'])
         self.ext = img_file['type'].split('/')[-1]
 
 
@@ -106,8 +106,7 @@ def huaban_download_board(url, output_dir, **kwargs):
         bar.update()
         name_len = get_num_len(board.pin_count)
         for i, pin in enumerate(board.pins):
-            filename = '{0}[{1}].{2}'.format(board.title,
-                                             str(i).zfill(name_len), pin.ext)
+            filename = '{0}.{1}'.format(pin.id, pin.ext)
             filepath = os.path.join(output_dir, filename)
             bar.update_piece(i + 1)
             url_save(pin.url, filepath, bar, is_part=True, faker=True)
