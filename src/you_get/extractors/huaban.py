@@ -3,6 +3,7 @@
 import json
 import os
 import re
+import math
 import traceback
 import urllib.parse as urlparse
 
@@ -28,7 +29,7 @@ class EnhancedPiecesProgressBar(PiecesProgressBar):
 
     @property
     def done_bar(self):
-        return self.BAR_LEN // self.total_pieces * self.current_piece
+        return math.ceil(self.BAR_LEN / self.total_pieces * self.current_piece)
 
     @property
     def todo_bar(self):
@@ -82,10 +83,6 @@ def extract_board_data(url):
     return Board(title, list(map(Pin, pin_list)))
 
 
-def get_num_len(num):
-    return len(str(num))
-
-
 def huaban_download_board(url, output_dir, **kwargs):
     board = extract_board_data(url)
     output_dir = os.path.join(output_dir, board.title)
@@ -104,7 +101,6 @@ def huaban_download_board(url, output_dir, **kwargs):
                                                    board.title))
     try:
         bar.update()
-        name_len = get_num_len(board.pin_count)
         for i, pin in enumerate(board.pins):
             filename = '{0}.{1}'.format(pin.id, pin.ext)
             filepath = os.path.join(output_dir, filename)
