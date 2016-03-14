@@ -92,7 +92,7 @@ class VideoExtractor():
             print("      container:     %s" % stream['container'])
 
         if 'video_profile' in stream:
-            print("      video-profile: %s" % stream['video_profile'])
+            maybe_print("      video-profile: %s" % stream['video_profile'])
 
         if 'quality' in stream:
             print("      quality:       %s" % stream['quality'])
