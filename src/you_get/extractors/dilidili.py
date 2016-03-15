@@ -33,14 +33,6 @@ def dilidili_parser_data_to_stream_types(typ ,vid ,hd2 ,sign, tmsign, ulk):
         stream_types.append({'id': str(i[1][-1]), 'container': 'mp4', 'video_profile': i[0]})
     return stream_types
 
-##----------------------------------------------------------------------
-#def dilidili_parser_data_to_download_url(typ ,vid ,hd2 ,sign, tmsign, ulk):
-    #"""Not used for now"""
-    #parse_url = 'http://player.005.tv/parse.php?xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'.format(typ = typ, vid = vid, hd2 = hd2, sign = sign, tmsign = tmsign, ulk = ulk)
-    #html = get_content(parse_url, headers=headers)
-    
-    #return match1(html, r'<file><!\[CDATA\[(.+)\]\]></file>')
-
 #----------------------------------------------------------------------
 def dilidili_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
     if re.match(r'http://www.dilidili.com/watch/\w+', url):
