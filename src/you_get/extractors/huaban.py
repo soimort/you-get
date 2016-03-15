@@ -16,26 +16,6 @@ site_info = '花瓣 (Huaban)'
 LIMIT = 100
 
 
-class EnhancedPiecesProgressBar(PiecesProgressBar):
-    BAR_LEN = 40
-
-    def update(self):
-        self.displayed = True
-        bar = '{0:>5}%[{1}] {2}/{3}'.format(
-            '', '=' * self.done_bar + '-' * self.todo_bar,
-            self.current_piece, self.total_pieces)
-        sys.stdout.write('\r' + bar)
-        sys.stdout.flush()
-
-    @property
-    def done_bar(self):
-        return math.ceil(self.BAR_LEN / self.total_pieces * self.current_piece)
-
-    @property
-    def todo_bar(self):
-        return self.BAR_LEN - self.done_bar
-
-
 class Board:
     def __init__(self, title, pins):
         self.title = title
@@ -48,7 +28,7 @@ class Pin:
 
     def __init__(self, pin_json):
         img_file = pin_json['file']
-        self.id = pin_json['pin_id']
+        self.id = str(pin_json['pin_id'])
         self.url = urlparse.urljoin(self.host, img_file['key'])
         self.ext = img_file['type'].split('/')[-1]
 
@@ -84,33 +64,13 @@ def extract_board_data(url):
 
 
 def huaban_download_board(url, output_dir, **kwargs):
+    kwargs['merge'] = False
     board = extract_board_data(url)
     output_dir = os.path.join(output_dir, board.title)
-    bar = EnhancedPiecesProgressBar(float('Inf'), board.pin_count)
-
-    print("Site:      ", site_info)
-    print("Title:     ", board.title)
-    print()
-
-    if dry_run:
-        urls = '\n'.join(map(lambda p: p.url, board.pins))
-        print('Real URLs:\n{}'.format(urls))
-        return
-
-    print('Downloading {} images in {} ...'.format(board.pin_count,
-                                                   board.title))
-    try:
-        bar.update()
-        for i, pin in enumerate(board.pins):
-            filename = '{0}.{1}'.format(pin.id, pin.ext)
-            filepath = os.path.join(output_dir, filename)
-            bar.update_piece(i + 1)
-            url_save(pin.url, filepath, bar, is_part=True, faker=True)
-        bar.done()
-    except KeyboardInterrupt:
-        pass
-    except:
-        traceback.print_exception(*sys.exc_info())
+    print_info(site_info, board.title, 'jpg', float('Inf'))
+    for pin in board.pins:
+        download_urls([pin.url], pin.id, pin.ext, float('Inf'),
+                      output_dir=output_dir, faker=True, **kwargs)
 
 
 def huaban_download(url, output_dir='.', **kwargs):
