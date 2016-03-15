@@ -11,7 +11,7 @@ from copy import copy
 from ..common import *
 
 #----------------------------------------------------------------------
-def get_info_by_xml(ckinfo):
+def ckplayer_get_info_by_xml(ckinfo):
     """str->dict
     Information for CKPlayer API content."""
     e = ET.XML(ckinfo)
@@ -37,6 +37,7 @@ def get_info_by_xml(ckinfo):
 
     return video_dict
 
+#----------------------------------------------------------------------
 #helper
 #https://stackoverflow.com/questions/2148119/how-to-convert-an-xml-string-to-a-dictionary-in-python
 def dictify(r,root=True):
@@ -51,12 +52,15 @@ def dictify(r,root=True):
         d[x.tag].append(dictify(x,False))
     return d
 
-def ckplayer_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
+#----------------------------------------------------------------------
+def ckplayer_download_by_xml(ckinfo, output_dir = '.', merge = False, info_only = False, **kwargs):
     #Info XML
-    ckinfo = get_content(url)
-    video_info = get_info_by_xml(ckinfo)
+    video_info = ckplayer_get_info_by_xml(ckinfo)
     
-    title = ''
+    try:
+        title = kwargs['title']
+    except:
+        title = ''
     type_ = ''
     size = 0
     
@@ -71,7 +75,23 @@ def ckplayer_download(url, output_dir = '.', merge = False, info_only = False, *
     
     print_info(site_info, title, type_, size)
     if not info_only:
-        download_urls(video_info['links'], title, ext, size, output_dir=output_dir, merge=merge)
+        download_urls(video_info['links'], title, _ext, size, output_dir=output_dir, merge=merge)
+
+#----------------------------------------------------------------------
+def ckplayer_download(url, output_dir = '.', merge = False, info_only = False, is_xml = True, **kwargs):
+    if is_xml:  #URL is XML URL
+        try:
+            title = kwargs['title']
+        except:
+            title = ''
+        try:
+            headers = kwargs['headers']  #headers provided
+            ckinfo = get_content(url, headers = headers)
+        except NameError:
+            ckinfo = get_content(url)
+        
+        ckplayer_download_by_xml(ckinfo, output_dir, merge, 
+                                info_only, title = title)
 
 site_info = "CKPlayer General"
 download = ckplayer_download

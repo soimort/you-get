@@ -7,6 +7,7 @@ from .baidu import *
 from .bandcamp import *
 from .bilibili import *
 from .cbs import *
+from .ckplayer import *
 from .cntv import *
 from .dailymotion import *
 from .dilidili import *
