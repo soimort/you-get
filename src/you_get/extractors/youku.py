@@ -203,6 +203,7 @@ class Youku(VideoExtractor):
             if stream_id in stream_types and stream['audio_lang'] == audio_lang:
                 if 'alias-of' in stream_types[stream_id]:
                     stream_id = stream_types[stream_id]['alias-of']
+                if stream_id in self.streams: continue # STOP!
                 self.streams[stream_id] = {
                     'container': stream_types[stream_id]['container'],
                     'video_profile': stream_types[stream_id]['video_profile'],
@@ -217,6 +218,7 @@ class Youku(VideoExtractor):
             if stream_id in stream_types and stream['audio_lang'] == audio_lang:
                 if 'alias-of' in stream_types[stream_id]:
                     stream_id = stream_types[stream_id]['alias-of']
+                if stream_id in self.streams_fallback_parameter: continue # STOP!
                 self.streams_fallback_parameter[stream_id] = {
                     'fileid': stream['stream_fileid'],
                     'segs': stream['segs']
