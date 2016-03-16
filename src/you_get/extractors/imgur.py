@@ -37,11 +37,15 @@ class Imgur(VideoExtractor):
 
         elif re.search(r'i\.imgur\.com/', self.url):
             # direct image
-            universal_download(self.url,
-                               output_dir=kwargs['output_dir'],
-                               merge=kwargs['merge'],
-                               info_only=kwargs['info_only'])
-            exit(0) # FIXME!
+            _, container, size = url_info(self.url)
+            self.streams = {
+                'original': {
+                    'src': [self.url],
+                    'size': size,
+                    'container': container
+                }
+            }
+            self.title = r1(r'i\.imgur\.com/([^./]*)', self.url)
 
         else:
             # gallery image
