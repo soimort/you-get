@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.330
+project-version: 0.4.350
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.330.tar.gz
+download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.350.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 84f4521734c74df7a56d23df9c572926ae9039d2
-download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.330.tar.gz.asc
+download-checksum-data: 307158959cd471cdc8d406c03e71026000ca1785
+download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.350.tar.gz.asc
 
 ---
 # You-Get
@@ -385,6 +385,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Youku<br/>优酷** | <http://www.youku.com/> |✓| | |
 | 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
 | 央视网   | <http://www.cntv.cn/>          |✓| | |
+| 花瓣     | <http://huaban.com/>           | |✓| |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
