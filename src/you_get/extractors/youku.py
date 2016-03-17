@@ -183,7 +183,6 @@ class Youku(VideoExtractor):
             log.wtf('[Failed] Wrong password.')
 
         stream_types = dict([(i['id'], i) for i in self.stream_types])
-        self.streams_parameter = {}
         audio_lang = data['stream'][0]['audio_lang']
 
         for stream in data['stream']:
