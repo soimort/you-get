@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html$if(lang)$ lang="$lang$"$endif$>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+$for(author-meta)$
+  <meta name="author" content="$author-meta$">
+$endfor$
+$if(date-meta)$
+  <meta name="dcterms.date" content="$date-meta$">
+$endif$
+  <title>$if(title-prefix)$$title-prefix$ - $endif$$pagetitle$</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+$if(quotes)$
+  <style type="text/css">q { quotes: "“" "”" "‘" "’"; }</style>
+$endif$
+$if(highlighting-css)$
+  <style type="text/css">
+$highlighting-css$
+  </style>
+$endif$
+
+<link href='css/theme.css' media="all" rel="stylesheet" type="text/css">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<!-- link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css' -->
+<!-- link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css' -->
+<link rel="icon" type="image/x-icon" href="$url$favicon.ico" />
+
+$for(css)$
+  <link rel="stylesheet" href="$css$">
+$endfor$
+$if(math)$
+  $math$
+$endif$
+$for(header-includes)$
+  $header-includes$
+$endfor$
+</head>
+<body>
+$for(include-before)$
+$include-before$
+$endfor$
+
+<a href="https://github.com/$github$" class="github-corner"><svg width="100px" height="100px" viewBox="0 0 250 250" style="position: fixed; top: 0px; right: 0px; border: 0px;"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z" fill="#111"></path><path class="octo-arm" d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="#ffffff" style="transform-origin: 130px 106px;"></path><path class="octo-body" d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="#ffffff"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out} @keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}} @media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+<img style="position: fixed; bottom: 5%; right: 5%; border: 0;" src="$background$"/>
+
+<nav id="$idprefix$DESC">
+  <a href="$url$"><img src="$project-logo$"/></a>
+  <div id="desc">
+    <h1>$project-name$</h1>
+    <h2>version $project-version$</h2>
+    <a href="https://github.com/$github$">Star <i class="fa fa-github-square fa-2x"></i></a>
+    <a href="$download-url$">Download <i class="fa fa-download fa-2x"></i></a>
+    <div id="msg">
+      <span id="checksum" onmouseover="this.innerHTML='$download-checksum-data$'" onmouseout="this.innerHTML='$download-checksum-type$'">$download-checksum-type$</span>
+      <a href="$download-signature$">PGP SIGNATURE</a>
+    </div>
+  </div>
+</nav>
+
+$if(toc)$
+<nav id="$idprefix$TOC">
+  <hr/>
+  $toc$
+
+  <hr/>
+  <ul>
+    <li>
+      <a href="/">
+        <img width="16px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAABaUExURUxpce1MXEKLwe1MXO5MXO1MXP/7+/L4+92Tou1MXP////z3+UKLwUKLwUiPw////0KLwfestPBode1MXP///0KLwfvS1vamrvJ5hW6m0JvC3oOz1rjU6NDi8JLwqRsAAAATdFJOUwBkbMmOOJH7FehnQNIxmcPvn8/4KzFCAAADdElEQVR42u2b7W6zMAyFoeUj0ALtSLaydvd/m29o1/KVQJw48fSqR9qk/PKj2PhgmkTRW2/ZqNrtjseT6NX2Kvb7JE5Dxa6PYqR2JEnBPEeXwa9XoQO4b0aS+ot+3/TbbRXAG8PuvvFd1+W5/LcK0Ccjxo3Odo+KEzd+120LoN8Ghh9e6ppznl/FNgAiwii8VA8gjAAkAkYiqslDJzr+88M7QwCJ4FqOrBZTfX8//l7iG8oY3u4rtQXA84N9/FoIdwC5CTjZtwfgjVUaqpPAArBKw27W84Vmzc1UguPPe75uzf0Q1LOe32nXpgCwUqznPV+/5j4I6mXP164v5krM86/o+bp1C1AMiD/v+dp1i05QKXu+dg0CaFO0/mPohgt33O6JR+EToN1j+I8LQJsYFKBXgPUyYCdtz9etwQCrZVDre75u/QXWee0J7Iw9AGTHUx1WngBzD3AAyNcq0NgDHAB01sxOEA9wAcgZgge4AKid+bEBxh7gBKDcAngPsgdQbQE7hQRQbIHlBohPOx2cXdC6FWtcsYJ6wHNtCbDwpBrqAc+1LcDcloEeMKxtAYpp/APQA4Z1i5ODGuoBr3WLk4Mj2ANs5gJ9DiqwB9jNBROxSReCeoDlXKCbUmphLW6tDKENOgE0IwBBAcDn42BwgIPaCYGe4ABQqgGAnsAxqnB4CILMBcsqHB6CIHPBGkCYuWAxoNh4wFMXB6kAwHNB6yAVAHguwAYI9VI6AaioAaKWSG+AvwPwRaQXQM5JNLTihgag+TsAGQ3A8EJS0gCU89E0tEZfSWgARnNBQ1uDsgo/CTQezWKKRjweThkFwORTYRE+/vQjURIeYPqJJg0PMPtQWNBmgCAH8w+VKXEGoujjElQfi6/lJZUT0ryXqX65y2jeRUbtOOAWqH+3y2g3IOQWaH64DPcgaE9V5XSPQNCX05WjdQmFC0zqMIAprp/kSQlcKHASNk+07f3G3zzI5LkMDI5y+S0Do4PWHqcUwwOFMXH8KDr7GQbP5odKs3AeHI4AeMK8DGbBgQjA8aU3I74d2N0xYGgfbhrbWxYZSflhp8HliodMQ+b6RTxzvWyUOrljgXHrLLZGKJBunLHECgH1thkcATP8IxGgdzXs636PcjTdBo+XLg0YPEb/LYc40SbD/6XX105Iiv1oM0Je+33rv9M/vIx5jqacFQcAAAAASUVORK5CYII=" />
+        <b>English</b>
+      </a>
+    </li>
+    <li>
+      <a href="/zh-CN.html">
+        <img width="16px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACABAMAAAAxEHz4AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAtUExURUxpce1MXO1MXO1MXO1MXO1MXO1MXO1MXO1MXP/mLvWMSfzFOPBmVPmuPv7ZMqsqYtsAAAAIdFJOUwDsFH3Fllk8Fvm63QAABAhJREFUaN7tWT1PG0EQdcxXSkQUxeUhRakd0VCiiEQuHQkplChKkdIpIqWMZQOb4+ya9RnXHEGufYH0BqLUOEHU2FL+Q+5sw+3H7M7uHV3yKjh7nnfnvZm93c3l/kODhZX1AolQXV+ppAh/tkEYvHxrGT7/mgh4vGUT/7FAJFTfGIfn3xEQrxzD+OdEgUdOtnhDBk18xIDHfyBaPMHinxIELxD9CxhBVeuH/CZBse1kmQAyiYWCCUFVXVrv4Ygr4f8dVfyM4idPCPG4B0UFQZJB95D9ftg7H/F5hOPnkm80LjkCn/b4MZWRAZDmPvNtb0hpn+BDYDMQtJK/3ZDSAzEtRUSCARNxTSnt9HEhFtjPh5T55zwaQk8cguyFZeZTl9JDbkJfpTksSVVQYj5tUMrKEFwKPohQd9QaRiJQ2mb+7ULuKutcHFDKyECOIQIhjXmujAaU+mhJ8XOYJbwIknVkrHEEnwgvAi8DiF2OgJtBIybooXNQF3IzJmhzj35FftLZeZkIIvAyxFZw/+i8tEoEESL7c4+++IO2SFBTiTgWQZBhj9IbjZAzd78L4UA2t5iEcQrcIRzfiQWFegKThImPL2CC0+ijn6CwiZtLTPZFjNU4Ogo7J9+lihR7iQdM4rYXBW3ASxWxlBsywW3qmjeakn7AW0iagNzop1iUeoEX8vF+H15qhCxuCnUkT0C10gOl2GXjR2YFmWefsZPw0aYyMfM8kZqB0QQibMkNedKOJkCb0lRHvh/uJQRoU5r2xYfcs7OEIDGfF2XjFCD4LDdU1ktJU/JGZO9G2Vj5dsSqwDz9NoRSWpMJPNYHfXZch0qCkkIENqYJE9RlgokIo64gQwDbqi4vKmfTLjjgZGgojD3xsiRC3AXHHfJOhoE/9I9+AHOQCcJpFxx3SEaGsxboJJkg+d14LExu2mYEbtIF4w6ZZN7dNyNgFxB+MblU1zO3BrK57tJ9rJqkEQTc+hO2rAmuOb9Nl/RjCwKhZi/Ur3kqGSFAL5osAbpRClq/D3RtuYTEgy/bymqUAb7ucwSreoJ4w6GSs2ZCEHtaNYIa0FQBhB1VDnaBtg4RiNs+oa3PYgTSxlNYWOYwgitkaZsnqbElL+92cHJmXsbe+DfTEmzrjw1w7EiveZZYhPaMNihD22YbVISXbVvUscMX0xyKey5jLKHHNwiKqk2XqQ8d1bbPEDXlxtM6BSmTUFRuvu1KMWfWWLHt/6w9wZrmCMRWxFRu3tEdA9mUMngQZVKJju4ozNJFqbpKxfhE1iyF1nYuIkeipgtCaiXL2LFwqgFYZKFoeTRuIsE9Hc5nvh7IfkGR+Yok+yVN9mui7BdV2a/KMl/WZb8uzH5heQ9Xptkvbe/h2vgfwl9ipQkE5oEhsgAAAABJRU5ErkJggg==" />
+        <b>简体中文</b>
+      </a>
+    </li>
+  </ul>
+</nav>
+$endif$
+
+<article>
+
+$if(title)$
+<header>
+<!-- h1 class="title">$title$</h1 -->
+$if(subtitle)$
+<h1 class="subtitle">$subtitle$</h1>
+$endif$
+$for(author)$
+<address class="author">$author$</address>
+$endfor$
+$if(date)$
+<h3 class="date">$date$</h3>
+$endif$
+</header>
+$endif$
+
+$body$
+<hr/>
+
+<footer>
+<p>This project is maintained by <strong><a href="https://github.com/soimort">@soimort</a></strong>.</p>
+</footer>
+
+</article>
+
+<script>
+  ((window.gitter = {}).chat = {}).options = {
+    room: '$github$'
+  };
+</script>
+<script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+$for(include-after)$
+$include-after$
+$endfor$
+</body>
+</html>

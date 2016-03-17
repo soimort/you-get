@@ -1,0 +1,28 @@
+#!/bin/bash
+
+OUTDIR=.         # where to put generated HTML files
+SRCDIR=.         # where your source files are
+SRCEXT=md        # extension of source files
+PANDOC=pandoc
+PANDOC_OPTIONS='--mathml --toc --toc-depth=2'
+TEMPLATE=_templates/main.html
+
+all=()
+while IFS= read -d $'\0' -r f ; do
+    all=("${all[@]}" "$f")
+done < <(find $SRCDIR -path ./.git -prune -o -name '*.'$SRCEXT -print0)
+echo Found source: ${all:?No source file found}
+
+for i in `ls -rv ${all[@]}`; do
+    if [ -f "$i" -a -n "${i%%*/_*}" ]; then # ignore underscored filenames
+        j="$OUTDIR/${i##$SRCDIR/}"
+        k="${j%.$SRCEXT}.html"
+        echo -e "$i\n\t->\t$k"
+        mkdir -p "${k%/*.html}"
+        $PANDOC $PANDOC_OPTIONS -s --template $TEMPLATE $i -o $k
+    fi
+done
+
+if [ -n "$1" ]; then # run your server
+    ruby -run -e httpd $OUTDIR -p 4000
+fi
