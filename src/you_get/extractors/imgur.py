@@ -16,7 +16,9 @@ class Imgur(VideoExtractor):
         if re.search(r'imgur\.com/a/', self.url):
             # album
             content = get_content(self.url)
-            album = json.loads(match1(content, r'album\s*:\s*({.*}),'))
+            album = match1(content, r'album\s*:\s*({.*}),') or \
+                    match1(content, r'image\s*:\s*({.*}),')
+            album = json.loads(album)
             count = album['album_images']['count']
             images = album['album_images']['images']
             ext = images[0]['ext']
