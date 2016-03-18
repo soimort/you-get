@@ -220,6 +220,30 @@ class Youku(VideoExtractor):
                         'segs': stream['segs']
                     })
 
+        self.streams_fallback = {}
+        for stream in data12['stream']:
+            stream_id = stream['stream_type']
+            if stream_id in stream_types and stream['audio_lang'] == audio_lang:
+                if 'alias-of' in stream_types[stream_id]:
+                    stream_id = stream_types[stream_id]['alias-of']
+
+                if stream_id not in self.streams_fallback:
+                    self.streams_fallback[stream_id] = {
+                        'container': stream_types[stream_id]['container'],
+                        'video_profile': stream_types[stream_id]['video_profile'],
+                        'size': stream['size'],
+                        'pieces': [{
+                            'fileid': stream['stream_fileid'],
+                            'segs': stream['segs']
+                        }]
+                    }
+                else:
+                    self.streams_fallback[stream_id]['size'] += stream['size']
+                    self.streams_fallback[stream_id]['pieces'].append({
+                        'fileid': stream['stream_fileid'],
+                        'segs': stream['segs']
+                    })
+
         # Audio languages
         if 'dvd' in data and 'audiolang' in data['dvd']:
             self.audiolang = data['dvd']['audiolang']
@@ -254,6 +278,7 @@ class Youku(VideoExtractor):
                     streamfileid = piece['fileid']
                     for no in range(0, len(segs)):
                         k = segs[no]['key']
+                        assert k != -1
                         fileid, ep = self.__class__.generate_ep(no, streamfileid,
                                                                 sid, token)
                         q = parse.urlencode(dict(
@@ -273,8 +298,13 @@ class Youku(VideoExtractor):
                                 q         = q
                             )
                         ksegs += [i['server'] for i in json.loads(get_content(u))]
-            except:
-                # Move on to next stream
+            except error.HTTPError as e:
+                # Use fallback stream data in case of HTTP 404
+                log.e('[Error] ' + str(e))
+                self.streams = {}
+                self.streams = self.streams_fallback
+            except KeyError:
+                # Move on to next stream if best quality not available
                 del self.streams_sorted[0]
                 stream_id = self.streams_sorted[0]['id']
             else: break
