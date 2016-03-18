@@ -150,13 +150,19 @@ class Youku(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
-        api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
+        api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
+        api12_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
         try:
             meta = json.loads(get_content(
                 api_url,
                 headers={'Referer': 'http://static.youku.com/'}
             ))
+            meta12 = json.loads(get_content(
+                api12_url,
+                headers={'Referer': 'http://static.youku.com/'}
+            ))
             data = meta['data']
+            data12 = meta12['data']
             assert 'stream' in data
         except AssertionError:
             if 'error' in data:
@@ -165,19 +171,25 @@ class Youku(VideoExtractor):
                     self.password_protected = True
                     self.password = input(log.sprint('Password: ', log.YELLOW))
                     api_url += '&pwd={}'.format(self.password)
+                    api_url12 += '&pwd={}'.format(self.password)
                     meta = json.loads(get_content(
                         api_url,
                         headers={'Referer': 'http://static.youku.com/'}
                     ))
+                    meta12 = json.loads(get_content(
+                        api_url12,
+                        headers={'Referer': 'http://static.youku.com/'}
+                    ))
                     data = meta['data']
+                    data12 = meta12['data']
                 else:
                     log.wtf('[Failed] ' + data['error']['note'])
             else:
                 log.wtf('[Failed] Video not found.')
 
         self.title = data['video']['title']
-        self.ep = data['security']['encrypt_string']
-        self.ip = data['security']['ip']
+        self.ep = data12['security']['encrypt_string']
+        self.ip = data12['security']['ip']
 
         if 'stream' not in data and self.password_protected:
             log.wtf('[Failed] Wrong password.')
