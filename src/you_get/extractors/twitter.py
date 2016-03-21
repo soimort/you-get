@@ -44,6 +44,8 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         # always use i/cards or videos url
         if not re.match(r'https?://twitter.com/i/', url):
             url = r1(r'<meta\s*property="og:video:url"\s*content="([^"]+)"', html)
+            if not url:
+                url = 'https://twitter.com/i/videos/%s' % item_id
             html = get_content(url)
 
         data_config = r1(r'data-config="([^"]*)"', html) or \
