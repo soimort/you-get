@@ -278,7 +278,7 @@ class Youku(VideoExtractor):
                     streamfileid = piece['fileid']
                     for no in range(0, len(segs)):
                         k = segs[no]['key']
-                        assert k != -1
+                        if k == -1: break # we hit the paywall; stop here
                         fileid, ep = self.__class__.generate_ep(no, streamfileid,
                                                                 sid, token)
                         q = parse.urlencode(dict(
