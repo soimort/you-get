@@ -13,7 +13,11 @@ def funshion_download(url, output_dir = '.', merge = False, info_only = False, *
         funshion_download_by_url(url, output_dir = '.', merge = False, info_only = False)
     elif re.match(r'http://www.fun.tv/vplay/g-(\w+)', url):  #whole drama
         funshion_download_by_drama_url(url, output_dir = '.', merge = False, info_only = False)
+    elif re.match(r'http://www.fun.tv/vplay/m-(\w+)', url):  #mobile?
+        real_location = get_location(url)
+        funshion_download(real_location)
     else:
+        log.wtf('I do not understand the URL pattern!')
         return
 
 # Logics for single video until drama
@@ -35,9 +39,12 @@ def funshion_download_by_vid(vid, output_dir = '.', merge = False, info_only = F
     title = funshion_get_title_by_vid(vid)
     url_list = funshion_vid_to_urls(vid)
     
-    for url in url_list:
-        type, ext, size = url_info(url)
-        print_info(site_info, title, type, size)
+    type, ext, size = url_info(url_list[0])  #reuse info
+    
+    for url in url_list[1:]:
+        size += url_info(url)[2]
+    
+    print_info(site_info, title, type, size)
     
     if not info_only:
         download_urls(url_list, title, ext, total_size=None, output_dir=output_dir, merge=merge)
@@ -82,9 +89,12 @@ def funshion_download_by_id(vid_id_tuple, output_dir = '.', merge = False, info_
     title = funshion_get_title_by_id(vid, id)
     url_list = funshion_id_to_urls(vid)
     
-    for url in url_list:
-        type, ext, size = url_info(url)
-        print_info(site_info, title, type, size)
+    type, ext, size = url_info(url_list[0])
+    
+    for url in url_list[1:]:
+        size += url_info(url)[2]
+    
+    print_info(site_info, title, type, size)
     
     if not info_only:
         download_urls(url_list, title, ext, total_size=None, output_dir=output_dir, merge=merge)
@@ -142,12 +152,12 @@ def select_url_from_video_api(html):
     video_dic = {}
     for i in c['mp4']:
         video_dic[i['code']] = i['http']
-    quality_preference_list = ['sdvd', 'hd', 'dvd', 'sd']
+    quality_preference_list = ['sdvd', 'hd', 'dvd', 'sd', 'tv']
     url = [video_dic[quality] for quality in quality_preference_list if quality in video_dic][0]
     html = get_html(url)
     c = json.loads(html)
     #'{"return":"succ","client":{"ip":"107.191.**.**","sp":"0","loc":"0"},"playlist":[{"bits":"1638400","tname":"dvd","size":"555811243","urls":["http:\\/\\/61.155.217.4:80\\/play\\/1E070CE31DAA1373B667FD23AA5397C192CA6F7F.mp4",...]}]}'
-    return [i['urls'][0] for i in c['playlist']]
+    return [i['urls'] for i in c['playlist']][0]
 
 site_info = "funshion"
 download = funshion_download
