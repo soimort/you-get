@@ -10,7 +10,8 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     output_json = json.loads(match1(content, r'QZOutputJson=(.*)')[:-1])
     url = output_json['vl']['vi'][0]['ul']['ui'][0]['url']
     fvkey = output_json['vl']['vi'][0]['fvkey']
-    url = '%s/%s.mp4?vkey=%s' % ( url, vid, fvkey )
+    lnk = output_json['vl']['vi'][0]['lnk']
+    url = '%s/%s.mp4?vkey=%s' % ( url, lnk, fvkey )
     _, ext, size = url_info(url, faker=True)
 
     print_info(site_info, title, ext, size)
