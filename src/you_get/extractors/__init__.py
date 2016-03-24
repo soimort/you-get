@@ -48,6 +48,7 @@ from .netease import *
 from .nicovideo import *
 from .pinterest import *
 from .pixnet import *
+from .pornhub import *
 from .pptv import *
 from .qianmo import *
 from .qq import *

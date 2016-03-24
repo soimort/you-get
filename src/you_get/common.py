@@ -55,6 +55,7 @@ SITES = {
     'nicovideo'        : 'nicovideo',
     'pinterest'        : 'pinterest',
     'pixnet'           : 'pixnet',
+    'pornhub'       : 'pornhub',
     'pptv'             : 'pptv',
     'qianmo'           : 'qianmo',
     'qq'               : 'qq',
