@@ -15,7 +15,7 @@ SITES = {
     'dilidili'         : 'dilidili',
     'dongting'         : 'dongting',
     'douban'           : 'douban',
-    'douyutv'          : 'douyutv',
+    'douyu'            : 'douyutv',
     'ehow'             : 'ehow',
     'facebook'         : 'facebook',
     'fc2'              : 'fc2video',
