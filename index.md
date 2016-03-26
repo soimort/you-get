@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.350
+project-version: 0.4.365
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.350.tar.gz
+download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.365.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 307158959cd471cdc8d406c03e71026000ca1785
-download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.350.tar.gz.asc
+download-checksum-data: 51c90fcb24fe2c60e2701e0792165a5703e99c36
+download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.365.tar.gz.asc
 
 ---
 # You-Get
