@@ -12,7 +12,6 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     fvkey = output_json['vl']['vi'][0]['fvkey']
     fn = output_json['vl']['vi'][0]['fn']
     url = '%s/%s?vkey=%s' % ( url, fn, fvkey )
-    print(url)
     _, ext, size = url_info(url, faker=True)
 
     print_info(site_info, title, ext, size)
