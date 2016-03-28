@@ -1160,6 +1160,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
             output_dir = a
         elif o in ('-p', '--player'):
             player = a
+            caption = False
         elif o in ('-x', '--http-proxy'):
             proxy = a
         elif o in ('-y', '--extractor-proxy'):
