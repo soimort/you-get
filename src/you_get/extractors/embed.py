@@ -4,6 +4,7 @@ from ..common import *
 
 from .iqiyi import iqiyi_download_by_vid
 from .le import letvcloud_download_by_vu
+from .netease import netease_download
 from .qq import qq_download_by_vid
 from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_id
@@ -36,10 +37,13 @@ yinyuetai_embed_patterns = [ 'player\.yinyuetai\.com/video/swf/(\d+)' ]
 
 iqiyi_embed_patterns = [ 'player\.video\.qiyi\.com/([^/]+)/[^/]+/[^/]+/[^/]+\.swf[^"]+tvId=(\d+)' ]
 
+netease_embed_patterns = [ '(http://\w+\.163\.com/movie/[^\'"]+)' ]
+
 def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwargs):
-    content = get_content(url)
+    content = get_content(url, headers=fake_headers)
     found = False
     title = match1(content, '<title>([^<>]+)</title>')
+
     vids = matchall(content, youku_embed_patterns)
     for vid in set(vids):
         found = True
@@ -59,6 +63,11 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwa
     for vid in vids:
         found = True
         iqiyi_download_by_vid((vid[1], vid[0]), title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+
+    urls = matchall(content, netease_embed_patterns)
+    for url in urls:
+        found = True
+        netease_download(url, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     if not found:
         raise NotImplementedError(url)
