@@ -267,7 +267,7 @@ def get_location(url):
     # not to do that
     return response.geturl()
 
-def get_content(url, headers={}, decoded=True):
+def get_content(url, headers=None, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
 
     Args:
@@ -281,7 +281,7 @@ def get_content(url, headers={}, decoded=True):
 
     logging.debug('get_content: %s' % url)
 
-    req = request.Request(url, headers=headers)
+    req = request.Request(url, headers=headers or {})
     if cookies:
         cookies.add_cookie_header(req)
         req.headers.update(req.unredirected_hdrs)
@@ -301,7 +301,7 @@ def get_content(url, headers={}, decoded=True):
 
     return data
 
-def url_size(url, faker = False, headers = {}):
+def url_size(url, faker = False, headers = None):
     headers = fake_headers if faker else headers
     if headers:
         response = request.urlopen(request.Request(url, headers=headers), None)
@@ -311,16 +311,16 @@ def url_size(url, faker = False, headers = {}):
     size = response.headers['content-length']
     return int(size) if size!=None else float('inf')
 
-def urls_size(urls, faker = False, headers = {}):
+def urls_size(urls, faker = False, headers = None):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
-def get_head(url, headers = {}):
+def get_head(url, headers = None):
     req = request.Request(url, headers = headers) if headers else request.Request(url)
     req.get_method = lambda : 'HEAD'
     res = request.urlopen(req)
     return dict(res.headers)
 
-def url_info(url, faker = False, headers = {}):
+def url_info(url, faker = False, headers = None):
     headers = fake_headers if faker else headers
     if headers:
         response = request.urlopen(request.Request(url, headers = headers), None)
@@ -370,7 +370,7 @@ def url_info(url, faker = False, headers = {}):
 
     return type, ext, size
 
-def url_locations(urls, faker = False, headers = {}):
+def url_locations(urls, faker = False, headers = None):
     headers = fake_headers if faker else headers
     locations = []
     for url in urls:
@@ -381,7 +381,8 @@ def url_locations(urls, faker = False, headers = {}):
         locations.append(response.url)
     return locations
 
-def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
+def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = None):
+    headers = headers or {}
     file_size = url_size(url, faker = faker, headers = headers)
 
     if os.path.exists(filepath):
@@ -415,7 +416,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         open_mode = 'wb'
 
     if received < file_size:
-        headers = fake_headers if faker else (headers or {})
+        headers = fake_headers if faker else headers
         if received:
             headers['Range'] = 'bytes=' + str(received) + '-'
         if refer:
@@ -456,7 +457,8 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
     os.rename(temp_filepath, filepath)
 
-def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
+def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False, headers=None):
+    headers = headers or {}
     if os.path.exists(filepath):
         if not force:
             if not is_part:
@@ -487,7 +489,7 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
     else:
         open_mode = 'wb'
 
-    headers = fake_headers if faker else (headers or {})
+    headers = fake_headers if faker else headers
     if received:
         headers['Range'] = 'bytes=' + str(received) + '-'
     if refer:
@@ -624,8 +626,9 @@ def get_output_filename(urls, title, ext, output_dir, merge):
             merged_ext = 'mkv' if has_ffmpeg_installed() else  'ts'
     return '%s.%s' % (title, merged_ext)
 
-def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
+def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = None, **kwargs):
     assert urls
+    headers = headers or {}
     if json_output:
         json_output_.download_urls(urls=urls, title=title, ext=ext, total_size=total_size, refer=refer)
         return
@@ -742,8 +745,9 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     print()
 
-def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}):
+def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = None):
     assert urls
+    headers = headers or {}
     if dry_run:
         print('Real URLs:\n%s\n' % urls)
         return
