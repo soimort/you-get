@@ -123,10 +123,8 @@ fake_headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0'
 }
 
-if sys.stdout.isatty():
-    default_encoding = sys.stdout.encoding.lower()
-else:
-    default_encoding = locale.getpreferredencoding().lower()
+
+default_encoding = (sys.stdout.encoding if sys.stdout.isatty() else locale.getpreferredencoding()).lower()
 
 def maybe_print(*s):
     try: print(*s)
@@ -167,10 +165,7 @@ def match1(text, *patterns):
     if len(patterns) == 1:
         pattern = patterns[0]
         match = re.search(pattern, text)
-        if match:
-            return match.group(1)
-        else:
-            return None
+        return match.group(1) if match else None
     else:
         ret = []
         for pattern in patterns:
@@ -190,12 +185,7 @@ def matchall(text, patterns):
         a list if matched. empty if not.
     """
 
-    ret = []
-    for pattern in patterns:
-        match = re.findall(pattern, text)
-        ret += match
-
-    return ret
+    return [re.findall(pattern, text) for pattern in patterns]
 
 def launch_player(player, urls):
     import subprocess
@@ -223,20 +213,14 @@ def unicodize(text):
 
 # DEPRECATED in favor of util.legitimize()
 def escape_file_path(path):
-    path = path.replace('/', '-')
-    path = path.replace('\\', '-')
-    path = path.replace('*', '-')
-    path = path.replace('?', '-')
-    return path
+    return path.replace('/', '-').replace('\\', '-').replace('*', '-').replace('?', '-')
 
 def ungzip(data):
     """Decompresses data for Content-Encoding: gzip.
     """
     from io import BytesIO
     import gzip
-    buffer = BytesIO(data)
-    f = gzip.GzipFile(fileobj=buffer)
-    return f.read()
+    return gzip.GzipFile(fileobj=BytesIO(data)).read()
 
 def undeflate(data):
     """Decompresses data for Content-Encoding: deflate.
@@ -259,27 +243,23 @@ def get_response(url, faker = False):
         response = request.urlopen(url)
 
     data = response.read()
-    if response.info().get('Content-Encoding') == 'gzip':
-        data = ungzip(data)
-    elif response.info().get('Content-Encoding') == 'deflate':
-        data = undeflate(data)
+    content_encoding = response.info().get('Content-Encoding')
+    func = {'gzip': ungzip, 'deflate': undeflate}.get(content_encoding, None)
+    if func:
+        data = func(data)
     response.data = data
     return response
 
 # DEPRECATED in favor of get_content()
 def get_html(url, encoding = None, faker = False):
-    content = get_response(url, faker).data
-    return str(content, 'utf-8', 'ignore')
+    return str(get_response(url, faker).data, 'utf-8', 'ignore')
 
 # DEPRECATED in favor of get_content()
 def get_decoded_html(url, faker = False):
     response = get_response(url, faker)
     data = response.data
     charset = r1(r'charset=([\w-]+)', response.headers['content-type'])
-    if charset:
-        return data.decode(charset, 'ignore')
-    else:
-        return data
+    return data.decode(charset, 'ignore') if charset else data
 
 def get_location(url):
     response = request.urlopen(url)
@@ -310,26 +290,21 @@ def get_content(url, headers={}, decoded=True):
 
     # Handle HTTP compression for gzip and deflate (zlib)
     content_encoding = response.getheader('Content-Encoding')
-    if content_encoding == 'gzip':
-        data = ungzip(data)
-    elif content_encoding == 'deflate':
-        data = undeflate(data)
+    func = {'gzip': ungzip, 'deflate': undeflate}.get(content_encoding, None)
+    if func:
+        data = func(data)
 
     # Decode the response body
     if decoded:
         charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
-        if charset is not None:
-            data = data.decode(charset)
-        else:
-            data = data.decode('utf-8')
+        data = data.decode(charset or 'utf-8')
 
     return data
 
 def url_size(url, faker = False, headers = {}):
-    if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
-    elif headers:
-        response = request.urlopen(request.Request(url, headers = headers), None)
+    headers = fake_headers if faker else headers
+    if headers:
+        response = request.urlopen(request.Request(url, headers=headers), None)
     else:
         response = request.urlopen(url)
 
@@ -340,18 +315,14 @@ def urls_size(urls, faker = False, headers = {}):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
 def get_head(url, headers = {}):
-    if headers:
-        req = request.Request(url, headers = headers)
-    else:
-        req = request.Request(url)
+    req = request.Request(url, headers = headers) if headers else request.Request(url)
     req.get_method = lambda : 'HEAD'
     res = request.urlopen(req)
     return dict(res.headers)
 
 def url_info(url, faker = False, headers = {}):
-    if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
-    elif headers:
+    headers = fake_headers if faker else headers
+    if headers:
         response = request.urlopen(request.Request(url, headers = headers), None)
     else:
         response = request.urlopen(request.Request(url))
@@ -359,7 +330,8 @@ def url_info(url, faker = False, headers = {}):
     headers = response.headers
 
     type = headers['content-type']
-    if type == 'image/jpg; charset=UTF-8' or type == 'image/jpg' : type = 'audio/mpeg'    #fix for netease
+    if type in ('image/jpg; charset=UTF-8', 'image/jpg'):
+        type = 'audio/mpeg'    #fix for netease
     mapping = {
         'video/3gpp': '3gp',
         'video/f4v': 'flv',
@@ -376,9 +348,8 @@ def url_info(url, faker = False, headers = {}):
         'image/gif': 'gif',
         'application/pdf': 'pdf',
     }
-    if type in mapping:
-        ext = mapping[type]
-    else:
+    ext = mapping.get(type, None)
+    if not ext:
         type = None
         if headers['content-disposition']:
             try:
@@ -400,15 +371,13 @@ def url_info(url, faker = False, headers = {}):
     return type, ext, size
 
 def url_locations(urls, faker = False, headers = {}):
+    headers = fake_headers if faker else headers
     locations = []
     for url in urls:
-        if faker:
-            response = request.urlopen(request.Request(url, headers = fake_headers), None)
-        elif headers:
+        if headers:
             response = request.urlopen(request.Request(url, headers = headers), None)
         else:
             response = request.urlopen(request.Request(url))
-
         locations.append(response.url)
     return locations
 
@@ -446,12 +415,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         open_mode = 'wb'
 
     if received < file_size:
-        if faker:
-            headers = fake_headers
-        elif headers:
-            headers = headers
-        else:
-            headers = {}
+        headers = fake_headers if faker else (headers or {})
         if received:
             headers['Range'] = 'bytes=' + str(received) + '-'
         if refer:
@@ -523,12 +487,7 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
     else:
         open_mode = 'wb'
 
-    if faker:
-        headers = fake_headers
-    elif headers:
-        headers = headers
-    else:
-        headers = {}
+    headers = fake_headers if faker else (headers or {})
     if received:
         headers['Range'] = 'bytes=' + str(received) + '-'
     if refer:
@@ -576,8 +535,7 @@ class SimpleProgressBar:
         self.displayed = True
         bar_size = self.bar_size
         percent = round(self.received * 100 / self.total_size, 1)
-        if percent >= 100:
-            percent = 100
+        percent = max(percent, 100)
         dots = bar_size * int(percent) // 100
         plus = int(percent) - dots // bar_size * 100
         if plus > 0.8:
@@ -659,17 +617,11 @@ def get_output_filename(urls, title, ext, output_dir, merge):
     if (len(urls) > 1) and merge:
         from .processor.ffmpeg import has_ffmpeg_installed
         if ext in ['flv', 'f4v']:
-            if has_ffmpeg_installed():
-                merged_ext = 'mp4'
-            else:
-                merged_ext = 'flv'
+            merged_ext = 'mp4' if has_ffmpeg_installed() else 'flv'
         elif ext == 'mp4':
             merged_ext = 'mp4'
         elif ext == 'ts':
-            if has_ffmpeg_installed():
-                merged_ext = 'mkv'
-            else:
-                merged_ext = 'ts'
+            merged_ext = 'mkv' if has_ffmpeg_installed() else  'ts'
     return '%s.%s' % (title, merged_ext)
 
 def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
@@ -699,8 +651,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     if total_size:
         if not force and os.path.exists(output_filepath) and os.path.getsize(output_filepath) >= total_size * 0.9:
-            print('Skipping %s: file already exists' % output_filepath)
-            print()
+            print('Skipping %s: file already exists\n' % output_filepath)
             return
         bar = SimpleProgressBar(total_size, len(urls))
     else:
@@ -729,7 +680,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             print()
             return
 
-        if 'av' in kwargs and kwargs['av']:
+        if kwargs.get('av', None):
             from .processor.ffmpeg import has_ffmpeg_installed
             if has_ffmpeg_installed():
                 from .processor.ffmpeg import ffmpeg_concat_av
@@ -738,7 +689,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 if ret == 0:
                     for part in parts: os.remove(part)
 
-        elif ext in ['flv', 'f4v']:
+        elif ext in ('flv', 'f4v'):
             try:
                 from .processor.ffmpeg import has_ffmpeg_installed
                 if has_ffmpeg_installed():
@@ -974,10 +925,7 @@ def mime_to_container(mime):
         'video/webm': 'webm',
         'video/x-flv': 'flv',
     }
-    if mime in mapping:
-        return mapping[mime]
-    else:
-        return mime.split('/')[1]
+    return mapping.get(mime, mime.split('/')[1])
 
 def parse_host(host):
     """Parses host name and port number from a string.
@@ -1226,8 +1174,7 @@ def google_search(url):
     durs = [r1(r'(\d+:\d+)', unescape_html(dur)) for dur in vdurs]
     print("Google Videos search:")
     for v in zip(videos, durs):
-        print("- video:  %s [%s]" % (unescape_html(v[0][1]),
-                                     v[1] if v[1] else '?'))
+        print("- video:  %s [%s]" % (unescape_html(v[0][1]), v[1] or '?'))
         print("# you-get %s" % log.sprint(v[0][0], log.UNDERLINE))
         print()
     print("Best matched result:")
