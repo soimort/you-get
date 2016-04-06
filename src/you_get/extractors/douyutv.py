@@ -12,7 +12,7 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
     #Thanks to @yan12125 for providing decoding method!!
     suffix = 'room/%s?aid=android&client_sys=android&time=%d' % (room_id, int(time.time()))
     sign = hashlib.md5((suffix + '1231').encode('ascii')).hexdigest()
-    json_request_url = "http://www.douyutv.com/api/v1/%s&auth=%s" % (suffix, sign)
+    json_request_url = "http://www.douyu.com/api/v1/%s&auth=%s" % (suffix, sign)
     content = get_html(json_request_url)
     data = json.loads(content)['data']
     server_status = data.get('error',0)
@@ -28,6 +28,6 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
     if not info_only:
         download_urls([real_url], title, 'flv', None, output_dir, merge = merge)
 
-site_info = "douyutv.com"
+site_info = "douyu.com"
 download = douyutv_download
-download_playlist = playlist_not_supported('douyutv')
+download_playlist = playlist_not_supported('douyu')
