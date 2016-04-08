@@ -38,6 +38,7 @@ SITES = {
     'joy'              : 'joy',
     'jpopsuki'         : 'jpopsuki',
     'kankanews'        : 'bilibili',
+    'kissanime'        : 'kissanime',
     'khanacademy'      : 'khan',
     'ku6'              : 'ku6',
     'kugou'            : 'kugou',
