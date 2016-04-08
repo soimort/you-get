@@ -127,7 +127,8 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         if re.match(r'https?://live\.bilibili\.com/', url):
             title = r1(r'<title>([^<>]+)</title>', html)
             bilibili_live_download_by_cid(cid, title, output_dir=output_dir, merge=merge, info_only=info_only)
-        elif 'playlist' in kwargs and kwargs['playlist']:
+
+        else:
             # multi-P
             cids = []
             pages = re.findall('<option value=\'([^\']*)\'', html)
@@ -140,15 +141,18 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
                 if flashvars:
                     t, cid = flashvars.split('=', 1)
                     cids.append(cid.split('&')[0])
+
+            # no multi-P
+            if not pages:
+                cids = [cid]
+                titles = [r1(r'<option value=.* selected>(.+)</option>', html) or title]
+
             for i in range(len(cids)):
                 bilibili_download_by_cid(cids[i],
                                          titles[i],
                                          output_dir=output_dir,
                                          merge=merge,
                                          info_only=info_only)
-        else:
-            title = r1(r'<option value=.* selected>(.+)</option>', html) or title
-            bilibili_download_by_cid(cid, title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     elif t == 'vid':
         sina_download_by_vid(cid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
@@ -169,14 +173,6 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         with open(os.path.join(output_dir, title + '.cmt.xml'), 'w', encoding='utf-8') as x:
             x.write(xml)
 
-def bilibili_download_playlist(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    bilibili_download(url,
-                      output_dir=output_dir,
-                      merge=merge,
-                      info_only=info_only,
-                      playlist=True,
-                      **kwargs)
-
 site_info = "bilibili.com"
 download = bilibili_download
-download_playlist = bilibili_download_playlist
+download_playlist = bilibili_download
