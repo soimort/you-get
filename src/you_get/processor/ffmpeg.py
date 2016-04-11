@@ -58,7 +58,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
         concat_list.close()
 
         params = [FFMPEG] + LOGLEVEL
-        params.extend(['-f', 'concat', '-y', '-i'])
+        params.extend(['-f', 'concat', '-safe', '-1', '-y', '-i'])
         params.append(output + '.txt')
         params += ['-c', 'copy', output]
 
@@ -122,7 +122,7 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
                 concat_list.write("file %s\n" % parameterize(file))
         concat_list.close()
 
-        params = [FFMPEG] + LOGLEVEL + ['-f', 'concat', '-y', '-i']
+        params = [FFMPEG] + LOGLEVEL + ['-f', 'concat', '-safe', '-1', '-y', '-i']
         params.append(output + '.txt')
         params += ['-c', 'copy', output]
 
@@ -167,7 +167,7 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
                 concat_list.write("file %s\n" % parameterize(file))
         concat_list.close()
 
-        params = [FFMPEG] + LOGLEVEL + ['-f', 'concat', '-y', '-i']
+        params = [FFMPEG] + LOGLEVEL + ['-f', 'concat', '-safe', '-1', '-y', '-i']
         params.append(output + '.txt')
         params += ['-c', 'copy', output]
 
