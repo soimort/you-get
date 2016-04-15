@@ -106,6 +106,7 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
+from . import proxy_picker
 
 dry_run = False
 json_output = False
@@ -1029,6 +1030,7 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         else:
             download(url, **kwargs)
 
+
 def script_main(script_name, download, download_playlist, **kwargs):
     def version():
         log.i('version %s, a tiny downloader that scrapes the web.'
@@ -1061,10 +1063,11 @@ def script_main(script_name, download, download_playlist, **kwargs):
     -y | --extractor-proxy <HOST:PORT>  Use an HTTP proxy for extracting only.
          --no-proxy                     Never use a proxy.
     -d | --debug                        Show traceback and other debug info.
+    -C | --china                        Pick a Chinese proxy for extracting.
     '''
 
-    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
+    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:C'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=', "china"]
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -1167,6 +1170,9 @@ def script_main(script_name, download, download_playlist, **kwargs):
             extractor_proxy = a
         elif o in ('--lang',):
             lang = a
+        elif o in ('-C', '--china'):
+            extractor_proxy = proxy_picker.pick_a_chinese_proxy()
+            print("Using Chinese proxy {}".format(extractor_proxy))
         else:
             log.e("try 'you-get --help' for more options")
             sys.exit(2)
