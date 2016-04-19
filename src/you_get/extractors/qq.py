@@ -24,6 +24,10 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         # it will redirect.
         vid = match1(url, r'\b(\w+).html')
         title = vid
+    elif 'kuaibao.qq.com' in url:
+        content = get_html(url)
+        vid = match1(content, r'vid\s*=\s*"\s*([^"]+)"')
+        title = match1(content, r'title">([^"]+)</p>').strip()
     elif 'iframe/player.html' in url:
         vid = match1(url, r'\bvid=(\w+)')
         # for embedded URLs; don't know what the title is
