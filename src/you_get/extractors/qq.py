@@ -18,7 +18,13 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
         download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
 def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    if 'iframe/player.html' in url:
+    if 'v.qq.com/page' in url:
+        # for URLs like this:
+        # http://v.qq.com/page/k/9/7/k0194pwgw97.html
+        # it will redirect.
+        vid = match1(url, r'\b(\w+).html')
+        title = vid
+    elif 'iframe/player.html' in url:
         vid = match1(url, r'\bvid=(\w+)')
         # for embedded URLs; don't know what the title is
         title = vid
