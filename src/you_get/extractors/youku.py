@@ -171,13 +171,13 @@ class Youku(VideoExtractor):
                     self.password_protected = True
                     self.password = input(log.sprint('Password: ', log.YELLOW))
                     api_url += '&pwd={}'.format(self.password)
-                    api_url12 += '&pwd={}'.format(self.password)
+                    api12_url += '&pwd={}'.format(self.password)
                     meta = json.loads(get_content(
                         api_url,
                         headers={'Referer': 'http://static.youku.com/'}
                     ))
                     meta12 = json.loads(get_content(
-                        api_url12,
+                        api12_url,
                         headers={'Referer': 'http://static.youku.com/'}
                     ))
                     data = meta['data']
