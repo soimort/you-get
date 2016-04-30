@@ -1,21 +1,21 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.365
+project-version: 0.4.390
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.365.tar.gz
+download-url: https://github.com/soimort/you-get/releases/download/v0.4.390/you-get-0.4.390.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 51c90fcb24fe2c60e2701e0792165a5703e99c36
-download-signature: https://pypi.python.org/packages/source/y/you-get/you-get-0.4.365.tar.gz.asc
+download-checksum-data: c86edeb82a61ab1435acf0463b3aa9ce4a6544d0
+download-signature: https://github.com/soimort/you-get/releases/download/v0.4.390/you-get-0.4.390.tar.gz.asc
 
 ---
 # You-Get
 
-[![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get)
-[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
+[![PyPI version](https://img.shields.io/pypi/v/you-get.svg)](https://pypi.python.org/pypi/you-get/)
+[![Build Status](https://travis-ci.org/soimort/you-get.svg)](https://travis-ci.org/soimort/you-get)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [You-Get](https://you-get.org/) is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.
