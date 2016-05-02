@@ -6,7 +6,7 @@ from ..common import *
 
 def bandcamp_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
-    trackinfo = json.loads(r1(r'(\[{"video_poster_url".*}\]),', html))
+    trackinfo = json.loads(r1(r'(\[{"(video_poster_url|video_caption)".*}\]),', html))
     for track in trackinfo:
         track_num = track['track_num']
         title = '%s. %s' % (track_num, track['title'])
