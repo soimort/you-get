@@ -31,10 +31,13 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         if extractor_proxy:
             set_proxy(tuple(extractor_proxy.split(":")))
         info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
+        info = info['data']
         for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
-            hqvid = info['data'][qtyp]
+            hqvid = info[qtyp]
             if hqvid != 0 and hqvid != vid :
                 info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % hqvid))
+                if not 'allot' in info:
+                    continue
                 break
         if extractor_proxy:
             unset_proxy()
