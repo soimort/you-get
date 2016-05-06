@@ -10,7 +10,12 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     output_json = json.loads(match1(content, r'QZOutputJson=(.*)')[:-1])
     url = output_json['vl']['vi'][0]['ul']['ui'][0]['url']
     fvkey = output_json['vl']['vi'][0]['fvkey']
-    url = '%s/%s.mp4?vkey=%s' % ( url, vid, fvkey )
+    mp4 = output_json['vl']['vi'][0]['cl'].get('ci', None)
+    if mp4:
+        mp4 = mp4[0]['keyid'].replace('.10', '.p') + '.mp4'
+    else:
+        mp4 = output_json['vl']['vi'][0]['fn']
+    url = '%s/%s?vkey=%s' % ( url, mp4, fvkey )
     _, ext, size = url_info(url, faker=True)
 
     print_info(site_info, title, ext, size)
@@ -27,7 +32,8 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     elif 'kuaibao.qq.com' in url:
         content = get_html(url)
         vid = match1(content, r'vid\s*=\s*"\s*([^"]+)"')
-        title = match1(content, r'title">([^"]+)</p>').strip()
+        title = match1(content, r'title">([^"]+)</p>')
+        title = title.strip() if title else vid
     elif 'iframe/player.html' in url:
         vid = match1(url, r'\bvid=(\w+)')
         # for embedded URLs; don't know what the title is
