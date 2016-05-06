@@ -38,6 +38,7 @@ from .le import *
 from .lizhi import *
 from .magisto import *
 from .metacafe import *
+from .mgtv import *
 from .miaopai import *
 from .miomio import *
 from .mixcloud import *
