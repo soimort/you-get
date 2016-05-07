@@ -47,6 +47,7 @@ SITES = {
     'lizhi'            : 'lizhi',
     'magisto'          : 'magisto',
     'metacafe'         : 'metacafe',
+    'mgtv'             : 'mgtv',
     'miomio'           : 'miomio',
     'mixcloud'         : 'mixcloud',
     'mtv81'            : 'mtv81',
