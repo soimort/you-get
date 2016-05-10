@@ -87,6 +87,9 @@ SITES = {
     'youtu'            : 'youtube',
     'youtube'          : 'youtube',
     'zhanqi'           : 'zhanqi',
+    'eastmoney'   : 'eastmoney',
+    'cnfol'   : 'cnfol',
+    'yicai'   : 'yicai',
 }
 
 import getopt
