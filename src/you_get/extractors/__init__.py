@@ -76,3 +76,4 @@ from .youtube import *
 from .ted import *
 from .khan import *
 from .eastmoney import *
+from .yicai import *
