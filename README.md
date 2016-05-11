@@ -374,6 +374,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 花瓣     | <http://huaban.com/>           | |✓| |
 | 东方财富  | <http://video.eastmoney.com/>          |✓| | |
 | 第一财经  | <http://www.yicai.com/video/>          |✓| | |
+| 中金在线  | <http://video.cnfol.com/>          |✓| | |
 
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.

@@ -77,3 +77,4 @@ from .ted import *
 from .khan import *
 from .eastmoney import *
 from .yicai import *
+from .cnfol import *
