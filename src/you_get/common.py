@@ -54,6 +54,7 @@ SITES = {
     'musicplayon'      : 'musicplayon',
     '7gogo'            : 'nanagogo',
     'nicovideo'        : 'nicovideo',
+    'panda'            : 'panda',
     'pinterest'        : 'pinterest',
     'pixnet'           : 'pixnet',
     'pptv'             : 'pptv',

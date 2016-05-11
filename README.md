@@ -344,6 +344,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Dilidili | <http://www.dilidili.com/>     |✓| | |
 | 豆瓣     | <http://www.douban.com/>       | | |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
+| Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
 | 风行网   | <http://www.fun.tv/>           |✓| | |
 | iQIYI<br/>爱奇艺 | <http://www.iqiyi.com/> |✓| | |
