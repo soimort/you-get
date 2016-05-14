@@ -35,7 +35,7 @@ def dilidili_parser_data_to_stream_types(typ ,vid ,hd2 ,sign, tmsign, ulk):
 
 #----------------------------------------------------------------------
 def dilidili_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
-    if re.match(r'http://www.dilidili.com/watch/\w+', url):
+    if re.match(r'http://www.dilidili.com/watch\S+', url):
         html = get_content(url)
         title = match1(html, r'<title>(.+)丨(.+)</title>')  #title
         
