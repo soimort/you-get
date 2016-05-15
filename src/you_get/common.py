@@ -74,6 +74,7 @@ SITES = {
     'vidto'            : 'vidto',
     'vimeo'            : 'vimeo',
     'weibo'            : 'miaopai',
+    'v1'               : 'v1',
     'veoh'             : 'veoh',
     'vine'             : 'vine',
     'vk'               : 'vk',
