@@ -54,6 +54,7 @@ SITES = {
     'musicplayon'      : 'musicplayon',
     '7gogo'            : 'nanagogo',
     'nicovideo'        : 'nicovideo',
+    'panda'            : 'panda',
     'pinterest'        : 'pinterest',
     'pixnet'           : 'pixnet',
     'pptv'             : 'pptv',
@@ -734,7 +735,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             if has_ffmpeg_installed():
                 from .processor.ffmpeg import ffmpeg_concat_av
                 ret = ffmpeg_concat_av(parts, output_filepath, ext)
-                print('Done.')
+                print('Merged into %s' % output_filename)
                 if ret == 0:
                     for part in parts: os.remove(part)
 
@@ -747,7 +748,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_flv import concat_flv
                     concat_flv(parts, output_filepath)
-                print('Done.')
+                print('Merged into %s' % output_filename)
             except:
                 raise
             else:
@@ -763,7 +764,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_mp4 import concat_mp4
                     concat_mp4(parts, output_filepath)
-                print('Done.')
+                print('Merged into %s' % output_filename)
             except:
                 raise
             else:
@@ -779,7 +780,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_ts import concat_ts
                     concat_ts(parts, output_filepath)
-                print('Done.')
+                print('Merged into %s' % output_filename)
             except:
                 raise
             else:
