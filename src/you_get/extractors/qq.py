@@ -3,6 +3,7 @@
 __all__ = ['qq_download']
 
 from ..common import *
+from .qie import download as qieDownload
 
 def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     api = "http://h5vv.video.qq.com/getinfo?otype=json&platform=10901&vid=%s" % vid
@@ -34,6 +35,9 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         vid = match1(content, r'vid\s*=\s*"\s*([^"]+)"')
         title = match1(content, r'title">([^"]+)</p>')
         title = title.strip() if title else vid
+    elif 'live.qq.com' in url:
+        qieDownload(url,output_dir=output_dir, merge=merge, info_only=info_only)
+        exit()
     elif 'iframe/player.html' in url:
         vid = match1(url, r'\bvid=(\w+)')
         # for embedded URLs; don't know what the title is
