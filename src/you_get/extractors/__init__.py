@@ -45,6 +45,7 @@ from .mixcloud import *
 from .mtv81 import *
 from .musicplayon import *
 from .nanagogo import *
+from .naver import *
 from .netease import *
 from .nicovideo import *
 from .panda import *

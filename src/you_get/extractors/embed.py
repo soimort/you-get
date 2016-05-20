@@ -8,6 +8,7 @@ from .netease import netease_download
 from .qq import qq_download_by_vid
 from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_id
+from .vimeo import vimeo_download_by_id
 from .yinyuetai import yinyuetai_download_by_id
 from .youku import youku_download_by_vid
 
@@ -39,6 +40,9 @@ iqiyi_embed_patterns = [ 'player\.video\.qiyi\.com/([^/]+)/[^/]+/[^/]+/[^/]+\.sw
 
 netease_embed_patterns = [ '(http://\w+\.163\.com/movie/[^\'"]+)' ]
 
+vimeo_embed_patters = [ 'player\.vimeo\.com/video/(\d+)' ]
+
+
 def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwargs):
     content = get_content(url, headers=fake_headers)
     found = False
@@ -68,6 +72,11 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwa
     for url in urls:
         found = True
         netease_download(url, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+
+    urls = matchall(content, vimeo_embed_patters)
+    for url in urls:
+        found = True
+        vimeo_download_by_id(url, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     if not found:
         raise NotImplementedError(url)
