@@ -53,6 +53,7 @@ from .pinterest import *
 from .pixnet import *
 from .pptv import *
 from .qianmo import *
+from .qie import *
 from .qq import *
 from .sina import *
 from .sohu import *
