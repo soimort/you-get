@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.390
+project-version: 0.4.424
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://github.com/soimort/you-get/releases/download/v0.4.390/you-get-0.4.390.tar.gz
+download-url: https://github.com/soimort/you-get/releases/download/v0.4.424/you-get-0.4.424.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: c86edeb82a61ab1435acf0463b3aa9ce4a6544d0
-download-signature: https://github.com/soimort/you-get/releases/download/v0.4.390/you-get-0.4.390.tar.gz.asc
+download-checksum-data: 8844a92d1def3179c5f84bc4d0039946ce6282b7
+download-signature: https://github.com/soimort/you-get/releases/download/v0.4.424/you-get-0.4.424.tar.gz.asc
 
 ---
 # You-Get
@@ -358,6 +358,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Dilidili | <http://www.dilidili.com/>     |✓| | |
 | 豆瓣     | <http://www.douban.com/>       | | |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
+| Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
 | 风行网   | <http://www.fun.tv/>           |✓| | |
 | iQIYI<br/>爱奇艺 | <http://www.iqiyi.com/> |✓| | |
@@ -373,6 +374,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | PPTV聚力 | <http://www.pptv.com/>         |✓| | |
 | 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
 | QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
+| 企鹅直播 | <http://live.qq.com/>          |✓| | |
 | 阡陌视频 | <http://qianmo.com/>           |✓| | |
 | THVideo  | <http://thvideo.tv/>           |✓| | |
 | Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
@@ -386,6 +388,8 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
 | 央视网   | <http://www.cntv.cn/>          |✓| | |
 | 花瓣     | <http://huaban.com/>           | |✓| |
+| Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
+| 芒果TV   | <http://www.mgtv.com/>         |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
