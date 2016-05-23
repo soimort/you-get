@@ -98,6 +98,7 @@ import logging
 import os
 import platform
 import re
+import socket
 import sys
 import time
 from urllib import request, parse, error
@@ -308,7 +309,14 @@ def get_content(url, headers={}, decoded=True):
     if cookies:
         cookies.add_cookie_header(req)
         req.headers.update(req.unredirected_hdrs)
-    response = request.urlopen(req)
+
+    for i in range(10):
+        try:
+            response = request.urlopen(req, timeout=10)
+            break
+        except socket.timeout:
+            logging.debug('request attempt %s timeout' % str(i + 1))
+
     data = response.read()
 
     # Handle HTTP compression for gzip and deflate (zlib)
