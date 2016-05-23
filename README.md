@@ -360,6 +360,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | PPTV聚力 | <http://www.pptv.com/>         |✓| | |
 | 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
 | QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
+| 企鹅直播 | <http://live.qq.com/>          |✓| | |
 | 阡陌视频 | <http://qianmo.com/>           |✓| | |
 | THVideo  | <http://thvideo.tv/>           |✓| | |
 | Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
@@ -374,6 +375,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 央视网   | <http://www.cntv.cn/>          |✓| | |
 | 花瓣     | <http://huaban.com/>           | |✓| |
 | Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
+| 芒果TV   | <http://www.mgtv.com/>         |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
