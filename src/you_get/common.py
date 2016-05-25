@@ -312,7 +312,7 @@ def get_content(url, headers={}, decoded=True):
 
     for i in range(10):
         try:
-            response = request.urlopen(req, timeout=10)
+            response = request.urlopen(req)
             break
         except socket.timeout:
             logging.debug('request attempt %s timeout' % str(i + 1))
@@ -1071,11 +1071,12 @@ def script_main(script_name, download, download_playlist, **kwargs):
     -x | --http-proxy <HOST:PORT>       Use an HTTP proxy for downloading.
     -y | --extractor-proxy <HOST:PORT>  Use an HTTP proxy for extracting only.
          --no-proxy                     Never use a proxy.
+    -t | --timeout <SECONDS>            Set socket timeout.
     -d | --debug                        Show traceback and other debug info.
     '''
 
-    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
+    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:t:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=', 'timeout=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -1105,6 +1106,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     proxy = None
     extractor_proxy = None
     traceback = False
+    timeout = 600
     for o, a in opts:
         if o in ('-V', '--version'):
             version()
@@ -1178,6 +1180,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
             extractor_proxy = a
         elif o in ('--lang',):
             lang = a
+        elif o in ('-t', '--timeout'):
+            timeout = int(a)
         else:
             log.e("try 'you-get --help' for more options")
             sys.exit(2)
@@ -1186,6 +1190,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
         sys.exit()
 
     set_http_proxy(proxy)
+
+    socket.setdefaulttimeout(timeout)
 
     try:
         if stream_id:
