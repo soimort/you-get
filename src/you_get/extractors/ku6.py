@@ -7,6 +7,7 @@ from ..common import *
 import json
 import re
 
+#----------------------------------------------------------------------
 def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     data = json.loads(get_html('http://v.ku6.com/fetchVideo4Player/%s...html' % id))['data']
     t = data['t']
@@ -26,11 +27,24 @@ def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
     if not info_only:
         download_urls(urls, title, ext, size, output_dir, merge = merge)
 
+#----------------------------------------------------------------------
+def ku6_baidu_get_id(url):
+    """str->str"""
+    baidu_id = match1(url, r'http://baidu.ku6.com/watch/(\d+).+')
+    inner_url = 'http://v.baidu.com/watch/{baidu_id}.html'.format(baidu_id = baidu_id)
+    html = get_content(inner_url)
+    ku6_id = match1(html, r'http%3A%2F%2Fv.ku6.com%2Fshow%2F(.*)\.\.\.html')
+    return ku6_id
+
+#----------------------------------------------------------------------
 def ku6_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    patterns = [r'http://v.ku6.com/special/show_\d+/(.*)\.\.\.html',
-            r'http://v.ku6.com/show/(.*)\.\.\.html',
-            r'http://my.ku6.com/watch\?.*v=(.*)\.\..*']
-    id = r1_of(patterns, url)
+    if 'baidu.ku6' in url:
+        id = ku6_baidu_get_id(url)
+    else:
+        patterns = [r'http://v.ku6.com/special/show_\d+/(.*)\.\.\.html',
+                r'http://v.ku6.com/show/(.*)\.\.\.html',
+                r'http://my.ku6.com/watch\?.*v=(.*)\.\..*']
+        id = r1_of(patterns, url)
 
     ku6_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 
