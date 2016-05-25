@@ -5,6 +5,13 @@ __all__ = ['twitter_download']
 from ..common import *
 from .vine import vine_download
 
+def extract_m3u(source):
+    r1 = get_content(source)
+    s1 = re.findall(r'(/ext_tw_video/.*)', r1)
+    r2 = get_content('https://video.twimg.com%s' % s1[-1])
+    s2 = re.findall(r'(/ext_tw_video/.*)', r2)
+    return ['https://video.twimg.com%s' % i for i in s2]
+
 def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
     screen_name = r1(r'data-screen-name="([^"]*)"', html) or \
@@ -63,11 +70,13 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             source = r1(r'<MediaFile>\s*<!\[CDATA\[(.*)\]\]>', vmap)
             if not item_id: page_title = i['tweet_id']
 
-        mime, ext, size = url_info(source)
+        urls = extract_m3u(source)
+        size = urls_size(urls)
+        mime, ext = 'video/mp4', 'mp4'
 
         print_info(site_info, page_title, mime, size)
         if not info_only:
-            download_urls([source], page_title, ext, size, output_dir, merge=merge)
+            download_urls(urls, page_title, ext, size, output_dir, merge=merge)
 
 site_info = "Twitter.com"
 download = twitter_download
