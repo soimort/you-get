@@ -61,7 +61,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
                 netease_lyric_download(i, l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
             except: pass
 
-    elif "song" in url:
+    elif "song" in url: 
         j = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
         netease_song_download(j["songs"][0], output_dir=output_dir, info_only=info_only)
         try: # download lyrics
@@ -69,6 +69,15 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
             netease_lyric_download(j["songs"][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
         except: pass
+
+    elif "program" in url:
+        j = loads(get_content("http://music.163.com/api/dj/program/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        netease_song_download(j["program"]["mainSong"], output_dir=output_dir, info_only=info_only)
+
+    elif "radio" in url:
+        j = loads(get_content("http://music.163.com/api/dj/program/byradio/?radioId=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        for i in j['programs']:
+            netease_song_download(i["mainSong"],output_dir=output_dir, info_only=info_only)
 
     elif "mv" in url:
         j = loads(get_content("http://music.163.com/api/mv/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
