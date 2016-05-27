@@ -13,8 +13,8 @@ try:
 except:
     README = ""
 CHANGELOG = open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf-8').read()
-VERSION = imp.load_source('version', os.path.join(here, 'src/%s/version.py' % PACKAGE_NAME)).__version__
-
+#VERSION = imp.load_source('version', os.path.join(here, 'src/%s/version.py' % PACKAGE_NAME)).__version__
+VERSION = imp.load_source('version', os.path.join(here, 'src', PACKAGE_NAME, 'version.py')).__version__
 from setuptools import setup, find_packages
 setup(
     name = proj_info['name'],
