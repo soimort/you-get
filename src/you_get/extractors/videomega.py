@@ -15,11 +15,14 @@ def videomega_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                          ('Cookie', 'noadvtday=0')]
     request.install_opener(opener)
 
-    content = get_content(url)
-    m = re.search(r'ref="([^"]*)";\s*width="([^"]*)";\s*height="([^"]*)"', content)
-    ref = m.group(1)
-    width, height = m.group(2), m.group(3)
-    php_url = 'http://videomega.tv/view.php?ref=%s&width=%s&height=%s' % (ref, width, height)
+    if re.search(r'view\.php', url):
+        php_url = url
+    else:
+        content = get_content(url)
+        m = re.search(r'ref="([^"]*)";\s*width="([^"]*)";\s*height="([^"]*)"', content)
+        ref = m.group(1)
+        width, height = m.group(2), m.group(3)
+        php_url = 'http://videomega.tv/view.php?ref=%s&width=%s&height=%s' % (ref, width, height)
     content = get_content(php_url)
 
     title = match1(content, r'<title>(.*)</title>')
