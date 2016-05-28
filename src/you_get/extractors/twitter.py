@@ -69,8 +69,14 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             vmap = get_content(vmap_url)
             source = r1(r'<MediaFile>\s*<!\[CDATA\[(.*)\]\]>', vmap)
             if not item_id: page_title = i['tweet_id']
+        elif 'scribe_playlist_url' in i:
+            scribe_playlist_url = i['scribe_playlist_url']
+            return vine_download(scribe_playlist_url, output_dir, merge=merge, info_only=info_only)
 
-        urls = extract_m3u(source)
+        if source.endswith('.mp4'):
+            urls = [source]
+        else:
+            urls = extract_m3u(source)
         size = urls_size(urls)
         mime, ext = 'video/mp4', 'mp4'
 
