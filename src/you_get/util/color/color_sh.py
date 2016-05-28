@@ -41,15 +41,28 @@ Can be compatibale with python2(>2.6)(Care: UniocoedEncodeError)
 STYLE = {
         'fore':
         {   # 前景色
-            'black'    : 30,   #  黑色
-            'red'      : 31,   #  红色
-            'green'    : 32,   #  绿色
-            'yellow'   : 33,   #  黄色
-            'blue'     : 34,   #  蓝色
-            'purple'   : 35,   #  紫红色
-            'cyan'     : 36,   #  青蓝色
-            'white'    : 37,   #  白色
-            'blank'    : 0,    #原生色
+            'black'       : 30,   #  黑色
+
+            'red'         : 31,   #  红色
+            'darkred'     : 31,
+
+            'green'       : 32,   #  绿色
+            'darkgreen'   : 32,
+
+            'yellow'      : 33,   #  黄色
+            'darkyellow'  :33,
+
+            'blue'        : 34,   #  蓝色
+            'darkblue'    : 34,
+
+            'purple'      : 35,   #  紫红色
+            'darkpink'    : 35,
+
+            'cyan'        : 36,   #  青蓝色
+            'darkskyblue' : 36,
+
+            'white'       : 37,   #  白色
+            'blank'       : 0,    #原生色
         },
 
         'back' :

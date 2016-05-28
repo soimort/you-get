@@ -62,7 +62,7 @@ def printDarkRed(*objs,**kwargs):
 
 
 def printDarkSkyBlue(*objs,**kwargs):
-    print_color(*objs,color='darkblue',**kwargs)
+    print_color(*objs,color='darkskyblue',**kwargs)
 
 def printDarkGreen(*objs,**kwargs):
     print_color(*objs,color='darkgreen',**kwargs)
@@ -85,27 +85,27 @@ def printBlank(*objs,**kwargs):
 #
 #You can also configure them with color_dict and print_map
 ################################################################################
-color_dict={'green'   : printDarkGreen,
-            'skyblue' : printDarkSkyBlue,
-            'yellow'  : printDarkYellow,
-            'red'     : printDarkRed,
-            'blue'    : printBlue,
-            'white'   : printWhite,
-            'purple'  : printDarkPink}
+color_dict={'green'       : printDarkGreen,
+            'darkskyblue' : printDarkSkyBlue,
+            'yellow'      : printDarkYellow,
+            'red'         : printDarkRed,
+            'blue'        : printBlue,
+            'white'       : printWhite,
+            'purple'      : printDarkPink}
 
-print_map={'info'    : color_dict['skyblue'],
+print_map={'info'    : color_dict['darkskyblue'],
            'ok'      : color_dict['green'],
            'warning' : color_dict['yellow'],
            'error'   : color_dict['red']}
 
-def print_info(obj):print_map['info'](obj)
-def print_ok(obj):print_map['ok'](obj)
+def print_info(*objs,**kwargs):print_map['info'](*objs,**kwargs)
+def print_ok(*objs,**kwargs):print_map['ok'](*objs,**kwargs)
 
-def print_warning(obj):print_map['warning'](obj)
-def print_warn(obj): print_warning(obj) # print_warning is too long
+def print_warning(*objs,**kwargs):print_map['warning'](*objs,**kwargs)
+def print_warn(*objs,**kwargs): print_warning(*objs,**kwargs) # print_warning is too long
 
-def print_error(obj):print_map['error'](obj)
-def print_err(obj):print_error(obj) #print_error is too long
+def print_error(*objs,**kwargs):print_map['error'](*objs,**kwargs)
+def print_err(*objs,**kwargs):print_error(*objs,**kwargs) #print_error is too long
 
 
 
