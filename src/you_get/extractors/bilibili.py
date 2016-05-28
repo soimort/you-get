@@ -11,7 +11,7 @@ from .youku import youku_download_by_vid
 import hashlib
 import re
 
-appkey='8e9fc618fbd41e28'
+appkey='f3bb208b3d081dc8'
 
 def get_srt_xml(id):
     url = 'http://comment.bilibili.com/%s.xml' % id
