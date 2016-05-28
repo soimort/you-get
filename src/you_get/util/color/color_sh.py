@@ -49,6 +49,7 @@ STYLE = {
             'purple'   : 35,   #  紫红色
             'cyan'     : 36,   #  青蓝色
             'white'    : 37,   #  白色
+            'blank'    : 0,    #原生色
         },
 
         'back' :
@@ -121,6 +122,7 @@ def TestColor( ):
     print(UseStyle('紫红色', fore = 'purple'), end=' ')
     print(UseStyle('青蓝色', fore = 'cyan'), end=' ')
     print(UseStyle('白色',   fore = 'white'))
+    print(UseStyle('原生色',   fore = 'blank'))
     print('')
 
 

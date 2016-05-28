@@ -3,6 +3,9 @@
 """
 ################################################################################
 Establish a Unified Color print across all kinds of os
+
+However, you should care about that
+         we only implemented 8^1=8 kind of basic color in color_sh
 ################################################################################
 """
 
@@ -13,83 +16,62 @@ if islinux():
 elif iswin():
     from . import color_cmd as cmd
 
+def _remove_key(dic,keys):
+    return {_key:dic[_key] for _key in dic if _key not in set(keys)}
 
-def printWhite(obj):
+def print_color(*objs,**kwargs):
+
+    _end=kwargs.get('end' ,'\n')
+    _sep=kwargs.get('sep' ,' ')
+    _color=kwargs.get('color','blank')
+    kwargs=_remove_key(kwargs,['end','sep','color'])
+
     if iswin():
-        with cmd.printWhite():
-            print(obj)
+        with cmd.print_color(color=_color):
+            [print(obj, end=_sep, sep='',**kwargs) for obj in objs]
+            print(end=_end)
+
     elif islinux():
-        print(sh.UseStyle(obj,'white'))
+        [print(sh.UseStyle(obj,fore=_color), end=_sep, sep='',**kwargs)
+         for obj in objs]
+
+        print(end=_end)
 
     else:
-        print(obj)
-def printDarkPink(obj):
-    if iswin():
-        with cmd.printDarkPink():
-            print(obj)
-    elif islinux():
-        print(sh.UseStyle(obj,'purple'))
+        [print(obj, end=_sep, sep='',**kwargs) for obj in objs]
+        print(end=_end)
 
-    else:
-        print(obj)
+def printWhite(*objs,**kwargs):
+    print_color(*objs,color='white',**kwargs)
 
-def printBlue(obj):
+
+def printDarkPink(*objs,**kwargs):
+    print_color(*objs,color='darkpink',**kwargs)
+
+def printBlue(*objs,**kwargs):
     """
     Belive it ,It's an ugly print-color.
     Blue makes you blue :(
     :param obj:
     :return:
     """
-    if iswin():
-        with cmd.printBlue():
-            print(obj)
-    elif islinux():
-        print(sh.UseStyle(obj,'blue'))
+    print_color(*objs,color='blue',**kwargs)
 
-    else:
-        print(obj)
+def printDarkRed(*objs,**kwargs):
+    print_color(*objs,color='darkred',**kwargs)
 
 
-def printDarkRed(obj):
-    if iswin():
-        with cmd.printDarkRed():
-            print(obj)
-    elif islinux():
-        print(sh.UseStyle(obj,'red'))
+def printDarkSkyBlue(*objs,**kwargs):
+    print_color(*objs,color='darkblue',**kwargs)
 
-    else:
-        print(obj)
+def printDarkGreen(*objs,**kwargs):
+    print_color(*objs,color='darkgreen',**kwargs)
 
+def printDarkYellow(*objs,**kwargs):
+    print_color(*objs,color='darkyellow',**kwargs)
 
-def printDarkSkyBlue(obj):
-    if iswin():
-        with cmd.printDarkSkyBlue():
-            print(obj)
-    elif islinux():
-        print(sh.UseStyle(obj,'cyan'))
-
-    else:
-        print(obj)
-
-def printDarkGreen(obj):
-    if iswin():
-        with cmd.printDarkGreen():
-            print(obj)
-    elif islinux():
-        print(sh.UseStyle(obj,'green'))
-
-    else:
-        print(obj)
-
-def printDarkYellow(obj):
-    if iswin():
-        with cmd.printDarkYellow():
-            print(obj)
-    elif islinux():
-        print(sh.UseStyle(obj,'yellow'))
-
-    else:
-        print(obj)
+def printBlank(*objs,**kwargs):
+    print_color(*objs,color='blank',**kwargs)
 
 ################################################################################
 # Application layer encapsulation
@@ -103,18 +85,18 @@ def printDarkYellow(obj):
 #
 #You can also configure them with color_dict and print_map
 ################################################################################
-color_dict={'green' : printDarkGreen,
+color_dict={'green'   : printDarkGreen,
             'skyblue' : printDarkSkyBlue,
-            'yellow' : printDarkYellow,
-            'red' : printDarkRed,
-            'blue':printBlue,
-            'white':printWhite,
-            'purple':printDarkPink}
+            'yellow'  : printDarkYellow,
+            'red'     : printDarkRed,
+            'blue'    : printBlue,
+            'white'   : printWhite,
+            'purple'  : printDarkPink}
 
-print_map={'info' : color_dict['skyblue'],
-           'ok' : color_dict['green'],
+print_map={'info'    : color_dict['skyblue'],
+           'ok'      : color_dict['green'],
            'warning' : color_dict['yellow'],
-           'error' : color_dict['red']}
+           'error'   : color_dict['red']}
 
 def print_info(obj):print_map['info'](obj)
 def print_ok(obj):print_map['ok'](obj)
@@ -131,8 +113,8 @@ if __name__ == '__main__':
     print('isLinux?%r'%islinux())
     print('isWindows?%r'%iswin())
 
-    printDarkRed({'a':1,'b':2})
-    printDarkGreen([1,2,3])
+    printDarkRed({'a':1,'b':2}, {'c':3}, end='')
+    printDarkGreen([1,2,3], 4, sep='*', end='\n')
     printDarkSkyBlue((1,2,3))
     printDarkYellow({1,2,3})
 

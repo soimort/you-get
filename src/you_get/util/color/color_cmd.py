@@ -39,8 +39,8 @@ FOREGROUND_WHITE = 0x0f # white.
 
 
 # Windows CMD命令行 背景颜色定义 background colors
-BACKGROUND_BLUE = 0x10 # dark blue.
-BACKGROUND_GREEN = 0x20 # dark green.
+BACKGROUND_DARKBLUE = 0x10 # dark blue.
+BACKGROUND_DARKGREEN = 0x20 # dark green.
 BACKGROUND_DARKSKYBLUE = 0x30 # dark skyblue.
 BACKGROUND_DARKRED = 0x40 # dark red.
 BACKGROUND_DARKPINK = 0x50 # dark pink.
@@ -205,57 +205,100 @@ class printYellowRed(printColor):
     def __enter__(self):
         set_cmd_text_color(BACKGROUND_YELLOW | FOREGROUND_RED)
 
+#原样输出
+#write origin text
+class printBlank(printColor):
+    def __enter__(self):
+        pass
+
+################################################################################
+# Application layer encapsulation
+#
+# with print_color('xxx'):
+#       print(xxx)
+################################################################################
+print_map={'darkblue'    : printDarkBlue,
+           'darkgreen'   : printDarkGreen,
+           'darkskyblue' : printDarkSkyBlue,
+           'darkred'     : printDarkRed,
+           'darkpink'    : printDarkPink,
+           'darkyellow'  : printDarkYellow,
+           'darkwhite'   : printDarkWhite,
+           'darkgray'    : printDarkGray,
+
+           'blue'        : printBlue,
+           'green'       : printGreen,
+           'skyblue'     : printSkyBlue,
+           'red'         : printRed,
+           'pink'        : printPink,
+           'yellow'      : printYellow,
+           'white'       : printWhite,
+
+           'blank'       : printBlank}
 
 
-##############################################################
+
+def print_color(color='darkwhite'):
+    """
+
+    Args:
+        color: default darkwhite/printDarkWhite
+
+    Returns: an printColor instance
+
+    """
+    return print_map.get(color,printDarkWhite)()
+
 
 if __name__ == '__main__':
 
-    with printDarkBlue():
+    with print_color('darkblue'):
         print(u'printDarkBlue:暗蓝色文字\n')
 
-    with printDarkGreen():
+    with print_color('darkgreen'):
         print(u'printDarkGreen:暗绿色文字\n')
 
-    with printDarkSkyBlue():
+    with print_color('darkblue'):
         print(u'printDarkSkyBlue:暗天蓝色文字\n')
 
-    with printDarkRed():
+    with print_color('darkred'):
         print(u'printDarkRed:暗红色文字\n')
 
-    with printDarkPink():
+    with print_color('darkpink'):
         print(u'printDarkPink:暗粉红色文字\n')
 
-    with printDarkYellow():
+    with print_color('darkyellow'):
         print(u'printDarkYellow:暗黄色文字\n')
 
-    with printDarkWhite():
+    with print_color('darkwhite'):
         print(u'printDarkWhite:暗白色文字\n')
 
-    with printDarkGray():
+    with print_color('darkgray'):
         print(u'printDarkGray:暗灰色文字\n')
 
-    with printBlue():
+    with print_color('blue'):
         print(u'printBlue:蓝色文字\n')
 
-    with printGreen():
+    with print_color('green'):
         print(u'printGreen:绿色文字\n')
 
-    with printSkyBlue():
+    with print_color('skyblue'):
         print(u'printSkyBlue:天蓝色文字\n')
 
-    with printRed():
+    with print_color('red'):
         print(u'printRed:红色文字\n')
 
-    with printPink():
+    with print_color('pink'):
         print(u'printPink:粉红色文字\n')
 
-    with printYellow():
+    with print_color('yellow'):
         print(u'printYellow:黄色文字\n')
 
-    with printWhite():
+    with print_color('white'):
         print(u'printWhite:白色文字\n')
 
+    with print_color('blank'):
+        print(u'printBlank:原生颜色')
     with printWhiteBlack():
         print(u'printWhiteBlack:白底黑字输出\n')
 
@@ -264,3 +307,4 @@ if __name__ == '__main__':
 
     with printYellowRed():
         print(u'printYellowRed:黄底红字输出\n')
+
