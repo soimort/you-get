@@ -7,6 +7,7 @@ from ..extractor import VideoExtractor
 from json import loads
 from urllib.parse import urlsplit
 from os.path import dirname
+import re
 
 class MGTV(VideoExtractor):
     name = "芒果 (MGTV)"
@@ -67,6 +68,7 @@ class MGTV(VideoExtractor):
             if s['video_profile'] in stream_available.keys():
                 quality_id = self.id_dic[s['video_profile']]
                 url = stream_available[s['video_profile']]
+                url = re.sub( r'(\&arange\=\d+)', '', url)  #Un-Hum
                 segment_list_this = self.get_mgtv_real_url(url)
                 
                 container_this_stream = ''
