@@ -3,7 +3,7 @@
 
 """
 ################################################################################
-Provide Color Support for all kinds of shell Stdio
+Provide Color Support for all kinds of shell Stdin
  main API :
      color.color_dict
      color.print_map

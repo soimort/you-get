@@ -1043,7 +1043,7 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
 
 def script_main(script_name, download, download_playlist, **kwargs):
     def version():
-        log.i('version %s, a tiny downloader that scrapes the web.'
+        log.println('version %s, a tiny downloader that scrapes the web.'
               % get_version(kwargs['repo_path']
             if 'repo_path' in kwargs else __version__))
 
