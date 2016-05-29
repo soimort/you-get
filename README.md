@@ -93,6 +93,10 @@ $ git clone git://github.com/soimort/you-get.git
 
 Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
 
+### Shell completion
+
+Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](contrib/completion). Please consult your shell's manual for how to take advantage of them.
+
 ## Upgrading
 
 Based on which option you chose to install `you-get`, you may upgrade it via:
