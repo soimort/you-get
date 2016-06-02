@@ -107,6 +107,12 @@ or download the latest release via:
 $ you-get https://github.com/soimort/you-get/archive/master.zip
 ```
 
+In order to get the latest ```develop``` branch without messing up the PIP, you can try:
+
+```
+$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop
+```
+
 ## Getting Started
 
 ### Download a video
