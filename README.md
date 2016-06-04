@@ -93,6 +93,14 @@ $ git clone git://github.com/soimort/you-get.git
 
 Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
 
+### Option 6: Homebrew (Mac only)
+
+You can install `you-get` easily via:
+
+```
+$ brew install you-get
+```
+
 ## Upgrading
 
 Based on which option you chose to install `you-get`, you may upgrade it via:
