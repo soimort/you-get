@@ -75,8 +75,9 @@ class MGTV(VideoExtractor):
                 size_this_stream = 0
                 stream_fileid_list = []
                 for i in segment_list_this:
-                    _, container_this_stream, size_this_seg = url_info(i)
-                    size_this_stream += size_this_seg
+                    if 'json_output' not in kwargs and not kwargs['json_output']:
+                        _, container_this_stream, size_this_seg = url_info(i)
+                        size_this_stream += size_this_seg
                     stream_fileid_list.append(os.path.basename(i).split('.')[0])
                     
             #make pieces
