@@ -139,9 +139,15 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
                                    r'flashvars="([^"]+)"',
                                    r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
                 if flashvars:
-                    t, cid = flashvars.split('=', 1)
-                    cids.append(cid.split('&')[0])
-
+                    t, c = flashvars.split('=', 1)
+                    cids.append(c.split('&')[0])
+            
+            try:
+                cur = cids.index(cid)
+                cids = cids[cur:]+cids[:cur]
+                titles = titles[cur:]+titles[:cur]
+            except ValueError:
+                pass
             # no multi-P
             if not pages:
                 cids = [cid]
