@@ -101,6 +101,10 @@ You can install `you-get` easily via:
 $ brew install you-get
 ```
 
+### Shell completion
+
+Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](contrib/completion). Please consult your shell's manual for how to take advantage of them.
+
 ## Upgrading
 
 Based on which option you chose to install `you-get`, you may upgrade it via:
