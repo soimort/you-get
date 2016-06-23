@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.424
+project-version: 0.4.455
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://github.com/soimort/you-get/releases/download/v0.4.424/you-get-0.4.424.tar.gz
+download-url: https://github.com/soimort/you-get/releases/download/v0.4.455/you-get-0.4.455.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 8844a92d1def3179c5f84bc4d0039946ce6282b7
-download-signature: https://github.com/soimort/you-get/releases/download/v0.4.424/you-get-0.4.424.tar.gz.asc
+download-checksum-data: 3afa2d7015452c0a934b873ce958253c9ec9ca4a
+download-signature: https://github.com/soimort/you-get/releases/download/v0.4.455/you-get-0.4.455.tar.gz.asc
 
 ---
 # You-Get
@@ -107,6 +107,18 @@ $ git clone git://github.com/soimort/you-get.git
 
 Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
 
+### Option 6: Homebrew (Mac only)
+
+You can install `you-get` easily via:
+
+```
+$ brew install you-get
+```
+
+### Shell completion
+
+Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](contrib/completion). Please consult your shell's manual for how to take advantage of them.
+
 ## Upgrading
 
 Based on which option you chose to install `you-get`, you may upgrade it via:
@@ -119,6 +131,12 @@ or download the latest release via:
 
 ```
 $ you-get https://github.com/soimort/you-get/archive/master.zip
+```
+
+In order to get the latest ```develop``` branch without messing up the PIP, you can try:
+
+```
+$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop
 ```
 
 ## Getting Started

@@ -27,12 +27,12 @@
   <a href="https://you-get.org/"><img src="images/logo.jpg"/></a>
   <div id="desc">
     <h1>You-Get</h1>
-    <h2>version 0.4.424</h2>
+    <h2>version 0.4.455</h2>
     <a href="https://github.com/soimort/you-get">Star <i class="fa fa-github-square fa-2x"></i></a>
-    <a href="https://github.com/soimort/you-get/releases/download/v0.4.424/you-get-0.4.424.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
+    <a href="https://github.com/soimort/you-get/releases/download/v0.4.455/you-get-0.4.455.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
     <div id="msg">
-      <span id="checksum" onmouseover="this.innerHTML='8844a92d1def3179c5f84bc4d0039946ce6282b7'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
-      <a href="https://github.com/soimort/you-get/releases/download/v0.4.424/you-get-0.4.424.tar.gz.asc">PGP SIGNATURE</a>
+      <span id="checksum" onmouseover="this.innerHTML='3afa2d7015452c0a934b873ce958253c9ec9ca4a'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
+      <a href="https://github.com/soimort/you-get/releases/download/v0.4.455/you-get-0.4.455.tar.gz.asc">PGP SIGNATURE</a>
     </div>
   </div>
 </nav>
@@ -132,11 +132,18 @@ Downloading TEDxGE2014_Stallman05_LQ.webm ...
 <p>This is the recommended way for all developers, even if you don't often code in Python.</p>
 <pre><code>$ git clone git://github.com/soimort/you-get.git</code></pre>
 <p>Then put the cloned directory into your <code>PATH</code>, or run <code>./setup.py install</code> to install <code>you-get</code> to a permanent path.</p>
+<h3 id="option-6-homebrew-mac-only">Option 6: Homebrew (Mac only)</h3>
+<p>You can install <code>you-get</code> easily via:</p>
+<pre><code>$ brew install you-get</code></pre>
+<h3 id="shell-completion">Shell completion</h3>
+<p>Completion definitions for Bash, Fish and Zsh can be found in <a href="contrib/completion"><code>contrib/completion</code></a>. Please consult your shell's manual for how to take advantage of them.</p>
 <h2 id="upgrading">Upgrading</h2>
 <p>Based on which option you chose to install <code>you-get</code>, you may upgrade it via:</p>
 <pre><code>$ pip3 install --upgrade you-get</code></pre>
 <p>or download the latest release via:</p>
 <pre><code>$ you-get https://github.com/soimort/you-get/archive/master.zip</code></pre>
+<p>In order to get the latest <code>develop</code> branch without messing up the PIP, you can try:</p>
+<pre><code>$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop</code></pre>
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="download-a-video">Download a video</h3>
 <p>When you get a video of interest, you might want to use the <code>--info</code>/<code>-i</code> option to see all available quality and formats:</p>
