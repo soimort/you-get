@@ -199,3 +199,64 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
     for file in files:
         os.remove(file + '.ts')
     return True
+
+def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
+    """str, str->True
+    WARNING: NOT THE SAME PARMS AS OTHER FUNCTIONS!!!!!!
+    You can basicly download anything with this function
+    but better leave it alone with 
+    """
+    output = title + '.' + ext
+    
+    if not (output_dir == '.'):
+        output = output_dir + output
+        
+    ffmpeg_params = []
+    #should these exist...
+    if len(params) > 0:
+        for k, v in params:
+            ffmpeg_params.append(k)
+            ffmpeg_params.append(v)
+        
+    print('Downloading streaming content with FFmpeg, press Ctrl+C to stop recording...')
+    ffmpeg_params = [FFMPEG] + LOGLEVEL + ['-y', '-i']
+    ffmpeg_params.append(files)  #not the same here!!!!
+    
+    if FFMPEG == 'avconv':  #who cares?
+        ffmpeg_params += ['-c', 'copy', output]
+    else:
+        ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', '-bsf:v', 'h264_mp4toannexb', output]
+    
+    ffmpeg_params.append(output)
+    
+    subprocess.call(ffmpeg_params)
+
+    return True
+
+#
+#To be refactor
+#Direct copy of rtmpdump.py
+#
+def ffmpeg_play_stream(player, url, params={}):
+    ffmpeg_params = []
+    #should these exist...
+    if len(params) > 0:
+        for k, v in params:
+            ffmpeg_params.append(k)
+            ffmpeg_params.append(v)
+        
+    print('Playing streaming content with FFmpeg, press Ctrl+C to stop recording...')
+    ffmpeg_params = [FFMPEG] + LOGLEVEL + ['-y', '-i']
+    ffmpeg_params.append(url)  #not the same here!!!!
+    
+    if FFMPEG == 'avconv':  #who cares?
+        ffmpeg_params += ['-c', 'copy', '|']
+    else:
+        ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', '-bsf:v', 'h264_mp4toannexb', '|']
+    
+    ffmpeg_params += [player, '-']
+    
+    print(' '.join(ffmpeg_params))
+    
+    subprocess.call(ffmpeg_params)
+    return

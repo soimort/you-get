@@ -898,6 +898,23 @@ def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', re
     assert has_rtmpdump_installed(), "RTMPDump not installed."
     download_rtmpdump_stream(url,  title, ext,params, output_dir)
 
+def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
+    assert url
+    if dry_run:
+        print('Real URL:\n%s\n' % [url])
+        if params.get("-y",False): #None or unset ->False
+            print('Real Playpath:\n%s\n' % [params.get("-y")])
+        return
+
+    if player:
+        from .processor.ffmpeg import ffmpeg_play_stream
+        ffmpeg_play_stream(player, url, params)
+        return
+
+    from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_streaming
+    assert has_ffmpeg_installed(), "FFmpeg not installed."
+    ffmpeg_download_stream(url, title, ext, params, output_dir)
+
 def playlist_not_supported(name):
     def f(*args, **kwargs):
         raise NotImplementedError('Playlist is not supported for ' + name)
