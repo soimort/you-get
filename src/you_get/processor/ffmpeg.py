@@ -218,8 +218,8 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
             ffmpeg_params.append(k)
             ffmpeg_params.append(v)
         
-    print('Downloading streaming content with FFmpeg, press Ctrl+C to stop recording...')
-    ffmpeg_params = [FFMPEG] + ['-y', '-i']
+    print('Downloading streaming content with FFmpeg, press q to stop recording...')
+    ffmpeg_params = [FFMPEG] + ['-y', '-re', '-i']
     ffmpeg_params.append(files)  #not the same here!!!!
     
     if FFMPEG == 'avconv':  #who cares?
@@ -231,7 +231,14 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
     
     print(' '.join(ffmpeg_params))
     
-    subprocess.call(ffmpeg_params)
+    try:
+        a = subprocess.Popen(ffmpeg_params, stdin= subprocess.PIPE)
+        a.communicate()
+    except KeyboardInterrupt:
+        try:
+            a.stdin.write('q'.encode('utf-8'))
+        except:
+            pass
 
     return True
 
@@ -247,8 +254,8 @@ def ffmpeg_play_stream(player, url, params={}):
             ffmpeg_params.append(k)
             ffmpeg_params.append(v)
         
-    print('Playing streaming content with FFmpeg, press Ctrl+C to stop recording...')
-    ffmpeg_params = [FFMPEG] + LOGLEVEL + ['-y', '-i']
+    print('Playing streaming content with FFmpeg, press 1 to stop recording...')
+    ffmpeg_params = [FFMPEG] + LOGLEVEL + ['-y', '-re', '-i']
     ffmpeg_params.append(url)  #not the same here!!!!
     
     if FFMPEG == 'avconv':  #who cares?
@@ -260,5 +267,13 @@ def ffmpeg_play_stream(player, url, params={}):
     
     print(' '.join(ffmpeg_params))
     
-    subprocess.call(ffmpeg_params)
-    return
+    try:
+        a = subprocess.Popen(ffmpeg_params, stdin= subprocess.PIPE)
+        a.communicate()
+    except KeyboardInterrupt:
+        try:
+            a.stdin.write('q'.encode('utf-8'))
+        except:
+            pass
+
+    return True
