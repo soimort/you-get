@@ -219,15 +219,17 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
             ffmpeg_params.append(v)
         
     print('Downloading streaming content with FFmpeg, press Ctrl+C to stop recording...')
-    ffmpeg_params = [FFMPEG] + LOGLEVEL + ['-y', '-i']
+    ffmpeg_params = [FFMPEG] + ['-y', '-i']
     ffmpeg_params.append(files)  #not the same here!!!!
     
     if FFMPEG == 'avconv':  #who cares?
         ffmpeg_params += ['-c', 'copy', output]
     else:
-        ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', '-bsf:v', 'h264_mp4toannexb', output]
+        ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc']
     
     ffmpeg_params.append(output)
+    
+    print(' '.join(ffmpeg_params))
     
     subprocess.call(ffmpeg_params)
 
@@ -252,7 +254,7 @@ def ffmpeg_play_stream(player, url, params={}):
     if FFMPEG == 'avconv':  #who cares?
         ffmpeg_params += ['-c', 'copy', '|']
     else:
-        ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', '-bsf:v', 'h264_mp4toannexb', '|']
+        ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', '|']
     
     ffmpeg_params += [player, '-']
     
