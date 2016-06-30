@@ -99,7 +99,7 @@ class Iqiyi(VideoExtractor):
     '''
     ids = ['BD', 'FD', 'OD', 'TD', 'HD', 'SD', 'LD']
     vd_2_id = {21: 'TD', 2: 'HD', 4: 'FD', 17: 'BD', 96: 'LD', 1: 'SD'}
-    vd_2_profile = {21: u'超清', 2: u'高清', 4: u'超高清', 17: u'全高清', 96: u'流畅', 1: u'标清'}
+    vd_2_profile = {21: '超清', 2: '高清', 4: '超高清', 17: '全高清', 96: '流畅', 1: '标清'}
 
     def getVMS(self):
         tvid, vid = self.vid
