@@ -9,6 +9,7 @@ SITES = {
     'bandcamp'         : 'bandcamp',
     'baomihua'         : 'baomihua',
     'bilibili'         : 'bilibili',
+    'cctv'             : 'cntv',
     'cntv'             : 'cntv',
     'cbs'              : 'cbs',
     'dailymotion'      : 'dailymotion',
