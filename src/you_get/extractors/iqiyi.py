@@ -137,9 +137,9 @@ class Iqiyi(VideoExtractor):
         assert info['code'] == 'A00000', 'can\'t play this video'
 
         for stream in info['data']['vidl']:
-           stream_id = self.vd_2_id[stream['vd']]
-           stream_profile = self.vd_2_profile[stream['vd']]
-           self.streams[stream_id] = {'video_profile': stream_profile, 'container': 'm3u8', 'src': [stream['m3u']], 'size' : 0}
+            stream_id = self.vd_2_id[stream['vd']]
+            stream_profile = self.vd_2_profile[stream['vd']]
+            self.streams[stream_id] = {'video_profile': stream_profile, 'container': 'm3u8', 'src': [stream['m3u']], 'size' : 0}
 
 '''
         if info["code"] != "A000000":
