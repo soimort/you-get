@@ -8,6 +8,7 @@ import json
 from math import floor
 from zlib import decompress
 import hashlib
+from ..util import log
 
 import time
 
@@ -79,17 +80,24 @@ def getDispathKey(rid):
     t=str(int(floor(int(time)/(10*60.0))))
     return hashlib.new("md5",bytes(t+tp+rid,"utf-8")).hexdigest()
 '''
+def getVMS(tvid, vid):
+    t = int(time.time() * 1000)
+    src = '76f90cbd92f94a2e925d83e8ccd22cb7'
+    key = 'd5fb4bd9d50c4be6948c97edd7254b0e'
+    sc = hashlib.new('md5', bytes(str(t) + key  + vid, 'utf-8')).hexdigest()
+    vmsreq= url = 'http://cache.m.iqiyi.com/tmts/{0}/{1}/?t={2}&sc={3}&src={4}'.format(tvid,vid,t,sc,src)
+    return json.loads(get_content(vmsreq))
 
 class Iqiyi(VideoExtractor):
     name = "爱奇艺 (Iqiyi)"
 
     stream_types = [
-        {'id': 'BD', 'container': 'm3u8', 'video_profile': '全高清'},
-        {'id': 'FD', 'container': 'm3u8', 'video_profile': '超高清'},
-        {'id': 'TD', 'container': 'm3u8', 'video_profile': '超清'},
-        {'id': 'HD', 'container': 'm3u8', 'video_profile': '高清'},
-        {'id': 'SD', 'container': 'm3u8', 'video_profile': '标清'},
-        {'id': 'LD', 'container': 'm3u8', 'video_profile': '流畅'},
+        {'id': '4k', 'container': 'm3u8', 'video_profile': '4k'},
+        {'id': 'BD', 'container': 'm3u8', 'video_profile': '1080p'},
+        {'id': 'TD', 'container': 'm3u8', 'video_profile': '720p'},
+        {'id': 'HD', 'container': 'm3u8', 'video_profile': '540p'},
+        {'id': 'SD', 'container': 'm3u8', 'video_profile': '360p'},
+        {'id': 'LD', 'container': 'm3u8', 'video_profile': '210p'},
     ]
     '''
     supported_stream_types = [ 'high', 'standard']
@@ -97,18 +105,11 @@ class Iqiyi(VideoExtractor):
 
     stream_to_bid = {  '4k': 10, 'fullhd' : 5, 'suprt-high' : 4, 'super' : 3, 'high' : 2, 'standard' :1, 'topspeed' :96}
     '''
-    ids = ['BD', 'FD', 'OD', 'TD', 'HD', 'SD', 'LD']
-    vd_2_id = {21: 'TD', 2: 'HD', 4: 'FD', 17: 'BD', 96: 'LD', 1: 'SD'}
-    vd_2_profile = {21: '超清', 2: '高清', 4: '超高清', 17: '全高清', 96: '流畅', 1: '标清'}
+    ids = ['4k','BD', 'TD', 'HD', 'SD', 'LD']
+    vd_2_id = {10: '4k', 19: '4k', 5:'BD', 18: 'BD', 21: 'HD', 2: 'HD', 4: 'TD', 17: 'TD', 96: 'LD', 1: 'SD'}
+    id_2_profile = {'4k':'4k', 'BD': '1080p','TD': '720p', 'HD': '540p', 'SD': '360p', 'LD': '210p'}
 
-    def getVMS(self):
-        tvid, vid = self.vid
-        t = int(time.time() * 1000)
-        src = '76f90cbd92f94a2e925d83e8ccd22cb7'
-        key = 'd5fb4bd9d50c4be6948c97edd7254b0e'
-        sc = hashlib.new('md5', bytes(str(t) + key  + vid, 'utf-8')).hexdigest()
-        vmsreq= url = 'http://cache.m.iqiyi.com/tmts/{0}/{1}/?t={2}&sc={3}&src={4}'.format(tvid,vid,t,sc,src)
-        return json.loads(get_content(vmsreq))
+
 
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
@@ -132,15 +133,46 @@ class Iqiyi(VideoExtractor):
                       r1(r'data-player-videoid="([^"]+)"', html)
             self.vid = (tvid, videoid)
             self.title = match1(html, '<title>([^<]+)').split('-')[0]
-
-        info = self.getVMS()
+        tvid, videoid = self.vid
+        info = getVMS(tvid, videoid)
         assert info['code'] == 'A00000', 'can\'t play this video'
 
         for stream in info['data']['vidl']:
-            stream_id = self.vd_2_id[stream['vd']]
-            stream_profile = self.vd_2_profile[stream['vd']]
-            self.streams[stream_id] = {'video_profile': stream_profile, 'container': 'm3u8', 'src': [stream['m3u']], 'size' : 0}
+            try:
+                stream_id = self.vd_2_id[stream['vd']]
+                if stream_id in self.stream_types:
+                    continue
+                stream_profile = self.id_2_profile[stream_id]
+                self.streams[stream_id] = {'video_profile': stream_profile, 'container': 'm3u8', 'src': [stream['m3u']], 'size' : 0}
+            except:
+                log.i("vd: {} is not handled".format(stream['vd']))
+                log.i("info is {}".format(stream))
+        # why I need do below???
+        if not 'BD' in self.stream_types:
+            p1080_vids = []
+            if 18 in info['data']['ctl']['vip']['bids']:
+                p1080_vids.append(info['data']['ctl']['configs']['18']['vid'])
+            if 5 in info['data']['ctl']['vip']['bids']:
+                p1080_vids.append(info['data']['ctl']['configs']['5']['vid'])
+            for v in p1080_vids:
+                p1080_info = getVMS(tvid, v)
+                if info['code'] == 'A00000':
+                    p1080_url = p1080_info['data']['m3u']
+                    self.streams['BD'] = {'video_profile': '1080p', 'container': 'm3u8', 'src': [p1080_url], 'size' : 0}
+                    break
 
+        if not '4k' in self.stream_types:
+            k4_vids = []
+            if 19 in info['data']['ctl']['vip']['bids']:
+                k4_vids.append(info['data']['ctl']['configs']['19']['vid'])
+            if 10 in info['data']['ctl']['vip']['bids']:
+                k4_vids.append(info['data']['ctl']['configs']['10']['vid'])
+            for v in k4_vids:
+                k4_info = getVMS(tvid, v)
+                if info['code'] == 'A00000':
+                    k4_url = k4_info['data']['m3u']
+                    self.streams['4k'] = {'video_profile': '4k', 'container': 'm3u8', 'src': [k4_url], 'size' : 0}
+                    break
 '''
         if info["code"] != "A000000":
             log.e("[error] outdated iQIYI key")
