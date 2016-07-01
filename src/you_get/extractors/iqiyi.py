@@ -148,12 +148,17 @@ class Iqiyi(VideoExtractor):
                 log.i("vd: {} is not handled".format(stream['vd']))
                 log.i("info is {}".format(stream))
         # why I need do below???
-        if not 'BD' in self.stream_types:
+        try:
+            vip_vds = info['data']['ctl']['vip']['bids']
+            vip_conf = info['data']['ctl']['configs']
+        except:
+            return
+        if not 'BD' in self.streams.keys():
             p1080_vids = []
-            if 18 in info['data']['ctl']['vip']['bids']:
-                p1080_vids.append(info['data']['ctl']['configs']['18']['vid'])
-            if 5 in info['data']['ctl']['vip']['bids']:
-                p1080_vids.append(info['data']['ctl']['configs']['5']['vid'])
+            if 18 in vip_vds:
+                p1080_vids.append(vip_conf['18']['vid'])
+            if 5 in vip_vds:
+                p1080_vids.append(vip_conf['5']['vid'])
             for v in p1080_vids:
                 p1080_info = getVMS(tvid, v)
                 if info['code'] == 'A00000':
@@ -161,12 +166,12 @@ class Iqiyi(VideoExtractor):
                     self.streams['BD'] = {'video_profile': '1080p', 'container': 'm3u8', 'src': [p1080_url], 'size' : 0}
                     break
 
-        if not '4k' in self.stream_types:
+        if not '4k' in self.streams.keys():
             k4_vids = []
-            if 19 in info['data']['ctl']['vip']['bids']:
-                k4_vids.append(info['data']['ctl']['configs']['19']['vid'])
-            if 10 in info['data']['ctl']['vip']['bids']:
-                k4_vids.append(info['data']['ctl']['configs']['10']['vid'])
+            if 19 in vip_vds:
+                k4_vids.append(vip_conf['19']['vid'])
+            if 10 in vip_vds:
+                k4_vids.append(vip_conf['10']['vid'])
             for v in k4_vids:
                 k4_info = getVMS(tvid, v)
                 if info['code'] == 'A00000':
