@@ -43,6 +43,7 @@ def download_rtmpdump_stream(url, title, ext,params={},output_dir='.'):
 
 #
 #To be refactor
+#To the future myself: Remember to refactor the same function in ffmpeg.py
 #
 def play_rtmpdump_stream(player, url, params={}):
     cmdline="rtmpdump -r '%s' "%url
