@@ -55,6 +55,7 @@ from .pptv import *
 from .qianmo import *
 from .qie import *
 from .qq import *
+from .showroom import *
 from .sina import *
 from .sohu import *
 from .soundcloud import *

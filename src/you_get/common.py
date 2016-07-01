@@ -62,6 +62,7 @@ SITES = {
     'pptv'             : 'pptv',
     'qianmo'           : 'qianmo',
     'qq'               : 'qq',
+    'showroom-live'    : 'showroom',
     'sina'             : 'sina',
     'smgbb'            : 'bilibili',
     'sohu'             : 'sohu',
@@ -912,7 +913,7 @@ def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', 
         ffmpeg_play_stream(player, url, params)
         return
 
-    from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_streaming
+    from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
     assert has_ffmpeg_installed(), "FFmpeg not installed."
     ffmpeg_download_stream(url, title, ext, params, output_dir)
 
