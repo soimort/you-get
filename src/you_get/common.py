@@ -9,6 +9,7 @@ SITES = {
     'bandcamp'         : 'bandcamp',
     'baomihua'         : 'baomihua',
     'bilibili'         : 'bilibili',
+    'cctv'             : 'cntv',
     'cntv'             : 'cntv',
     'cbs'              : 'cbs',
     'dailymotion'      : 'dailymotion',
@@ -61,6 +62,7 @@ SITES = {
     'pptv'             : 'pptv',
     'qianmo'           : 'qianmo',
     'qq'               : 'qq',
+    'showroom-live'    : 'showroom',
     'sina'             : 'sina',
     'smgbb'            : 'bilibili',
     'sohu'             : 'sohu',
@@ -898,6 +900,23 @@ def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', re
     assert has_rtmpdump_installed(), "RTMPDump not installed."
     download_rtmpdump_stream(url,  title, ext,params, output_dir)
 
+def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
+    assert url
+    if dry_run:
+        print('Real URL:\n%s\n' % [url])
+        if params.get("-y",False): #None or unset ->False
+            print('Real Playpath:\n%s\n' % [params.get("-y")])
+        return
+
+    if player:
+        from .processor.ffmpeg import ffmpeg_play_stream
+        ffmpeg_play_stream(player, url, params)
+        return
+
+    from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
+    assert has_ffmpeg_installed(), "FFmpeg not installed."
+    ffmpeg_download_stream(url, title, ext, params, output_dir)
+
 def playlist_not_supported(name):
     def f(*args, **kwargs):
         raise NotImplementedError('Playlist is not supported for ' + name)
@@ -1071,12 +1090,13 @@ def script_main(script_name, download, download_playlist, **kwargs):
     -x | --http-proxy <HOST:PORT>       Use an HTTP proxy for downloading.
     -y | --extractor-proxy <HOST:PORT>  Use an HTTP proxy for extracting only.
          --no-proxy                     Never use a proxy.
+    -s | --socks-proxy <HOST:PORT>      Use an SOCKS5 proxy for downloading.
     -t | --timeout <SECONDS>            Set socket timeout.
     -d | --debug                        Show traceback and other debug info.
     '''
 
-    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:t:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=', 'timeout=']
+    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:s:t:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'socks-proxy=', 'extractor-proxy=', 'lang=', 'timeout=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -1104,6 +1124,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     lang = None
     output_dir = '.'
     proxy = None
+    socks_proxy = None
     extractor_proxy = None
     traceback = False
     timeout = 600
@@ -1176,6 +1197,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
             caption = False
         elif o in ('-x', '--http-proxy'):
             proxy = a
+        elif o in ('-s', '--socks-proxy'):
+            socks_proxy = a
         elif o in ('-y', '--extractor-proxy'):
             extractor_proxy = a
         elif o in ('--lang',):
@@ -1189,7 +1212,21 @@ def script_main(script_name, download, download_playlist, **kwargs):
         print(help)
         sys.exit()
 
-    set_http_proxy(proxy)
+    if (socks_proxy):
+        try:
+          import socket
+          import socks
+          socks_proxy_addrs = socks_proxy.split(':')
+          socks.set_default_proxy(socks.SOCKS5, 
+                                  socks_proxy_addrs[0], 
+                                  int(socks_proxy_addrs[1]))
+          socket.socket = socks.socksocket
+        except ImportError:
+          log.w('Error importing PySocks library, socks proxy ignored.'
+                'In order to use use socks proxy, please install PySocks.')
+    else:
+        import socket
+        set_http_proxy(proxy)
 
     socket.setdefaulttimeout(timeout)
 
