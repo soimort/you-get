@@ -147,37 +147,7 @@ class Iqiyi(VideoExtractor):
             except:
                 log.i("vd: {} is not handled".format(stream['vd']))
                 log.i("info is {}".format(stream))
-        # why I need do below???
-        try:
-            vip_vds = info['data']['ctl']['vip']['bids']
-            vip_conf = info['data']['ctl']['configs']
-        except:
-            return
-        if not 'BD' in self.streams.keys():
-            p1080_vids = []
-            if 18 in vip_vds:
-                p1080_vids.append(vip_conf['18']['vid'])
-            if 5 in vip_vds:
-                p1080_vids.append(vip_conf['5']['vid'])
-            for v in p1080_vids:
-                p1080_info = getVMS(tvid, v)
-                if info['code'] == 'A00000':
-                    p1080_url = p1080_info['data']['m3u']
-                    self.streams['BD'] = {'video_profile': '1080p', 'container': 'm3u8', 'src': [p1080_url], 'size' : 0}
-                    break
 
-        if not '4k' in self.streams.keys():
-            k4_vids = []
-            if 19 in vip_vds:
-                k4_vids.append(vip_conf['19']['vid'])
-            if 10 in vip_vds:
-                k4_vids.append(vip_conf['10']['vid'])
-            for v in k4_vids:
-                k4_info = getVMS(tvid, v)
-                if info['code'] == 'A00000':
-                    k4_url = k4_info['data']['m3u']
-                    self.streams['4k'] = {'video_profile': '4k', 'container': 'm3u8', 'src': [k4_url], 'size' : 0}
-                    break
 '''
         if info["code"] != "A000000":
             log.e("[error] outdated iQIYI key")
