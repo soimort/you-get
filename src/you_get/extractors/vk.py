@@ -10,7 +10,7 @@ def get_video_info(url):
     title = r1(r'<div class="vv_summary">(.[^>]+?)</div', video_page)
     sources = re.findall(r'<source src=\"(.[^>]+?)"', video_page)
 
-    for quality in ['1080', '720', '480', '360', '240']:
+    for quality in ['.1080.', '.720.', '.480.', '.360.', '.240.']:
         for source in sources:
             if source.find(quality) != -1:
                 url = source
