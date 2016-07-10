@@ -91,7 +91,7 @@ $ python3 setup.py install --user
 
 to install `you-get` to a permanent path.
 
-### Option6: Git clone
+### Option 6: Git clone
 
 This is the recommended way for all developers, even if you don't often code in Python.
 
