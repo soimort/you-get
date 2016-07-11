@@ -61,19 +61,11 @@ Add the following line to your `.zshrc`:
 
     antigen bundle soimort/you-get
 
-### Option 3: Using [Chocolatey](https://chocolatey.org/) (Windows only)
-
-    choco install you-get
-
-The chocolatey package source can be found [here](https://github.com/chantisnake/you-get-choco)
-
-The chocolatey package page can be found [here](https://chocolatey.org/packages/you-get/0.4.486)
-
-### Option 4: Use a pre-built package (Windows only)
+### Option 3: Use a pre-built package (Windows only)
 
 Download the `exe` (standalone) or `7z` (all dependencies included) from: <https://github.com/soimort/you-get/releases/latest>.
 
-### Option 5: Download from GitHub
+### Option 4: Download from GitHub
 
 You may either download the [stable](https://github.com/soimort/you-get/archive/master.zip) (identical with the latest release on PyPI) or the [develop](https://github.com/soimort/you-get/archive/develop.zip) (more hotfixes, unstable features) branch of `you-get`. Unzip it, and put the directory containing the `you-get` script into your `PATH`.
 
@@ -91,7 +83,7 @@ $ python3 setup.py install --user
 
 to install `you-get` to a permanent path.
 
-### Option 6: Git clone
+### Option 5: Git clone
 
 This is the recommended way for all developers, even if you don't often code in Python.
 
@@ -100,6 +92,12 @@ $ git clone git://github.com/soimort/you-get.git
 ```
 
 Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
+
+### Option 6: Using [Chocolatey](https://chocolatey.org/) (Windows only)
+
+```
+> choco install you-get
+```
 
 ### Option 7: Homebrew (Mac only)
 
