@@ -43,7 +43,7 @@ Are you a Python programmer? Then check out [the source](https://github.com/soim
 
 ### Prerequisites
 
-The following dependencies are required and must be installed separately, unless you are using a pre-built package on Windows:
+The following dependencies are required and must be installed separately, unless you are using a pre-built package or chocolatey on Windows:
 
 * **[Python 3](https://www.python.org/downloads/)**
 * **[FFmpeg](https://www.ffmpeg.org/)** (strongly recommended) or [Libav](https://libav.org/)
@@ -93,7 +93,13 @@ $ git clone git://github.com/soimort/you-get.git
 
 Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
 
-### Option 6: Homebrew (Mac only)
+### Option 6: Using [Chocolatey](https://chocolatey.org/) (Windows only)
+
+```
+> choco install you-get
+```
+
+### Option 7: Homebrew (Mac only)
 
 You can install `you-get` easily via:
 
@@ -117,6 +123,12 @@ or download the latest release via:
 
 ```
 $ you-get https://github.com/soimort/you-get/archive/master.zip
+```
+
+or use [chocolatey package manager](https://chocolatey.org):
+
+```
+> choco upgrade you-get 
 ```
 
 In order to get the latest ```develop``` branch without messing up the PIP, you can try:
