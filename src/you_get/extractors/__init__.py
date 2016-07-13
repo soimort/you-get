@@ -17,6 +17,7 @@ from .ehow import *
 from .facebook import *
 from .fc2video import *
 from .flickr import *
+from .freebuf import *
 from .freesound import *
 from .funshion import *
 from .google import *
