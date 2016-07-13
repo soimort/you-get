@@ -21,6 +21,7 @@ SITES = {
     'facebook'         : 'facebook',
     'fc2'              : 'fc2video',
     'flickr'           : 'flickr',
+    'freebuf'          : 'freebuf',
     'freesound'        : 'freesound',
     'fun'              : 'funshion',
     'google'           : 'google',
