@@ -9,6 +9,7 @@ from math import floor
 from zlib import decompress
 import hashlib
 from ..util import log
+from .. import json_output
 
 import time
 
