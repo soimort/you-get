@@ -104,12 +104,11 @@ class Youku(VideoExtractor):
             num_pages = int(re.findall(r'page=([0-9]+)\.htm', last_page_url)[0])
             if (num_pages > 0):
                 # download one by one
-                for pn in range(1, num_pages + 1):
+                for pn in range(2, num_pages + 1):
                     extra_page_url = re.sub(r'page=([0-9]+)\.htm', r'page=%s.htm' % pn, last_page_url)
                     extra_page = get_content('http://list.youku.com' + extra_page_url)
                     videos |= Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
-        except Exception as e:
-            print(e)
+        except:
             # Show full list of episodes
             if match1(url, r'youku\.com/show_page/id_([a-zA-Z0-9=]+)'):
                 ep_id = match1(url, r'youku\.com/show_page/id_([a-zA-Z0-9=]+)')
