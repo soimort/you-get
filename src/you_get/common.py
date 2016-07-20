@@ -1214,15 +1214,18 @@ def script_main(script_name, download, download_playlist, **kwargs):
 
     if (socks_proxy):
         try:
-          import socket
-          import socks
-          socks_proxy_addrs = socks_proxy.split(':')
-          socks.set_default_proxy(socks.SOCKS5, 
-                                  socks_proxy_addrs[0], 
-                                  int(socks_proxy_addrs[1]))
-          socket.socket = socks.socksocket
+            import socket
+            import socks
+            socks_proxy_addrs = socks_proxy.split(':')
+            socks.set_default_proxy(socks.SOCKS5, 
+                                    socks_proxy_addrs[0], 
+                                    int(socks_proxy_addrs[1]))
+            socket.socket = socks.socksocket
+            def getaddrinfo(*args):
+                return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
+            socket.getaddrinfo = getaddrinfo
         except ImportError:
-          log.w('Error importing PySocks library, socks proxy ignored.'
+            log.w('Error importing PySocks library, socks proxy ignored.'
                 'In order to use use socks proxy, please install PySocks.')
     else:
         import socket
