@@ -76,7 +76,7 @@ class Youku(VideoExtractor):
         for x in xs:
             if x not in mem:
                 mem.add(x)
-                yield(x)
+        return mem
 
     def get_vid_from_url(url):
         """Extracts video ID from URL.
@@ -89,7 +89,7 @@ class Youku(VideoExtractor):
     def get_playlist_id_from_url(url):
         """Extracts playlist ID from URL.
         """
-        return match1(url, r'youku\.com/playlist_show/id_([a-zA-Z0-9=]+)')
+        return match1(url, r'youku\.com/albumlist/show\?id=([a-zA-Z0-9=]+)')
 
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
@@ -97,15 +97,17 @@ class Youku(VideoExtractor):
         try:
             playlist_id = self.__class__.get_playlist_id_from_url(self.url)
             assert playlist_id
-
-            video_page = get_content('http://www.youku.com/playlist_show/id_%s' % playlist_id)
+            video_page = get_content('http://list.youku.com/albumlist/show?id=%s' % playlist_id)
             videos = Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
-
             # Parse multi-page playlists
-            for extra_page_url in Youku.oset(re.findall('href="(http://www\.youku\.com/playlist_show/id_%s_[^?"]+)' % playlist_id, video_page)):
-                extra_page = get_content(extra_page_url)
-                videos |= Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
-
+            last_page_url = re.findall(r'href="(/albumlist/show\?id=%s[^"]+)" title="末页"' % playlist_id, video_page)[0]
+            num_pages = int(re.findall(r'page=([0-9]+)\.htm', last_page_url)[0])
+            if (num_pages > 0):
+                # download one by one
+                for pn in range(2, num_pages + 1):
+                    extra_page_url = re.sub(r'page=([0-9]+)\.htm', r'page=%s.htm' % pn, last_page_url)
+                    extra_page = get_content('http://list.youku.com' + extra_page_url)
+                    videos |= Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
         except:
             # Show full list of episodes
             if match1(url, r'youku\.com/show_page/id_([a-zA-Z0-9=]+)'):
