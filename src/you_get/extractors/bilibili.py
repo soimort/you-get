@@ -146,7 +146,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
             # multi-P
             cids = []
             pages = re.findall('<option value=\'([^\']*)\'', html)
-            titles = re.findall('<option value=.*>\s*(.+)\s*</option>', html)
+            titles = re.findall('<option value=.*>\s*([^<>]+)\s*</option>', html)
             for i, page in enumerate(pages):
                 html = get_html("http://www.bilibili.com%s" % page)
                 flashvars = r1_of([r'(cid=\d+)',
@@ -163,7 +163,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
             # no multi-P
             if not pages:
                 cids = [cid]
-                titles = [r1(r'<option value=.* selected>\s*(.+)\s*</option>', html) or title]
+                titles = [r1(r'<option value=.* selected>\s*([^<>]+)\s*</option>', html) or title]
 
             for i in range(len(cids)):
                 bilibili_download_by_cid(cids[i],
