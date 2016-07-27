@@ -125,8 +125,8 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         url = r1(r'"([^"]+)" class="v-av-link"', html)
         html = get_content(url)
 
-    title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',
-                   r'<h1[^>]*>([^<>]+)</h1>'], html)
+    title = r1_of([r'<meta name="title" content="\s*([^<>]{1,999})\s*" />',
+                   r'<h1[^>]*>\s*([^<>]+)\s*</h1>'], html)
     if title:
         title = unescape_html(title)
         title = escape_file_path(title)
@@ -139,14 +139,14 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
     cid = cid.split('&')[0]
     if t == 'cid':
         if re.match(r'https?://live\.bilibili\.com/', url):
-            title = r1(r'<title>([^<>]+)</title>', html)
+            title = r1(r'<title>\s*([^<>]+)\s*</title>', html)
             bilibili_live_download_by_cid(cid, title, output_dir=output_dir, merge=merge, info_only=info_only)
 
         else:
             # multi-P
             cids = []
             pages = re.findall('<option value=\'([^\']*)\'', html)
-            titles = re.findall('<option value=.*>(.+)</option>', html)
+            titles = re.findall('<option value=.*>\s*(.+)\s*</option>', html)
             for i, page in enumerate(pages):
                 html = get_html("http://www.bilibili.com%s" % page)
                 flashvars = r1_of([r'(cid=\d+)',
@@ -163,7 +163,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
             # no multi-P
             if not pages:
                 cids = [cid]
-                titles = [r1(r'<option value=.* selected>(.+)</option>', html) or title]
+                titles = [r1(r'<option value=.* selected>\s*(.+)\s*</option>', html) or title]
 
             for i in range(len(cids)):
                 bilibili_download_by_cid(cids[i],
