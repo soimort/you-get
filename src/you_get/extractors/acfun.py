@@ -17,10 +17,24 @@ def get_srt_json(id):
     return get_html(url)
 
 def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False, **kwargs):
+    """str, str, str, bool, bool ->None
+    
+    Download Acfun video by vid.
+    
+    Call Acfun API, decide which site to use, and pass the job to its
+    extractor.
+    """
+
+    #first call the main parasing API
     info = json.loads(get_html('http://www.acfun.tv/video/getVideo.aspx?id=' + vid))
+
     sourceType = info['sourceType']
+
+    #decide sourceId to know which extractor to use
     if 'sourceId' in info: sourceId = info['sourceId']
     # danmakuId = info['danmakuId']
+
+    #call extractor decided by sourceId
     if sourceType == 'sina':
         sina_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'youku':
@@ -32,11 +46,13 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
     elif sourceType == 'letv':
         letvcloud_download_by_vu(sourceId, '2d8c027396', title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'zhuzhan':
+        #As in Jul.28.2016, Acfun is using embsig to anti hotlink so we need to pass this
+        embsig =  info['encode']
         a = 'http://api.aixifan.com/plays/%s' % vid
         s = json.loads(get_content(a, headers={'deviceType': '2'}))
         if s['data']['source'] == "zhuzhan-youku":
             sourceId = s['data']['sourceId']
-            youku_open_download_by_vid(client_id='908a519d032263f8', vid=sourceId, title=title, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+            youku_open_download_by_vid(client_id='908a519d032263f8', vid=sourceId, title=title, output_dir=output_dir,merge=merge, info_only=info_only, embsig = embsig, **kwargs)
     else:
         raise NotImplementedError(sourceType)
 
