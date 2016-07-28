@@ -330,22 +330,51 @@ class Youku(VideoExtractor):
 
     def open_download_by_vid(self, client_id, vid, **kwargs):
         """self, str, str, **kwargs->None
+        
+        Arguments:
+        client_id:        An ID per client. For now we only know Acfun's
+                          such ID.
+        
+        vid:              An video ID for each video, starts with "C".
+        
+        kwargs['embsig']: Youku COOP's anti hotlinking.
+                          For Acfun, an API call must be done to Acfun's
+                          server, or the "playsign" of the content of sign_url
+                          shall be empty.
+        
+        Misc:
         Override the original one with VideoExtractor.
-        Most of the credit are to @ERioK, who gave his POC."""
+        
+        Author:
+        Most of the credit are to @ERioK, who gave his POC.
+        
+        History:
+        Jul.28.2016 Youku COOP now have anti hotlinking via embsig. """
         self.f_code_1 = '10ehfkbv'  #can be retrived by running r.translate with the keys and the list e
         self.f_code_2 = 'msjv7h2b'
+        
+        # as in VideoExtractor
         self.url = None
         self.vid = vid
         self.name = "优酷开放平台 (Youku COOP)"
 
         #A little bit of work before self.prepare
-        sign_url = "https://api.youku.com/players/custom.json?client_id={client_id}&video_id={video_id}".format(client_id = client_id, video_id = vid)
+        
+        #Change as Jul.28.2016 Youku COOP updates its platform to add ant hotlinking
+        if kwargs['embsig']:
+            sign_url = "https://api.youku.com/players/custom.json?client_id={client_id}&video_id={video_id}&embsig={embsig}".format(client_id = client_id, video_id = vid, embsig = kwargs['embsig'])
+        else:
+            sign_url = "https://api.youku.com/players/custom.json?client_id={client_id}&video_id={video_id}".format(client_id = client_id, video_id = vid)
+
         playsign = json.loads(get_content(sign_url))['playsign']
-    
+
+        #to be injected and replace ct10 and 12
         api85_url = 'http://play.youku.com/partner/get.json?cid={client_id}&vid={vid}&ct=85&sign={playsign}'.format(client_id = client_id, vid = vid, playsign = playsign)
         api86_url = 'http://play.youku.com/partner/get.json?cid={client_id}&vid={vid}&ct=86&sign={playsign}'.format(client_id = client_id, vid = vid, playsign = playsign)
         
         self.prepare(api_url = api85_url, api12_url = api86_url, ctype = 86, **kwargs)
+        
+        #exact copy from original VideoExtractor
         if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             unset_proxy()
 
