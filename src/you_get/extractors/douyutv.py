@@ -34,7 +34,6 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
 
     json_request_url = "http://www.douyu.com/lapi/live/getPlay/%s" % room_id
     payload = {'cdn': 'ws', 'rate': '0', 'tt': tt, 'did': did, 'sign': sign}
-    json_data = json.dumps(payload).encode('utf8')
     postdata = urllib.parse.urlencode(payload)
     req = urllib.request.Request(json_request_url, postdata.encode('utf-8'))
     with urllib.request.urlopen(req) as response:
