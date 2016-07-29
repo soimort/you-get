@@ -213,10 +213,12 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
         
     ffmpeg_params = []
     #should these exist...
-    if len(params) > 0:
-        for k, v in params:
-            ffmpeg_params.append(k)
-            ffmpeg_params.append(v)
+    if params is not None:
+        if len(params) > 0:
+            for k, v in params:
+                ffmpeg_params.append(k)
+                ffmpeg_params.append(v)
+
         
     print('Downloading streaming content with FFmpeg, press q to stop recording...')
     ffmpeg_params = [FFMPEG] + ['-y', '-re', '-i']
@@ -249,10 +251,12 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
 def ffmpeg_play_stream(player, url, params={}):
     ffmpeg_params = []
     #should these exist...
-    if len(params) > 0:
-        for k, v in params:
-            ffmpeg_params.append(k)
-            ffmpeg_params.append(v)
+    if params is not None:
+        if len(params) > 0:
+            for k, v in params:
+                ffmpeg_params.append(k)
+                ffmpeg_params.append(v)
+
         
     print('Playing streaming content with FFmpeg, press 1 to stop recording...')
     ffmpeg_params = [FFMPEG] + LOGLEVEL + ['-y', '-re', '-i']
