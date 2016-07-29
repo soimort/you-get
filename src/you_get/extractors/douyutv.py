@@ -11,7 +11,9 @@ import string
 import urllib.parse, urllib.request
 
 def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    room_id = url[url.rfind('/')+1:]
+    html = get_content(url)
+    room_id_patt = r'"room_id"\s*:\s*(\d+),'
+    room_id = match1(html, room_id_patt)
 
     json_request_url = "http://m.douyu.com/html5/live?roomId=%s" % room_id
     content = get_content(json_request_url)
@@ -48,7 +50,6 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
-        print(real_url)
         download_url_ffmpeg(real_url, title, 'flv', None, output_dir, merge = merge)
 
 site_info = "douyu.com"
