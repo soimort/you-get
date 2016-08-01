@@ -5,6 +5,7 @@ from .alive import *
 from .archive import *
 from .baidu import *
 from .bandcamp import *
+from .bigthink import *
 from .bilibili import *
 from .cbs import *
 from .ckplayer import *
