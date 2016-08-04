@@ -5,6 +5,7 @@ __all__ = ['qq_download']
 from ..common import *
 from .qie import download as qieDownload
 from urllib.parse import urlparse,parse_qs
+
 def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     api = "http://h5vv.video.qq.com/getinfo?otype=json&platform=10901&vid=%s" % vid
     content = get_html(api)
@@ -23,7 +24,9 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     if not info_only:
         download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
+
 def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    """"""
     if 'live.qq.com' in url:
         qieDownload(url,output_dir=output_dir, merge=merge, info_only=info_only)
         return 
@@ -35,7 +38,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         content = get_html(url)
         url = match1(content,r'window\.location\.href="(.*?)"')
         
-    if 'kuaibao.qq.com' in url:
+    if 'kuaibao.qq.com' in url or re.match(r'http://daxue.qq.com/content/content/id/\d+', url):
         content = get_html(url)
         vid = match1(content, r'vid\s*=\s*"\s*([^"]+)"')
         title = match1(content, r'title">([^"]+)</p>')
