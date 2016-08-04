@@ -27,12 +27,12 @@
   <a href="https://you-get.org/"><img src="images/logo.jpg"/></a>
   <div id="desc">
     <h1>You-Get</h1>
-    <h2>version 0.4.486</h2>
+    <h2>version 0.4.523</h2>
     <a href="https://github.com/soimort/you-get">Star <i class="fa fa-github-square fa-2x"></i></a>
-    <a href="https://github.com/soimort/you-get/releases/download/v0.4.486/you-get-0.4.486.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
+    <a href="https://github.com/soimort/you-get/releases/download/v0.4.523/you-get-0.4.523.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
     <div id="msg">
-      <span id="checksum" onmouseover="this.innerHTML='468d3f53cee416958a3ec4591993af27934b0588'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
-      <a href="https://github.com/soimort/you-get/releases/download/v0.4.486/you-get-0.4.486.tar.gz.asc">PGP SIGNATURE</a>
+      <span id="checksum" onmouseover="this.innerHTML='33cafd6c3f6007d550a6e2a3a32b2a766935445a'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
+      <a href="https://github.com/soimort/you-get/releases/download/v0.4.523/you-get-0.4.523.tar.gz.asc">PGP SIGNATURE</a>
     </div>
   </div>
 </nav>
@@ -107,7 +107,7 @@ Downloading TEDxGE2014_Stallman05_LQ.webm ...
 </div>
 <h2 id="installation">Installation</h2>
 <h3 id="prerequisites">Prerequisites</h3>
-<p>The following dependencies are required and must be installed separately, unless you are using a pre-built package on Windows:</p>
+<p>The following dependencies are required and must be installed separately, unless you are using a pre-built package or chocolatey on Windows:</p>
 <ul>
 <li><strong><a href="https://www.python.org/downloads/">Python 3</a></strong></li>
 <li><strong><a href="https://www.ffmpeg.org/">FFmpeg</a></strong> (strongly recommended) or <a href="https://libav.org/">Libav</a></li>
@@ -132,7 +132,9 @@ Downloading TEDxGE2014_Stallman05_LQ.webm ...
 <p>This is the recommended way for all developers, even if you don't often code in Python.</p>
 <pre><code>$ git clone git://github.com/soimort/you-get.git</code></pre>
 <p>Then put the cloned directory into your <code>PATH</code>, or run <code>./setup.py install</code> to install <code>you-get</code> to a permanent path.</p>
-<h3 id="option-6-homebrew-mac-only">Option 6: Homebrew (Mac only)</h3>
+<h3 id="option-6-using-chocolatey-windows-only">Option 6: Using <a href="https://chocolatey.org/">Chocolatey</a> (Windows only)</h3>
+<pre><code>&gt; choco install you-get</code></pre>
+<h3 id="option-7-homebrew-mac-only">Option 7: Homebrew (Mac only)</h3>
 <p>You can install <code>you-get</code> easily via:</p>
 <pre><code>$ brew install you-get</code></pre>
 <h3 id="shell-completion">Shell completion</h3>
@@ -142,6 +144,8 @@ Downloading TEDxGE2014_Stallman05_LQ.webm ...
 <pre><code>$ pip3 install --upgrade you-get</code></pre>
 <p>or download the latest release via:</p>
 <pre><code>$ you-get https://github.com/soimort/you-get/archive/master.zip</code></pre>
+<p>or use <a href="https://chocolatey.org">chocolatey package manager</a>:</p>
+<pre><code>&gt; choco upgrade you-get </code></pre>
 <p>In order to get the latest <code>develop</code> branch without messing up the PIP, you can try:</p>
 <pre><code>$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop</code></pre>
 <h2 id="getting-started">Getting Started</h2>
@@ -304,7 +308,7 @@ Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
 <td align="center">VK</td>
 <td align="left"><a href="http://vk.com/" class="uri">http://vk.com/</a></td>
 <td align="center">✓</td>
-<td align="center"></td>
+<td align="center">✓</td>
 <td align="center"></td>
 </tr>
 <tr class="even">

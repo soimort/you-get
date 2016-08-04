@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.486
+project-version: 0.4.523
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://github.com/soimort/you-get/releases/download/v0.4.486/you-get-0.4.486.tar.gz
+download-url: https://github.com/soimort/you-get/releases/download/v0.4.523/you-get-0.4.523.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 468d3f53cee416958a3ec4591993af27934b0588
-download-signature: https://github.com/soimort/you-get/releases/download/v0.4.486/you-get-0.4.486.tar.gz.asc
+download-checksum-data: 33cafd6c3f6007d550a6e2a3a32b2a766935445a
+download-signature: https://github.com/soimort/you-get/releases/download/v0.4.523/you-get-0.4.523.tar.gz.asc
 
 ---
 # You-Get
@@ -57,7 +57,7 @@ Are you a Python programmer? Then check out [the source](https://github.com/soim
 
 ### Prerequisites
 
-The following dependencies are required and must be installed separately, unless you are using a pre-built package on Windows:
+The following dependencies are required and must be installed separately, unless you are using a pre-built package or chocolatey on Windows:
 
 * **[Python 3](https://www.python.org/downloads/)**
 * **[FFmpeg](https://www.ffmpeg.org/)** (strongly recommended) or [Libav](https://libav.org/)
@@ -107,7 +107,13 @@ $ git clone git://github.com/soimort/you-get.git
 
 Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
 
-### Option 6: Homebrew (Mac only)
+### Option 6: Using [Chocolatey](https://chocolatey.org/) (Windows only)
+
+```
+> choco install you-get
+```
+
+### Option 7: Homebrew (Mac only)
 
 You can install `you-get` easily via:
 
@@ -131,6 +137,12 @@ or download the latest release via:
 
 ```
 $ you-get https://github.com/soimort/you-get/archive/master.zip
+```
+
+or use [chocolatey package manager](https://chocolatey.org):
+
+```
+> choco upgrade you-get 
 ```
 
 In order to get the latest ```develop``` branch without messing up the PIP, you can try:
@@ -332,7 +344,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | :--: | :-- | :-----: | :-----: | :-----: |
 | **YouTube** | <https://www.youtube.com/>    |✓| | |
 | **Twitter** | <https://twitter.com/>        |✓|✓| |
-| VK          | <http://vk.com/>              |✓| | |
+| VK          | <http://vk.com/>              |✓|✓| |
 | Vine        | <https://vine.co/>            |✓| | |
 | Vimeo       | <https://vimeo.com/>          |✓| | |
 | Vidto       | <http://vidto.me/>            |✓| | |
