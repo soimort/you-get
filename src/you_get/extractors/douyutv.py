@@ -6,8 +6,7 @@ from ..common import *
 import json
 import hashlib
 import time
-import random
-import string
+import uuid
 import urllib.parse, urllib.request
 
 def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
@@ -28,7 +27,7 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
         raise ValueError("The live stream is not online! (Errno:%s)" % server_status)
 
     tt = int(time.time() / 60)
-    did = ''.join([random.choice(string.ascii_uppercase + string.digits) for n in range(32)])
+    did = uuid.uuid4().hex.upper()
     sign_content = '{room_id}{did}A12Svb&%1UUmf@hC{tt}'.format(room_id = room_id, did = did, tt = tt)
     sign = hashlib.md5(sign_content.encode('utf-8')).hexdigest()
 
@@ -37,10 +36,9 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
     postdata = urllib.parse.urlencode(payload)
     req = urllib.request.Request(json_request_url, postdata.encode('utf-8'))
     with urllib.request.urlopen(req) as response:
-        the_page = response.read()
+        content = response.read()
 
-    content = json.loads(the_page.decode('utf-8'))
-    data = content['data']
+    data = json.loads(content.decode('utf-8'))['data']
     server_status = data.get('error',0)
     if server_status is not 0:
         raise ValueError("Server returned error:%s" % server_status)
@@ -49,7 +47,7 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
-        download_url_ffmpeg(real_url, title, 'flv', None, output_dir, merge = merge)
+        download_url_ffmpeg(real_url, title, 'flv', {}, output_dir, merge = merge)
 
 site_info = "douyu.com"
 download = douyutv_download
