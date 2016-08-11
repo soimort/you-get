@@ -209,7 +209,7 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
     output = title + '.' + ext
     
     if not (output_dir == '.'):
-        output = output_dir + output
+        output = output_dir + '/' + output
         
     ffmpeg_params = []
     #should these exist...
