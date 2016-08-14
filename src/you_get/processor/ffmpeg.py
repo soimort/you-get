@@ -204,13 +204,13 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
     """str, str->True
     WARNING: NOT THE SAME PARMS AS OTHER FUNCTIONS!!!!!!
     You can basicly download anything with this function
-    but better leave it alone with 
+    but better leave it alone with
     """
     output = title + '.' + ext
-    
+
     if not (output_dir == '.'):
         output = output_dir + '/' + output
-        
+
     ffmpeg_params = []
     #should these exist...
     if params is not None:
@@ -219,58 +219,20 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
                 ffmpeg_params.append(k)
                 ffmpeg_params.append(v)
 
-        
+
     print('Downloading streaming content with FFmpeg, press q to stop recording...')
     ffmpeg_params = [FFMPEG] + ['-y', '-re', '-i']
     ffmpeg_params.append(files)  #not the same here!!!!
-    
+
     if FFMPEG == 'avconv':  #who cares?
         ffmpeg_params += ['-c', 'copy', output]
     else:
         ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc']
-    
+
     ffmpeg_params.append(output)
-    
+
     print(' '.join(ffmpeg_params))
-    
-    try:
-        a = subprocess.Popen(ffmpeg_params, stdin= subprocess.PIPE)
-        a.communicate()
-    except KeyboardInterrupt:
-        try:
-            a.stdin.write('q'.encode('utf-8'))
-        except:
-            pass
 
-    return True
-
-#
-#To be refactor
-#Direct copy of rtmpdump.py
-#
-def ffmpeg_play_stream(player, url, params={}):
-    ffmpeg_params = []
-    #should these exist...
-    if params is not None:
-        if len(params) > 0:
-            for k, v in params:
-                ffmpeg_params.append(k)
-                ffmpeg_params.append(v)
-
-        
-    print('Playing streaming content with FFmpeg, press 1 to stop recording...')
-    ffmpeg_params = [FFMPEG] + LOGLEVEL + ['-y', '-re', '-i']
-    ffmpeg_params.append(url)  #not the same here!!!!
-    
-    if FFMPEG == 'avconv':  #who cares?
-        ffmpeg_params += ['-c', 'copy', '|']
-    else:
-        ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', '|']
-    
-    ffmpeg_params += [player, '-']
-    
-    print(' '.join(ffmpeg_params))
-    
     try:
         a = subprocess.Popen(ffmpeg_params, stdin= subprocess.PIPE)
         a.communicate()

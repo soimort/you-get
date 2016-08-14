@@ -910,8 +910,7 @@ def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', 
         return
 
     if player:
-        from .processor.ffmpeg import ffmpeg_play_stream
-        ffmpeg_play_stream(player, url, params)
+        launch_player(player, [url])
         return
 
     from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
@@ -1218,8 +1217,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
             import socket
             import socks
             socks_proxy_addrs = socks_proxy.split(':')
-            socks.set_default_proxy(socks.SOCKS5, 
-                                    socks_proxy_addrs[0], 
+            socks.set_default_proxy(socks.SOCKS5,
+                                    socks_proxy_addrs[0],
                                     int(socks_proxy_addrs[1]))
             socket.socket = socks.socksocket
             def getaddrinfo(*args):
