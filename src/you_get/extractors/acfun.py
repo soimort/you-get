@@ -18,9 +18,9 @@ def get_srt_json(id):
 
 def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False, **kwargs):
     """str, str, str, bool, bool ->None
-    
+
     Download Acfun video by vid.
-    
+
     Call Acfun API, decide which site to use, and pass the job to its
     extractor.
     """
@@ -78,15 +78,14 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     title = escape_file_path(title)
     assert title
 
-    videos = re.findall("data-vid=\"(\d+)\".*href=\"[^\"]+\".*title=\"([^\"]+)\"", html)
-    for video in videos:
-        p_vid = video[0]
-        p_title = title + " - " + video[1] if video[1] != '删除标签' else title
-        acfun_download_by_vid(p_vid, p_title,
-                              output_dir=output_dir,
-                              merge=merge,
-                              info_only=info_only,
-                              **kwargs)
+    video = re.search('data-vid="(\d+)"\s*data-scode="".*>([^<]+)</a>', html)
+    vid = video.group(1)
+    title = title + ' - ' + video.group(2)
+    acfun_download_by_vid(vid, title,
+                          output_dir=output_dir,
+                          merge=merge,
+                          info_only=info_only,
+                          **kwargs)
 
 site_info = "AcFun.tv"
 download = acfun_download
