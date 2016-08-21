@@ -29,7 +29,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     """"""
     if 'live.qq.com' in url:
         qieDownload(url,output_dir=output_dir, merge=merge, info_only=info_only)
-        return 
+        return
 
     #do redirect
     if 'v.qq.com/page' in url:
@@ -37,7 +37,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         # http://v.qq.com/page/k/9/7/k0194pwgw97.html
         content = get_html(url)
         url = match1(content,r'window\.location\.href="(.*?)"')
-        
+
     if 'kuaibao.qq.com' in url or re.match(r'http://daxue.qq.com/content/content/id/\d+', url):
         content = get_html(url)
         vid = match1(content, r'vid\s*=\s*"\s*([^"]+)"')
@@ -49,10 +49,11 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         title = vid
     else:
         content = get_html(url)
-        vid = parse_qs(urlparse(url).query).get('vid') #for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5 
+        vid = parse_qs(urlparse(url).query).get('vid') #for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5
         vid = vid[0] if vid else match1(content, r'vid\s*:\s*"\s*([^"]+)"') #general fallback
         title = match1(content,r'<a.*?id\s*=\s*"%s".*?title\s*=\s*"(.+?)".*?>'%vid)
         title = match1(content, r'title">([^"]+)</p>') if not title else title
+        title = match1(content, r'"title":"([^"]+)"') if not title else title
         title = vid if not title else title #general fallback
 
 
