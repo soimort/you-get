@@ -13,7 +13,7 @@ def ifeng_download_by_id(id, title = None, output_dir = '.', merge = True, info_
     url = r1(r'VideoPlayUrl="([^"]+)"', xml)
     from random import randint
     r = randint(10, 19)
-    url = url.replace('http://video.ifeng.com/', 'http://video%s.ifeng.com/' % r)
+    url = url.replace('http://wideo.ifeng.com/', 'http://ips.ifeng.com/wideo.ifeng.com/')
     type, ext, size = url_info(url)
 
     print_info(site_info, title, ext, size)
