@@ -73,10 +73,10 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             scribe_playlist_url = i['scribe_playlist_url']
             return vine_download(scribe_playlist_url, output_dir, merge=merge, info_only=info_only)
 
-        if source.endswith('.mp4'):
-            urls = [source]
-        else:
+        try:
             urls = extract_m3u(source)
+        except:
+            urls = [source]
         size = urls_size(urls)
         mime, ext = 'video/mp4', 'mp4'
 
