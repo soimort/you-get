@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.523
+project-version: 0.4.536
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://github.com/soimort/you-get/releases/download/v0.4.523/you-get-0.4.523.tar.gz
+download-url: https://github.com/soimort/you-get/releases/download/v0.4.536/you-get-0.4.536.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 33cafd6c3f6007d550a6e2a3a32b2a766935445a
-download-signature: https://github.com/soimort/you-get/releases/download/v0.4.523/you-get-0.4.523.tar.gz.asc
+download-checksum-data: ce4f6e579ac8b4f54b5172036fc2112c7325b292
+download-signature: https://github.com/soimort/you-get/releases/download/v0.4.536/you-get-0.4.536.tar.gz.asc
 
 ---
 # You-Get
