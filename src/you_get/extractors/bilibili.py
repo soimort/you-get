@@ -33,6 +33,11 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         bilibili_download_by_api(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
         return
 
+    if re.match(r'https?://bangumi\.bilibili\.com/', url):
+        # quick hack for bangumi URLs
+        html = get_content(url)
+        url = r1(r'"([^"]+)" class="v-av-link"', html)
+
     html = get_content(url)
     main_title = r1_of([r'<meta name="title" content="\s*([^<>]{1,999})\s*" />',
                         r'<h1[^>]*>\s*([^<>]+)\s*</h1>'], html)
