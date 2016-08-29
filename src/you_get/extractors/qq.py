@@ -50,7 +50,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     else:
         content = get_html(url)
         vid = parse_qs(urlparse(url).query).get('vid') #for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5
-        vid = vid[0] if vid else match1(content, r'vid\s*:\s*"\s*([^"]+)"') #general fallback
+        vid = vid[0] if vid else match1(content, r'vid"*\s*:\s*"\s*([^"]+)"') #general fallback
         title = match1(content,r'<a.*?id\s*=\s*"%s".*?title\s*=\s*"(.+?)".*?>'%vid)
         title = match1(content, r'title">([^"]+)</p>') if not title else title
         title = match1(content, r'"title":"([^"]+)"') if not title else title
