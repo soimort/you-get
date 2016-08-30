@@ -37,14 +37,14 @@ def constructKey(arg):
             l4+=1
         return l3
         pass
-    
+
     def rot(k,b): ##>>> in as3
         if k>=0:
             return k>>b
         elif k<0:
             return (2**32+k)>>b
         pass
-     
+
     def lot(k,b):
         return (k<<b)%(2**32)
 
@@ -72,10 +72,10 @@ def constructKey(arg):
         l18=ord(l8[l12+5])<<8
         l19=ord(l8[l12+6])<<16
         l20=ord(l8[l12+7])<<24
-     
+
         l21=(((0|l13)|l14)|l15)|l16
         l22=(((0|l17)|l18)|l19)|l20
-     
+
         l23=0
         l24=0
         while l24<32:
@@ -91,9 +91,9 @@ def constructKey(arg):
             l40=(l39+l7)%(2**32)
             l41=((l37^l38)%(2**32)^l40)%(2**32)
             l22=(l22+l41)%(2**32)
-     
+
             l24+=1
-     
+
         l11+=chr(rot(l21,0)&0xff)
         l11+=chr(rot(l21,8)&0xff)
         l11+=chr(rot(l21,16)&0xff)
@@ -102,9 +102,9 @@ def constructKey(arg):
         l11+=chr(rot(l22,8)&0xff)
         l11+=chr(rot(l22,16)&0xff)
         l11+=chr(rot(l22,24)&0xff)
-     
-        return l11        
-            
+
+        return l11
+
 
     loc1=hex(int(arg))[2:]+(16-len(hex(int(arg))[2:]))*"\x00"
     SERVER_KEY="qqqqqww"+"\x00"*9
@@ -129,7 +129,7 @@ def pptv_download_by_id(id, title = None, output_dir = '.', merge = True, info_o
 
     pieces = re.findall('<sgm no="(\d+)"[^<>]+fs="(\d+)"', xml)
     numbers, fs = zip(*pieces)
-    urls=[ "http://ccf.pptv.com/{}/{}?key={}&fpp.ver=1.3.0.4&k={}&type=web.fpp".format(i,rid,key,k)  for i in range(max(map(int,numbers))+1)]
+    urls=["http://{}/{}/{}?key={}&fpp.ver=1.3.0.4&k={}&type=web.fpp".format(host,i,rid,key,k) for i in range(max(map(int,numbers))+1)]
 
     total_size = sum(map(int, fs))
     assert rid.endswith('.mp4')
