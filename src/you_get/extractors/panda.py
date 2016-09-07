@@ -18,10 +18,11 @@ def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     data = json.loads(content)['data']
     title = data.get('roominfo')['name']
     room_key = data.get('videoinfo')['room_key']
+    plflag = data.get('videoinfo')['plflag'].split('_')
     status = data.get('videoinfo')['status']
     if status is not "2":
         raise ValueError("The live stream is not online! (status:%s)" % status)
-    real_url = 'http://pl3.live.panda.tv/live_panda/{}.flv'.format(room_key)
+    real_url = 'http://pl{}.live.panda.tv/live_panda/{}.flv'.format(plflag[1],room_key)
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
