@@ -78,7 +78,7 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     title = escape_file_path(title)
     assert title
 
-    video = re.search('data-vid="(\d+)"\s*data-scode="".*>([^<]+)</a>', html)
+    video = re.search('data-vid="(\d+)"\s*data-scode=""[^<]*title="([^"]+)"', html)
     vid = video.group(1)
     title = title + ' - ' + video.group(2)
     acfun_download_by_vid(vid, title,
