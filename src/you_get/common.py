@@ -13,6 +13,7 @@ SITES = {
     'cctv'             : 'cntv',
     'cntv'             : 'cntv',
     'cbs'              : 'cbs',
+    'chaturbate'       : 'chaturbate',
     'dailymotion'      : 'dailymotion',
     'dilidili'         : 'dilidili',
     'dongting'         : 'dongting',
