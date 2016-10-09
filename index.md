@@ -51,7 +51,7 @@ Interested? [Install it](#installation) now and [get started by examples](#getti
 
 Are you a Python programmer? Then check out [the source](https://github.com/soimort/you-get) and fork it!
 
-![](http://i.imgur.com/GfthFAz.png)
+![](https://i.imgur.com/GfthFAz.png)
 
 ## Installation
 
