@@ -327,6 +327,45 @@ def get_content(url, headers={}, decoded=True):
 
     return data
 
+def post_content(url, headers={}, post_data={}, decoded=True):
+    """Post the content of a URL via sending a HTTP POST request.
+
+    Args:
+        url: A URL.
+        headers: Request headers used by the client.
+        decoded: Whether decode the response body using UTF-8 or the charset specified in Content-Type.
+
+    Returns:
+        The content as a string.
+    """
+
+    logging.debug('post_content: %s \n post_data: %s' % (url, post_data))
+
+    req = request.Request(url, headers=headers)
+    if cookies:
+        cookies.add_cookie_header(req)
+        req.headers.update(req.unredirected_hdrs)
+    post_data_enc = bytes(parse.urlencode(post_data), 'utf-8')
+    response = request.urlopen(req, data = post_data_enc)
+    data = response.read()
+
+    # Handle HTTP compression for gzip and deflate (zlib)
+    content_encoding = response.getheader('Content-Encoding')
+    if content_encoding == 'gzip':
+        data = ungzip(data)
+    elif content_encoding == 'deflate':
+        data = undeflate(data)
+
+    # Decode the response body
+    if decoded:
+        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
+        if charset is not None:
+            data = data.decode(charset)
+        else:
+            data = data.decode('utf-8')
+
+    return data
+
 def url_size(url, faker = False, headers = {}):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
