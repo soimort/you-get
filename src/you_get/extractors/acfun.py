@@ -73,14 +73,14 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     assert re.match(r'http://[^\.]+.acfun.[^\.]+/\D/\D\D(\d+)', url)
     html = get_html(url)
 
-    title = r1(r'<h1 id="txt-title-view">([^<>]+)<', html)
+    title = r1(r'data-title="([^"]+)"', html)
     title = unescape_html(title)
     title = escape_file_path(title)
     assert title
 
-    video = re.search('data-vid="(\d+)"\s*data-scode=""[^<]*title="([^"]+)"', html)
-    vid = video.group(1)
-    title = title + ' - ' + video.group(2)
+    vid = r1('data-vid="(\d+)"', html)
+    up = r1('data-name="([^"]+)"', html)
+    title = title + ' - ' + up
     acfun_download_by_vid(vid, title,
                           output_dir=output_dir,
                           merge=merge,
