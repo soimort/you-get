@@ -236,7 +236,7 @@ class YouTube(VideoExtractor):
                     start = '{:0>2}:{:0>2}:{:06.3f}'.format(int(h), int(m), s).replace('.', ',')
                     m, s = divmod(finish, 60); h, m = divmod(m, 60)
                     finish = '{:0>2}:{:0>2}:{:06.3f}'.format(int(h), int(m), s).replace('.', ',')
-                    content = text.firstChild.nodeValue
+                    content = unescape_html(text.firstChild.nodeValue)
 
                     srt += '%s\n' % str(seq)
                     srt += '%s --> %s\n' % (start, finish)
