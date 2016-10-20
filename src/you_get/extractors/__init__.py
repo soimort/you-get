@@ -24,6 +24,7 @@ from .funshion import *
 from .google import *
 from .heavymusic import *
 from .huaban import *
+from .icourses import *
 from .ifeng import *
 from .imgur import *
 from .infoq import *
