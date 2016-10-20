@@ -27,6 +27,7 @@ SITES = {
     'google'           : 'google',
     'heavy-music'      : 'heavymusic',
     'huaban'           : 'huaban',
+    'huomao'           : 'huomaotv',
     'iask'             : 'sina',
     'ifeng'            : 'ifeng',
     'imgur'            : 'imgur',
