@@ -28,6 +28,7 @@ SITES = {
     'heavy-music'      : 'heavymusic',
     'huaban'           : 'huaban',
     'iask'             : 'sina',
+    'icourses'         : 'icourses',
     'ifeng'            : 'ifeng',
     'imgur'            : 'imgur',
     'in'               : 'alive',
