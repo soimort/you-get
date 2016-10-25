@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from ..common import *
 from urllib import parse
+import random
+from time import sleep
 import xml.etree.ElementTree as ET
 import datetime
 import hashlib
@@ -12,23 +14,24 @@ import re
 __all__ = ['icourses_download']
 
 
-def icourses_download(url, info_only, merge=False, output_dir='.', **kwargs):
+def icourses_download(url, merge=False, output_dir='.', **kwargs):
     icourses_parser = ICousesExactor(url=url)
     real_url = icourses_parser.icourses_cn_url_parser(**kwargs)
     title = icourses_parser.title
     if real_url is not None:
-        for tries in range(0, 3):
+        for tries in range(0, 5):
             try:
                 _, type_, size = url_info(real_url, faker=True)
                 break
             except error.HTTPError:
                 logging.warning('Failed to fetch the video file! Retrying...')
+                sleep(random.Random().randint(0, 5))  # Prevent from blockage
                 real_url = icourses_parser.icourses_cn_url_parser()
                 title = icourses_parser.title
         print_info(site_info, title, type_, size)
-        if not info_only:
-            download_urls([real_url], title, 'flv',
-                          total_size=size, output_dir=output_dir, refer=url, merge=merge, faker=True)
+        if not kwargs['info_only']:
+            download_urls_chunked([real_url], title, 'flv',
+                          total_size=size, output_dir=output_dir, refer=url, merge=merge, faker=True, ignore_range=True, chunk_size=15000000, dyn_callback=icourses_parser.icourses_cn_url_parser)
 
 
 # Why not using VideoExtractor: This site needs specical download method
@@ -40,9 +43,7 @@ class ICousesExactor(object):
         return
 
     def icourses_playlist_download(self, **kwargs):
-        import random
-        from time import sleep
-        html = get_content(url)
+        html = get_content(self.url)
         page_type_patt = r'showSectionNode\(this,(\d+),(\d+)\)'
         video_js_number = r'changeforvideo\((.*?)\)'
         fs_flag = r'<input type="hidden" value=(\w+) id="firstShowFlag">'
@@ -59,7 +60,7 @@ class ICousesExactor(object):
             sleep(random.Random().randint(0, 5))  # Prevent from blockage
             icourses_download(video_url, **kwargs)
 
-    def icourses_cn_url_parser(self, **kwargs):
+    def icourses_cn_url_parser(self, received=0, **kwargs):
         PLAYER_BASE_VER = '150606-1'
         ENCRYPT_MOD_VER = '151020'
         ENCRYPT_SALT = '3DAPmXsZ4o'  # It took really long time to find this...
@@ -93,9 +94,14 @@ class ICousesExactor(object):
         logging.debug('The result was {}'.format(xml_obj.get('status')))
         if xml_obj.get('status') != 'success':
             raise ValueError('Server returned error!')
-        common_args = {'lv': PLAYER_BASE_VER, 'ls': 'play',
+        if received:
+            play_type = 'seek'
+        else:
+            play_type = 'play'
+            received -= 1
+        common_args = {'lv': PLAYER_BASE_VER, 'ls': play_type,
                        'lt': datetime.datetime.now().strftime('%m-%d/%H:%M:%S'),
-                       'start': 0}
+                       'start': received + 1}
         media_host = xml_obj.find(".//*[@name='host']").text
         media_url = media_host + xml_obj.find(".//*[@name='url']").text
         # This is what they called `SSLModule`... But obviously, just a kind of
