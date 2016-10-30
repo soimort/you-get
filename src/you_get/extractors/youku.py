@@ -314,9 +314,6 @@ class Youku(VideoExtractor):
                                 q         = q
                             )
                         ksegs += [i['server'] for i in json.loads(get_content(u))]
-
-                        if (parse_host(ksegs[len(ksegs)-1])[0] == "vali.cp31.ott.cibntv.net"):
-                            ksegs.pop(len(ksegs)-1)
             except error.HTTPError as e:
                 # Use fallback stream data in case of HTTP 404
                 log.e('[Error] ' + str(e))
