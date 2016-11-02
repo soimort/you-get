@@ -6,7 +6,7 @@ from ..common import *
 
 
 def get_mobile_room_url(room_id):
-    return 'http://www.huomao.com/mobile/mob_live?cid=%s' % room_id
+    return 'http://www.huomao.com/mobile/mob_live/%s' % room_id
 
 
 def get_m3u8_url(stream_id):
