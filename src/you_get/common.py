@@ -547,7 +547,11 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
     os.rename(temp_filepath, filepath)
 
-def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
+def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore_range=False, refer=None, is_part=False, faker=False, headers={}):
+    def dyn_update_url(received):
+        if callable(dyn_callback):
+            logging.debug('Calling callback %s for new URL from %s' % (dyn_callback.__name__, received))
+            return dyn_callback(received)
     if os.path.exists(filepath):
         if not force:
             if not is_part:
@@ -585,19 +589,26 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
     else:
         headers = {}
     if received:
-        headers['Range'] = 'bytes=' + str(received) + '-'
+        url = dyn_update_url(received)
+        if not ignore_range:
+            headers['Range'] = 'bytes=' + str(received) + '-'
     if refer:
         headers['Referer'] = refer
 
-    response = request.urlopen(request.Request(url, headers = headers), None)
+    response = request.urlopen(request.Request(url, headers=headers), None)
 
     with open(temp_filepath, open_mode) as output:
+        this_chunk = received
         while True:
             buffer = response.read(1024 * 256)
             if not buffer:
                 break
             output.write(buffer)
             received += len(buffer)
+            if chunk_size and (received - this_chunk) >= chunk_size:
+                url = dyn_callback(received)
+                this_chunk = received
+                response = request.urlopen(request.Request(url, headers=headers), None)
             if bar:
                 bar.update_received(len(buffer))
 
@@ -846,7 +857,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     print()
 
-def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}):
+def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
     assert urls
     if dry_run:
         print('Real URLs:\n%s\n' % urls)
@@ -860,7 +871,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
-    if total_size and ext in ('ts'):
+    if total_size:
         if not force and os.path.exists(filepath[:-3] + '.mkv'):
             print('Skipping %s: file already exists' % filepath[:-3] + '.mkv')
             print()
@@ -875,7 +886,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
         print('Downloading %s ...' % tr(filename))
         filepath = os.path.join(output_dir, filename)
         parts.append(filepath)
-        url_save_chunked(url, filepath, bar, refer = refer, faker = faker, headers = headers)
+        url_save_chunked(url, filepath, bar, refer = refer, faker = faker, headers = headers, **kwargs)
         bar.done()
 
         if not merge:
