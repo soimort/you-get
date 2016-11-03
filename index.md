@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.555
+project-version: 0.4.575
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://github.com/soimort/you-get/releases/download/v0.4.555/you-get-0.4.555.tar.gz
+download-url: https://github.com/soimort/you-get/releases/download/v0.4.575/you-get-0.4.575.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 3d9c0a5b94bc44f96dab0220d5b03d5b82c03e0c
-download-signature: https://github.com/soimort/you-get/releases/download/v0.4.555/you-get-0.4.555.tar.gz.asc
+download-checksum-data: ac6d5384cdc7f2505b0341ecd56e0f15361921cc
+download-signature: https://github.com/soimort/you-get/releases/download/v0.4.575/you-get-0.4.575.tar.gz.asc
 
 ---
 # You-Get
@@ -353,6 +353,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
 | TED         | <http://www.ted.com/>         |✓| | |
 | SoundCloud  | <https://soundcloud.com/>     | | |✓|
+| SHOWROOM    | <https://www.showroom-live.com/> |✓| | |
 | Pinterest   | <https://www.pinterest.com/>  | |✓| |
 | MusicPlayOn | <http://en.musicplayon.com/>  |✓| | |
 | MTV81       | <http://www.mtv81.com/>       |✓| | |
@@ -420,6 +421,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 花瓣     | <http://huaban.com/>           | |✓| |
 | Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
 | 芒果TV   | <http://www.mgtv.com/>         |✓| | |
+| 火猫TV   | <http://www.huomao.com/>         |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
