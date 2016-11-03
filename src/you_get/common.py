@@ -29,6 +29,7 @@ SITES = {
     'huaban'           : 'huaban',
     'huomao'           : 'huomaotv',
     'iask'             : 'sina',
+    'icourses'         : 'icourses',
     'ifeng'            : 'ifeng',
     'imgur'            : 'imgur',
     'in'               : 'alive',
