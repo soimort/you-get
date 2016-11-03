@@ -121,8 +121,15 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
 
     if re.match(r'https?://bangumi\.bilibili\.com/', url):
         # quick hack for bangumi URLs
-        url = r1(r'"([^"]+)" class="v-av-link"', html)
-        html = get_content(url)
+        #url = r1(r'"([^"]+)" class="v-av-link"', html)
+        #html = get_content(url)
+        import requests
+        episode_id = r1(r'episode-id="(\d+)"', html)
+        get_cid = requests.post(
+                                'http://bangumi.bilibili.com/web_api/get_source',
+                                data={'episode_id':episode_id},
+                                headers=fake_headers)
+        html += get_cid.text.replace('"', '').replace(':', '=')
 
     title = r1_of([r'<meta name="title" content="\s*([^<>]{1,999})\s*" />',
                    r'<h1[^>]*>\s*([^<>]+)\s*</h1>'], html)
