@@ -1,7 +1,7 @@
 # You-Get
 
-[![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get)
-[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
+[![PyPI version](https://img.shields.io/pypi/v/you-get.svg)](https://pypi.python.org/pypi/you-get/)
+[![Build Status](https://travis-ci.org/soimort/you-get.svg)](https://travis-ci.org/soimort/you-get)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [You-Get](https://you-get.org/) is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.
@@ -37,13 +37,13 @@ Interested? [Install it](#installation) now and [get started by examples](#getti
 
 Are you a Python programmer? Then check out [the source](https://github.com/soimort/you-get) and fork it!
 
-![](http://i.imgur.com/GfthFAz.png)
+![](https://i.imgur.com/GfthFAz.png)
 
 ## Installation
 
 ### Prerequisites
 
-The following dependencies are required and must be installed separately, unless you are using a pre-built package on Windows:
+The following dependencies are required and must be installed separately, unless you are using a pre-built package or chocolatey on Windows:
 
 * **[Python 3](https://www.python.org/downloads/)**
 * **[FFmpeg](https://www.ffmpeg.org/)** (strongly recommended) or [Libav](https://libav.org/)
@@ -93,6 +93,24 @@ $ git clone git://github.com/soimort/you-get.git
 
 Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
 
+### Option 6: Using [Chocolatey](https://chocolatey.org/) (Windows only)
+
+```
+> choco install you-get
+```
+
+### Option 7: Homebrew (Mac only)
+
+You can install `you-get` easily via:
+
+```
+$ brew install you-get
+```
+
+### Shell completion
+
+Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](contrib/completion). Please consult your shell's manual for how to take advantage of them.
+
 ## Upgrading
 
 Based on which option you chose to install `you-get`, you may upgrade it via:
@@ -105,6 +123,18 @@ or download the latest release via:
 
 ```
 $ you-get https://github.com/soimort/you-get/archive/master.zip
+```
+
+or use [chocolatey package manager](https://chocolatey.org):
+
+```
+> choco upgrade you-get
+```
+
+In order to get the latest ```develop``` branch without messing up the PIP, you can try:
+
+```
+$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop
 ```
 
 ## Getting Started
@@ -300,7 +330,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | :--: | :-- | :-----: | :-----: | :-----: |
 | **YouTube** | <https://www.youtube.com/>    |✓| | |
 | **Twitter** | <https://twitter.com/>        |✓|✓| |
-| VK          | <http://vk.com/>              |✓| | |
+| VK          | <http://vk.com/>              |✓|✓| |
 | Vine        | <https://vine.co/>            |✓| | |
 | Vimeo       | <https://vimeo.com/>          |✓| | |
 | Vidto       | <http://vidto.me/>            |✓| | |
@@ -309,6 +339,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
 | TED         | <http://www.ted.com/>         |✓| | |
 | SoundCloud  | <https://soundcloud.com/>     | | |✓|
+| SHOWROOM    | <https://www.showroom-live.com/> |✓| | |
 | Pinterest   | <https://www.pinterest.com/>  | |✓| |
 | MusicPlayOn | <http://en.musicplayon.com/>  |✓| | |
 | MTV81       | <http://www.mtv81.com/>       |✓| | |
@@ -342,8 +373,9 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
 | **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
 | Dilidili | <http://www.dilidili.com/>     |✓| | |
-| 豆瓣     | <http://www.douban.com/>       | | |✓|
+| 豆瓣     | <http://www.douban.com/>       |✓| |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
+| Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
 | 风行网   | <http://www.fun.tv/>           |✓| | |
 | iQIYI<br/>爱奇艺 | <http://www.iqiyi.com/> |✓| | |
@@ -359,6 +391,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | PPTV聚力 | <http://www.pptv.com/>         |✓| | |
 | 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
 | QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
+| 企鹅直播 | <http://live.qq.com/>          |✓| | |
 | 阡陌视频 | <http://qianmo.com/>           |✓| | |
 | THVideo  | <http://thvideo.tv/>           |✓| | |
 | Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
@@ -372,6 +405,9 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
 | 央视网   | <http://www.cntv.cn/>          |✓| | |
 | 花瓣     | <http://huaban.com/>           | |✓| |
+| Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
+| 芒果TV   | <http://www.mgtv.com/>         |✓| | |
+| 火猫TV   | <http://www.huomao.com/>         |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 

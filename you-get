@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os, sys
 
-_srcdir = 'src/'
+_srcdir = '%s/src/' % os.path.dirname(os.path.realpath(__file__))
 _filepath = os.path.dirname(sys.argv[0])
 sys.path.insert(1, os.path.join(_filepath, _srcdir))
 

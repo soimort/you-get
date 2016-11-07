@@ -11,11 +11,13 @@ from .youku import youku_download_by_vid
 import hashlib
 import re
 
-appkey='8e9fc618fbd41e28'
+appkey = 'f3bb208b3d081dc8'
+SECRETKEY_MINILOADER = '1c15888dc316e05a15fdd0a02ed6584f'
 
 def get_srt_xml(id):
     url = 'http://comment.bilibili.com/%s.xml' % id
     return get_html(url)
+
 
 def parse_srt_p(p):
     fields = p.split(',')
@@ -44,11 +46,13 @@ def parse_srt_p(p):
 
     return pool, mode, font_size, font_color
 
+
 def parse_srt_xml(xml):
     d = re.findall(r'<d p="([^"]+)">(.*)</d>', xml)
     for x, y in d:
         p = parse_srt_p(x)
     raise NotImplementedError()
+
 
 def parse_cid_playurl(xml):
     from xml.dom.minidom import parseString
@@ -59,14 +63,16 @@ def parse_cid_playurl(xml):
     except:
         return []
 
+
 def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only=False):
     urls = []
     for cid in cids:
-        url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + cid
+        sign_this = hashlib.md5(bytes('cid={cid}&from=miniplay&player=1{SECRETKEY_MINILOADER}'.format(cid = cid, SECRETKEY_MINILOADER = SECRETKEY_MINILOADER), 'utf-8')).hexdigest()
+        url = 'http://interface.bilibili.com/playurl?&cid=' + cid + '&from=miniplay&player=1' + '&sign=' + sign_this
         urls += [i
-                if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i)
-                else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
-                for i in parse_cid_playurl(get_content(url))]
+                 if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i)
+                 else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
+                 for i in parse_cid_playurl(get_content(url))]
 
     type_ = ''
     size = 0
@@ -78,8 +84,10 @@ def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only
     if not info_only:
         download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
+
 def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False):
-    url = 'http://interface.bilibili.com/playurl?appkey=' + appkey + '&cid=' + cid
+    sign_this = hashlib.md5(bytes('cid={cid}&from=miniplay&player=1{SECRETKEY_MINILOADER}'.format(cid = cid, SECRETKEY_MINILOADER = SECRETKEY_MINILOADER), 'utf-8')).hexdigest()
+    url = 'http://interface.bilibili.com/playurl?&cid=' + cid + '&from=miniplay&player=1' + '&sign=' + sign_this
     urls = [i
             if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i)
             else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
@@ -87,16 +95,14 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
 
     type_ = ''
     size = 0
-    try:
-        for url in urls:
-            _, type_, temp = url_info(url)
-            size += temp or 0
-    except error.URLError:
-        log.wtf('[Failed] DNS not resolved. Please change your DNS server settings.')
+    for url in urls:
+        _, type_, temp = url_info(url)
+        size += temp or 0
 
     print_info(site_info, title, type_, size)
     if not info_only:
         download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
+
 
 def bilibili_live_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False):
     api_url = 'http://live.bilibili.com/api/playurl?cid=' + cid
@@ -109,59 +115,74 @@ def bilibili_live_download_by_cid(cid, title, output_dir='.', merge=True, info_o
         if not info_only:
             download_urls([url], title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
+
 def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_content(url)
 
-    title = r1_of([r'<meta name="title" content="([^<>]{1,999})" />',
-                   r'<h1[^>]*>([^<>]+)</h1>'], html)
+    title = r1_of([r'<meta name="title" content="\s*([^<>]{1,999})\s*" />',
+                   r'<h1[^>]*>\s*([^<>]+)\s*</h1>'], html)
     if title:
         title = unescape_html(title)
         title = escape_file_path(title)
 
-    flashvars = r1_of([r'(cid=\d+)', r'(cid: \d+)', r'flashvars="([^"]+)"', r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
-    assert flashvars
-    flashvars = flashvars.replace(': ','=')
-    t, cid = flashvars.split('=', 1)
-    cid = cid.split('&')[0]
-    if t == 'cid':
-        if re.match(r'https?://live\.bilibili\.com/', url):
-            title = r1(r'<title>([^<>]+)</title>', html)
-            bilibili_live_download_by_cid(cid, title, output_dir=output_dir, merge=merge, info_only=info_only)
+    if re.match(r'https?://bangumi\.bilibili\.com/', url):
+        # quick hack for bangumi URLs
+        episode_id = r1(r'data-current-episode-id="(\d+)"', html)
+        cont = post_content('http://bangumi.bilibili.com/web_api/get_source',
+                            post_data={'episode_id': episode_id})
+        cid = json.loads(cont)['result']['cid']
+        bilibili_download_by_cid(str(cid), title, output_dir=output_dir, merge=merge, info_only=info_only)
 
-        else:
-            # multi-P
-            cids = []
-            pages = re.findall('<option value=\'([^\']*)\'', html)
-            titles = re.findall('<option value=.*>(.+)</option>', html)
-            for page in pages:
-                html = get_html("http://www.bilibili.com%s" % page)
-                flashvars = r1_of([r'(cid=\d+)',
-                                   r'flashvars="([^"]+)"',
-                                   r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
-                if flashvars:
-                    t, cid = flashvars.split('=', 1)
-                    cids.append(cid.split('&')[0])
-
-            # no multi-P
-            if not pages:
-                cids = [cid]
-                titles = [r1(r'<option value=.* selected>(.+)</option>', html) or title]
-
-            for i in range(len(cids)):
-                bilibili_download_by_cid(cids[i],
-                                         titles[i],
-                                         output_dir=output_dir,
-                                         merge=merge,
-                                         info_only=info_only)
-
-    elif t == 'vid':
-        sina_download_by_vid(cid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
-    elif t == 'ykid':
-        youku_download_by_vid(cid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
-    elif t == 'uid':
-        tudou_download_by_id(cid, title, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
-        raise NotImplementedError(flashvars)
+        flashvars = r1_of([r'(cid=\d+)', r'(cid: \d+)', r'flashvars="([^"]+)"',
+                           r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+        assert flashvars
+        flashvars = flashvars.replace(': ', '=')
+        t, cid = flashvars.split('=', 1)
+        cid = cid.split('&')[0]
+        if t == 'cid':
+            if re.match(r'https?://live\.bilibili\.com/', url):
+                title = r1(r'<title>\s*([^<>]+)\s*</title>', html)
+                bilibili_live_download_by_cid(cid, title, output_dir=output_dir, merge=merge, info_only=info_only)
+
+            else:
+                # multi-P
+                cids = []
+                pages = re.findall('<option value=\'([^\']*)\'', html)
+                titles = re.findall('<option value=.*>\s*([^<>]+)\s*</option>', html)
+                for i, page in enumerate(pages):
+                    html = get_html("http://www.bilibili.com%s" % page)
+                    flashvars = r1_of([r'(cid=\d+)',
+                                       r'flashvars="([^"]+)"',
+                                       r'"https://[a-z]+\.bilibili\.com/secure,(cid=\d+)(?:&aid=\d+)?"'], html)
+                    if flashvars:
+                        t, cid = flashvars.split('=', 1)
+                        cids.append(cid.split('&')[0])
+                    if url.endswith(page):
+                        cids = [cid.split('&')[0]]
+                        titles = [titles[i]]
+                        break
+
+                # no multi-P
+                if not pages:
+                    cids = [cid]
+                    titles = [r1(r'<option value=.* selected>\s*([^<>]+)\s*</option>', html) or title]
+
+                for i in range(len(cids)):
+                    bilibili_download_by_cid(cids[i],
+                                             titles[i],
+                                             output_dir=output_dir,
+                                             merge=merge,
+                                             info_only=info_only)
+
+        elif t == 'vid':
+            sina_download_by_vid(cid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+        elif t == 'ykid':
+            youku_download_by_vid(cid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+        elif t == 'uid':
+            tudou_download_by_id(cid, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        else:
+            raise NotImplementedError(flashvars)
 
     if not info_only and not dry_run:
         if not kwargs['caption']:
@@ -172,6 +193,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         xml = get_srt_xml(cid)
         with open(os.path.join(output_dir, title + '.cmt.xml'), 'w', encoding='utf-8') as x:
             x.write(xml)
+
 
 site_info = "bilibili.com"
 download = bilibili_download

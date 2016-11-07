@@ -35,16 +35,16 @@ def dilidili_parser_data_to_stream_types(typ ,vid ,hd2 ,sign, tmsign, ulk):
 
 #----------------------------------------------------------------------
 def dilidili_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
-    if re.match(r'http://www.dilidili.com/watch/\w+', url):
+    if re.match(r'http://www.dilidili.com/watch\S+', url):
         html = get_content(url)
         title = match1(html, r'<title>(.+)丨(.+)</title>')  #title
         
         # player loaded via internal iframe
-        frame_url = re.search(r'<iframe (.+)src="(.+)\" f(.+)</iframe>', html).group(2)
+        frame_url = re.search(r'<iframe src=\"(.+?)\"', html).group(1)
         #print(frame_url)
         
         #https://player.005.tv:60000/?vid=a8760f03fd:a04808d307&v=yun&sign=a68f8110cacd892bc5b094c8e5348432
-        html = get_content(frame_url, headers=headers)
+        html = get_content(frame_url, headers=headers, decoded=False).decode('utf-8')
         
         match = re.search(r'(.+?)var video =(.+?);', html)
         vid = match1(html, r'var vid="(.+)"')

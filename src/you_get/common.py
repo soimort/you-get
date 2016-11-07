@@ -8,7 +8,9 @@ SITES = {
     'baidu'            : 'baidu',
     'bandcamp'         : 'bandcamp',
     'baomihua'         : 'baomihua',
+    'bigthink'         : 'bigthink',
     'bilibili'         : 'bilibili',
+    'cctv'             : 'cntv',
     'cntv'             : 'cntv',
     'cbs'              : 'cbs',
     'dailymotion'      : 'dailymotion',
@@ -25,7 +27,9 @@ SITES = {
     'google'           : 'google',
     'heavy-music'      : 'heavymusic',
     'huaban'           : 'huaban',
+    'huomao'           : 'huomaotv',
     'iask'             : 'sina',
+    'icourses'         : 'icourses',
     'ifeng'            : 'ifeng',
     'imgur'            : 'imgur',
     'in'               : 'alive',
@@ -47,17 +51,21 @@ SITES = {
     'lizhi'            : 'lizhi',
     'magisto'          : 'magisto',
     'metacafe'         : 'metacafe',
+    'mgtv'             : 'mgtv',
     'miomio'           : 'miomio',
     'mixcloud'         : 'mixcloud',
     'mtv81'            : 'mtv81',
     'musicplayon'      : 'musicplayon',
+    'naver'            : 'naver',
     '7gogo'            : 'nanagogo',
     'nicovideo'        : 'nicovideo',
+    'panda'            : 'panda',
     'pinterest'        : 'pinterest',
     'pixnet'           : 'pixnet',
     'pptv'             : 'pptv',
     'qianmo'           : 'qianmo',
     'qq'               : 'qq',
+    'showroom-live'    : 'showroom',
     'sina'             : 'sina',
     'smgbb'            : 'bilibili',
     'sohu'             : 'sohu',
@@ -73,6 +81,7 @@ SITES = {
     'videomega'        : 'videomega',
     'vidto'            : 'vidto',
     'vimeo'            : 'vimeo',
+    'wanmen'           : 'wanmen',
     'weibo'            : 'miaopai',
     'veoh'             : 'veoh',
     'vine'             : 'vine',
@@ -95,6 +104,7 @@ import logging
 import os
 import platform
 import re
+import socket
 import sys
 import time
 from urllib import request, parse, error
@@ -305,7 +315,53 @@ def get_content(url, headers={}, decoded=True):
     if cookies:
         cookies.add_cookie_header(req)
         req.headers.update(req.unredirected_hdrs)
-    response = request.urlopen(req)
+
+    for i in range(10):
+        try:
+            response = request.urlopen(req)
+            break
+        except socket.timeout:
+            logging.debug('request attempt %s timeout' % str(i + 1))
+
+    data = response.read()
+
+    # Handle HTTP compression for gzip and deflate (zlib)
+    content_encoding = response.getheader('Content-Encoding')
+    if content_encoding == 'gzip':
+        data = ungzip(data)
+    elif content_encoding == 'deflate':
+        data = undeflate(data)
+
+    # Decode the response body
+    if decoded:
+        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
+        if charset is not None:
+            data = data.decode(charset)
+        else:
+            data = data.decode('utf-8')
+
+    return data
+
+def post_content(url, headers={}, post_data={}, decoded=True):
+    """Post the content of a URL via sending a HTTP POST request.
+
+    Args:
+        url: A URL.
+        headers: Request headers used by the client.
+        decoded: Whether decode the response body using UTF-8 or the charset specified in Content-Type.
+
+    Returns:
+        The content as a string.
+    """
+
+    logging.debug('post_content: %s \n post_data: %s' % (url, post_data))
+
+    req = request.Request(url, headers=headers)
+    if cookies:
+        cookies.add_cookie_header(req)
+        req.headers.update(req.unredirected_hdrs)
+    post_data_enc = bytes(parse.urlencode(post_data), 'utf-8')
+    response = request.urlopen(req, data = post_data_enc)
     data = response.read()
 
     # Handle HTTP compression for gzip and deflate (zlib)
@@ -492,7 +548,11 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
     os.rename(temp_filepath, filepath)
 
-def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
+def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore_range=False, refer=None, is_part=False, faker=False, headers={}):
+    def dyn_update_url(received):
+        if callable(dyn_callback):
+            logging.debug('Calling callback %s for new URL from %s' % (dyn_callback.__name__, received))
+            return dyn_callback(received)
     if os.path.exists(filepath):
         if not force:
             if not is_part:
@@ -530,19 +590,26 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
     else:
         headers = {}
     if received:
-        headers['Range'] = 'bytes=' + str(received) + '-'
+        url = dyn_update_url(received)
+        if not ignore_range:
+            headers['Range'] = 'bytes=' + str(received) + '-'
     if refer:
         headers['Referer'] = refer
 
-    response = request.urlopen(request.Request(url, headers = headers), None)
+    response = request.urlopen(request.Request(url, headers=headers), None)
 
     with open(temp_filepath, open_mode) as output:
+        this_chunk = received
         while True:
             buffer = response.read(1024 * 256)
             if not buffer:
                 break
             output.write(buffer)
             received += len(buffer)
+            if chunk_size and (received - this_chunk) >= chunk_size:
+                url = dyn_callback(received)
+                this_chunk = received
+                response = request.urlopen(request.Request(url, headers=headers), None)
             if bar:
                 bar.update_received(len(buffer))
 
@@ -734,7 +801,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             if has_ffmpeg_installed():
                 from .processor.ffmpeg import ffmpeg_concat_av
                 ret = ffmpeg_concat_av(parts, output_filepath, ext)
-                print('Done.')
+                print('Merged into %s' % output_filename)
                 if ret == 0:
                     for part in parts: os.remove(part)
 
@@ -747,7 +814,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_flv import concat_flv
                     concat_flv(parts, output_filepath)
-                print('Done.')
+                print('Merged into %s' % output_filename)
             except:
                 raise
             else:
@@ -763,7 +830,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_mp4 import concat_mp4
                     concat_mp4(parts, output_filepath)
-                print('Done.')
+                print('Merged into %s' % output_filename)
             except:
                 raise
             else:
@@ -779,7 +846,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 else:
                     from .processor.join_ts import concat_ts
                     concat_ts(parts, output_filepath)
-                print('Done.')
+                print('Merged into %s' % output_filename)
             except:
                 raise
             else:
@@ -791,7 +858,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     print()
 
-def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}):
+def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
     assert urls
     if dry_run:
         print('Real URLs:\n%s\n' % urls)
@@ -805,7 +872,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
-    if total_size and ext in ('ts'):
+    if total_size:
         if not force and os.path.exists(filepath[:-3] + '.mkv'):
             print('Skipping %s: file already exists' % filepath[:-3] + '.mkv')
             print()
@@ -820,7 +887,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
         print('Downloading %s ...' % tr(filename))
         filepath = os.path.join(output_dir, filename)
         parts.append(filepath)
-        url_save_chunked(url, filepath, bar, refer = refer, faker = faker, headers = headers)
+        url_save_chunked(url, filepath, bar, refer = refer, faker = faker, headers = headers, **kwargs)
         bar.done()
 
         if not merge:
@@ -886,6 +953,22 @@ def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', re
     from .processor.rtmpdump import has_rtmpdump_installed, download_rtmpdump_stream
     assert has_rtmpdump_installed(), "RTMPDump not installed."
     download_rtmpdump_stream(url,  title, ext,params, output_dir)
+
+def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
+    assert url
+    if dry_run:
+        print('Real URL:\n%s\n' % [url])
+        if params.get("-y",False): #None or unset ->False
+            print('Real Playpath:\n%s\n' % [params.get("-y")])
+        return
+
+    if player:
+        launch_player(player, [url])
+        return
+
+    from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
+    assert has_ffmpeg_installed(), "FFmpeg not installed."
+    ffmpeg_download_stream(url, title, ext, params, output_dir)
 
 def playlist_not_supported(name):
     def f(*args, **kwargs):
@@ -1015,6 +1098,22 @@ def set_http_proxy(proxy):
     opener = request.build_opener(proxy_support)
     request.install_opener(opener)
 
+def print_more_compatible(*args, **kwargs):
+    import builtins as __builtin__
+    """Overload default print function as py (<3.3) does not support 'flush' keyword.
+    Although the function name can be same as print to get itself overloaded automatically,
+    I'd rather leave it with a different name and only overload it when importing to make less confusion. """
+    # nothing happens on py3.3 and later
+    if sys.version_info[:2] >= (3, 3):
+        return __builtin__.print(*args, **kwargs)
+
+    # in lower pyver (e.g. 3.2.x), remove 'flush' keyword and flush it as requested
+    doFlush = kwargs.pop('flush', False)
+    ret = __builtin__.print(*args, **kwargs)
+    if doFlush:
+        kwargs.get('file', sys.stdout).flush()
+    return ret
+
 
 
 def download_main(download, download_playlist, urls, playlist, **kwargs):
@@ -1060,11 +1159,13 @@ def script_main(script_name, download, download_playlist, **kwargs):
     -x | --http-proxy <HOST:PORT>       Use an HTTP proxy for downloading.
     -y | --extractor-proxy <HOST:PORT>  Use an HTTP proxy for extracting only.
          --no-proxy                     Never use a proxy.
+    -s | --socks-proxy <HOST:PORT>      Use an SOCKS5 proxy for downloading.
+    -t | --timeout <SECONDS>            Set socket timeout.
     -d | --debug                        Show traceback and other debug info.
     '''
 
-    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'extractor-proxy=', 'lang=']
+    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:s:t:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'socks-proxy=', 'extractor-proxy=', 'lang=', 'timeout=']
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -1092,8 +1193,10 @@ def script_main(script_name, download, download_playlist, **kwargs):
     lang = None
     output_dir = '.'
     proxy = None
+    socks_proxy = None
     extractor_proxy = None
     traceback = False
+    timeout = 600
     for o, a in opts:
         if o in ('-V', '--version'):
             version()
@@ -1163,10 +1266,14 @@ def script_main(script_name, download, download_playlist, **kwargs):
             caption = False
         elif o in ('-x', '--http-proxy'):
             proxy = a
+        elif o in ('-s', '--socks-proxy'):
+            socks_proxy = a
         elif o in ('-y', '--extractor-proxy'):
             extractor_proxy = a
         elif o in ('--lang',):
             lang = a
+        elif o in ('-t', '--timeout'):
+            timeout = int(a)
         else:
             log.e("try 'you-get --help' for more options")
             sys.exit(2)
@@ -1174,7 +1281,26 @@ def script_main(script_name, download, download_playlist, **kwargs):
         print(help)
         sys.exit()
 
-    set_http_proxy(proxy)
+    if (socks_proxy):
+        try:
+            import socket
+            import socks
+            socks_proxy_addrs = socks_proxy.split(':')
+            socks.set_default_proxy(socks.SOCKS5,
+                                    socks_proxy_addrs[0],
+                                    int(socks_proxy_addrs[1]))
+            socket.socket = socks.socksocket
+            def getaddrinfo(*args):
+                return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
+            socket.getaddrinfo = getaddrinfo
+        except ImportError:
+            log.w('Error importing PySocks library, socks proxy ignored.'
+                'In order to use use socks proxy, please install PySocks.')
+    else:
+        import socket
+        set_http_proxy(proxy)
+
+    socket.setdefaulttimeout(timeout)
 
     try:
         if stream_id:

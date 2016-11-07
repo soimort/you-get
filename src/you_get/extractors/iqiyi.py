@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 
 from ..common import *
+from ..common import print_more_compatible as print
 from ..extractor import VideoExtractor
+from ..util import log
+from .. import json_output
+
 from uuid import uuid4
 from random import random,randint
 import json
 from math import floor
 from zlib import decompress
 import hashlib
+import time
 
 '''
 Changelog:
@@ -44,6 +49,7 @@ bid meaning for quality
 96 topspeed
 
 '''
+'''
 def mix(tvid):
     salt = '4a1caba4b4465345366f28da7c117d20'
     tm = str(randint(2000,4000))
@@ -75,42 +81,37 @@ def getDispathKey(rid):
     time=json.loads(get_content("http://data.video.qiyi.com/t?tn="+str(random())))["t"]
     t=str(int(floor(int(time)/(10*60.0))))
     return hashlib.new("md5",bytes(t+tp+rid,"utf-8")).hexdigest()
+'''
+def getVMS(tvid, vid):
+    t = int(time.time() * 1000)
+    src = '76f90cbd92f94a2e925d83e8ccd22cb7'
+    key = 'd5fb4bd9d50c4be6948c97edd7254b0e'
+    sc = hashlib.new('md5', bytes(str(t) + key  + vid, 'utf-8')).hexdigest()
+    vmsreq= url = 'http://cache.m.iqiyi.com/tmts/{0}/{1}/?t={2}&sc={3}&src={4}'.format(tvid,vid,t,sc,src)
+    return json.loads(get_content(vmsreq))
 
 class Iqiyi(VideoExtractor):
     name = "爱奇艺 (Iqiyi)"
 
     stream_types = [
-        {'id': '4k', 'container': 'f4v', 'video_profile': '4K'},
-        {'id': 'fullhd', 'container': 'f4v', 'video_profile': '全高清'},
-        {'id': 'suprt-high', 'container': 'f4v', 'video_profile': '超高清'},
-        {'id': 'super', 'container': 'f4v', 'video_profile': '超清'},
-        {'id': 'high', 'container': 'f4v', 'video_profile': '高清'},
-        {'id': 'standard', 'container': 'f4v', 'video_profile': '标清'},
-        {'id': 'topspeed', 'container': 'f4v', 'video_profile': '最差'},
+        {'id': '4k', 'container': 'm3u8', 'video_profile': '4k'},
+        {'id': 'BD', 'container': 'm3u8', 'video_profile': '1080p'},
+        {'id': 'TD', 'container': 'm3u8', 'video_profile': '720p'},
+        {'id': 'HD', 'container': 'm3u8', 'video_profile': '540p'},
+        {'id': 'SD', 'container': 'm3u8', 'video_profile': '360p'},
+        {'id': 'LD', 'container': 'm3u8', 'video_profile': '210p'},
     ]
+    '''
+    supported_stream_types = [ 'high', 'standard']
+
 
     stream_to_bid = {  '4k': 10, 'fullhd' : 5, 'suprt-high' : 4, 'super' : 3, 'high' : 2, 'standard' :1, 'topspeed' :96}
+    '''
+    ids = ['4k','BD', 'TD', 'HD', 'SD', 'LD']
+    vd_2_id = {10: '4k', 19: '4k', 5:'BD', 18: 'BD', 21: 'HD', 2: 'HD', 4: 'TD', 17: 'TD', 96: 'LD', 1: 'SD'}
+    id_2_profile = {'4k':'4k', 'BD': '1080p','TD': '720p', 'HD': '540p', 'SD': '360p', 'LD': '210p'}
 
-    stream_urls = {  '4k': [] , 'fullhd' : [], 'suprt-high' : [], 'super' : [], 'high' : [], 'standard' :[], 'topspeed' :[]}
 
-    baseurl = ''
-
-    gen_uid = ''
-    def getVMS(self):
-        #tm ->the flash run time for md5 usage
-        #um -> vip 1 normal 0
-        #authkey -> for password protected video ,replace '' with your password
-        #puid user.passportid may empty?
-        #TODO: support password protected video
-        tvid, vid = self.vid
-        tm, sc, src = mix(tvid)
-        uid = self.gen_uid
-        vmsreq='http://cache.video.qiyi.com/vms?key=fvip&src=1702633101b340d8917a69cf8a4b8c7' +\
-                "&tvId="+tvid+"&vid="+vid+"&vinfo=1&tm="+tm+\
-                "&enc="+sc+\
-                "&qyid="+uid+"&tn="+str(random()) +"&um=1" +\
-                "&authkey="+hashlib.new('md5',bytes(hashlib.new('md5', b'').hexdigest()+str(tm)+tvid,'utf-8')).hexdigest()
-        return json.loads(get_content(vmsreq))
 
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
@@ -133,14 +134,88 @@ class Iqiyi(VideoExtractor):
                       r1(r'vid=([^&]+)', self.url) or \
                       r1(r'data-player-videoid="([^"]+)"', html)
             self.vid = (tvid, videoid)
+            self.title = match1(html, '<title>([^<]+)').split('-')[0]
+        tvid, videoid = self.vid
+        info = getVMS(tvid, videoid)
+        assert info['code'] == 'A00000', 'can\'t play this video'
 
-        self.gen_uid = uuid4().hex
-        try:
-            info = self.getVMS()
-        except:
-            self.download_playlist_by_url(self.url, **kwargs)
-            exit(0)
+        for stream in info['data']['vidl']:
+            try:
+                stream_id = self.vd_2_id[stream['vd']]
+                if stream_id in self.stream_types:
+                    continue
+                stream_profile = self.id_2_profile[stream_id]
+                self.streams[stream_id] = {'video_profile': stream_profile, 'container': 'm3u8', 'src': [stream['m3u']], 'size' : 0}
+            except:
+                log.i("vd: {} is not handled".format(stream['vd']))
+                log.i("info is {}".format(stream))
+    
 
+    def download(self, **kwargs):
+        """Override the original one
+        Ugly ugly dirty hack"""
+        if 'json_output' in kwargs and kwargs['json_output']:
+            json_output.output(self)
+        elif 'info_only' in kwargs and kwargs['info_only']:
+            if 'stream_id' in kwargs and kwargs['stream_id']:
+                # Display the stream
+                stream_id = kwargs['stream_id']
+                if 'index' not in kwargs:
+                    self.p(stream_id)
+                else:
+                    self.p_i(stream_id)
+            else:
+                # Display all available streams
+                if 'index' not in kwargs:
+                    self.p([])
+                else:
+                    stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
+                    self.p_i(stream_id)
+
+        else:
+            if 'stream_id' in kwargs and kwargs['stream_id']:
+                # Download the stream
+                stream_id = kwargs['stream_id']
+            else:
+                # Download stream with the best quality
+                stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
+
+            if 'index' not in kwargs:
+                self.p(stream_id)
+            else:
+                self.p_i(stream_id)
+
+            if stream_id in self.streams:
+                urls = self.streams[stream_id]['src']
+                ext = self.streams[stream_id]['container']
+                total_size = self.streams[stream_id]['size']
+            else:
+                urls = self.dash_streams[stream_id]['src']
+                ext = self.dash_streams[stream_id]['container']
+                total_size = self.dash_streams[stream_id]['size']
+
+            if not urls:
+                log.wtf('[Failed] Cannot extract video source.')
+            # For legacy main()
+            
+            #Here's the change!!
+            download_url_ffmpeg(urls[0], self.title, 'mp4',
+                          output_dir=kwargs['output_dir'],
+                          merge=kwargs['merge'],)
+
+            if not kwargs['caption']:
+                print('Skipping captions.')
+                return
+            for lang in self.caption_tracks:
+                filename = '%s.%s.srt' % (get_filename(self.title), lang)
+                print('Saving %s ... ' % filename, end="", flush=True)
+                srt = self.caption_tracks[lang]
+                with open(os.path.join(kwargs['output_dir'], filename),
+                          'w', encoding='utf-8') as x:
+                    x.write(srt)
+                print('Done.')    
+
+'''
         if info["code"] != "A000000":
             log.e("[error] outdated iQIYI key")
             log.wtf("is your you-get up-to-date?")
@@ -208,6 +283,7 @@ class Iqiyi(VideoExtractor):
         #because the url is generated before start downloading
         #and the key may be expired after 10 minutes
         self.streams[stream_id]['src'] = urls
+'''
 
 site = Iqiyi()
 download = site.download_by_url

@@ -27,12 +27,29 @@ def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
         download_urls(urls, title, ext, size, output_dir, merge = merge)
 
 def ku6_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    patterns = [r'http://v.ku6.com/special/show_\d+/(.*)\.\.\.html',
-            r'http://v.ku6.com/show/(.*)\.\.\.html',
-            r'http://my.ku6.com/watch\?.*v=(.*)\.\..*']
-    id = r1_of(patterns, url)
+    id = None
+
+    if match1(url, r'http://baidu.ku6.com/watch/(.*)\.html') is not None:
+        id = baidu_ku6(url)
+    else:
+        patterns = [r'http://v.ku6.com/special/show_\d+/(.*)\.\.\.html',
+                r'http://v.ku6.com/show/(.*)\.\.\.html',
+                r'http://my.ku6.com/watch\?.*v=(.*)\.\..*']
+        id = r1_of(patterns, url)
 
     ku6_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
+
+def baidu_ku6(url):
+    id = None
+
+    h1 = get_html(url)
+    isrc = match1(h1, r'<iframe id="innerFrame" src="([^"]*)"')
+
+    if isrc is not None:
+        h2 = get_html(isrc)
+        id = match1(h2, r'http://v.ku6.com/show/(.*)\.\.\.html')
+
+    return id
 
 site_info = "Ku6.com"
 download = ku6_download

@@ -14,7 +14,7 @@ def get_k(vid, rand):
 
 def video_info_xml(vid):
     rand = "0.{0}{1}".format(randint(10000, 10000000), randint(10000, 10000000))
-    url = 'http://v.iask.com/v_play.php?vid={0}&ran={1}&p=i&k={2}'.format(vid, rand, get_k(vid, rand))
+    url = 'http://ask.ivideo.sina.com.cn/v_play.php?vid={0}&ran={1}&p=i&k={2}'.format(vid, rand, get_k(vid, rand))
     xml = get_content(url, headers=fake_headers, decoded=True)
     return xml
 
@@ -71,7 +71,7 @@ def sina_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             vid = vids[-1]
 
     if vid is None:
-        vid = match1(video_page, r'vid:(\d+)')
+        vid = match1(video_page, r'vid:"?(\d+)"?')
     if vid:
         title = match1(video_page, r'title\s*:\s*\'([^\']+)\'')
         sina_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)

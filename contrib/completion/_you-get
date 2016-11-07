@@ -1,0 +1,29 @@
+#compdef you-get
+
+# Zsh completion definition for soimort/you-get.
+
+setopt localoptions noshwordsplit noksharrays
+local -a args
+
+args=(
+    '(- : *)'{-V,--version}'[print version and exit]'
+    '(- : *)'{-h,--help}'[print help and exit]'
+    '(-i --info)'{-i,--info}'[print extracted information]'
+    '(-u --url)'{-u,--url}'[print extracted information with URLs]'
+    '(--json)--json[print extracted URLs in JSON format]'
+    '(-n --no-merge)'{-n,--no-merge}'[do not merge video parts]'
+    '(--no-caption)--no-caption[do not download captions]'
+    '(-f --force)'{-f,--force}'[force overwrite existing files]'
+    '(-F --format)'{-F,--format}'[set video format to the specified stream id]:stream id'
+    '(-O --output-filename)'{-O,--output-filename}'[set output filename]:filename:_files'
+    '(-o --output-dir)'{-o,--output-dir}'[set output directory]:directory:_files -/'
+    '(-p --player)'{-p,--player}'[stream extracted URL to the specified player]:player and options'
+    '(-c --cookies)'{-c,--cookies}'[load cookies.txt or cookies.sqlite]:cookies file:_files'
+    '(-x --http-proxy)'{-x,--http-proxy}'[use the specified HTTP proxy for downloading]:host\:port:'
+    '(-y --extractor-proxy)'{-y,--extractor-proxy}'[use the specified HTTP proxy for extraction only]:host\:port'
+    '(--no-proxy)--no-proxy[do not use a proxy]'
+    '(-t --timeout)'{-t,--timeout}'[set socket timeout]:seconds'
+    '(-d --debug)'{-d,--debug}'[show traceback and other debug info]'
+    '*: :_guard "^-*" url'
+)
+_arguments -S -s $args

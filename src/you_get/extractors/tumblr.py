@@ -68,7 +68,7 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         real_url = r1(r'<source src="([^"]*)"', html)
     if not real_url:
         iframe_url = r1(r'<[^>]+tumblr_video_container[^>]+><iframe[^>]+src=[\'"]([^\'"]*)[\'"]', html)
-        if len(iframe_url) > 0:
+        if iframe_url:
             iframe_html = get_content(iframe_url, headers=fake_headers)
             real_url = r1(r'<video[^>]*>[\n ]*<source[^>]+src=[\'"]([^\'"]*)[\'"]', iframe_html)
         else:
