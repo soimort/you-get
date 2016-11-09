@@ -155,6 +155,8 @@ class YouTube(VideoExtractor):
                 try:
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
                     self.html5player = 'https:' + ytplayer_config['assets']['js']
+                    # Workaround: get_video_info returns bad s. Why?
+                    stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                 except:
                     self.html5player = None
 
