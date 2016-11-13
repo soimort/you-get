@@ -12,11 +12,11 @@ import re
 class MGTV(VideoExtractor):
     name = "芒果 (MGTV)"
 
-    # Last updated: 2015-11-24
+    # Last updated: 2016-11-13
     stream_types = [
-        {'id': 'hd', 'container': 'flv', 'video_profile': '超清'},
-        {'id': 'sd', 'container': 'flv', 'video_profile': '高清'},
-        {'id': 'ld', 'container': 'flv', 'video_profile': '标清'},
+        {'id': 'hd', 'container': 'ts', 'video_profile': '超清'},
+        {'id': 'sd', 'container': 'ts', 'video_profile': '高清'},
+        {'id': 'ld', 'container': 'ts', 'video_profile': '标清'},
     ]
     
     id_dic = {i['video_profile']:(i['id']) for i in stream_types}
@@ -27,7 +27,7 @@ class MGTV(VideoExtractor):
     def get_vid_from_url(url):
         """Extracts video ID from URL.
         """
-        return match1(url, 'http://www.mgtv.com/v/\d/\d+/\w+/(\d+).html')
+        return match1(url, 'http://www.mgtv.com/b/\d+/(\d+).html')
     
     #----------------------------------------------------------------------
     @staticmethod
@@ -44,10 +44,15 @@ class MGTV(VideoExtractor):
 
         content = get_content(content['info'])  #get the REAL M3U url, maybe to be changed later?
         segment_list = []
+        segments_size = 0
         for i in content.split():
             if not i.startswith('#'):  #not the best way, better we use the m3u8 package
                 segment_list.append(base_url + i)
-        return segment_list
+            # use ext-info for fast size calculate
+            elif i.startswith('#EXT-MGTV-File-SIZE:'):
+                segments_size += int(i[i.rfind(':')+1:])
+
+        return m3u_url, segments_size, segment_list
 
     def download_playlist_by_url(self, url, **kwargs):
         pass
@@ -69,28 +74,25 @@ class MGTV(VideoExtractor):
                 quality_id = self.id_dic[s['video_profile']]
                 url = stream_available[s['video_profile']]
                 url = re.sub( r'(\&arange\=\d+)', '', url)  #Un-Hum
-                segment_list_this = self.get_mgtv_real_url(url)
-                
-                container_this_stream = ''
-                size_this_stream = 0
+                m3u8_url, m3u8_size, segment_list_this = self.get_mgtv_real_url(url)
+
                 stream_fileid_list = []
                 for i in segment_list_this:
-                    _, container_this_stream, size_this_seg = url_info(i)
-                    size_this_stream += size_this_seg
                     stream_fileid_list.append(os.path.basename(i).split('.')[0])
-                    
+
             #make pieces
             pieces = []
             for i in zip(stream_fileid_list, segment_list_this):
                 pieces.append({'fileid': i[0], 'segs': i[1],})
 
                 self.streams[quality_id] = {
-                        'container': 'flv',
+                        'container': s['container'],
                         'video_profile': s['video_profile'],
-                        'size': size_this_stream,
-                        'pieces': pieces
+                        'size': m3u8_size,
+                        'pieces': pieces,
+                        'm3u8_url': m3u8_url
                     }
-                
+
             if not kwargs['info_only']:
                 self.streams[quality_id]['src'] = segment_list_this
 
@@ -106,6 +108,44 @@ class MGTV(VideoExtractor):
         else:
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
+
+    def download(self, **kwargs):
+
+        if 'stream_id' in kwargs and kwargs['stream_id']:
+            stream_id = kwargs['stream_id']
+        else:
+            stream_id = 'null'
+
+        # print video info only
+        if 'info_only' in kwargs and kwargs['info_only']:
+            if stream_id != 'null':
+                if 'index' not in kwargs:
+                    self.p(stream_id)
+                else:
+                    self.p_i(stream_id)
+            else:
+                # Display all available streams
+                if 'index' not in kwargs:
+                    self.p([])
+                else:
+                    stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
+                    self.p_i(stream_id)
+
+        # default to use the best quality
+        if stream_id == 'null':
+            stream_id = self.streams_sorted[0]['id']
+
+        stream_info = self.streams[stream_id]
+
+        if not kwargs['info_only']:
+            if player:
+                # with m3u8 format because some video player can process urls automatically (e.g. mpv)
+                launch_player(player, [stream_info['m3u8_url']])
+            else:
+                download_urls(stream_info['src'], self.title, stream_info['container'], stream_info['size'],
+                              output_dir=kwargs['output_dir'],
+                              merge=kwargs['merge'],
+                              av=stream_id in self.dash_streams)
 
 site = MGTV()
 download = site.download_by_url
