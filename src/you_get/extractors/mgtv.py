@@ -18,17 +18,18 @@ class MGTV(VideoExtractor):
         {'id': 'sd', 'container': 'flv', 'video_profile': '高清'},
         {'id': 'ld', 'container': 'flv', 'video_profile': '标清'},
     ]
-    
+
     id_dic = {i['video_profile']:(i['id']) for i in stream_types}
-    
+
     api_endpoint = 'http://v.api.mgtv.com/player/video?video_id={video_id}'
 
     @staticmethod
     def get_vid_from_url(url):
         """Extracts video ID from URL.
         """
-        return match1(url, 'http://www.mgtv.com/v/\d/\d+/\w+/(\d+).html')
-    
+        return match1(url, 'http://www.mgtv.com/v/\d/\d+/\w+/(\d+).html') or \
+          match1(url, 'http://www.mgtv.com/b/\d+/(\d+).html')
+
     #----------------------------------------------------------------------
     @staticmethod
     def get_mgtv_real_url(url):
@@ -37,7 +38,7 @@ class MGTV(VideoExtractor):
         content = loads(get_content(url))
         m3u_url = content['info']
         split = urlsplit(m3u_url)
-        
+
         base_url = "{scheme}://{netloc}{path}/".format(scheme = split[0],
                                                       netloc = split[1],
                                                       path = dirname(split[2]))
@@ -58,7 +59,7 @@ class MGTV(VideoExtractor):
         content = get_content(self.api_endpoint.format(video_id = self.vid))
         content = loads(content)
         self.title = content['data']['info']['title']
-        
+
         #stream_avalable = [i['name'] for i in content['data']['stream']]
         stream_available = {}
         for i in content['data']['stream']:
@@ -70,7 +71,7 @@ class MGTV(VideoExtractor):
                 url = stream_available[s['video_profile']]
                 url = re.sub( r'(\&arange\=\d+)', '', url)  #Un-Hum
                 segment_list_this = self.get_mgtv_real_url(url)
-                
+
                 container_this_stream = ''
                 size_this_stream = 0
                 stream_fileid_list = []
@@ -78,7 +79,7 @@ class MGTV(VideoExtractor):
                     _, container_this_stream, size_this_seg = url_info(i)
                     size_this_stream += size_this_seg
                     stream_fileid_list.append(os.path.basename(i).split('.')[0])
-                    
+
             #make pieces
             pieces = []
             for i in zip(stream_fileid_list, segment_list_this):
@@ -90,7 +91,7 @@ class MGTV(VideoExtractor):
                         'size': size_this_stream,
                         'pieces': pieces
                     }
-                
+
             if not kwargs['info_only']:
                 self.streams[quality_id]['src'] = segment_list_this
 
