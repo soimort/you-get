@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.575
+project-version: 0.4.595
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://github.com/soimort/you-get/releases/download/v0.4.575/you-get-0.4.575.tar.gz
+download-url: https://github.com/soimort/you-get/releases/download/v0.4.595/you-get-0.4.595.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: ac6d5384cdc7f2505b0341ecd56e0f15361921cc
-download-signature: https://github.com/soimort/you-get/releases/download/v0.4.575/you-get-0.4.575.tar.gz.asc
+download-checksum-data: 41f6bd339b327637cc16ef434bf9b4684f67ad06
+download-signature: https://github.com/soimort/you-get/releases/download/v0.4.595/you-get-0.4.595.tar.gz.asc
 
 ---
 # You-Get
@@ -142,7 +142,7 @@ $ you-get https://github.com/soimort/you-get/archive/master.zip
 or use [chocolatey package manager](https://chocolatey.org):
 
 ```
-> choco upgrade you-get 
+> choco upgrade you-get
 ```
 
 In order to get the latest ```develop``` branch without messing up the PIP, you can try:
@@ -387,7 +387,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
 | **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
 | Dilidili | <http://www.dilidili.com/>     |✓| | |
-| 豆瓣     | <http://www.douban.com/>       | | |✓|
+| 豆瓣     | <http://www.douban.com/>       |✓| |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
 | Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
