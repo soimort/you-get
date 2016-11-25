@@ -10,6 +10,7 @@ def legitimize(text, os=platform.system()):
     text = text.translate({
         0: None,
         ord('/'): '-',
+        ord('|'): '-',
     })
 
     if os == 'Windows':
@@ -20,7 +21,6 @@ def legitimize(text, os=platform.system()):
             ord('*'): '-',
             ord('?'): '-',
             ord('\\'): '-',
-            ord('|'): '-',
             ord('\"'): '\'',
             # Reserved in Windows VFAT
             ord('+'): '-',
