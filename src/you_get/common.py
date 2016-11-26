@@ -338,7 +338,7 @@ def get_content(url, headers={}, decoded=True):
         if charset is not None:
             data = data.decode(charset)
         else:
-            data = data.decode('utf-8')
+            data = data.decode('utf-8', 'ignore')
 
     return data
 
@@ -395,12 +395,12 @@ def url_size(url, faker = False, headers = {}):
 def urls_size(urls, faker = False, headers = {}):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
-def get_head(url, headers = {}):
+def get_head(url, headers = {}, get_method = 'HEAD'):
     if headers:
         req = request.Request(url, headers = headers)
     else:
         req = request.Request(url)
-    req.get_method = lambda : 'HEAD'
+    req.get_method = lambda : get_method
     res = request.urlopen(req)
     return dict(res.headers)
 
