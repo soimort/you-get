@@ -32,11 +32,11 @@ def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = 
 def tudou_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if 'acfun.tudou.com' in url:  #wrong way!
         url = url.replace('acfun.tudou.com', 'www.acfun.tv')
-        you_get.extractors.acfun.acfun_download(url, output_dir, 
-                                               merge, 
+        you_get.extractors.acfun.acfun_download(url, output_dir,
+                                               merge,
                                                info_only)
         return  #throw you back
-    
+
     # Embedded player
     id = r1(r'http://www.tudou.com/v/([^/]+)/', url)
     if id:
@@ -44,7 +44,7 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False, **kwa
 
     html = get_decoded_html(url)
 
-    title = r1(r'kw\s*[:=]\s*[\'\"]([^\n]+?)\'\s*\n', html).replace("\\'", "\'")
+    title = r1(r'\Wkw\s*[:=]\s*[\'\"]([^\n]+?)\'\s*\n', html).replace("\\'", "\'")
     assert title
     title = unescape_html(title)
 
