@@ -125,7 +125,7 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
 
         params = [FFMPEG] + LOGLEVEL + ['-f', 'concat', '-safe', '-1', '-y', '-i']
         params.append(output + '.txt')
-        params += ['-c', 'copy', output]
+        params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', output]
 
         subprocess.check_call(params)
         os.remove(output + '.txt')
@@ -212,15 +212,6 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
     if not (output_dir == '.'):
         output = output_dir + '/' + output
 
-    ffmpeg_params = []
-    #should these exist...
-    if params is not None:
-        if len(params) > 0:
-            for k, v in params:
-                ffmpeg_params.append(k)
-                ffmpeg_params.append(v)
-
-
     print('Downloading streaming content with FFmpeg, press q to stop recording...')
     ffmpeg_params = [FFMPEG] + ['-y', '-re', '-i']
     ffmpeg_params.append(files)  #not the same here!!!!
@@ -229,6 +220,12 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
         ffmpeg_params += ['-c', 'copy', output]
     else:
         ffmpeg_params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc']
+
+    if params is not None:
+        if len(params) > 0:
+            for k, v in params:
+                ffmpeg_params.append(k)
+                ffmpeg_params.append(v)
 
     ffmpeg_params.append(output)
 

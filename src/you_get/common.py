@@ -27,7 +27,9 @@ SITES = {
     'google'           : 'google',
     'heavy-music'      : 'heavymusic',
     'huaban'           : 'huaban',
+    'huomao'           : 'huomaotv',
     'iask'             : 'sina',
+    'icourses'         : 'icourses',
     'ifeng'            : 'ifeng',
     'imgur'            : 'imgur',
     'in'               : 'alive',
@@ -340,6 +342,45 @@ def get_content(url, headers={}, decoded=True):
 
     return data
 
+def post_content(url, headers={}, post_data={}, decoded=True):
+    """Post the content of a URL via sending a HTTP POST request.
+
+    Args:
+        url: A URL.
+        headers: Request headers used by the client.
+        decoded: Whether decode the response body using UTF-8 or the charset specified in Content-Type.
+
+    Returns:
+        The content as a string.
+    """
+
+    logging.debug('post_content: %s \n post_data: %s' % (url, post_data))
+
+    req = request.Request(url, headers=headers)
+    if cookies:
+        cookies.add_cookie_header(req)
+        req.headers.update(req.unredirected_hdrs)
+    post_data_enc = bytes(parse.urlencode(post_data), 'utf-8')
+    response = request.urlopen(req, data = post_data_enc)
+    data = response.read()
+
+    # Handle HTTP compression for gzip and deflate (zlib)
+    content_encoding = response.getheader('Content-Encoding')
+    if content_encoding == 'gzip':
+        data = ungzip(data)
+    elif content_encoding == 'deflate':
+        data = undeflate(data)
+
+    # Decode the response body
+    if decoded:
+        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
+        if charset is not None:
+            data = data.decode(charset)
+        else:
+            data = data.decode('utf-8')
+
+    return data
+
 def url_size(url, faker = False, headers = {}):
     if faker:
         response = request.urlopen(request.Request(url, headers = fake_headers), None)
@@ -507,7 +548,11 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         os.remove(filepath) # on Windows rename could fail if destination filepath exists
     os.rename(temp_filepath, filepath)
 
-def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
+def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore_range=False, refer=None, is_part=False, faker=False, headers={}):
+    def dyn_update_url(received):
+        if callable(dyn_callback):
+            logging.debug('Calling callback %s for new URL from %s' % (dyn_callback.__name__, received))
+            return dyn_callback(received)
     if os.path.exists(filepath):
         if not force:
             if not is_part:
@@ -545,19 +590,26 @@ def url_save_chunked(url, filepath, bar, refer = None, is_part = False, faker = 
     else:
         headers = {}
     if received:
-        headers['Range'] = 'bytes=' + str(received) + '-'
+        url = dyn_update_url(received)
+        if not ignore_range:
+            headers['Range'] = 'bytes=' + str(received) + '-'
     if refer:
         headers['Referer'] = refer
 
-    response = request.urlopen(request.Request(url, headers = headers), None)
+    response = request.urlopen(request.Request(url, headers=headers), None)
 
     with open(temp_filepath, open_mode) as output:
+        this_chunk = received
         while True:
             buffer = response.read(1024 * 256)
             if not buffer:
                 break
             output.write(buffer)
             received += len(buffer)
+            if chunk_size and (received - this_chunk) >= chunk_size:
+                url = dyn_callback(received)
+                this_chunk = received
+                response = request.urlopen(request.Request(url, headers=headers), None)
             if bar:
                 bar.update_received(len(buffer))
 
@@ -806,7 +858,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     print()
 
-def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}):
+def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
     assert urls
     if dry_run:
         print('Real URLs:\n%s\n' % urls)
@@ -820,7 +872,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
-    if total_size and ext in ('ts'):
+    if total_size:
         if not force and os.path.exists(filepath[:-3] + '.mkv'):
             print('Skipping %s: file already exists' % filepath[:-3] + '.mkv')
             print()
@@ -835,7 +887,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
         print('Downloading %s ...' % tr(filename))
         filepath = os.path.join(output_dir, filename)
         parts.append(filepath)
-        url_save_chunked(url, filepath, bar, refer = refer, faker = faker, headers = headers)
+        url_save_chunked(url, filepath, bar, refer = refer, faker = faker, headers = headers, **kwargs)
         bar.done()
 
         if not merge:

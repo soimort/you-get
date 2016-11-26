@@ -128,7 +128,7 @@ $ you-get https://github.com/soimort/you-get/archive/master.zip
 or use [chocolatey package manager](https://chocolatey.org):
 
 ```
-> choco upgrade you-get 
+> choco upgrade you-get
 ```
 
 In order to get the latest ```develop``` branch without messing up the PIP, you can try:
@@ -373,7 +373,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
 | **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
 | Dilidili | <http://www.dilidili.com/>     |✓| | |
-| 豆瓣     | <http://www.douban.com/>       | | |✓|
+| 豆瓣     | <http://www.douban.com/>       |✓| |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
 | Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
@@ -407,6 +407,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 花瓣     | <http://huaban.com/>           | |✓| |
 | Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
 | 芒果TV   | <http://www.mgtv.com/>         |✓| | |
+| 火猫TV   | <http://www.huomao.com/>         |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
