@@ -56,12 +56,12 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             if not info_only:
                 download_urls(part_urls, parts_ti, ext, total_size, output_dir=output_dir, merge=merge)
         else:
-            fvkey = output_json['vl']['vi'][0]['fvkey']
-            mp4 = output_json['vl']['vi'][0]['cl'].get('ci', None)
+            fvkey = video_json['vl']['vi'][0]['fvkey']
+            mp4 = video_json['vl']['vi'][0]['cl'].get('ci', None)
             if mp4:
                 mp4 = mp4[0]['keyid'].replace('.10', '.p') + '.mp4'
             else:
-                mp4 = output_json['vl']['vi'][0]['fn']
+                mp4 = video_json['vl']['vi'][0]['fn']
             url = '%s/%s?vkey=%s' % ( parts_prefix, mp4, fvkey )
             _, ext, size = url_info(url, faker=True)
 
