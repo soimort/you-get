@@ -1080,11 +1080,25 @@ def parse_host(host):
     return (hostname, port)
 
 def set_proxy(proxy):
-    proxy_handler = request.ProxyHandler({
-        'http': '%s:%s' % proxy,
-        'https': '%s:%s' % proxy,
-    })
-    opener = request.build_opener(proxy_handler)
+    cred = match1(proxy, r'(.*)@')
+    if cred: # Proxy with authentication
+        user, passwd = match1(cred, r'(.*):'), match1(cred, r':(.*)')
+        proxy_url = match1(proxy, r'@(.*)')
+        logging.info("use proxy: %s" % proxy_url)
+
+        pass_mgr = request. HTTPPasswordMgrWithDefaultRealm()
+        pass_mgr.add_password(None, proxy_url, user, passwd)
+        proxy_handler = request.ProxyHandler({'http': '%s' % proxy_url,
+                                              'https': '%s' % proxy_url})
+        proxy_auth_handler = request.ProxyBasicAuthHandler(pass_mgr)
+        opener = request.build_opener(proxy_handler, proxy_auth_handler)
+    else:
+        logging.info("use proxy: %s" % proxy)
+
+        proxy_handler = request.ProxyHandler({'http': '%s' % proxy,
+                                              'https': '%s' % proxy})
+        opener = request.build_opener(proxy_handler)
+
     request.install_opener(opener)
 
 def unset_proxy():
@@ -1096,11 +1110,30 @@ def unset_proxy():
 def set_http_proxy(proxy):
     if proxy == None: # Use system default setting
         proxy_support = request.ProxyHandler()
+        opener = request.build_opener(proxy_support)
     elif proxy == '': # Don't use any proxy
         proxy_support = request.ProxyHandler({})
-    else: # Use proxy
-        proxy_support = request.ProxyHandler({'http': '%s' % proxy, 'https': '%s' % proxy})
-    opener = request.build_opener(proxy_support)
+        opener = request.build_opener(proxy_support)
+    else:
+        cred = match1(proxy, r'(.*)@')
+        if cred: # Proxy with authentication
+            user, passwd = match1(cred, r'(.*):'), match1(cred, r':(.*)')
+            proxy_url = match1(proxy, r'@(.*)')
+            logging.info("use proxy: %s" % proxy_url)
+
+            pass_mgr = request. HTTPPasswordMgrWithDefaultRealm()
+            pass_mgr.add_password(None, proxy_url, user, passwd)
+            proxy_handler = request.ProxyHandler({'http': '%s' % proxy_url,
+                                                  'https': '%s' % proxy_url})
+            proxy_auth_handler = request.ProxyBasicAuthHandler(pass_mgr)
+            opener = request.build_opener(proxy_handler, proxy_auth_handler)
+        else:
+            logging.info("use proxy: %s" % proxy)
+
+            proxy_handler = request.ProxyHandler({'http': '%s' % proxy,
+                                                  'https': '%s' % proxy})
+            opener = request.build_opener(proxy_handler)
+
     request.install_opener(opener)
 
 def print_more_compatible(*args, **kwargs):
