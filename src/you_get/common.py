@@ -968,11 +968,15 @@ def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', 
 
     from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
     assert has_ffmpeg_installed(), "FFmpeg not installed."
+
     global output_filename
-    if(output_filename):
+    if output_filename:
         dotPos = output_filename.rfind(".")
         title = output_filename[:dotPos]
         ext = output_filename[dotPos+1:]
+
+    title = tr(get_filename(title))
+
     ffmpeg_download_stream(url, title, ext, params, output_dir)
 
 def playlist_not_supported(name):

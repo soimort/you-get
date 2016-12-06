@@ -148,6 +148,17 @@ class YouTube(VideoExtractor):
         elif video_info['status'] == ['ok']:
             if 'use_cipher_signature' not in video_info or video_info['use_cipher_signature'] == ['False']:
                 self.title = parse.unquote_plus(video_info['title'][0])
+
+                # YouTube Live
+                if 'url_encoded_fmt_stream_map' not in video_info:
+                    hlsvp = video_info['hlsvp'][0]
+
+                    if 'info_only' in kwargs and kwargs['info_only']:
+                        return
+                    else:
+                        download_url_ffmpeg(hlsvp, self.title, 'mp4')
+                        exit(0)
+
                 stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
 
                 # Parse video page (for DASH)
