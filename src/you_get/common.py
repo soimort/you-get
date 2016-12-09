@@ -1305,14 +1305,14 @@ def script_main(script_name, download, download_playlist, **kwargs):
     try:
         if stream_id:
             if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                download_main(download, download_playlist, args, playlist, stream_id=stream_id, proxy=proxy, extractor_proxy=proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
             else:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                download_main(download, download_playlist, args, playlist, stream_id=stream_id, proxy=proxy, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
         else:
             if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                download_main(download, download_playlist, args, playlist, proxy=proxy, extractor_proxy=proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
             else:
-                download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                download_main(download, download_playlist, args, playlist, proxy=proxy, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
     except KeyboardInterrupt:
         if traceback:
             raise
