@@ -34,6 +34,7 @@ from .iqilu import *
 from .iqiyi import *
 from .joy import *
 from .jpopsuki import *
+from .kissanime import *
 from .ku6 import *
 from .kugou import *
 from .kuwo import *
