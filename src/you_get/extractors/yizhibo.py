@@ -14,7 +14,7 @@ def yizhibo_download(url, output_dir = '.', merge = True, info_only = False, **k
     if (error != 1):
         raise ValueError("Error : {}".format(error))
 
-    data = json.loads(content)#['data']
+    data = json.loads(content)
     title = data.get('data')['live_title']
     if (title == ''):
         title = data.get('data')['nickname']
