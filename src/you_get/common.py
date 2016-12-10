@@ -91,6 +91,7 @@ SITES = {
     'xiaojiadianvideo' : 'fc2video',
     'yinyuetai'        : 'yinyuetai',
     'miaopai'          : 'yixia',
+    'yizhibo'          : 'yizhibo',
     'youku'            : 'youku',
     'youtu'            : 'youtube',
     'youtube'          : 'youtube',
