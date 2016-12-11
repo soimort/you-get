@@ -28,6 +28,8 @@ def yizhibo_download(url, output_dir = '.', merge = True, info_only = False, **k
         real_url.append(url)
     print_info(site_info, title, 'ts', float('inf'))
     if not info_only:
+        if player:
+            launch_player(player, [m3u8_url])
         download_urls(real_url, title, 'ts', float('inf'), output_dir, merge = merge)
 
 site_info = "yizhibo.com"
