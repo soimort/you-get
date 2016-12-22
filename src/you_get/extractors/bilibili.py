@@ -167,10 +167,10 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
                 if not pages:
                     cids = [cid]
                     titles = [r1(r'<option value=.* selected>\s*([^<>]+)\s*</option>', html) or title]
-
                 for i in range(len(cids)):
+                    completeTitle=title+"-"+titles[i]#Build Better Title
                     bilibili_download_by_cid(cids[i],
-                                             titles[i],
+                                             completeTitle,
                                              output_dir=output_dir,
                                              merge=merge,
                                              info_only=info_only)
