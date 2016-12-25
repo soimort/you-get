@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import logging
 import os.path
 import subprocess
 from ..util.strings import parameterize
@@ -21,7 +22,10 @@ def get_usable_ffmpeg(cmd):
         return None
 
 FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv') or (None, None)
-LOGLEVEL = ['-loglevel', 'quiet']
+if logging.getLogger().isEnabledFor(logging.DEBUG):
+    LOGLEVEL = ['-loglevel', 'info']
+else:
+    LOGLEVEL = ['-loglevel', 'quiet']
 
 def has_ffmpeg_installed():
     return FFMPEG is not None
