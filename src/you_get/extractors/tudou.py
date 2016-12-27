@@ -13,8 +13,9 @@ def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only 
 
     urls = []
     for vid in vids:
-        for i in parseString(get_html('http://ct.v2.tudou.com/f?id=%s' % vid)).getElementsByTagName('f'):
-            urls.append(i.firstChild.nodeValue.strip())
+        urls.append('http://vr.tudou.com/v2proxy/v?sid=95000&id={}&st=99'.format(vid))
+#         for i in parseString(get_html('http://ct.v2.tudou.com/f?id=%s' % vid)).getElementsByTagName('f'):
+#             urls.append(i.firstChild.nodeValue.strip())
 
     ext = r1(r'http://[\w.]*/(\w+)/[\w.]*', urls[0])
 
