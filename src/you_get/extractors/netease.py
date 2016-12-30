@@ -7,6 +7,7 @@ from ..common import *
 from ..common import print_more_compatible as print
 from ..util import fs
 from json import loads
+import urllib
 import hashlib
 import base64
 import os
@@ -54,7 +55,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
                 os.mkdir(new_dir)
             cover_url = j['result']['coverImgUrl']
             download_urls([cover_url], "cover", "jpg", 0, new_dir)
-        
+
         prefix_width = len(str(len(j['result']['tracks'])))
         for n, i in enumerate(j['result']['tracks']):
             playlist_prefix = '%%.%dd_' % prefix_width % n
@@ -106,18 +107,41 @@ def netease_video_download(vinfo, output_dir='.', info_only=False):
                             output_dir=output_dir, info_only=info_only)
 
 def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix=""):
+    def _download():
+        netease_download_common(title, url_best,
+                                output_dir=output_dir, info_only=info_only)
+
     title = "%s%s. %s" % (playlist_prefix, song['position'], song['name'])
     songNet = 'p' + song['mp3Url'].split('/')[2][1:]
 
-    if 'hMusic' in song and song['hMusic'] != None:
-        url_best = make_url(songNet, song['hMusic']['dfsId'])
-    elif 'mp3Url' in song:
-        url_best = song['mp3Url']
-    elif 'bMusic' in song:
-        url_best = make_url(songNet, song['bMusic']['dfsId'])
+    k = 0
+    while k < 3:
+        down = False
+        if k == 0:
+            if 'hMusic' in song and song['hMusic'] != None:
+                url_best = make_url(songNet, song['hMusic']['dfsId'])
+                print('hMusic url: %s' % url_best)
+                down = True
+        elif k == 1:
+            if 'mp3Url' in song:
+                url_best = song['mp3Url']
+                print('mp3Url url: %s' % url_best)
+                down = True
+        elif k == 2:
+            if 'bMusic' in song:
+                url_best = make_url(songNet, song['bMusic']['dfsId'])
+                print('bMusic url: %s' % url_best)
+                down = True
+        if down:
+            try:
+                _download()
+                break
+            except urllib.error.HTTPError: # urllib.error.HTTPError: HTTP Error 404: Not Found
+                import traceback
+                print(traceback.format_exc())
 
-    netease_download_common(title, url_best,
-                            output_dir=output_dir, info_only=info_only)
+        k += 1
+
 
 def netease_download_common(title, url_best, output_dir, info_only):
     songtype, ext, size = url_info(url_best)
