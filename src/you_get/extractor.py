@@ -203,10 +203,10 @@ class VideoExtractor():
                 log.wtf('[Failed] Cannot extract video source.')
             # For legacy main()
             download_urls(urls, self.title, ext, total_size,
-                          output_dir=kwargs['output_dir'],
-                          merge=kwargs['merge'],
+                          output_dir=kwargs.get('output_dir', '.'),
+                          merge=kwargs.get('merge', True),
                           av=stream_id in self.dash_streams)
-            if not kwargs['caption']:
+            if not kwargs.get('caption',True):
                 print('Skipping captions.')
                 return
             for lang in self.caption_tracks:
