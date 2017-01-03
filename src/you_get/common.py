@@ -65,6 +65,7 @@ SITES = {
     'pptv'             : 'pptv',
     'qianmo'           : 'qianmo',
     'qq'               : 'qq',
+    'quanmin'          : 'quanmin',
     'showroom-live'    : 'showroom',
     'sina'             : 'sina',
     'smgbb'            : 'bilibili',
