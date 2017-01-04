@@ -9,6 +9,7 @@ import time
 def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     roomid = url[url.rfind('/')+1:]
     json_request_url = 'http://www.panda.tv/api_room?roomid={}&pub_key=&_={}'.format(roomid, int(time.time()))
+    print(json_request_url)
     content = get_html(json_request_url)
     errno = json.loads(content)['errno']
     errmsg = json.loads(content)['errmsg']
@@ -20,6 +21,10 @@ def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     room_key = data.get('videoinfo')['room_key']
     plflag = data.get('videoinfo')['plflag'].split('_')
     status = data.get('videoinfo')['status']
+    if data.get("roominfo")["banned_reason"]:
+        data2 = json.loads(data['videoinfo']['plflag_list'])
+        plflag = data2["backup"][0].split('_')
+        print(plflag)
     if status is not "2":
         raise ValueError("The live stream is not online! (status:%s)" % status)
     real_url = 'http://pl{}.live.panda.tv/live_panda/{}.flv'.format(plflag[1],room_key)
