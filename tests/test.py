@@ -18,9 +18,6 @@ class YouGetTests(unittest.TestCase):
     def test_magisto(self):
         magisto.download("http://www.magisto.com/album/video/f3x9AAQORAkfDnIFDA", info_only=True)
 
-    def test_mixcloud(self):
-        mixcloud.download("http://www.mixcloud.com/DJVadim/north-america-are-you-ready/", info_only=True)
-
     def test_youtube(self):
         youtube.download("http://www.youtube.com/watch?v=pzKerr0JIPA", info_only=True)
         youtube.download("http://youtu.be/pzKerr0JIPA", info_only=True)

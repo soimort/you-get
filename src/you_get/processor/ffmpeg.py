@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import logging
 import os.path
 import subprocess
 from ..util.strings import parameterize
@@ -21,10 +22,25 @@ def get_usable_ffmpeg(cmd):
         return None
 
 FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv') or (None, None)
-LOGLEVEL = ['-loglevel', 'quiet']
+if logging.getLogger().isEnabledFor(logging.DEBUG):
+    LOGLEVEL = ['-loglevel', 'info']
+else:
+    LOGLEVEL = ['-loglevel', 'quiet']
 
 def has_ffmpeg_installed():
     return FFMPEG is not None
+
+# Given a list of segments and the output path, generates the concat
+# list and returns the path to the concat list.
+def generate_concat_list(files, output):
+    concat_list_path = output + '.txt'
+    concat_list_dir = os.path.dirname(concat_list_path)
+    with open(concat_list_path, 'w', encoding='utf-8') as concat_list:
+        for file in files:
+            if os.path.isfile(file):
+                relpath = os.path.relpath(file, start=concat_list_dir)
+                concat_list.write('file %s\n' % parameterize(relpath))
+    return concat_list_path
 
 def ffmpeg_concat_av(files, output, ext):
     print('Merging video parts... ', end="", flush=True)
@@ -52,17 +68,9 @@ def ffmpeg_convert_ts_to_mkv(files, output='output.mkv'):
 def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w', encoding="utf-8")
-        for file in files:
-            if os.path.isfile(file):
-                concat_list.write("file %s\n" % parameterize(file))
-        concat_list.close()
-
-        params = [FFMPEG] + LOGLEVEL
-        params.extend(['-f', 'concat', '-safe', '-1', '-y', '-i'])
-        params.append(output + '.txt')
-        params += ['-c', 'copy', output]
-
+        concat_list = generate_concat_list(files, output)
+        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '-1',
+                                        '-i', concat_list, '-c', 'copy', output]
         if subprocess.call(params) == 0:
             os.remove(output + '.txt')
             return True
@@ -115,18 +123,10 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
     print('Merging video parts... ', end="", flush=True)
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w', encoding="utf-8")
-        for file in files:
-            if os.path.isfile(file):
-                # for escaping rules, see:
-                # https://www.ffmpeg.org/ffmpeg-utils.html#Quoting-and-escaping
-                concat_list.write("file %s\n" % parameterize(file))
-        concat_list.close()
-
-        params = [FFMPEG] + LOGLEVEL + ['-f', 'concat', '-safe', '-1', '-y', '-i']
-        params.append(output + '.txt')
-        params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', output]
-
+        concat_list = generate_concat_list(files, output)
+        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '-1',
+                                        '-i', concat_list, '-c', 'copy',
+                                        '-bsf:a', 'aac_adtstoasc', output]
         subprocess.check_call(params)
         os.remove(output + '.txt')
         return True
@@ -162,16 +162,10 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
     print('Merging video parts... ', end="", flush=True)
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = open(output + '.txt', 'w', encoding="utf-8")
-        for file in files:
-            if os.path.isfile(file):
-                concat_list.write("file %s\n" % parameterize(file))
-        concat_list.close()
-
-        params = [FFMPEG] + LOGLEVEL + ['-f', 'concat', '-safe', '-1', '-y', '-i']
-        params.append(output + '.txt')
-        params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc', output]
-
+        concat_list = generate_concat_list(files, output)
+        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '-1',
+                                        '-i', concat_list, '-c', 'copy',
+                                        '-bsf:a', 'aac_adtstoasc', output]
         subprocess.check_call(params)
         os.remove(output + '.txt')
         return True
