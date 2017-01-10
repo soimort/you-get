@@ -25,8 +25,8 @@ def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwa
         raise ValueError("The live stream is not online! (status:%s)" % status)
     real_url = 'http://pl{}.live.panda.tv/live_panda/{}.flv'.format(plflag[1],room_key)
     counter = 0
+    data2 = json.loads(data['videoinfo']['plflag_list'])
     while (requests.head(real_url, allow_redirects=True).status_code == 403 and counter < len(data2["backup"])):
-        data2 = json.loads(data['videoinfo']['plflag_list'])
         plflag = data2["backup"][counter].split('_')
         counter = counter + 1
         real_url = 'http://pl{}.live.panda.tv/live_panda/{}.flv'.format(plflag[1],room_key)
