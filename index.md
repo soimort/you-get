@@ -1,15 +1,15 @@
 ---
 title: You-Get
 project-name: You-Get
-project-version: 0.4.595
+project-version: 0.4.626
 project-logo: images/logo.jpg
 background: images/background.png
 github: soimort/you-get
 url: https://you-get.org/
-download-url: https://github.com/soimort/you-get/releases/download/v0.4.595/you-get-0.4.595.tar.gz
+download-url: https://github.com/soimort/you-get/releases/download/v0.4.626/you-get-0.4.626.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: 41f6bd339b327637cc16ef434bf9b4684f67ad06
-download-signature: https://github.com/soimort/you-get/releases/download/v0.4.595/you-get-0.4.595.tar.gz.asc
+download-checksum-data: a685f8b5768d98f1a697dcbbf970cd1842103564
+download-signature: https://github.com/soimort/you-get/releases/download/v0.4.626/you-get-0.4.626.tar.gz.asc
 
 ---
 # You-Get
@@ -422,6 +422,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
 | 芒果TV   | <http://www.mgtv.com/>         |✓| | |
 | 火猫TV   | <http://www.huomao.com/>         |✓| | |
+| 全民Tv   | <http://www.quanmin.tv/>         |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
