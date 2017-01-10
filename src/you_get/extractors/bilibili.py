@@ -131,6 +131,7 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         cont = post_content('http://bangumi.bilibili.com/web_api/get_source',
                             post_data={'episode_id': episode_id})
         cid = json.loads(cont)['result']['cid']
+        title = '%s [%s]' % (title, episode_id)
         bilibili_download_by_cid(str(cid), title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     else:
