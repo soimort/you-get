@@ -56,12 +56,12 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             if not info_only:
                 download_urls(part_urls, parts_ti, ext, total_size, output_dir=output_dir, merge=merge)
         else:
-            fvkey = output_json['vl']['vi'][0]['fvkey']
-            mp4 = output_json['vl']['vi'][0]['cl'].get('ci', None)
+            fvkey = video_json['vl']['vi'][0]['fvkey']
+            mp4 = video_json['vl']['vi'][0]['cl'].get('ci', None)
             if mp4:
                 mp4 = mp4[0]['keyid'].replace('.10', '.p') + '.mp4'
             else:
-                mp4 = output_json['vl']['vi'][0]['fn']
+                mp4 = video_json['vl']['vi'][0]['fn']
             url = '%s/%s?vkey=%s' % ( parts_prefix, mp4, fvkey )
             _, ext, size = url_info(url, faker=True)
 
@@ -73,7 +73,14 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
 def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     """"""
     if 'live.qq.com' in url:
-        qieDownload(url,output_dir=output_dir, merge=merge, info_only=info_only)
+        qieDownload(url, output_dir=output_dir, merge=merge, info_only=info_only)
+        return
+
+    if 'mp.weixin.qq.com/s?' in url:
+        content = get_html(url)
+        vids = matchall(content, [r'\bvid=(\w+)'])
+        for vid in vids:
+            qq_download_by_vid(vid, vid, output_dir, merge, info_only)
         return
 
     #do redirect
@@ -100,8 +107,6 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         title = match1(content, r'title">([^"]+)</p>') if not title else title
         title = match1(content, r'"title":"([^"]+)"') if not title else title
         title = vid if not title else title #general fallback
-
-
 
     qq_download_by_vid(vid, title, output_dir, merge, info_only)
 

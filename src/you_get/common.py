@@ -65,6 +65,7 @@ SITES = {
     'pptv'             : 'pptv',
     'qianmo'           : 'qianmo',
     'qq'               : 'qq',
+    'quanmin'          : 'quanmin',
     'showroom-live'    : 'showroom',
     'sina'             : 'sina',
     'smgbb'            : 'bilibili',
@@ -338,7 +339,7 @@ def get_content(url, headers={}, decoded=True):
         if charset is not None:
             data = data.decode(charset)
         else:
-            data = data.decode('utf-8')
+            data = data.decode('utf-8', 'ignore')
 
     return data
 
@@ -395,12 +396,12 @@ def url_size(url, faker = False, headers = {}):
 def urls_size(urls, faker = False, headers = {}):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
-def get_head(url, headers = {}):
+def get_head(url, headers = {}, get_method = 'HEAD'):
     if headers:
         req = request.Request(url, headers = headers)
     else:
         req = request.Request(url)
-    req.get_method = lambda : 'HEAD'
+    req.get_method = lambda : get_method
     res = request.urlopen(req)
     return dict(res.headers)
 
@@ -968,11 +969,15 @@ def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', 
 
     from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
     assert has_ffmpeg_installed(), "FFmpeg not installed."
+
     global output_filename
-    if(output_filename):
+    if output_filename:
         dotPos = output_filename.rfind(".")
         title = output_filename[:dotPos]
         ext = output_filename[dotPos+1:]
+
+    title = tr(get_filename(title))
+
     ffmpeg_download_stream(url, title, ext, params, output_dir)
 
 def playlist_not_supported(name):

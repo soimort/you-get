@@ -6,7 +6,10 @@ from ..common import *
 from .embed import *
 
 def universal_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    content_type = get_head(url, headers=fake_headers)['Content-Type']
+    try:
+        content_type = get_head(url, headers=fake_headers)['Content-Type']
+    except:
+        content_type = get_head(url, headers=fake_headers, get_method='GET')['Content-Type']
     if content_type.startswith('text/html'):
         try:
             embed_download(url, output_dir, merge=merge, info_only=info_only)

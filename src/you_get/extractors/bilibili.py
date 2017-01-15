@@ -127,10 +127,11 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
 
     if re.match(r'https?://bangumi\.bilibili\.com/', url):
         # quick hack for bangumi URLs
-        episode_id = r1(r'data-current-episode-id="(\d+)"', html)
+        episode_id = r1(r'#(\d+)$', url) or r1(r'first_ep_id = "(\d+)"', html)
         cont = post_content('http://bangumi.bilibili.com/web_api/get_source',
                             post_data={'episode_id': episode_id})
         cid = json.loads(cont)['result']['cid']
+        title = '%s [%s]' % (title, episode_id)
         bilibili_download_by_cid(str(cid), title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     else:
