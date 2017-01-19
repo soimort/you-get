@@ -107,6 +107,11 @@ You can install `you-get` easily via:
 $ brew install you-get
 ```
 
+### Option 8: Pacman (ArchLinux only)
+```
+$ [sudo] pacman -S you-get
+```
+
 ### Shell completion
 
 Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](contrib/completion). Please consult your shell's manual for how to take advantage of them.
