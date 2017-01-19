@@ -21,7 +21,7 @@ class MGTV(VideoExtractor):
     
     id_dic = {i['video_profile']:(i['id']) for i in stream_types}
     
-    api_endpoint = 'http://v.api.mgtv.com/player/video?video_id={video_id}'
+    api_endpoint = 'http://pcweb.api.mgtv.com/player/video?video_id={video_id}'
 
     @staticmethod
     def get_vid_from_url(url):
@@ -63,6 +63,7 @@ class MGTV(VideoExtractor):
         content = get_content(self.api_endpoint.format(video_id = self.vid))
         content = loads(content)
         self.title = content['data']['info']['title']
+        domain = content['data']['stream_domain'][0]
         
         #stream_avalable = [i['name'] for i in content['data']['stream']]
         stream_available = {}
@@ -73,7 +74,7 @@ class MGTV(VideoExtractor):
             if s['video_profile'] in stream_available.keys():
                 quality_id = self.id_dic[s['video_profile']]
                 url = stream_available[s['video_profile']]
-                url = re.sub( r'(\&arange\=\d+)', '', url)  #Un-Hum
+                url = domain + re.sub( r'(\&arange\=\d+)', '', url)  #Un-Hum
                 m3u8_url, m3u8_size, segment_list_this = self.get_mgtv_real_url(url)
 
                 stream_fileid_list = []
@@ -144,8 +145,8 @@ class MGTV(VideoExtractor):
             else:
                 download_urls(stream_info['src'], self.title, stream_info['container'], stream_info['size'],
                               output_dir=kwargs['output_dir'],
-                              merge=kwargs['merge'],
-                              av=stream_id in self.dash_streams)
+                              merge=kwargs.get('merge', True))
+                              # av=stream_id in self.dash_streams)
 
 site = MGTV()
 download = site.download_by_url
