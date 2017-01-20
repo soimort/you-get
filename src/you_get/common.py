@@ -520,7 +520,8 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
             range_length = end_length - range_start
         except:
             content_length = response.headers['content-length']
-            range_length = int(content_length) if content_length!=None else float('inf')
+            range_length = int(content_length) if content_length != None else float('inf')
+            file_size = int(content_length) if content_length != None else file_size
 
         if file_size != received + range_length:
             received = 0
@@ -532,7 +533,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
             while True:
                 buffer = response.read(1024 * 256)
                 if not buffer:
-                    if received == file_size: # Download finished
+                    if received >= file_size: # Download finished
                         break
                     else: # Unexpected termination. Retry request
                         headers['Range'] = 'bytes=' + str(received) + '-'
