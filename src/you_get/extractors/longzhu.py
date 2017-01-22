@@ -64,7 +64,8 @@ def longzhu_download(url, output_dir = '.', merge = True, info_only = False, **k
             real_url = match1(html, real_url_patt).replace('\\','')
             print_info(site_info, title, 'rtmp', float('inf'))
             if not info_only:
-                download_rtmp_url([real_url], title, 'mp4', None, output_dir, merge = merge)
+                #download_rtmp_url([real_url], title, 'mp4', None, output_dir, merge = merge)
+                download_url_ffmpeg(real_url, title, 'flv', {}, output_dir = output_dir, merge = merge)
 
         elif len(offlineVideo_url) >= 4 :
             real_url = offlineVideo_url
