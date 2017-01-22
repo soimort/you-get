@@ -143,6 +143,9 @@ class Youku(VideoExtractor):
             })
         else:
             proxy_handler = request.ProxyHandler({})
+        if not request._opener:
+            opener = request.build_opener(proxy_handler)
+            request.install_opener(opener)
         for handler in (ssl_context, cookie_handler, proxy_handler):
             request._opener.add_handler(handler)
         request._opener.addheaders = [('Cookie','__ysuid={}'.format(time.time()))]
