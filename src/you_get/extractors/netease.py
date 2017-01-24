@@ -10,6 +10,7 @@ from json import loads
 import hashlib
 import base64
 import os
+import requests
 
 def netease_hymn():
     return """
@@ -111,13 +112,22 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
 
     if 'hMusic' in song and song['hMusic'] != None:
         url_best = make_url(songNet, song['hMusic']['dfsId'])
-    elif 'mp3Url' in song:
+        status_code = requests.get(url_best).status_code
+        if status_code == 200:
+            netease_download_common(title, url_best, output_dir=output_dir, info_only=info_only)
+            return
+            
+    if 'mp3Url' in song:
         url_best = song['mp3Url']
-    elif 'bMusic' in song:
+        status_code = requests.get(url_best).status_code
+        if status_code == 200:
+            netease_download_common(title, url_best, output_dir=output_dir, info_only=info_only)
+            return
+    if 'bMusic' in song:
         url_best = make_url(songNet, song['bMusic']['dfsId'])
-
-    netease_download_common(title, url_best,
-                            output_dir=output_dir, info_only=info_only)
+        status_code = requests.get(url_best).status_code
+        if status_code == 200:
+            netease_download_common(title, url_best, output_dir=output_dir, info_only=info_only)
 
 def netease_download_common(title, url_best, output_dir, info_only):
     songtype, ext, size = url_info(url_best)
