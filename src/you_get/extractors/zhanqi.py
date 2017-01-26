@@ -4,12 +4,14 @@ __all__ = ['zhanqi_download']
 
 from ..common import *
 import json
-
+   
 def zhanqi_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):#the programmers of zhanqi are noobs
     host_name = url.split('/')[2]
     first_folder_path = url.split('/')[3]
 
     if first_folder_path != 'videos': #url = "https://www.zhanqi.tv/huashan"
+        if first_folder_path == 'topic': #https://www.zhanqi.tv/topic/lyingman
+            first_folder_path = url.split('/')[4]
         api_url = "https://www.zhanqi.tv/api/static/v2.1/room/domain/" + first_folder_path + ".json"
         api_json = json.loads(get_html(api_url))
         data = api_json['data']
