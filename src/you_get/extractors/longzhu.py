@@ -7,7 +7,7 @@ import json
 
    
 def longzhu_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    host_name = url.split("/")[-2]
+    host_name = url.split("/")[2]
 
     if host_name == 'star.longzhu.com' or host_name == 'm.longzhu.com':
         domain_param = url[url.rfind('/')+1:]
