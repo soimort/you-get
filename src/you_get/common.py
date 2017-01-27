@@ -259,6 +259,7 @@ def undeflate(data):
 
 # DEPRECATED in favor of get_content()
 def get_response(url, faker = False):
+    url = parse.quote(url,':/')
     # install cookies
     if cookies:
         opener = request.build_opener(request.HTTPCookieProcessor(cookies))
