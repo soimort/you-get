@@ -7,10 +7,10 @@ import json
 
    
 def longzhu_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    host_name = url.split("/")[-2]
+    host_name = url.split("/")[2]
 
     if host_name == 'star.longzhu.com' or host_name == 'm.longzhu.com':
-        domain_param = url[url.rfind('/')+1:]
+        domain_param = url.split('/')[3].split('?')[0]
         get_id_url = "http://m.longzhu.com/%s" % domain_param
         html = get_content(get_id_url)
         room_id_patt = r'var\s+roomId\s*=\s*(\d+);'  #var roomId = 394548;
@@ -51,7 +51,6 @@ def longzhu_download(url, output_dir = '.', merge = True, info_only = False, **k
 
         if status == 'false': #get offline video url
             offlineVideo_patt = r'"offlineVideoUrl":"([^"]*)",'
-            #offlineVideo_url = ''
             offlineVideo_url = match1(html, offlineVideo_patt).replace('\\','')
 
         title_patt = r'<title>([^<]{1,9999})</title>'
@@ -60,11 +59,11 @@ def longzhu_download(url, output_dir = '.', merge = True, info_only = False, **k
         site_info = "yoyo.longzhu.com"
         
         if status == 'true':
-            real_url_patt = r'"rtmpUrl"\s*:\s*"([^"]*)",'
+            real_url_patt = r'"rtmpUrl"\s*:\s*"([^"]+)",'
             real_url = match1(html, real_url_patt).replace('\\','')
             print_info(site_info, title, 'rtmp', float('inf'))
             if not info_only:
-                #download_rtmp_url([real_url], title, 'mp4', None, output_dir, merge = merge)
+                #download_urls([real_url], title, 'mp4', None, output_dir, merge = merge)
                 download_url_ffmpeg(real_url, title, 'flv', {}, output_dir = output_dir, merge = merge)
 
         elif len(offlineVideo_url) >= 4 :
