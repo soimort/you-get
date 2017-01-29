@@ -7,13 +7,15 @@ import json
 import time
 
 def quanmin_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    roomid = url[url.rfind("/")+1:]
-    json_request_url = 'http://www.quanmin.tv/json/rooms/{}/info4.json'.format(roomid)
+    roomid = url.split('/')[3].split('?')[0] #add ?parameter.split and change the unstable url(from the back) rfind to split(from the front)
+
+    #json_request_url = 'http://www.quanmin.tv/json/rooms/{}/info4.json'.format(roomid) #"http://www.quanmin.tv/json/rooms/308137/info4.json" switch to "http://m.quanmin.tv/json/rooms/308137/noinfo6.json"
+    json_request_url = 'http://m.quanmin.tv/json/rooms/{}/noinfo6.json'.format(roomid)
     content = get_html(json_request_url)
     data = json.loads(content)
 
     title = data["title"]
-    
+
     if not data["play_status"]:
         raise ValueError("The live stream is not online!")
     real_url = "http://flv.quanmin.tv/live/{}.flv".format(roomid)
