@@ -347,7 +347,6 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Metacafe    | <http://www.metacafe.com/>    |✓| | |
 | Magisto     | <http://www.magisto.com/>     |✓| | |
 | Khan Academy | <https://www.khanacademy.org/> |✓| | |
-| JPopsuki TV | <http://www.jpopsuki.tv/>     |✓| | |
 | Internet Archive | <https://archive.org/>   |✓| | |
 | **Instagram** | <https://instagram.com/>    |✓|✓| |
 | InfoQ       | <http://www.infoq.com/presentations/> |✓| | |
@@ -392,11 +391,8 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
 | QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
 | 企鹅直播 | <http://live.qq.com/>          |✓| | |
-| 阡陌视频 | <http://qianmo.com/>           |✓| | |
-| THVideo  | <http://thvideo.tv/>           |✓| | |
 | Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
 | Sohu<br/>搜狐视频 | <http://tv.sohu.com/> |✓| | |
-| 天天动听 | <http://www.dongting.com/>     | | |✓|
 | **Tudou<br/>土豆** | <http://www.tudou.com/> |✓| | |
 | 虾米     | <http://www.xiami.com/>        | | |✓|
 | 阳光卫视 | <http://www.isuntv.com/>       |✓| | |
