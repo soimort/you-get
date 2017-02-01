@@ -65,7 +65,7 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
         title = post_date + "_" + post_id
 
         try:
-            url = "https://plus.google.com/" + r1(r'"(photos/\d+/albums/\d+/\d+)', html)
+            url = "https://plus.google.com/" + r1(r'(photos/\d+/albums/\d+/\d+)\?authkey', html)
             html = get_html(url, faker=True)
             temp = re.findall(r'\[(\d+),\d+,\d+,"([^"]+)"\]', html)
             temp = sorted(temp, key = lambda x : fmt_level[x[0]])
