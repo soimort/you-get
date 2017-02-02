@@ -8,7 +8,7 @@ github: soimort/you-get
 url: https://you-get.org/
 download-url: https://github.com/soimort/you-get/releases/download/v0.4.652/you-get-0.4.652.tar.gz
 download-checksum-type: SHA1SUM
-download-checksum-data: f5b34b0ea39fb4e06e991e7095e0b2fbab9d5c4b
+download-checksum-data: 58e5f10473890e50fdf2ae080e324d57ec4a1a5b
 download-signature: https://github.com/soimort/you-get/releases/download/v0.4.652/you-get-0.4.652.tar.gz.asc
 
 target:   index.html
