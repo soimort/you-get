@@ -15,8 +15,7 @@ headers = {
     'Cache-Control': 'max-age=0',
     'Referer': 'http://www.dilidili.com/',
     'Connection': 'keep-alive',
-    'Save-Data': 'on',
-    'Save-Data': 'on',
+    'Save-Data': 'on'
 }
 
 #----------------------------------------------------------------------
