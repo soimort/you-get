@@ -16,12 +16,15 @@ headers = {
     'Referer': 'http://www.dilidili.com/',
     'Connection': 'keep-alive',
     'Save-Data': 'on',
+    'Save-Data': 'on',
 }
 
 #----------------------------------------------------------------------
 def dilidili_parser_data_to_stream_types(typ ,vid ,hd2 ,sign, tmsign, ulk):
     """->list"""
-    parse_url = 'http://player.005.tv/parse.php?xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'.format(typ = typ, vid = vid, hd2 = hd2, sign = sign, tmsign = tmsign, ulk = ulk)
+    parse_url = 'http://player.005.tv/parse.php?' \
+                'xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'\
+        .format(typ = typ, vid = vid, hd2 = hd2, sign = sign, tmsign = tmsign, ulk = ulk)
     html = get_content(parse_url, headers=headers)
     
     info = re.search(r'(\{[^{]+\})(\{[^{]+\})(\{[^{]+\})(\{[^{]+\})(\{[^{]+\})', html).groups()
@@ -35,7 +38,7 @@ def dilidili_parser_data_to_stream_types(typ ,vid ,hd2 ,sign, tmsign, ulk):
 
 #----------------------------------------------------------------------
 def dilidili_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
-    if re.match(r'http://www.dilidili.com/watch\S+', url):
+    if re.match(r'http://www.dilidili.(com|wang|mobi|name)/watch\S+', url):
         html = get_content(url)
         title = match1(html, r'<title>(.+)丨(.+)</title>')  #title
         
@@ -60,7 +63,9 @@ def dilidili_download(url, output_dir = '.', merge = False, info_only = False, *
         #get best
         best_id = max([i['id'] for i in stream_types])
         
-        parse_url = 'http://player.005.tv/parse.php?xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'.format(typ = typ, vid = vid, hd2 = best_id, sign = sign, tmsign = tmsign, ulk = ulk)
+        parse_url = 'http://player.005.tv/parse.php?' \
+                    'xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'\
+            .format(typ = typ, vid = vid, hd2 = best_id, sign = sign, tmsign = tmsign, ulk = ulk)
         
         ckplayer_download(parse_url, output_dir, merge, info_only, is_xml = True, title = title, headers = headers)
 
