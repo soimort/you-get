@@ -5,8 +5,15 @@ __all__ = ['nicovideo_download']
 from ..common import *
 
 def nicovideo_login(user, password):
-    data = "current_form=login&mail=" + user +"&password=" + password + "&login_submit=Log+In"
-    response = request.urlopen(request.Request("https://secure.nicovideo.jp/secure/login?site=niconico", headers=fake_headers, data=data.encode('utf-8')))
+    post_data = {
+        'mail_tel': user,
+        'password': password,
+    }
+    response = request.urlopen(request.Request(
+        'https://account.nicovideo.jp/api/v1/login?site=niconico',
+        headers=fake_headers,
+        data=parse.urlencode(post_data).encode('utf-8'),
+    ))
     return response.headers
 
 def nicovideo_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
@@ -23,18 +30,23 @@ context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
     except:
         info = None
     if info is None:
-        user = input("User:     ")
+        user = input("Email/Tel: ")
         password = getpass.getpass("Password: ")
     else:
         user, password = info[0], info[2]
     print("Logging in...")
     nicovideo_login(user, password)
 
-    html = get_html(url) # necessary!
-    title = unicodize(r1(r'<span class="videoHeaderTitle"[^>]*>([^<]+)</span>', html))
+    html = get_content(url)
+    # There are two possible layouts where titles are embedded differently.
+    # See https://gist.github.com/ed95394afc6eff8a781395ac5afcbe48 for sample HTML pages.
+    try:
+        title = unicodize(r1(r'<h1 [^>]*class="txt-title"[^>]*>([^<]+)</h1>', html))
+    except TypeError:
+        title = unicodize(r1(r'<span [^>]*class="videoHeaderTitle"[^>]*>([^<]+)</span>', html))
 
     vid = url.split('/')[-1].split('?')[0]
-    api_html = get_html('http://www.nicovideo.jp/api/getflv?v=%s' % vid)
+    api_html = get_content('http://flapi.nicovideo.jp/api/getflv?v=%s' % vid)
     real_url = parse.unquote(r1(r'url=([^&]+)&', api_html))
 
     type, ext, size = url_info(real_url)
