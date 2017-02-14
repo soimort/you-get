@@ -555,6 +555,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
                 received += len(buffer)
                 if bar:
                     bar.update_received(len(buffer))
+        bar.update_piece()
 
     assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (received, os.path.getsize(temp_filepath), temp_filepath)
 
@@ -626,6 +627,7 @@ def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore
                 response = urlopen_with_retry(request.Request(url, headers=headers))
             if bar:
                 bar.update_received(len(buffer))
+    bar.update_piece()
 
     assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (received, os.path.getsize(temp_filepath))
 
@@ -657,7 +659,7 @@ class SimpleProgressBar:
 
     def update(self):
         # Don't bother updating the UI if cannot aquire the lock
-        if not self.ui_lock.acquire(blocking=False) return;
+        if not self.ui_lock.acquire(blocking=False): return
         self.data_lock.acquire()
         self.displayed = True
         bar_size = self.bar_size
@@ -696,9 +698,9 @@ class SimpleProgressBar:
         self.data_lock.release()
         self.update()
 
-    def update_piece(self, n):
+    def update_piece(self):
         self.data_lock.acquire()
-        self.current_piece = n
+        self.current_piece += 1
         self.data_lock.release()
 
     def done(self):
@@ -737,9 +739,9 @@ class PiecesProgressBar:
         self.data_lock.release()
         self.update()
 
-    def update_piece(self, n):
+    def update_piece(self):
         self.data_lock.acquire()
-        self.current_piece = n
+        self.current_piece += 1
         self.data_lock.release()
 
     def done(self):
@@ -756,7 +758,7 @@ class DummyProgressBar:
         pass
     def update_received(self, n):
         pass
-    def update_piece(self, n):
+    def update_piece(self):
         pass
     def done(self):
         pass
@@ -833,7 +835,6 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 filepath = os.path.join(output_dir, filename)
                 parts.append(filepath)
                 #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
-                bar.update_piece(i + 1)
                 e.submit(url_save, url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers)
         bar.done()
 
