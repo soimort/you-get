@@ -22,9 +22,9 @@ def netease_hymn():
     """
 
 def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    rid = match1(url, r'id=(.*)')
+    rid = match1(url, r'\Wid=(.*)')
     if rid is None:
-        rid = match1(url, r'/(\d+)/?$')
+        rid = match1(url, r'/(\d+)/?')
     if "album" in url:
         j = loads(get_content("http://music.163.com/api/album/%s?id=%s&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
 

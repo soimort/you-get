@@ -33,7 +33,6 @@ from .interest import *
 from .iqilu import *
 from .iqiyi import *
 from .joy import *
-from .jpopsuki import *
 from .ku6 import *
 from .kugou import *
 from .kuwo import *
@@ -55,7 +54,6 @@ from .panda import *
 from .pinterest import *
 from .pixnet import *
 from .pptv import *
-from .qianmo import *
 from .qie import *
 from .qq import *
 from .showroom import *
@@ -64,7 +62,6 @@ from .sohu import *
 from .soundcloud import *
 from .suntv import *
 from .theplatform import *
-from .thvideo import *
 from .tucao import *
 from .tudou import *
 from .tumblr import *

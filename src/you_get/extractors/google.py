@@ -51,7 +51,7 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
         # attempt to extract images first
         # TBD: posts with > 4 images
         # TBD: album links
-        html = get_html(parse.unquote(url))
+        html = get_html(parse.unquote(url), faker=True)
         real_urls = []
         for src in re.findall(r'src="([^"]+)"[^>]*itemprop="image"', html):
             t = src.split('/')
@@ -65,8 +65,8 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
         title = post_date + "_" + post_id
 
         try:
-            url = "https://plus.google.com/" + r1(r'"(photos/\d+/albums/\d+/\d+)', html)
-            html = get_html(url)
+            url = "https://plus.google.com/" + r1(r'(photos/\d+/albums/\d+/\d+)\?authkey', html)
+            html = get_html(url, faker=True)
             temp = re.findall(r'\[(\d+),\d+,\d+,"([^"]+)"\]', html)
             temp = sorted(temp, key = lambda x : fmt_level[x[0]])
             urls = [unicodize(i[1]) for i in temp if i[0] == temp[0][0]]
@@ -77,7 +77,7 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
             post_author = r1(r'/\+([^/]+)/posts', post_url)
             if post_author:
                 post_url = "https://plus.google.com/+%s/posts/%s" % (parse.quote(post_author), r1(r'posts/(.+)', post_url))
-            post_html = get_html(post_url)
+            post_html = get_html(post_url, faker=True)
             title = r1(r'<title[^>]*>([^<\n]+)', post_html)
 
             if title is None:
@@ -98,7 +98,7 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
 
     elif service in ['docs', 'drive'] : # Google Docs
 
-        html = get_html(url)
+        html = get_html(url, faker=True)
 
         title = r1(r'"title":"([^"]*)"', html) or r1(r'<meta itemprop="name" content="([^"]*)"', html)
         if len(title.split('.')) > 1:
