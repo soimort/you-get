@@ -180,8 +180,14 @@ class QQ(VideoExtractor):
         # url_prefix = urlparse(url_prefix)._replace(netloc='vmind.qqvideo.tc.qq.com').geturl()  # fast
         fi = video_json['fl']['fi']  # streams
         self.streams = {}
+
+        def lazy_urls(fid):
+            for idx in range(1, vi0['cl']['fc']+1):
+                yield '{prefix}/{vid}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, vid=vid, format1000=fid%1000, idx=idx, vkey=self._getvkey(vid, fid, idx))
+
         for f in fi:
-            urls = ['{prefix}/{vid}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, vid=vid, format1000=f['id']%1000, idx=idx, vkey=self._getvkey(vid, f['id'], idx)) for idx in range(1, vi0['cl']['fc']+1)]
+
+            # urls = ['{prefix}/{vid}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, vid=vid, format1000=f['id']%1000, idx=idx, vkey=self._getvkey(vid, f['id'], idx)) for idx in range(1, vi0['cl']['fc']+1)]
 
             # print(vi0['ul']['ui'])
             # vkey = self._getvkey(vid, f['id'], 1)
@@ -193,7 +199,7 @@ class QQ(VideoExtractor):
                 'video_profile': f['cname'],
                 'size': f['fs'],
                 'container': 'mp4',
-                'src': urls,
+                'src': lazy_urls(f['id']),
             }
 
 
