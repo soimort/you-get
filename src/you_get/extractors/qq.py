@@ -151,17 +151,6 @@ class QQ(VideoExtractor):
         {'id': 'sd'},
     ]
 
-    def _getvkey(self, vid, format, idx):
-        import uuid
-        appver = '3.2.38.401'
-        guid = uuid.uuid4().hex
-        platform = 11
-        cKey = echo_ckeyv3(vid=vid, guid=guid, player_version=appver, platform=platform)
-        key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={vid}.p{format1000}.{idx}.mp4&format={format}&cKey={cKey}&guid={guid}&charge=0&encryptVer=5.4&lnk={vid}'.format(vid=vid, appver=appver, format1000=format%1000, format=format, cKey=cKey, guid=guid, platform=platform, idx=idx)
-        part_info = get_html(key_api)
-        key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
-        return key_json['key']
-
     def prepare(self, **kwargs):
         # vid = kwargs['vid'] if 'vid' in kwargs else None
         # vid = vid if vid is not None else self.vid
@@ -181,12 +170,30 @@ class QQ(VideoExtractor):
         fi = video_json['fl']['fi']  # streams
         self.streams = {}
 
-        def lazy_urls(fid):
-            for idx in range(1, vi0['cl']['fc']+1):
-                yield '{prefix}/{vid}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, vid=vid, format1000=fid%1000, idx=idx, vkey=self._getvkey(vid, fid, idx))
+        class LazyDict(dict):
+            def __init__(self, stream_id=None, **kwargs):
+                dict.__init__(self, **kwargs)
+                self.stream_id = stream_id
+
+            def _getvkey(self, vid, format, idx):
+                import uuid
+                appver = '3.2.38.401'
+                guid = uuid.uuid4().hex
+                platform = 11
+                cKey = echo_ckeyv3(vid=vid, guid=guid, player_version=appver, platform=platform)
+                key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={vid}.p{format1000}.{idx}.mp4&format={format}&cKey={cKey}&guid={guid}&charge=0&encryptVer=5.4&lnk={vid}'.format(vid=vid, appver=appver, format1000=format%1000, format=format, cKey=cKey, guid=guid, platform=platform, idx=idx)
+                part_info = get_html(key_api)
+                key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
+                return key_json['key']
+
+            def __getitem__(self, key):
+                if key == 'src' and 'src' not in self:
+                    self['src'] = ['{prefix}/{vid}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, vid=vid, format1000=self.stream_id%1000, idx=idx, vkey=self._getvkey(vid, self.stream_id, idx)) for idx in range(1, vi0['cl']['fc']+1)]
+                    return self['src']
+                else:
+                    return dict.__getitem__(self, key)
 
         for f in fi:
-
             # urls = ['{prefix}/{vid}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, vid=vid, format1000=f['id']%1000, idx=idx, vkey=self._getvkey(vid, f['id'], idx)) for idx in range(1, vi0['cl']['fc']+1)]
 
             # print(vi0['ul']['ui'])
@@ -195,12 +202,12 @@ class QQ(VideoExtractor):
             #     test = '{prefix}/{vid}.p{format1000}.1.mp4?vkey={vkey}'.format(prefix=ui['url'], vid=vid, format1000=f['id']%1000, vkey=vkey)
             #     print(test)
 
-            self.streams[f['name']] = {
-                'video_profile': f['cname'],
-                'size': f['fs'],
-                'container': 'mp4',
-                'src': lazy_urls(f['id']),
-            }
+            self.streams[f['name']] = LazyDict(
+                video_profile=f['cname'],
+                size=f['fs'],
+                container='mp4',
+                stream_id=f['id']
+            )
 
 
 site = QQ()
