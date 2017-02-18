@@ -11,7 +11,8 @@ def output(video_extractor, pretty_print=True):
     out['title'] = ve.title
     out['site'] = ve.name
     for stream in ve.streams.values():
-        stream['src'] = list(stream['src'])  # convert generator to list
+        if 'src' in stream:
+            stream['src'] = list(stream['src'])  # convert generator to list
     map(list, ve.streams.values())
     out['streams'] = ve.streams
     if pretty_print:
