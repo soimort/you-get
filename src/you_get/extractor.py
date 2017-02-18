@@ -194,12 +194,12 @@ class VideoExtractor():
                 urls = self.streams[stream_id]['src']
                 ext = self.streams[stream_id]['container']
                 total_size = self.streams[stream_id]['size']
-                segments = self.streams[stream_id]['segments']
+                segments = self.streams[stream_id]['segments'] if 'segments' in self.streams[stream_id] else None
             else:
                 urls = self.dash_streams[stream_id]['src']
                 ext = self.dash_streams[stream_id]['container']
                 total_size = self.dash_streams[stream_id]['size']
-                segments = self.streams[stream_id]['segments']
+                segments = self.streams[stream_id]['segments'] if 'segments' in self.streams[stream_id] else None
 
             if not urls:
                 log.wtf('[Failed] Cannot extract video source.')
