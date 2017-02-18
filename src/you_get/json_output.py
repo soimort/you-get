@@ -10,6 +10,9 @@ def output(video_extractor, pretty_print=True):
     out['url'] = ve.url
     out['title'] = ve.title
     out['site'] = ve.name
+    for stream in ve.streams.values():
+        stream['src'] = list(stream['src'])  # convert generator to list
+    map(list, ve.streams.values())
     out['streams'] = ve.streams
     if pretty_print:
         print(json.dumps(out, indent=4, sort_keys=True, ensure_ascii=False))

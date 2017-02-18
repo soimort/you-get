@@ -194,10 +194,12 @@ class VideoExtractor():
                 urls = self.streams[stream_id]['src']
                 ext = self.streams[stream_id]['container']
                 total_size = self.streams[stream_id]['size']
+                segments = self.streams[stream_id]['segments']
             else:
                 urls = self.dash_streams[stream_id]['src']
                 ext = self.dash_streams[stream_id]['container']
                 total_size = self.dash_streams[stream_id]['size']
+                segments = self.streams[stream_id]['segments']
 
             if not urls:
                 log.wtf('[Failed] Cannot extract video source.')
@@ -205,7 +207,7 @@ class VideoExtractor():
             download_urls(urls, self.title, ext, total_size,
                           output_dir=kwargs['output_dir'],
                           merge=kwargs['merge'],
-                          av=stream_id in self.dash_streams)
+                          av=stream_id in self.dash_streams, segments=segments)
             if 'caption' not in kwargs or not kwargs['caption']:
                 print('Skipping captions.')
                 return
