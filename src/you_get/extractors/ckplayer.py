@@ -15,16 +15,13 @@ def ckplayer_get_info_by_xml(ckinfo):
     """str->dict
     Information for CKPlayer API content."""
     e = ET.XML(ckinfo)
+    logging.debug('video xml info:\n{}'.format(ckinfo))
+
     video_dict = {'title': '',
                   #'duration': 0,
                   'links': [],
                   'size': 0,
                   'flashvars': '',}
-    if '_text' in dictify(e)['ckplayer']['info'][0]['title'][0]:  #title
-        video_dict['title'] = dictify(e)['ckplayer']['info'][0]['title'][0]['_text'].strip()
-
-    #if dictify(e)['ckplayer']['info'][0]['title'][0]['_text'].strip():  #duration
-        #video_dict['title'] = dictify(e)['ckplayer']['info'][0]['title'][0]['_text'].strip()
 
     if '_text' in dictify(e)['ckplayer']['video'][0]['size'][0]:  #size exists for 1 piece
         video_dict['size'] = sum([int(i['size'][0]['_text']) for i in dictify(e)['ckplayer']['video']])
@@ -36,6 +33,7 @@ def ckplayer_get_info_by_xml(ckinfo):
         video_dict['flashvars'] = dictify(e)['ckplayer']['flashvars'][0]['_text'].strip()
 
     return video_dict
+
 
 #----------------------------------------------------------------------
 #helper
