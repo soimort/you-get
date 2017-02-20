@@ -8,6 +8,9 @@ import base64
 import ssl
 import time
 import traceback
+import json
+import math
+from urllib import parse
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
@@ -86,44 +89,127 @@ class Youku(VideoExtractor):
           match1(url, r'loader\.swf\?VideoIDS=([a-zA-Z0-9=]+)') or \
           match1(url, r'player\.youku\.com/embed/([a-zA-Z0-9=]+)')
 
+    @staticmethod
     def get_playlist_id_from_url(url):
         """Extracts playlist ID from URL.
         """
-        return match1(url, r'youku\.com/albumlist/show\?id=([a-zA-Z0-9=]+)')
+        return match1(url, r'list\.youku\.com/show/id_([a-zA-Z0-9=]+)')
+
+    @staticmethod
+    def get_albumlist_id_from_url(url):
+        return match1(url, r'list\.youku\.com/albumlist/show/id_(\d+)\.html')
+
+    @staticmethod
+    def is_playlist_page(url):
+        return re.match(r'https?://list\.youku\.com/show/id_[a-zA-Z0-9=]+\.html',
+                        url) is not None
+
+    @staticmethod
+    def is_albumlist_page(url):
+        return re.match(r'https?://list\.youku\.com/albumlist/show/id_\d+\.html',
+                        url) is not None
+
+    @staticmethod
+    def get_json(url):
+        components = list(parse.urlparse(url))
+        query = components[4]
+        fields = dict(parse.parse_qsl(query))
+        fields['callback'] = fields.get('callback', 'callback')
+        components[4] = parse.urlencode(fields)
+        url = parse.urlunparse(components)
+
+        jstr = match1(get_content(url), r'^[^\{]*(\{.*\})[^\}]*$')
+        jdict = json.loads(jstr)
+        assert jdict['error'] == 1 and jdict['message'] == 'success'
+        return jdict
+
+    @classmethod
+    def get_vurls_of_playlist(cls, url):
+        list_page = get_content(url)
+        first_video_url = match1(list_page, r'href="//v\.youku\.com/wechatShare/\?' \
+                          'url=(http://v\.youku\.com/v_show/id_[a-zA-Z0-9=]+\.html)')
+        video_page = get_content(first_video_url)
+        js = match1(video_page, r'PageConfig\s*=\s*(\{.*?\});')
+        js = re.sub(r'(\w+)\s*:', r'"\1":', js)
+        js = re.sub(r':\s*(?P<quotes>[\'`])(?P<str>.*?)(?P=quotes)\s*(?=[,}])',
+                    r': "\g<str>"', js)
+        page_config = json.loads(js)
+        vurls = []
+
+        if page_config['page']['type'] == 'Num':
+            episodes_per_page = 100
+            total_episodes = int(page_config['page']['totalepisodes'])
+            total_pages = math.ceil(total_episodes / episodes_per_page)
+            for pagenum in range(1, total_pages+1):
+                url = 'http:{host}page/playlist/pm_{pm}_vid_{vid}_showid_{sid}' \
+                        '_page_{pn}{v}'.format(
+                            host    = page_config['homeHost'],
+                            pm      = page_config['playmode'],
+                            vid     = page_config['videoId'],
+                            sid     = page_config['showid'],
+                            pn      = pagenum,
+                            v       = '_v_' + page_config['parentvideoid']
+                                        if 'parentvideoid' in page_config else ''
+                        )
+                jdict = cls.get_json(url)
+                html = re.sub(r'<h4>相关片段</h4>.*$', '', jdict['html'])
+                vurls += ['http:' + h for h in re.findall(r'href="(.*?)"', html)]
+        elif page_config['page']['type'] == 'Date':
+            raise NotImplementedError()
+        else:
+            raise NotImplementedError()
+
+        return vurls
+
+    @classmethod
+    def get_vurls_of_albumlist(cls, url):
+        vurls = []
+
+        bdid = cls.get_albumlist_id_from_url(url)
+        ascending = 1
+        domain_listpage = 'list.youku.com'
+        bdpage = {'page': 1, 'size': 20, 'total': 0}
+
+        while True:
+            url = 'http://{domain}/albumlist/items?id={id}&page={p}&size={s}&ascending={a}'.format(
+                domain  = domain_listpage,
+                id      = bdid,
+                p       = bdpage['page'],
+                s       = bdpage['size'],
+                a       = ascending
+            )
+
+            jdict = cls.get_json(url)
+            vurls += ['http:' + h for h in re.findall(r'<ul\s+class="info-list">.*?href="(.*?)".*?</ul>',
+                                                      jdict['html'])]
+            bdpage['total'] = int(jdict['data']['total'])
+
+            if bdpage['page'] * bdpage['size'] < bdpage['total']:
+                bdpage['page'] += 1
+            else:
+                break
+
+        return vurls
 
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
 
-        try:
-            playlist_id = self.__class__.get_playlist_id_from_url(self.url)
-            assert playlist_id
-            video_page = get_content('http://list.youku.com/albumlist/show?id=%s' % playlist_id)
-            videos = Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
-            # Parse multi-page playlists
-            last_page_url = re.findall(r'href="(/albumlist/show\?id=%s[^"]+)" title="末页"' % playlist_id, video_page)[0]
-            num_pages = int(re.findall(r'page=([0-9]+)\.htm', last_page_url)[0])
-            if (num_pages > 0):
-                # download one by one
-                for pn in range(2, num_pages + 1):
-                    extra_page_url = re.sub(r'page=([0-9]+)\.htm', r'page=%s.htm' % pn, last_page_url)
-                    extra_page = get_content('http://list.youku.com' + extra_page_url)
-                    videos |= Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', extra_page))
-        except:
-            # Show full list of episodes
-            if match1(url, r'youku\.com/show_page/id_([a-zA-Z0-9=]+)'):
-                ep_id = match1(url, r'youku\.com/show_page/id_([a-zA-Z0-9=]+)')
-                url = 'http://www.youku.com/show_episode/id_%s' % ep_id
+        if self.__class__.is_playlist_page(url):
+            vurls = self.__class__.get_vurls_of_playlist(url)
+        elif self.__class__.is_albumlist_page(url):
+            vurls = self.__class__.get_vurls_of_albumlist(url)
+        else:
+            log.e('Unsupported URL: {}'.format(url))
+            sys.exit(1)
 
-            video_page = get_content(url)
-            videos = Youku.oset(re.findall(r'href="(http://v\.youku\.com/[^?"]+)', video_page))
-
-        self.title = r1(r'<meta name="title" content="([^"]+)"', video_page) or \
-                     r1(r'<title>([^<]+)', video_page)
+        page = get_content(url)
+        self.title = r1(r'<meta name="title" content="([^"]+)"', page) or \
+                     r1(r'<title>([^<]+)', page)
         self.p_playlist()
-        for video in videos:
-            index = parse_query_param(video, 'f')
+
+        for index, url in enumerate(vurls):
             try:
-                self.__class__().download_by_url(video, index=index, **kwargs)
+                self.__class__().download_by_url(url, index=index, **kwargs)
             except KeyboardInterrupt:
                 raise
             except:
