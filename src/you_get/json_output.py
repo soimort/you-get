@@ -11,6 +11,11 @@ def output(video_extractor, pretty_print=True):
     out['title'] = ve.title
     out['site'] = ve.name
     out['streams'] = ve.streams
+    try:
+        if ve.audiolang:
+            out['audiolang'] = ve.audiolang
+    except NameError:
+        pass
     if pretty_print:
         print(json.dumps(out, indent=4, sort_keys=True, ensure_ascii=False))
     else:
