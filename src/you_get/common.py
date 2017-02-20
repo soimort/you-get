@@ -349,6 +349,47 @@ def get_content(url, headers={}, decoded=True):
 
     return data
 
+def get_content_and_redirected(url, headers={}, decoded=True):
+    """Gets the content of a URL and redirected URL via sending a HTTP GET request.
+
+    Args:
+        url: A URL.
+        headers: Request headers used by the client.
+        decoded: Whether decode the response body using UTF-8 or the charset specified in Content-Type.
+
+    Returns:
+        The content as a string, redirected URL as a string, the 2 as a tuple.
+    """
+
+    logging.debug('get_content_and_redirected: %s' % url)
+
+    req = request.Request(url, headers=headers)
+    if cookies:
+        cookies.add_cookie_header(req)
+        req.headers.update(req.unredirected_hdrs)
+
+    response = urlopen_with_retry(req)
+    data = response.read()
+    redirected_url = response.url
+    logging.debug('get_content_and_redirected: %s' % redirected_url)
+
+    # Handle HTTP compression for gzip and deflate (zlib)
+    content_encoding = response.getheader('Content-Encoding')
+    if content_encoding == 'gzip':
+        data = ungzip(data)
+    elif content_encoding == 'deflate':
+        data = undeflate(data)
+
+    # Decode the response body
+    if decoded:
+        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
+        if charset is not None:
+            data = data.decode(charset)
+        else:
+            data = data.decode('utf-8', 'ignore')
+
+    return (data, redirected_url)
+
 def post_content(url, headers={}, post_data={}, decoded=True):
     """Post the content of a URL via sending a HTTP POST request.
 

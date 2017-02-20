@@ -117,7 +117,7 @@ def bilibili_live_download_by_cid(cid, title, output_dir='.', merge=True, info_o
 
 
 def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    html = get_content(url)
+    html, url = get_content_and_redirected(url)
 
     title = r1_of([r'<meta name="title" content="\s*([^<>]{1,999})\s*" />',
                    r'<h1[^>]*>\s*([^<>]+)\s*</h1>'], html)
