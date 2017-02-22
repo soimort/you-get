@@ -162,6 +162,7 @@ class QQ(VideoExtractor):
         info = get_html(info_api)
         video_json = json.loads(match1(info, r'QZOutputJson=(.*)')[:-1])
         vi0 = video_json['vl']['vi'][0]
+        lnk = vi0['lnk']
         self.title = vi0['ti']
         url_prefix = vi0['ul']['ui'][0]['url']
         url_prefix = urlparse(url_prefix)._replace(netloc='lmbsy.qq.com').geturl()  # fast
@@ -181,7 +182,7 @@ class QQ(VideoExtractor):
                 guid = uuid.uuid4().hex.upper()
                 platform = 11
                 cKey = echo_ckeyv3(vid=vid, guid=guid, player_version=appver, platform=platform)
-                key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={vid}.p{format1000}.{idx}.mp4&format={format}&cKey={cKey}&guid={guid}&charge=0&encryptVer=5.4&lnk={vid}'.format(vid=vid, appver=appver, format1000=format%1000, format=format, cKey=cKey, guid=guid, platform=platform, idx=idx)
+                key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={lnk}.p{format1000}.{idx}.mp4&format={format}&cKey={cKey}&guid={guid}&charge=1&encryptVer=5.4&lnk={vid}'.format(vid=vid, appver=appver, format1000=format%1000, format=format, cKey=cKey, guid=guid, platform=platform, idx=idx, lnk=lnk)
                 part_info = get_html(key_api)
                 key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
                 return key_json['key']
@@ -206,7 +207,7 @@ class QQ(VideoExtractor):
                 video_profile=f['cname'],
                 size=f['fs'],
                 container='mp4',
-                stream_id=f['id']
+                stream_id=f['id'],
             )
 
 
