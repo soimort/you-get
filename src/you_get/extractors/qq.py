@@ -178,7 +178,7 @@ class QQ(VideoExtractor):
             def _getvkey(self, vid, format, idx):
                 import uuid
                 appver = '3.2.38.401'
-                guid = uuid.uuid4().hex
+                guid = uuid.uuid4().hex.upper()
                 platform = 11
                 cKey = echo_ckeyv3(vid=vid, guid=guid, player_version=appver, platform=platform)
                 key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={vid}.p{format1000}.{idx}.mp4&format={format}&cKey={cKey}&guid={guid}&charge=0&encryptVer=5.4&lnk={vid}'.format(vid=vid, appver=appver, format1000=format%1000, format=format, cKey=cKey, guid=guid, platform=platform, idx=idx)
