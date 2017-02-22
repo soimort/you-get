@@ -185,11 +185,16 @@ class QQ(VideoExtractor):
                 key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={lnk}.p{format1000}.{idx}.mp4&format={format}&cKey={cKey}&guid={guid}&charge=1&encryptVer=5.4&lnk={vid}'.format(vid=vid, appver=appver, format1000=format%1000, format=format, cKey=cKey, guid=guid, platform=platform, idx=idx, lnk=lnk)
                 part_info = get_html(key_api)
                 key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
-                return key_json['key']
+                return 'key' in key_json and key_json['key']
 
             def __getitem__(self, key):
                 if key == 'src' and 'src' not in self:
-                    self['src'] = ['{prefix}/{vid}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, vid=vid, format1000=self.stream_id%1000, idx=idx, vkey=self._getvkey(vid, self.stream_id, idx)) for idx in range(1, vi0['cl']['fc']+1)]
+                    self['src'] = []
+                    for idx in range(1, vi0['cl']['fc']+1):
+                        vkey = self._getvkey(vid, self.stream_id, idx)
+                        if vkey:
+                            url = '{prefix}/{lnk}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, format1000=self.stream_id%1000, idx=idx, vkey=vkey, lnk=lnk)
+                            self['src'].append(url)
                     return self['src']
                 else:
                     return dict.__getitem__(self, key)
