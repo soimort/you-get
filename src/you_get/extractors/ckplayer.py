@@ -9,7 +9,6 @@ __all__ = ['ckplayer_download']
 from xml.etree import cElementTree as ET
 from copy import copy
 from ..common import *
-
 #----------------------------------------------------------------------
 def ckplayer_get_info_by_xml(ckinfo):
     """str->dict
@@ -20,20 +19,22 @@ def ckplayer_get_info_by_xml(ckinfo):
                   'links': [],
                   'size': 0,
                   'flashvars': '',}
-    if '_text' in dictify(e)['ckplayer']['info'][0]['title'][0]:  #title
-        video_dict['title'] = dictify(e)['ckplayer']['info'][0]['title'][0]['_text'].strip()
+    dictified = dictify(e)['ckplayer']
+    if 'info' in dictified:
+        if '_text' in dictified['info'][0]['title'][0]:  #title
+            video_dict['title'] = dictified['info'][0]['title'][0]['_text'].strip()
 
     #if dictify(e)['ckplayer']['info'][0]['title'][0]['_text'].strip():  #duration
         #video_dict['title'] = dictify(e)['ckplayer']['info'][0]['title'][0]['_text'].strip()
 
-    if '_text' in dictify(e)['ckplayer']['video'][0]['size'][0]:  #size exists for 1 piece
-        video_dict['size'] = sum([int(i['size'][0]['_text']) for i in dictify(e)['ckplayer']['video']])
+    if '_text' in dictified['video'][0]['size'][0]:  #size exists for 1 piece
+        video_dict['size'] = sum([int(i['size'][0]['_text']) for i in dictified['video']])
 
-    if '_text' in dictify(e)['ckplayer']['video'][0]['file'][0]:  #link exist
-        video_dict['links'] = [i['file'][0]['_text'].strip() for i in dictify(e)['ckplayer']['video']]
+    if '_text' in dictified['video'][0]['file'][0]:  #link exist
+        video_dict['links'] = [i['file'][0]['_text'].strip() for i in dictified['video']]
 
-    if '_text' in dictify(e)['ckplayer']['flashvars'][0]:
-        video_dict['flashvars'] = dictify(e)['ckplayer']['flashvars'][0]['_text'].strip()
+    if '_text' in dictified['flashvars'][0]:
+        video_dict['flashvars'] = dictified['flashvars'][0]['_text'].strip()
 
     return video_dict
 
