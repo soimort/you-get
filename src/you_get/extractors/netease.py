@@ -120,11 +120,22 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
                             output_dir=output_dir, info_only=info_only)
 
 def netease_download_common(title, url_best, output_dir, info_only):
-    songtype, ext, size = url_info(url_best)
+    import urllib
+    is_non_free = False
+    try:
+        songtype, ext, size = url_info(url_best)
+    except urllib.error.HTTPError:
+        songtype = 'UNKNOWN'
+        size = 0
+        ext = 'UNKNOWN'
+        is_non_free = True
+
     print_info(site_info, title, songtype, size)
     if not info_only:
-        download_urls([url_best], title, ext, size, output_dir)
-
+        if is_non_free:
+            print('netease.py: %s is non-free' % title)
+        else:
+            download_urls([url_best], title, ext, size, output_dir)
 
 def netease_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if "163.fm" in url:
