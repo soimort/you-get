@@ -3,7 +3,7 @@ __all__ = ['qq_download']
 
 from ..common import *
 from .qie import download as qieDownload, VideoExtractor
-from urllib.parse import urlparse,parse_qs
+from urllib.parse import urlparse, parse_qs
 import struct
 import base64
 import random
@@ -17,6 +17,7 @@ ZERO_LEN = 7
 
 SEED = 0xdead
 
+
 def rand():
     global SEED
     if SEED == 0:
@@ -28,18 +29,21 @@ def rand():
         SEED = SEED + 2147483647
     return SEED
 
+
 def pack(data):
     target = []
     for i in data:
         target.extend(struct.pack('>I', i))
     return target
 
+
 def unpack(data):
     data = bytes(data)
     target = []
     for i in range(0, len(data), 4):
-        target.extend(struct.unpack('>I', data[i:i+4]))
+        target.extend(struct.unpack('>I', data[i:i + 4]))
     return target
+
 
 def tea_encrypt(v, key):
     s = 0
@@ -48,11 +52,12 @@ def tea_encrypt(v, key):
     for i in range(ROUNDS):
         s += DELTA
         s &= 0xffffffff
-        v[0] += (v[1]+s) ^ ((v[1]>>5)+key[1]) ^ ((v[1]<<4)+key[0])
+        v[0] += (v[1] + s) ^ ((v[1] >> 5) + key[1]) ^ ((v[1] << 4) + key[0])
         v[0] &= 0xffffffff
-        v[1] += (v[0]+s) ^ ((v[0]>>5)+key[3]) ^ ((v[0]<<4)+key[2])
+        v[1] += (v[0] + s) ^ ((v[0] >> 5) + key[3]) ^ ((v[0] << 4) + key[2])
         v[1] &= 0xffffffff
     return pack(v)
+
 
 def oi_symmetry_encrypt2(raw_data, key):
     pad_salt_body_zero_len = 1 + SALT_LEN + len(raw_data) + ZERO_LEN
@@ -72,33 +77,36 @@ def oi_symmetry_encrypt2(raw_data, key):
     for i in range(8, len(data), 8):
         d1 = data[i:]
         for j in range(8):
-            d1[j] = d1[j] ^ enc[i-8+j]
+            d1[j] = d1[j] ^ enc[i - 8 + j]
         d1 = tea_encrypt(d1, key)
         for j in range(8):
-            d1[j] = d1[j] ^ data[i-8+j] ^ temp[j]
+            d1[j] = d1[j] ^ data[i - 8 + j] ^ temp[j]
             enc.append(d1[j])
-            temp[j] = enc[i-8+j]
+            temp[j] = enc[i - 8 + j]
     return enc
 
 
 KEY = [
     0xfa, 0x82, 0xde, 0xb5, 0x2d, 0x4b, 0xba, 0x31,
-    0x39, 0x6,  0x33, 0xee, 0xfb, 0xbf, 0xf3, 0xb6
+    0x39, 0x6, 0x33, 0xee, 0xfb, 0xbf, 0xf3, 0xb6
 ]
+
 
 def packstr(data):
     l = len(data)
     t = []
-    t.append((l&0xFF00) >> 8)
-    t.append(l&0xFF)
+    t.append((l & 0xFF00) >> 8)
+    t.append(l & 0xFF)
     t.extend([ord(c) for c in data])
     return t
+
 
 def strsum(data):
     s = 0
     for c in data:
-        s = s*131 + c
+        s = s * 131 + c
     return 0x7fffffff & s
+
 
 def echo_ckeyv3(vid, guid='', t=None, player_version='3.2.38.401', platform=10902, stdfrom='bcng'):
     data = []
@@ -108,7 +116,7 @@ def echo_ckeyv3(vid, guid='', t=None, player_version='3.2.38.401', platform=1090
     if not t:
         t = time.time()
     seconds = int(t)
-    microseconds = int(1000000*(t - int(t)))
+    microseconds = int(1000000 * (t - int(t)))
     data.extend(pack([microseconds, seconds]))
     data.extend(packstr(stdfrom))
 
@@ -123,12 +131,12 @@ def echo_ckeyv3(vid, guid='', t=None, player_version='3.2.38.401', platform=1090
     data.extend([0x00, 0x00, 0x00, 0x00])
 
     l = len(data)
-    data.insert(0, l&0xFF)
-    data.insert(0, (l&0xFF00) >> 8)
+    data.insert(0, l & 0xFF)
+    data.insert(0, (l & 0xFF00) >> 8)
 
     enc = oi_symmetry_encrypt2(data, KEY)
 
-    pad = [0x00, 0x00, 0x00, 0x00, 0xff&rand(), 0xff&rand(), 0xff&rand(), 0xff&rand()]
+    pad = [0x00, 0x00, 0x00, 0x00, 0xff & rand(), 0xff & rand(), 0xff & rand(), 0xff & rand()]
     pad[0] = pad[4] ^ 71 & 0xFF
     pad[1] = pad[5] ^ -121 & 0xFF
     pad[2] = pad[6] ^ -84 & 0xFF
@@ -176,13 +184,18 @@ class QQ(VideoExtractor):
                 dict.__init__(self, **kwargs)
                 self.stream_id = stream_id
 
+            def _getfilename(self, lnk, stream_id, idx):
+                return '{lnk}.p{num}.{idx}.mp4'.format(lnk=lnk, num=stream_id % 10 ** 3 if stream_id < 10 ** 4 else stream_id % 10 ** 4, idx=idx)
+
             def _getvkey(self, vid, format, idx):
                 import uuid
                 appver = '3.2.38.401'
                 guid = uuid.uuid4().hex.upper()
                 platform = 11
                 cKey = echo_ckeyv3(vid=vid, guid=guid, player_version=appver, platform=platform)
-                key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={lnk}.p{format1000}.{idx}.mp4&format={format}&cKey={cKey}&guid={guid}&charge=1&encryptVer=5.4&lnk={vid}'.format(vid=vid, appver=appver, format1000=format%1000, format=format, cKey=cKey, guid=guid, platform=platform, idx=idx, lnk=lnk)
+                key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={filename}&format={format}&cKey={cKey}&guid={guid}&charge=1&encryptVer=5.4&lnk={vid}'.format(
+                    vid=vid, appver=appver, filename=self._getfilename(lnk, format, idx),
+                    format=format, cKey=cKey, guid=guid, platform=platform, lnk=lnk)
                 part_info = get_html(key_api)
                 key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
                 return 'key' in key_json and key_json['key']
@@ -190,10 +203,10 @@ class QQ(VideoExtractor):
             def __getitem__(self, key):
                 if key == 'src' and 'src' not in self:
                     self['src'] = []
-                    for idx in range(1, vi0['cl']['fc']+1):
+                    for idx in range(1, vi0['cl']['fc'] + 1):
                         vkey = self._getvkey(vid, self.stream_id, idx)
                         if vkey:
-                            url = '{prefix}/{lnk}.p{format1000}.{idx}.mp4?vkey={vkey}'.format(prefix=url_prefix, format1000=self.stream_id%1000, idx=idx, vkey=vkey, lnk=lnk)
+                            url = '{prefix}/{filename}?vkey={vkey}'.format(prefix=url_prefix, filename=self._getfilename(lnk=lnk, stream_id=self.stream_id, idx=idx), vkey=vkey)
                             self['src'].append(url)
                     return self['src']
                 else:
@@ -232,7 +245,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             site.download_by_vid(vid=vid, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
         return
 
-    #do redirect
+    # do redirect
     if 'v.qq.com/page' in url:
         # for URLs like this:
         # http://v.qq.com/page/k/9/7/k0194pwgw97.html
@@ -249,16 +262,18 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         title = vid
     else:
         content = get_html(url)
-        vid = parse_qs(urlparse(url).query).get('vid') #for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5
-        vid = vid[0] if vid else match1(content, r'vid"*\s*:\s*"\s*([^"]+)"') #general fallback
-        title = match1(content,r'<a.*?id\s*=\s*"%s".*?title\s*=\s*"(.+?)".*?>'%vid)
+        vid = parse_qs(urlparse(url).query).get(
+            'vid')  # for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5
+        vid = vid[0] if vid else match1(content, r'vid"*\s*:\s*"\s*([^"]+)"')  # general fallback
+        title = match1(content, r'<a.*?id\s*=\s*"%s".*?title\s*=\s*"(.+?)".*?>' % vid)
         title = match1(content, r'title">([^"]+)</p>') if not title else title
         title = match1(content, r'"title":"([^"]+)"') if not title else title
-        title = vid if not title else title #general fallback
+        title = vid if not title else title  # general fallback
 
         site.download_by_vid(vid=vid, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
 
-qq_download_by_vid=site.download_by_vid
+
+qq_download_by_vid = site.download_by_vid
 site_info = "QQ.com"
 download = qq_download
 download_playlist = playlist_not_supported('qq')
