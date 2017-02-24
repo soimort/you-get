@@ -98,7 +98,7 @@ class VideoExtractor():
         if 'quality' in stream:
             print("      quality:       %s" % stream['quality'])
 
-        if 'size' in stream:
+        if 'size' in stream and stream['container'].lower() != 'm3u8':
             print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
 
         if 'itag' in stream:
