@@ -1,7 +1,4 @@
 from ..common import *
-import xml.etree.ElementTree as ET
-import re
-import sys
 
 __all__ = ['spankbang_download']
 
@@ -15,8 +12,8 @@ def spankbang_download(url, output_dir = '.', merge = True, info_only = False, *
                     ('q_low','240p__mp4')]
     
     content = get_decoded_html(url, faker = True)
-    stream_id = re.findall(r'stream_id.+?\'(.+)\'',content)[0]
-    stream_key = re.findall(r'stream_key.+?\'(.+)\'',content)[0]
+    stream_id = match1(content, r'stream_id.+?\'(.+)\'')
+    stream_key = match1(content, r'stream_key.+?\'(.+)\'')
     for key, value in stream_types:
         if content.find(key) != -1:
             video_url = video_url_pattern.format(stream_id=stream_id, stream_key=stream_key, quality=value)
@@ -30,9 +27,8 @@ def spankbang_download(url, output_dir = '.', merge = True, info_only = False, *
     
     if not info_only:
         download_urls([src], title, ext, size, output_dir = output_dir, merge = merge, faker = True)
-            
-            
-            
+
+   
 site_info = 'spankbang.com'
 download = spankbang_download
 download_playlist = playlist_not_supported('spankbang')
