@@ -65,6 +65,7 @@ SITES = {
     'quanmin'          : 'quanmin',
     'showroom-live'    : 'showroom',
     'sina'             : 'sina',
+    'spankbang'        : 'spankbang',
     'smgbb'            : 'bilibili',
     'sohu'             : 'sohu',
     'soundcloud'       : 'soundcloud',

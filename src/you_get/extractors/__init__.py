@@ -60,6 +60,7 @@ from .showroom import *
 from .sina import *
 from .sohu import *
 from .soundcloud import *
+from .spankbang import *
 from .suntv import *
 from .theplatform import *
 from .tucao import *
