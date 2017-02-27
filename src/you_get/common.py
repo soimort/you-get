@@ -751,12 +751,18 @@ def get_output_filename(urls, title, ext, output_dir, merge):
                 merged_ext = 'ts'
     return '%s.%s' % (title, merged_ext)
 
+def print_user_agent(faker=False):
+    urllib_default_user_agent = 'Python-urllib/%d.%d' % sys.version_info[:2]
+    user_agent = fake_headers['User-Agent'] if faker else urllib_default_user_agent
+    print('User Agent: %s' % user_agent)
+
 def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
     assert urls
     if json_output:
         json_output_.download_urls(urls=urls, title=title, ext=ext, total_size=total_size, refer=refer)
         return
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URLs:\n%s' % '\n'.join(urls))
         return
 
@@ -873,6 +879,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
     assert urls
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URLs:\n%s\n' % urls)
         return
 
@@ -952,6 +959,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
     assert url
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URL:\n%s\n' % [url])
         if params.get("-y",False): #None or unset ->False
             print('Real Playpath:\n%s\n' % [params.get("-y")])
@@ -969,6 +977,7 @@ def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', re
 def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
     assert url
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URL:\n%s\n' % [url])
         if params.get("-y",False): #None or unset ->False
             print('Real Playpath:\n%s\n' % [params.get("-y")])
