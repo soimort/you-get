@@ -81,3 +81,5 @@ _*
 *.xml
 /.env
 /.idea
+*.m4a
+*.DS_Store
