@@ -12,6 +12,7 @@ stream_types = [
         {'itag': '2', 'container': 'm4a', 'bitrate': '32'},
         {'itag': '3', 'container': 'm4a', 'bitrate': '64'}
         ]
+
 def ximalaya_download_by_id(id, title = None, output_dir = '.', info_only = False, stream_id = None):
     BASE_URL = 'http://www.ximalaya.com/tracks/'
     json_data = json.loads(get_content(BASE_URL + id + '.json'))
@@ -59,9 +60,13 @@ def ximalaya_download_page(playlist_url, output_dir = '.', info_only = False, st
         pattern = re.compile(r'<li sound_id="(\d+)"')
         ids = pattern.findall(page_content)
         for id in ids:
-            ximalaya_download_by_id(id, output_dir=output_dir, info_only=info_only, stream_id=stream_id)
+            try:
+                ximalaya_download_by_id(id, output_dir=output_dir, info_only=info_only, stream_id=stream_id)
+            except(ValueError):
+                print("something wrong with %s, perhaps paid item?" % id)
     else:
         raise NotImplementedError(playlist_url)
+    
 def ximalaya_download_playlist(url, output_dir='.', info_only=False, stream_id=None, **kwargs):
     match_result = re.match(r'http://www\.ximalaya\.com/(\d+)/album/(\d+)', url)
     if not match_result:
