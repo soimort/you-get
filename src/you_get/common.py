@@ -86,6 +86,7 @@ SITES = {
     'xiami'            : 'xiami',
     'xiaokaxiu'        : 'yixia',
     'xiaojiadianvideo' : 'fc2video',
+    'ximalaya'         : 'ximalaya',
     'yinyuetai'        : 'yinyuetai',
     'miaopai'          : 'yixia',
     'youku'            : 'youku',
@@ -1050,7 +1051,7 @@ def print_info(site_info, title, type, size):
         type_info = "Advanced Systems Format (%s)" % type
     #elif type in ['video/mpeg']:
     #    type_info = "MPEG video (%s)" % type
-    elif type in ['audio/mp4']:
+    elif type in ['audio/mp4', 'audio/m4a']:
         type_info = "MPEG-4 audio (%s)" % type
     elif type in ['audio/mpeg']:
         type_info = "MP3 (%s)" % type
