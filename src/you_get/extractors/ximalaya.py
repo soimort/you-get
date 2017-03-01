@@ -20,7 +20,8 @@ def ximalaya_download_by_id(id, title = None, output_dir = '.', info_only = Fals
         if json_data['res'] == False:
             raise ValueError('Server reported id %s is invalid' % id)
     if 'is_paid' in json_data and json_data['is_paid']:
-        raise ValueError('%s is paid item' % id)
+        if 'is_free' in json_data and not json_data['is_free']:
+            raise ValueError('%s is paid item' % id)
     if (not title) and 'title' in json_data:
         title = json_data['title']
 #no size data in the json. should it be calculated?
