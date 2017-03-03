@@ -1193,7 +1193,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
         opts = ['playlist'] + opts
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], short_opts, opts)
+        opts, args = getopt.gnu_getopt(sys.argv[1:], short_opts, opts)
     except getopt.GetoptError as err:
         log.e(err)
         log.e("try 'you-get --help' for more options")
