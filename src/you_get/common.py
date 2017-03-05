@@ -257,6 +257,7 @@ def undeflate(data):
 # DEPRECATED in favor of get_content()
 def get_response(url, faker = False):
     logging.debug('get_response: %s' % url)
+    url = parse.quote(url, ':/')
 
     # install cookies
     if cookies:
@@ -279,6 +280,7 @@ def get_response(url, faker = False):
 # DEPRECATED in favor of get_content()
 def get_html(url, encoding = None, faker = False):
     logging.debug('get_html: %s' % url)
+    url = parse.quote(url, ':/')
 
     content = get_response(url, faker).data
     return str(content, 'utf-8', 'ignore')
@@ -286,6 +288,7 @@ def get_html(url, encoding = None, faker = False):
 # DEPRECATED in favor of get_content()
 def get_decoded_html(url, faker = False):
     logging.debug('get_decoded_html: %s' % url)
+    url = parse.quote(url, ':/')
 
     response = get_response(url, faker)
     data = response.data
@@ -297,6 +300,7 @@ def get_decoded_html(url, faker = False):
 
 def get_location(url):
     logging.debug('get_location: %s' % url)
+    url = parse.quote(url, ':/')
 
     response = request.urlopen(url)
     # urllib will follow redirections and it's too much code to tell urllib
@@ -323,6 +327,7 @@ def get_content(url, headers={}, decoded=True):
     """
 
     logging.debug('get_content: %s' % url)
+    url = parse.quote(url, ':/')
 
     req = request.Request(url, headers=headers)
     if cookies:
@@ -362,6 +367,7 @@ def post_content(url, headers={}, post_data={}, decoded=True):
     """
 
     logging.debug('post_content: %s \n post_data: %s' % (url, post_data))
+    url = parse.quote(url, ':/')
 
     req = request.Request(url, headers=headers)
     if cookies:
