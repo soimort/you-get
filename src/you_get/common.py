@@ -1316,7 +1316,6 @@ def script_main(script_name, download, download_playlist, **kwargs):
         print(help)
         sys.exit()
     args.extend(urls_from_file)
-    print(args)
 
     if (socks_proxy):
         try:
