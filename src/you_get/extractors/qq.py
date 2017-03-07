@@ -169,6 +169,9 @@ class QQ(VideoExtractor):
         info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3%2E2%2E19%2E333&platform=11&defnpayver=1&vid=' + vid
         info = get_html(info_api)
         video_json = json.loads(match1(info, r'QZOutputJson=(.*)')[:-1])
+        if 'vl' not in video_json or 'vi' not in video_json['vl']:
+            sys.stderr.writelines('Extract failed!!')
+            return
         vi0 = video_json['vl']['vi'][0]
         lnk = vi0['lnk']
         self.title = vi0['ti']
