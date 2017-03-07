@@ -199,7 +199,12 @@ class QQ(VideoExtractor):
                 key_api = 'http://vv.video.qq.com/getvkey?vid={vid}&appver={appver}&platform={platform}&otype=json&filename={filename}&format={format}&cKey={cKey}&guid={guid}&charge=1&encryptVer=5.4&lnk={vid}'.format(
                     vid=vid, appver=appver, filename=self._getfilename(lnk, format, idx),
                     format=format, cKey=cKey, guid=guid, platform=platform, lnk=lnk)
-                part_info = get_html(key_api)
+                if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
+                    set_proxy(parse_host(kwargs['extractor_proxy']))
+                    part_info = get_html(key_api)
+                    unset_proxy()
+                else:
+                    part_info = get_html(key_api)
                 key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
                 return 'key' in key_json and key_json['key']
 
