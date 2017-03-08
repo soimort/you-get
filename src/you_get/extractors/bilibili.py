@@ -14,6 +14,25 @@ import re
 appkey = 'f3bb208b3d081dc8'
 SECRETKEY_MINILOADER = '1c15888dc316e05a15fdd0a02ed6584f'
 
+def collect_bangumi_epids(json_data):
+    eps = json_data['result']['episodes']
+    result = []
+    for ep in eps:
+        result.append(ep['episode_id'])
+    return sorted(result)
+
+def get_bangumi_info(bangumi_id):
+    BASE_URL = 'http://bangumi.bilibili.com/jsonp/seasoninfo/'
+    import time
+    import json
+    long_epoch = int(time.time() * 1000)
+    req_url = BASE_URL + bangumi_id + '.ver?callback=seasonListCallbaks&jsonp=jsonp&_=' + str(long_epoch)
+    season_data = get_content(req_url)
+    season_data = season_data[len('seasonListCallback('):]
+    season_data = season_data[: -1 * len(');')]
+    json_data = json.loads(season_data)
+    return json_data
+
 def get_srt_xml(id):
     url = 'http://comment.bilibili.com/%s.xml' % id
     return get_html(url)
@@ -128,11 +147,19 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
 
     if re.match(r'https?://bangumi\.bilibili\.com/', url):
         # quick hack for bangumi URLs
+        bangumi_id = match1(url, r'(\d+)')
+        bangumi_data = get_bangumi_info(bangumi_id)
+        ep_ids = collect_bangumi_epids(bangumi_data)
         episode_id = r1(r'#(\d+)$', url) or r1(r'first_ep_id = "(\d+)"', html)
         cont = post_content('http://bangumi.bilibili.com/web_api/get_source',
                             post_data={'episode_id': episode_id})
         cid = json.loads(cont)['result']['cid']
-        title = '%s [%s]' % (title, episode_id)
+        cont = get_content('http://bangumi.bilibili.com/web_api/episode/' + episode_id + '.json')
+        long_title = json.loads(cont)['result']['currentEpisode']['longTitle']
+        idx = 0
+        while ep_ids[idx] != episode_id:
+            idx += 1
+        title = '%s [%s %s]' % (title, idx+1, long_title)
         bilibili_download_by_cid(str(cid), title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     else:
