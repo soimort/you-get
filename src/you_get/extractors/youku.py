@@ -143,9 +143,12 @@ class Youku(VideoExtractor):
             })
         else:
             proxy_handler = request.ProxyHandler({})
-        opener = request.build_opener(ssl_context, cookie_handler, proxy_handler)
-        opener.addheaders = [('Cookie','__ysuid={}'.format(time.time()))]
-        request.install_opener(opener)
+        if not request._opener:
+            opener = request.build_opener(proxy_handler)
+            request.install_opener(opener)
+        for handler in (ssl_context, cookie_handler, proxy_handler):
+            request._opener.add_handler(handler)
+        request._opener.addheaders = [('Cookie','__ysuid={}'.format(time.time()))]
 
         assert self.url or self.vid
 
@@ -162,7 +165,7 @@ class Youku(VideoExtractor):
             api12_url = kwargs['api12_url']  #86
             self.ctype = kwargs['ctype']
             self.title = kwargs['title']
-            
+
         else:
             api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
             api12_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
@@ -304,7 +307,7 @@ class Youku(VideoExtractor):
                             ep    = parse.unquote(ep),
                             oip   = str(self.ip),
                             token = token,
-                            yxon  = 1
+                            yxon  = 0
                         ))
                         u = 'http://k.youku.com/player/getFlvPath/sid/{sid}_00' \
                             '/st/{container}/fileid/{fileid}?{q}'.format(
@@ -313,7 +316,7 @@ class Youku(VideoExtractor):
                                 fileid    = fileid,
                                 q         = q
                             )
-                        ksegs += [i['server'] for i in json.loads(get_content(u))]
+                        ksegs += [u]
             except error.HTTPError as e:
                 # Use fallback stream data in case of HTTP 404
                 log.e('[Error] ' + str(e))
@@ -330,36 +333,36 @@ class Youku(VideoExtractor):
 
     def open_download_by_vid(self, client_id, vid, **kwargs):
         """self, str, str, **kwargs->None
-        
+
         Arguments:
         client_id:        An ID per client. For now we only know Acfun's
                           such ID.
-        
+
         vid:              An video ID for each video, starts with "C".
-        
+
         kwargs['embsig']: Youku COOP's anti hotlinking.
                           For Acfun, an API call must be done to Acfun's
                           server, or the "playsign" of the content of sign_url
                           shall be empty.
-        
+
         Misc:
         Override the original one with VideoExtractor.
-        
+
         Author:
         Most of the credit are to @ERioK, who gave his POC.
-        
+
         History:
         Jul.28.2016 Youku COOP now have anti hotlinking via embsig. """
         self.f_code_1 = '10ehfkbv'  #can be retrived by running r.translate with the keys and the list e
         self.f_code_2 = 'msjv7h2b'
-        
+
         # as in VideoExtractor
         self.url = None
         self.vid = vid
         self.name = "优酷开放平台 (Youku COOP)"
 
         #A little bit of work before self.prepare
-        
+
         #Change as Jul.28.2016 Youku COOP updates its platform to add ant hotlinking
         if kwargs['embsig']:
             sign_url = "https://api.youku.com/players/custom.json?client_id={client_id}&video_id={video_id}&embsig={embsig}".format(client_id = client_id, video_id = vid, embsig = kwargs['embsig'])
@@ -371,9 +374,9 @@ class Youku(VideoExtractor):
         #to be injected and replace ct10 and 12
         api85_url = 'http://play.youku.com/partner/get.json?cid={client_id}&vid={vid}&ct=85&sign={playsign}'.format(client_id = client_id, vid = vid, playsign = playsign)
         api86_url = 'http://play.youku.com/partner/get.json?cid={client_id}&vid={vid}&ct=86&sign={playsign}'.format(client_id = client_id, vid = vid, playsign = playsign)
-        
+
         self.prepare(api_url = api85_url, api12_url = api86_url, ctype = 86, **kwargs)
-        
+
         #exact copy from original VideoExtractor
         if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             unset_proxy()
