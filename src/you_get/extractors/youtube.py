@@ -52,7 +52,7 @@ class YouTube(VideoExtractor):
             return code
 
         js = js.replace('\n', ' ')
-        f1 = match1(js, r'\w+\.sig\|\|([$\w]+)\(\w+\.\w+\)')
+        f1 = match1(js, r'"signature",([\w]+)\(\w+\.\w+\)')
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
                 match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
         f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
@@ -165,7 +165,7 @@ class YouTube(VideoExtractor):
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 try:
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
-                    self.html5player = 'https:' + ytplayer_config['assets']['js']
+                    self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
                     # Workaround: get_video_info returns bad s. Why?
                     stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                 except:
@@ -177,7 +177,7 @@ class YouTube(VideoExtractor):
                 ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
 
                 self.title = ytplayer_config['args']['title']
-                self.html5player = 'https:' + ytplayer_config['assets']['js']
+                self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
                 stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
 
         elif video_info['status'] == ['fail']:
@@ -193,7 +193,7 @@ class YouTube(VideoExtractor):
                     # 150 Restricted from playback on certain sites
                     # Parse video page instead
                     self.title = ytplayer_config['args']['title']
-                    self.html5player = 'https:' + ytplayer_config['assets']['js']
+                    self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
                     stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                 else:
                     log.wtf('[Error] The uploader has not made this video available in your country.')

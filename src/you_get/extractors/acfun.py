@@ -77,6 +77,8 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     title = unescape_html(title)
     title = escape_file_path(title)
     assert title
+    if match1(url, r'_(\d+)$'): # current P
+        title = title + " " + r1(r'active">([^<]*)', html)
 
     vid = r1('data-vid="(\d+)"', html)
     up = r1('data-name="([^"]+)"', html)

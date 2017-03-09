@@ -15,7 +15,6 @@ SITES = {
     'cbs'              : 'cbs',
     'dailymotion'      : 'dailymotion',
     'dilidili'         : 'dilidili',
-    'dongting'         : 'dongting',
     'douban'           : 'douban',
     'douyu'            : 'douyutv',
     'ehow'             : 'ehow',
@@ -40,7 +39,6 @@ SITES = {
     'iqiyi'            : 'iqiyi',
     'isuntv'           : 'suntv',
     'joy'              : 'joy',
-    'jpopsuki'         : 'jpopsuki',
     'kankanews'        : 'bilibili',
     'khanacademy'      : 'khan',
     'ku6'              : 'ku6',
@@ -63,7 +61,6 @@ SITES = {
     'pinterest'        : 'pinterest',
     'pixnet'           : 'pixnet',
     'pptv'             : 'pptv',
-    'qianmo'           : 'qianmo',
     'qq'               : 'qq',
     'quanmin'          : 'quanmin',
     'showroom-live'    : 'showroom',
@@ -73,7 +70,6 @@ SITES = {
     'soundcloud'       : 'soundcloud',
     'ted'              : 'ted',
     'theplatform'      : 'theplatform',
-    'thvideo'          : 'thvideo',
     'tucao'            : 'tucao',
     'tudou'            : 'tudou',
     'tumblr'           : 'tumblr',
@@ -131,7 +127,7 @@ fake_headers = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0'
 }
 
 if sys.stdout.isatty():
@@ -298,6 +294,13 @@ def get_location(url):
     # not to do that
     return response.geturl()
 
+def urlopen_with_retry(*args, **kwargs):
+    for i in range(10):
+        try:
+            return request.urlopen(*args, **kwargs)
+        except socket.timeout:
+            logging.debug('request attempt %s timeout' % str(i + 1))
+
 def get_content(url, headers={}, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
 
@@ -317,13 +320,7 @@ def get_content(url, headers={}, decoded=True):
         cookies.add_cookie_header(req)
         req.headers.update(req.unredirected_hdrs)
 
-    for i in range(10):
-        try:
-            response = request.urlopen(req)
-            break
-        except socket.timeout:
-            logging.debug('request attempt %s timeout' % str(i + 1))
-
+    response = urlopen_with_retry(req)
     data = response.read()
 
     # Handle HTTP compression for gzip and deflate (zlib)
@@ -362,7 +359,7 @@ def post_content(url, headers={}, post_data={}, decoded=True):
         cookies.add_cookie_header(req)
         req.headers.update(req.unredirected_hdrs)
     post_data_enc = bytes(parse.urlencode(post_data), 'utf-8')
-    response = request.urlopen(req, data = post_data_enc)
+    response = urlopen_with_retry(req, data=post_data_enc)
     data = response.read()
 
     # Handle HTTP compression for gzip and deflate (zlib)
@@ -384,11 +381,11 @@ def post_content(url, headers={}, post_data={}, decoded=True):
 
 def url_size(url, faker = False, headers = {}):
     if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        response = urlopen_with_retry(request.Request(url, headers=fake_headers))
     elif headers:
-        response = request.urlopen(request.Request(url, headers = headers), None)
+        response = urlopen_with_retry(request.Request(url, headers=headers))
     else:
-        response = request.urlopen(url)
+        response = urlopen_with_retry(url)
 
     size = response.headers['content-length']
     return int(size) if size!=None else float('inf')
@@ -398,20 +395,20 @@ def urls_size(urls, faker = False, headers = {}):
 
 def get_head(url, headers = {}, get_method = 'HEAD'):
     if headers:
-        req = request.Request(url, headers = headers)
+        req = request.Request(url, headers=headers)
     else:
         req = request.Request(url)
-    req.get_method = lambda : get_method
-    res = request.urlopen(req)
+    req.get_method = lambda: get_method
+    res = urlopen_with_retry(req)
     return dict(res.headers)
 
 def url_info(url, faker = False, headers = {}):
     if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        response = urlopen_with_retry(request.Request(url, headers=fake_headers))
     elif headers:
-        response = request.urlopen(request.Request(url, headers = headers), None)
+        response = urlopen_with_retry(request.Request(url, headers=headers))
     else:
-        response = request.urlopen(request.Request(url))
+        response = urlopen_with_retry(request.Request(url))
 
     headers = response.headers
 
@@ -460,11 +457,11 @@ def url_locations(urls, faker = False, headers = {}):
     locations = []
     for url in urls:
         if faker:
-            response = request.urlopen(request.Request(url, headers = fake_headers), None)
+            response = urlopen_with_retry(request.Request(url, headers=fake_headers))
         elif headers:
-            response = request.urlopen(request.Request(url, headers = headers), None)
+            response = urlopen_with_retry(request.Request(url, headers=headers))
         else:
-            response = request.urlopen(request.Request(url))
+            response = urlopen_with_retry(request.Request(url))
 
         locations.append(response.url)
     return locations
@@ -514,10 +511,10 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         if refer:
             headers['Referer'] = refer
 
-        response = request.urlopen(request.Request(url, headers = headers), None)
+        response = urlopen_with_retry(request.Request(url, headers=headers))
         try:
             range_start = int(response.headers['content-range'][6:].split('/')[0].split('-')[0])
-            end_length = end = int(response.headers['content-range'][6:].split('/')[1])
+            end_length = int(response.headers['content-range'][6:].split('/')[1])
             range_length = end_length - range_start
         except:
             content_length = response.headers['content-length']
@@ -537,7 +534,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
                         break
                     else: # Unexpected termination. Retry request
                         headers['Range'] = 'bytes=' + str(received) + '-'
-                        response = request.urlopen(request.Request(url, headers = headers), None)
+                        response = urlopen_with_retry(request.Request(url, headers=headers))
                 output.write(buffer)
                 received += len(buffer)
                 if bar:
@@ -597,7 +594,7 @@ def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore
     if refer:
         headers['Referer'] = refer
 
-    response = request.urlopen(request.Request(url, headers=headers), None)
+    response = urlopen_with_retry(request.Request(url, headers=headers))
 
     with open(temp_filepath, open_mode) as output:
         this_chunk = received
@@ -610,7 +607,7 @@ def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore
             if chunk_size and (received - this_chunk) >= chunk_size:
                 url = dyn_callback(received)
                 this_chunk = received
-                response = request.urlopen(request.Request(url, headers=headers), None)
+                response = urlopen_with_retry(request.Request(url, headers=headers))
             if bar:
                 bar.update_received(len(buffer))
 
