@@ -36,7 +36,6 @@ def ku6_download(url, output_dir = '.', merge = True, info_only = False, **kwarg
                 r'http://v.ku6.com/show/(.*)\.\.\.html',
                 r'http://my.ku6.com/watch\?.*v=(.*)\.\..*']
         id = r1_of(patterns, url)
-
     ku6_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def baidu_ku6(url):
@@ -48,6 +47,10 @@ def baidu_ku6(url):
     if isrc is not None:
         h2 = get_html(isrc)
         id = match1(h2, r'http://v.ku6.com/show/(.*)\.\.\.html')
+#fix #1746
+#some ku6 urls really ends with three dots? A bug?
+        if id is None:
+            id = match1(h2, r'http://v.ku6.com/show/(.*)\.html')
 
     return id
 
