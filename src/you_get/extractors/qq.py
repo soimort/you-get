@@ -69,9 +69,52 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             if not info_only:
                 download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
+def kg_qq_download_by_shareid(shareid, output_dir='.', info_only=False, caption=False):
+    BASE_URL = 'http://cgi.kg.qq.com/fcgi-bin/kg_ugc_getdetail'
+    params_str = '?dataType=jsonp&jsonp=callback&jsonpCallback=jsopgetsonginfo&v=4&outCharset=utf-8&shareid=' + shareid
+    url = BASE_URL + params_str
+    content = get_content(url)
+    json_str = content[len('jsonpcallback('):-1]
+    json_data = json.loads(json_str)
+
+    playurl = json_data['data']['playurl']
+    videourl = json_data['data']['playurl_video']
+    real_url = playurl if playurl else videourl
+    real_url = real_url.replace('\/', '/')
+
+    ksong_mid = json_data['data']['ksong_mid']
+    lyric_url = 'http://cgi.kg.qq.com/fcgi-bin/fcg_lyric?jsonpCallback=jsopgetlrcdata&outCharset=utf-8&ksongmid=' + ksong_mid 
+    lyric_data = get_content(lyric_url)
+    lyric_string = lyric_data[len('jsopgetlrcdata('):-1]
+    lyric_json = json.loads(lyric_string)
+    lyric = lyric_json['data']['lyric']
+
+    title = match1(lyric, r'\[ti:([^\]]*)\]')
+
+    type, ext, size = url_info(real_url)
+    if not title:
+        title = shareid
+
+    print_info('腾讯全民K歌', title, type, size)
+    if not info_only:
+        download_urls([real_url], title, ext, size, output_dir, merge=False)
+        if caption:
+            caption_filename = title + '.lrc'
+            caption_path = output_dir + '/' + caption_filename
+            with open(caption_path, 'w') as f:
+                lrc_list = lyric.split('\r\n')
+                for line in lrc_list:
+                    f.write(line)
+                    f.write('\n')
 
 def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     """"""
+    if 'kg.qq.com' in url or 'kg2.qq.com' in url:
+        shareid = url.split('?s=')[-1]
+        caption = kwargs['caption']
+        kg_qq_download_by_shareid(shareid, output_dir=output_dir, info_only=info_only, caption=caption)
+        return
+
     if 'live.qq.com' in url:
         qieDownload(url, output_dir=output_dir, merge=merge, info_only=info_only)
         return
