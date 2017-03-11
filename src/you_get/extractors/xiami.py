@@ -49,7 +49,7 @@ def xiami_download_song(sid, output_dir = '.', merge = True, info_only = False):
     i = doc.getElementsByTagName("track")[0]
     artist = i.getElementsByTagName("artist")[0].firstChild.nodeValue
     album_name = i.getElementsByTagName("album_name")[0].firstChild.nodeValue
-    song_title = i.getElementsByTagName("title")[0].firstChild.nodeValue
+    song_title = i.getElementsByTagName("name")[0].firstChild.nodeValue
     url = location_dec(i.getElementsByTagName("location")[0].firstChild.nodeValue)
     try:
         lrc_url = i.getElementsByTagName("lyric")[0].firstChild.nodeValue
