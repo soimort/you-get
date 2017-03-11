@@ -152,7 +152,10 @@ def xiami_download(url, output_dir = '.', stream_type = None, merge = True, info
         id = r1(r'http://www.xiami.com/collect/(\d+)', url)
         xiami_download_showcollect(id, output_dir, merge, info_only)
 
-    if re.match('http://www.xiami.com/song/\d+', url):
+    if re.match(r'http://www.xiami.com/song/\d+\b', url):
+        id = r1(r'http://www.xiami.com/song/(\d+)', url)
+        xiami_download_song(id, output_dir, merge, info_only)
+    elif re.match(r'http://www.xiami.com/song/\w+', url):
         html = get_html(url, faker=True)
         id = r1(r'rel="canonical" href="http://www.xiami.com/song/([^"]+)"', html)
         xiami_download_song(id, output_dir, merge, info_only)
