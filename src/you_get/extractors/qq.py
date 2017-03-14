@@ -170,7 +170,8 @@ class QQ(VideoExtractor):
         info = get_html(info_api)
         video_json = json.loads(match1(info, r'QZOutputJson=(.*)')[:-1])
         if 'vl' not in video_json or 'vi' not in video_json['vl']:
-            sys.stderr.writelines('Extract failed!!\n'+info+'\n')
+            # sys.stderr.writelines('Extract failed!!\n'+info+'\n')
+            print('Extract failed!!', info, file=sys.stderr)
             return
         vi0 = video_json['vl']['vi'][0]
         lnk = vi0['lnk']
@@ -262,21 +263,21 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if 'kuaibao.qq.com' in url or re.match(r'http://daxue.qq.com/content/content/id/\d+', url):
         content = get_html(url)
         vid = match1(content, r'vid\s*=\s*"\s*([^"]+)"')
-        title = match1(content, r'title">([^"]+)</p>')
-        title = title.strip() if title else vid
+        # title = match1(content, r'title">([^"]+)</p>')
+        # title = title.strip() if title else vid
     elif 'iframe/player.html' in url:
         vid = match1(url, r'\bvid=(\w+)')
         # for embedded URLs; don't know what the title is
-        title = vid
+        # title = vid
     else:
         content = get_html(url)
         vid = parse_qs(urlparse(url).query).get(
             'vid')  # for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5
         vid = vid[0] if vid else match1(content, r'vid"*\s*:\s*"\s*([^"]+)"')  # general fallback
-        title = match1(content, r'<a.*?id\s*=\s*"%s".*?title\s*=\s*"(.+?)".*?>' % vid)
-        title = match1(content, r'title">([^"]+)</p>') if not title else title
-        title = match1(content, r'"title":"([^"]+)"') if not title else title
-        title = vid if not title else title  # general fallback
+        # title = match1(content, r'<a.*?id\s*=\s*"%s".*?title\s*=\s*"(.+?)".*?>' % vid)
+        # title = match1(content, r'title">([^"]+)</p>') if not title else title
+        # title = match1(content, r'"title":"([^"]+)"') if not title else title
+        # title = vid if not title else title  # general fallback
 
         site.download_by_vid(vid=vid, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
 
