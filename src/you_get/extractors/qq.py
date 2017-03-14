@@ -279,7 +279,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         # title = match1(content, r'"title":"([^"]+)"') if not title else title
         # title = vid if not title else title  # general fallback
 
-        site.download_by_vid(vid=vid, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+    site.download_by_vid(vid=vid, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
 
 
 qq_download_by_vid = site.download_by_vid
