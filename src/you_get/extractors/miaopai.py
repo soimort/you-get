@@ -19,7 +19,7 @@ def miaopai_download_by_url(url, output_dir = '.', merge = False, info_only = Fa
 
         #grab download URL
         a = get_content(webpage_url, headers= fake_headers_mobile , decoded=True)
-        url = match1(a, r'<video src="(.*?)\"\W')
+        url = match1(a, r'<video id=.*?src=[\'"](.*?)[\'"]\W')
 
         #grab title
         b = get_content(webpage_url)  #normal
@@ -28,7 +28,7 @@ def miaopai_download_by_url(url, output_dir = '.', merge = False, info_only = Fa
         type_, ext, size = url_info(url)
         print_info(site_info, title, type_, size)
         if not info_only:
-            download_urls([url], title, ext, total_size=None, output_dir=output_dir, merge=merge)
+            download_urls([url], title.replace('\n',''), ext, total_size=None, output_dir=output_dir, merge=merge)
 
 #----------------------------------------------------------------------
 def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
