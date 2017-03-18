@@ -21,8 +21,9 @@ headers = {
 #----------------------------------------------------------------------
 def dilidili_parser_data_to_stream_types(typ ,vid ,hd2 ,sign, tmsign, ulk):
     """->list"""
+    another_url = 'https://newplayer.jfrft.com/parse.php?xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'.format(typ = typ, vid = vid, hd2 = hd2, sign = sign, tmsign = tmsign, ulk = ulk)
     parse_url = 'http://player.005.tv/parse.php?xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'.format(typ = typ, vid = vid, hd2 = hd2, sign = sign, tmsign = tmsign, ulk = ulk)
-    html = get_content(parse_url, headers=headers)
+    html = get_content(another_url, headers=headers)
     
     info = re.search(r'(\{[^{]+\})(\{[^{]+\})(\{[^{]+\})(\{[^{]+\})(\{[^{]+\})', html).groups()
     info = [i.strip('{}').split('->') for i in info]
@@ -35,13 +36,22 @@ def dilidili_parser_data_to_stream_types(typ ,vid ,hd2 ,sign, tmsign, ulk):
 
 #----------------------------------------------------------------------
 def dilidili_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
-    if re.match(r'http://www.dilidili.com/watch\S+', url):
+    global headers
+    re_str = r'http://www.dilidili.com/watch\S+'
+    if re.match(r'http://www.dilidili.wang', url):
+        re_str = r'http://www.dilidili.wang/watch\S+'
+        headers['Referer'] = 'http://www.dilidili.wang/'
+    elif re.match(r'http://www.dilidili.mobi', url):
+        re_str = r'http://www.dilidili.mobi/watch\S+'
+        headers['Referer'] = 'http://www.dilidili.mobi/'
+
+    if re.match(re_str, url):
         html = get_content(url)
         title = match1(html, r'<title>(.+)丨(.+)</title>')  #title
         
         # player loaded via internal iframe
         frame_url = re.search(r'<iframe src=\"(.+?)\"', html).group(1)
-        #print(frame_url)
+        logging.debug('dilidili_download: %s' % frame_url)
         
         #https://player.005.tv:60000/?vid=a8760f03fd:a04808d307&v=yun&sign=a68f8110cacd892bc5b094c8e5348432
         html = get_content(frame_url, headers=headers, decoded=False).decode('utf-8')
@@ -53,7 +63,7 @@ def dilidili_download(url, output_dir = '.', merge = False, info_only = False, *
         sign = match1(html, r'var sign="(.+)"')
         tmsign = match1(html, r'tmsign=([A-Za-z0-9]+)')
         ulk =  match1(html, r'var ulk="(.+)"')
-        
+
         # here s the parser...
         stream_types = dilidili_parser_data_to_stream_types(typ, vid, hd2, sign, tmsign, ulk)
         
@@ -62,7 +72,9 @@ def dilidili_download(url, output_dir = '.', merge = False, info_only = False, *
         
         parse_url = 'http://player.005.tv/parse.php?xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'.format(typ = typ, vid = vid, hd2 = best_id, sign = sign, tmsign = tmsign, ulk = ulk)
         
-        ckplayer_download(parse_url, output_dir, merge, info_only, is_xml = True, title = title, headers = headers)
+        another_url = 'https://newplayer.jfrft.com/parse.php?xmlurl=null&type={typ}&vid={vid}&hd={hd2}&sign={sign}&tmsign={tmsign}&userlink={ulk}'.format(typ = typ, vid = vid, hd2 = hd2, sign = sign, tmsign = tmsign, ulk = ulk)
+
+        ckplayer_download(another_url, output_dir, merge, info_only, is_xml = True, title = title, headers = headers)
 
         #type_ = ''
         #size = 0
