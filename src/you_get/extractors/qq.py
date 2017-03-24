@@ -212,7 +212,7 @@ class QQ(VideoExtractor):
             def __getitem__(self, key):
                 if key == 'src' and 'src' not in self:
                     self['src'] = []
-                    for idx in range(1, vi0['cl']['fc'] + 1):
+                    for idx in range(1, vi0['cl']['fc'] + 1) or [1]:
                         vkey = self._getvkey(vid, self.stream_id, idx)
                         if vkey:
                             url = '{prefix}/{filename}?vkey={vkey}'.format(prefix=url_prefix, filename=self._getfilename(lnk=lnk, stream_id=self.stream_id, idx=idx), vkey=vkey)
