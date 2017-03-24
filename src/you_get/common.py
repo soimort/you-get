@@ -482,7 +482,7 @@ def url_locations(urls, faker = False, headers = {}):
         locations.append(response.url)
     return locations
 
-def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
+def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}, timeout = None, **kwargs):
     file_size = url_size(url, faker = faker, headers = headers)
 
     if os.path.exists(filepath):
@@ -527,7 +527,10 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         if refer:
             headers['Referer'] = refer
 
-        response = urlopen_with_retry(request.Request(url, headers=headers))
+        if timeout:
+            response = urlopen_with_retry(request.Request(url, headers=headers), timeout=timeout)
+        else:
+            response = urlopen_with_retry(request.Request(url, headers=headers))
         try:
             range_start = int(response.headers['content-range'][6:].split('/')[0].split('-')[0])
             end_length = int(response.headers['content-range'][6:].split('/')[1])
@@ -791,7 +794,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
         url = urls[0]
         print('Downloading %s ...' % tr(output_filename))
         bar.update()
-        url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers)
+        url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers, **kwargs)
         bar.done()
     else:
         parts = []
@@ -803,7 +806,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             parts.append(filepath)
             #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
-            url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers)
+            url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers, **kwargs)
         bar.done()
 
         if not merge:
