@@ -58,6 +58,9 @@ docs/_build/
 # PyBuilder
 target/
 
+#Visual Studio Code
+.vscode/
+
 # Misc
 _*
 *_
