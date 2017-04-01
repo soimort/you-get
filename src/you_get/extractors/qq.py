@@ -14,6 +14,8 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     parts_ti = video_json['vl']['vi'][0]['ti']
     parts_prefix = video_json['vl']['vi'][0]['ul']['ui'][0]['url']
     parts_formats = video_json['fl']['fi']
+    if parts_prefix.endswith('/'):
+        parts_prefix = parts_prefix[:-1]
     # find best quality
     # only looking for fhd(1080p) and shd(720p) here.
     # 480p usually come with a single file, will be downloaded as fallback.
@@ -38,7 +40,7 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
                 # For fhd(1080p), every part is about 100M and 6 minutes
                 # try 100 parts here limited download longest single video of 10 hours.
                 for part in range(1,100):
-                    filename = vid + '.p' + str(part_format_id % 1000) + '.' + str(part) + '.mp4'
+                    filename = vid + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
                     key_api = "http://vv.video.qq.com/getkey?otype=json&platform=11&format=%s&vid=%s&filename=%s" % (part_format_id, parts_vid, filename)
                     #print(filename)
                     #print(key_api)
@@ -59,7 +61,9 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             fvkey = video_json['vl']['vi'][0]['fvkey']
             mp4 = video_json['vl']['vi'][0]['cl'].get('ci', None)
             if mp4:
-                mp4 = mp4[0]['keyid'].replace('.10', '.p') + '.mp4'
+                old_id = mp4[0]['keyid'].split('.')[1]
+                new_id = 'p' + str(int(old_id) % 10000)
+                mp4 = mp4[0]['keyid'].replace(old_id, new_id) + '.mp4'
             else:
                 mp4 = video_json['vl']['vi'][0]['fn']
             url = '%s/%s?vkey=%s' % ( parts_prefix, mp4, fvkey )
