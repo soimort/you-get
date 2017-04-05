@@ -3,6 +3,7 @@
 
 from ..version import script_name
 
+from .color import color
 import os, sys
 
 TERM = os.getenv('TERM', '')
@@ -63,16 +64,16 @@ def sprint(text, *colors):
 
 def println(text, *colors):
     """Print text to standard output."""
-    sys.stdout.write(sprint(text, *colors) + "\n")
-
+    #sys.stdout.write(sprint(text, *colors) + "\n")
+    color.print_info(text)
 def print_err(text, *colors):
     """Print text to standard error."""
-    sys.stderr.write(sprint(text, *colors) + "\n")
-
+    #sys.stderr.write(sprint(text, *colors) + "\n")
+    color.print_err(text)
 def print_log(text, *colors):
     """Print a log message to standard error."""
-    sys.stderr.write(sprint("{}: {}".format(script_name, text), *colors) + "\n")
-
+    #sys.stderr.write(sprint("{}: {}".format(script_name, text), *colors) + "\n")
+    color.print_err("{}: {}".format(script_name, text))
 def i(message):
     """Print a normal log message."""
     print_log(message)
