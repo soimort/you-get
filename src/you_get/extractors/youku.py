@@ -228,7 +228,7 @@ class Youku(VideoExtractor):
                         'video_profile': stream_types[stream_id]['video_profile'],
                         'size': stream['size'],
                         'pieces': [{
-                            'fileid': stream['stream_fileid'],
+                            'fileid': stream['segs'][0]['fileid'],
                             'segs': stream['segs']
                         }]
                     }
@@ -252,14 +252,14 @@ class Youku(VideoExtractor):
                         'video_profile': stream_types[stream_id]['video_profile'],
                         'size': stream['size'],
                         'pieces': [{
-                            'fileid': stream['stream_fileid'],
+                            'fileid': stream['segs'][0]['fileid'],
                             'segs': stream['segs']
                         }]
                     }
                 else:
                     self.streams_fallback[stream_id]['size'] += stream['size']
                     self.streams_fallback[stream_id]['pieces'].append({
-                        'fileid': stream['stream_fileid'],
+                        'fileid': stream['segs'][0]['fileid'],
                         'segs': stream['segs']
                     })
 
