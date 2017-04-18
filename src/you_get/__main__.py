@@ -54,11 +54,8 @@ def main_dev(**kwargs):
                 # Display version.
                 log.println("you-get:", log.BOLD)
                 log.println("    version:  {}".format(__version__))
-                if head is not None:
-                    log.println("    branch:   {}\n    commit:   {}".format(*head))
-                else:
-                    log.println("    branch:   {}\n    commit:   {}".format("(stable)", "(tag v{})".format(__version__)))
-
+                fmt = "    branch:   {}\n    commit:   {}"
+                log.println(fmt.format(*head if head else ("(stable)", "(tag v{})".format(__version__))))
                 log.println("    platform: {}".format(platform.platform()))
                 log.println("    python:   {}".format(sys.version.split('\n')[0]))
 
