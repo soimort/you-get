@@ -5,7 +5,7 @@ __all__ = ['yinyuetai_download', 'yinyuetai_download_by_id']
 from ..common import *
 
 def yinyuetai_download_by_id(vid, title=None, output_dir='.', merge=True, info_only=False):
-    video_info = json.loads(get_html('http://www.yinyuetai.com/insite/get-video-info?json=true&videoId=%s' % vid))
+    video_info = json.loads(get_html('http://ext.yinyuetai.com/main/get-h-mv-info?json=true&videoId=%s' % vid))
     url_models = video_info['videoInfo']['coreVideoInfo']['videoUrlModels']
     url_models = sorted(url_models, key=lambda i: i['qualityLevel'])
     url = url_models[-1]['videoUrl']
