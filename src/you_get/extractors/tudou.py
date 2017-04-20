@@ -45,16 +45,20 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     if id:
         return tudou_download_by_id(id, title="", info_only=info_only)
 
-    html = get_decoded_html(url)
+    html = get_content(url)
 
     try:
         title = r1(r'\Wkw\s*[:=]\s*[\'\"]([^\n]+?)\'\s*\n', html).replace("\\'", "\'")
         assert title
         title = unescape_html(title)
     except AttributeError:
-        title = ''
+        title = match1(html, r'id=\"subtitle\"\s*title\s*=\s*\"([^\"]+)\"')
+        if title is None:
+            title = ''
 
     vcode = r1(r'vcode\s*[:=]\s*\'([^\']+)\'', html)
+    if vcode is None:
+        vcode = match1(html, r'viden\s*[:=]\s*\"([\w+/=]+)\"')
     if vcode:
         from .youku import youku_download_by_vid
         return youku_download_by_vid(vcode, title=title, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
