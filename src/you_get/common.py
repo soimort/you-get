@@ -1358,7 +1358,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
         else:
             sys.exit(1)
     except UnicodeEncodeError:
-        raise
+        if traceback:
+            raise
         log.e('[error] oops, the current environment does not seem to support Unicode.')
         log.e('please set it to a UTF-8-aware locale first,')
         log.e('so as to save the video (with some Unicode characters) correctly.')
