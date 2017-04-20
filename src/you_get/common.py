@@ -279,15 +279,11 @@ def get_response(url, faker = False):
 
 # DEPRECATED in favor of get_content()
 def get_html(url, encoding = None, faker = False):
-    logging.debug('get_html: %s' % url)
-
     content = get_response(url, faker).data
     return str(content, 'utf-8', 'ignore')
 
 # DEPRECATED in favor of get_content()
 def get_decoded_html(url, faker = False):
-    logging.debug('get_decoded_html: %s' % url)
-
     response = get_response(url, faker)
     data = response.data
     charset = r1(r'charset=([\w-]+)', response.headers['content-type'])
@@ -1362,6 +1358,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
         else:
             sys.exit(1)
     except UnicodeEncodeError:
+        raise
         log.e('[error] oops, the current environment does not seem to support Unicode.')
         log.e('please set it to a UTF-8-aware locale first,')
         log.e('so as to save the video (with some Unicode characters) correctly.')

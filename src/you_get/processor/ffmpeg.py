@@ -21,10 +21,12 @@ def get_usable_ffmpeg(cmd):
         out, err = p.communicate()
         vers = str(out, 'utf-8').split('\n')[0].split()
         assert (vers[0] == 'ffmpeg' and vers[2][0] > '0') or (vers[0] == 'avconv')
-        #if the version is strange like 'N-1234-gd1111', set version to 2.0
+        #set version to 1.0 for nightly build and print warning
         try:
             version = [int(i) for i in vers[2].split('.')]
         except:
+            print('It seems that your ffmpeg is a nightly build.')
+            print('Please switch to the latest stable if merging failed.')
             version = [1, 0]
         return cmd, version
     except:
