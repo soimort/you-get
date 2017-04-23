@@ -25,8 +25,12 @@ def ifeng_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     if id:
         return ifeng_download_by_id(id, None, output_dir = output_dir, merge = merge, info_only = info_only)
 
-    html = get_html(url)
+    html = get_content(url)
+    uuid_pattern = r'"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"'
     id = r1(r'var vid="([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"', html)
+    if id is None:
+        video_pattern = r'"vid"\s*:\s*' + uuid_pattern
+        id = match1(html, video_pattern)
     assert id, "can't find video info"
     return ifeng_download_by_id(id, None, output_dir = output_dir, merge = merge, info_only = info_only)
 

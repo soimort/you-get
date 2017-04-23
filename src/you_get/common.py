@@ -86,8 +86,10 @@ SITES = {
     'xiami'            : 'xiami',
     'xiaokaxiu'        : 'yixia',
     'xiaojiadianvideo' : 'fc2video',
+    'ximalaya'         : 'ximalaya',
     'yinyuetai'        : 'yinyuetai',
     'miaopai'          : 'yixia',
+    'yizhibo'          : 'yizhibo',
     'youku'            : 'youku',
     'youtu'            : 'youtube',
     'youtube'          : 'youtube',
@@ -482,7 +484,7 @@ def url_locations(urls, faker = False, headers = {}):
         locations.append(response.url)
     return locations
 
-def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}):
+def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}, timeout = None, **kwargs):
     file_size = url_size(url, faker = faker, headers = headers)
 
     if os.path.exists(filepath):
@@ -527,7 +529,10 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
         if refer:
             headers['Referer'] = refer
 
-        response = urlopen_with_retry(request.Request(url, headers=headers))
+        if timeout:
+            response = urlopen_with_retry(request.Request(url, headers=headers), timeout=timeout)
+        else:
+            response = urlopen_with_retry(request.Request(url, headers=headers))
         try:
             range_start = int(response.headers['content-range'][6:].split('/')[0].split('-')[0])
             end_length = int(response.headers['content-range'][6:].split('/')[1])
@@ -766,7 +771,10 @@ class DummyProgressBar:
 def get_output_filename(urls, title, ext, output_dir, merge):
     # lame hack for the --output-filename option
     global output_filename
-    if output_filename: return output_filename
+    if output_filename:
+        if ext:
+            return output_filename + '.' + ext
+        return output_filename
 
     merged_ext = ext
     if (len(urls) > 1) and merge:
@@ -823,7 +831,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
         url = urls[0]
         print('Downloading %s ...' % tr(output_filename))
         bar.update()
-        url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers)
+        url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers, **kwargs)
         bar.done()
     else:
         parts = []
@@ -835,7 +843,8 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 filepath = os.path.join(output_dir, filename)
                 parts.append(filepath)
                 #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
-                e.submit(url_save, url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers)
+                bar.update_piece(i + 1)
+                e.submit(url_save, url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers, **kwargs)
         bar.done()
 
         if not merge:
@@ -1085,7 +1094,7 @@ def print_info(site_info, title, type, size):
         type_info = "Advanced Systems Format (%s)" % type
     #elif type in ['video/mpeg']:
     #    type_info = "MPEG video (%s)" % type
-    elif type in ['audio/mp4']:
+    elif type in ['audio/mp4', 'audio/m4a']:
         type_info = "MPEG-4 audio (%s)" % type
     elif type in ['audio/mpeg']:
         type_info = "MP3 (%s)" % type
