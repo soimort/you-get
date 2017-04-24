@@ -134,7 +134,12 @@ class Iqiyi(VideoExtractor):
                       r1(r'vid=([^&]+)', self.url) or \
                       r1(r'data-player-videoid="([^"]+)"', html)
             self.vid = (tvid, videoid)
-            self.title = match1(html, '<title>([^<]+)').split('-')[0]
+            info_u = 'http://mixer.video.iqiyi.com/jp/mixin/videos/' + tvid
+            mixin = get_content(info_u)
+            mixin_json = json.loads(mixin[len('var tvInfoJs='):])
+            real_u = mixin_json['url']
+            real_html = get_content(real_u)
+            self.title = match1(real_html, '<title>([^<]+)').split('-')[0]
         tvid, videoid = self.vid
         info = getVMS(tvid, videoid)
         assert info['code'] == 'A00000', 'can\'t play this video'
