@@ -115,6 +115,7 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
+from .cookies import load_cookies
 
 dry_run = False
 json_output = False
@@ -1250,32 +1251,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
             dry_run = True
             info_only = False
         elif o in ('-c', '--cookies'):
-            try:
-                cookies = cookiejar.MozillaCookieJar(a)
-                cookies.load()
-            except:
-                import sqlite3
-                cookies = cookiejar.MozillaCookieJar()
-                con = sqlite3.connect(a)
-                cur = con.cursor()
-                try:
-                    cur.execute("SELECT host, path, isSecure, expiry, name, value FROM moz_cookies")
-                    for item in cur.fetchall():
-                        c = cookiejar.Cookie(0, item[4], item[5],
-                                             None, False,
-                                             item[0],
-                                             item[0].startswith('.'),
-                                             item[0].startswith('.'),
-                                             item[1], False,
-                                             item[2],
-                                             item[3], item[3]=="",
-                                             None, None, {})
-                        cookies.set_cookie(c)
-                except: pass
-                # TODO: Chromium Cookies
-                # SELECT host_key, path, secure, expires_utc, name, encrypted_value FROM cookies
-                # http://n8henrie.com/2013/11/use-chromes-cookies-for-easier-downloading-with-python-requests/
-
+            cookies = load_cookies(a)
         elif o in ('-l', '--playlist'):
             playlist = True
         elif o in ('--no-caption',):
