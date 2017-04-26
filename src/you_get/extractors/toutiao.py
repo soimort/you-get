@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import base64
 
+import binascii
+
 from ..common import *
 import random
 from json import loads
@@ -8,69 +10,18 @@ from json import loads
 __all__ = ['toutiao_download', ]
 
 
-# magic function
-def int_overflow(val):
-    maxint = 2147483647
-    if not -maxint - 1 <= val <= maxint:
-        val = (val + (maxint + 1)) % (2 * (maxint + 1)) - maxint - 1
-    return val
-
-import ctypes
-
-
-def unsigned_right_shitf(n, i):
-    if n < 0:
-        n = ctypes.c_uint32(n).value
-    if i < 0:
-        return -int_overflow(n << abs(i))
-    return int_overflow(n >> i)
-
-
-def gen_table():
-    t = [0] * 256
-    for r in range(256):
-        e = r
-        e = (-306674912 ^ unsigned_right_shitf(e, 1)
-             ) if 1 & e else unsigned_right_shitf(e, 1)
-        e = (-306674912 ^ unsigned_right_shitf(e, 1)
-             ) if 1 & e else unsigned_right_shitf(e, 1)
-        e = (-306674912 ^ unsigned_right_shitf(e, 1)
-             ) if 1 & e else unsigned_right_shitf(e, 1)
-        e = (-306674912 ^ unsigned_right_shitf(e, 1)
-             ) if 1 & e else unsigned_right_shitf(e, 1)
-        e = (-306674912 ^ unsigned_right_shitf(e, 1)
-             ) if 1 & e else unsigned_right_shitf(e, 1)
-        e = (-306674912 ^ unsigned_right_shitf(e, 1)
-             ) if 1 & e else unsigned_right_shitf(e, 1)
-        e = (-306674912 ^ unsigned_right_shitf(e, 1)
-             ) if 1 & e else unsigned_right_shitf(e, 1)
-        e = (-306674912 ^ unsigned_right_shitf(e, 1)
-             ) if 1 & e else unsigned_right_shitf(e, 1)
-        t[r] = e
-    return t
-
-table = gen_table()
-
-
-def sign_url(r, url):
-    a = len(url)
-    t = -1
-    n = -1
-    o = -1
-    for i in range(a):
-        t = ord(url[i])
-        if t < 128:
-            o = unsigned_right_shitf(o, 8) ^ r[255 & (o ^ t)]
-    return o ^ -1
-
-
 def sign_video_url(vid):
-    href = "http://i.snssdk.com/video/urls/v/1/toutiao/mp4/" + vid
-    o = "/video/urls/v/1/toutiao/mp4/" + vid + "?r=" + \
-        str(random.randint(10000000000000000, 999999999999999999))
-    t = sign_url(table, o)
-    i = 4294967296 + t if t < 0 else t
-    return "http:" + "//" + "i.snssdk.com" + o + "&s=" + str(i)
+    # some code from http://codecloud.net/110854.html
+    r = str(random.random())[2:]
+
+    def right_shift(val, n):
+        return val >> n if val >= 0 else (val + 0x100000000) >> n
+
+    url = 'http://i.snssdk.com/video/urls/v/1/toutiao/mp4/%s' % vid
+    n = url.replace("http://i.snssdk.com", "")+ '?r=' + r
+    c = binascii.crc32(n.encode("ascii"))
+    s = right_shift(c, 0)
+    return url + '?r=%s&s=%s' % (r, s)
 
 
 class ToutiaoVideoInfo(object):
@@ -116,17 +67,9 @@ def toutiao_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
     title = match1(html, r"title: '([^']+)'.replace")
     video_file_list = get_file_by_vid(video_id)  # 调api获取视频源文件
     type, ext, size = url_info(video_file_list[0].url, faker=True)
-    log.d(video_file_list[0].url)
     print_info(site_info=site_info, title=title, type=type, size=size)
     if not info_only:
-        download_urls(
-            [video_file_list[0].url],
-            title,
-            ext,
-            size,
-            output_dir,
-            merge=merge,
-            faker=True)
+        download_urls([video_file_list[0].url], title, ext, size, output_dir, merge=merge, faker=True)
 
 
 site_info = "Toutiao.com"
