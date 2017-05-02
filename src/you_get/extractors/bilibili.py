@@ -11,6 +11,16 @@ from .youku import youku_download_by_vid
 import hashlib
 import re
 
+FAKE_HEADER = {
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'en-CA,en;q=0.8,en-US;q=0.6,zh-CN;q=0.4,zh;q=0.2',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.29 Safari/537.36',
+    'Accept': '*/*',
+    'Referer': 'http://www.bilibili.com/',
+    'Connection': 'keep-alive',
+    'DNT': '1',
+}
+
 appkey = 'f3bb208b3d081dc8'
 SECRETKEY_MINILOADER = '1c15888dc316e05a15fdd0a02ed6584f'
 
@@ -82,7 +92,7 @@ def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only
 
     print_info(site_info, title, type_, size)
     if not info_only:
-        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
+        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge, headers=FAKE_HEADER)
 
 
 def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False):
@@ -103,7 +113,7 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
 
             print_info(site_info, title, type_, size)
             if not info_only:
-                download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge, timeout=1)
+                download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge, timeout=1, headers=FAKE_HEADER)
         except socket.timeout:
             continue
         else:
