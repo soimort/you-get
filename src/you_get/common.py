@@ -1429,6 +1429,12 @@ def url_to_module(url):
         else:
             return import_module('you_get.extractors.universal'), url
 
+def any_download_info(url, **kwargs):
+    m, url = url_to_module(url)
+    m.download(url, **kwargs)
+    if hasattr(m, 'return_info'):
+        return m.return_info
+
 def any_download(url, **kwargs):
     m, url = url_to_module(url)
     m.download(url, **kwargs)
