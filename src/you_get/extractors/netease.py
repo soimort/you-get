@@ -41,7 +41,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             if i[1]['position'] == 0:
                 song_position = i[0]+1
             else:
-                song_positon = i[1]['position']
+                song_position = i[1]['position']
             netease_song_download(i[1], output_dir=new_dir, info_only=info_only, song_position=song_position)
             try: # download lyrics
                 assert kwargs['caption']
