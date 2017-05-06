@@ -82,7 +82,7 @@ def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only
 
     print_info(site_info, title, type_, size)
     if not info_only:
-        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
+        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge, headers={'Referer': 'http://www.bilibili.com/'})
 
 
 def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False):
@@ -98,12 +98,12 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
             type_ = ''
             size = 0
             for url in urls:
-                _, type_, temp = url_info(url)
+                _, type_, temp = url_info(url, headers={'Referer': 'http://www.bilibili.com/'})
                 size += temp or 0
 
             print_info(site_info, title, type_, size)
             if not info_only:
-                download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge, timeout=1)
+                download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge, timeout=1, headers={'Referer': 'http://www.bilibili.com/'})
         except socket.timeout:
             continue
         else:
