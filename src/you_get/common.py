@@ -479,6 +479,9 @@ def url_locations(urls, faker = False, headers = {}):
     return locations
 
 def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}, timeout = None, **kwargs):
+#When a referer specified with param refer, the key must be 'Referer' for the hack here
+    if refer is not None:
+        headers['Referer'] = refer
     file_size = url_size(url, faker = faker, headers = headers)
 
     if os.path.exists(filepath):
