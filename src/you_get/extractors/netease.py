@@ -37,12 +37,16 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             cover_url = j['album']['picUrl']
             download_urls([cover_url], "cover", "jpg", 0, new_dir)
 
-        for i in j['album']['songs']:
-            netease_song_download(i, output_dir=new_dir, info_only=info_only)
+        for i in enumerate(j['album']['songs']):
+            if i[1]['position'] == 0:
+                song_position = i[0]
+            else:
+                song_positon = i[1]['position']
+            netease_song_download(i[1], output_dir=new_dir, info_only=info_only, song_position=song_position)
             try: # download lyrics
                 assert kwargs['caption']
-                l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
-                netease_lyric_download(i, l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
+                l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i[1]['id'], headers={"Referer": "http://music.163.com/"}))
+                netease_lyric_download(i[1], l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
             except: pass
 
     elif "playlist" in url:
@@ -87,10 +91,10 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         j = loads(get_content("http://music.163.com/api/mv/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
         netease_video_download(j['data'], output_dir=output_dir, info_only=info_only)
 
-def netease_lyric_download(song, lyric, output_dir='.', info_only=False, playlist_prefix=""):
+def netease_lyric_download(song, lyric, output_dir='.', info_only=False, playlist_prefix="", song_position=""):
     if info_only: return
 
-    title = "%s%s. %s" % (playlist_prefix, song['position'], song['name'])
+    title = "%s%s. %s" % (playlist_prefix, song_position, song['name'])
     filename = '%s.lrc' % get_filename(title)
     print('Saving %s ...' % filename, end="", flush=True)
     with open(os.path.join(output_dir, filename),
@@ -105,8 +109,8 @@ def netease_video_download(vinfo, output_dir='.', info_only=False):
     netease_download_common(title, url_best,
                             output_dir=output_dir, info_only=info_only)
 
-def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix=""):
-    title = "%s%s. %s" % (playlist_prefix, song['position'], song['name'])
+def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix="", song_position=""):
+    title = "%s%s. %s" % (playlist_prefix, song_position, song['name'])
     songNet = 'p' + song['mp3Url'].split('/')[2][1:]
 
     if 'hMusic' in song and song['hMusic'] != None:
