@@ -108,7 +108,6 @@ def netease_video_download(vinfo, output_dir='.', info_only=False):
 def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix=""):
     title = "%s%s. %s" % (playlist_prefix, song['position'], song['name'])
     songNet = 'p' + song['mp3Url'].split('/')[2][1:]
-    url_backup = loads(get_content(url="https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % song['id']))
 
     if 'hMusic' in song and song['hMusic'] != None:
         url_best = make_url(songNet, song['hMusic']['dfsId'])
@@ -122,6 +121,7 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
         netease_download_common(title, url_best,
                             output_dir=output_dir, info_only=info_only)
     except HTTPError:
+        url_backup = loads(get_content(url="https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % song['id']))
         netease_download_common(title, url_backup['data'][0]['url'],
                                 output_dir=output_dir, info_only=info_only)
 
