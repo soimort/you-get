@@ -46,7 +46,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             try: # download lyrics
                 assert kwargs['caption']
                 l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i[1]['id'], headers={"Referer": "http://music.163.com/"}))
-                netease_lyric_download(i[1], l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
+                netease_lyric_download(i[1], l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only, song_position=song_position)
             except: pass
 
     elif "playlist" in url:
