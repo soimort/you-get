@@ -5,13 +5,13 @@ from ..version import script_name
 
 import os, sys
 
-IS_ANSI_TERMINAL = os.getenv('TERM') in (
+TERM = os.getenv('TERM', '')
+IS_ANSI_TERMINAL = TERM in (
     'eterm-color',
     'linux',
     'screen',
     'vt100',
-    'xterm',
-)
+) or TERM.startswith('xterm')
 
 # ANSI escape code
 # See <http://en.wikipedia.org/wiki/ANSI_escape_code>

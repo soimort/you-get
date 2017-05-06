@@ -14,6 +14,8 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     parts_ti = video_json['vl']['vi'][0]['ti']
     parts_prefix = video_json['vl']['vi'][0]['ul']['ui'][0]['url']
     parts_formats = video_json['fl']['fi']
+    if parts_prefix.endswith('/'):
+        parts_prefix = parts_prefix[:-1]
     # find best quality
     # only looking for fhd(1080p) and shd(720p) here.
     # 480p usually come with a single file, will be downloaded as fallback.
@@ -38,7 +40,7 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
                 # For fhd(1080p), every part is about 100M and 6 minutes
                 # try 100 parts here limited download longest single video of 10 hours.
                 for part in range(1,100):
-                    filename = vid + '.p' + str(part_format_id % 1000) + '.' + str(part) + '.mp4'
+                    filename = vid + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
                     key_api = "http://vv.video.qq.com/getkey?otype=json&platform=11&format=%s&vid=%s&filename=%s" % (part_format_id, parts_vid, filename)
                     #print(filename)
                     #print(key_api)
@@ -59,7 +61,9 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             fvkey = video_json['vl']['vi'][0]['fvkey']
             mp4 = video_json['vl']['vi'][0]['cl'].get('ci', None)
             if mp4:
-                mp4 = mp4[0]['keyid'].replace('.10', '.p') + '.mp4'
+                old_id = mp4[0]['keyid'].split('.')[1]
+                new_id = 'p' + str(int(old_id) % 10000)
+                mp4 = mp4[0]['keyid'].replace(old_id, new_id) + '.mp4'
             else:
                 mp4 = video_json['vl']['vi'][0]['fn']
             url = '%s/%s?vkey=%s' % ( parts_prefix, mp4, fvkey )
@@ -69,9 +73,52 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             if not info_only:
                 download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
+def kg_qq_download_by_shareid(shareid, output_dir='.', info_only=False, caption=False):
+    BASE_URL = 'http://cgi.kg.qq.com/fcgi-bin/kg_ugc_getdetail'
+    params_str = '?dataType=jsonp&jsonp=callback&jsonpCallback=jsopgetsonginfo&v=4&outCharset=utf-8&shareid=' + shareid
+    url = BASE_URL + params_str
+    content = get_content(url)
+    json_str = content[len('jsonpcallback('):-1]
+    json_data = json.loads(json_str)
+
+    playurl = json_data['data']['playurl']
+    videourl = json_data['data']['playurl_video']
+    real_url = playurl if playurl else videourl
+    real_url = real_url.replace('\/', '/')
+
+    ksong_mid = json_data['data']['ksong_mid']
+    lyric_url = 'http://cgi.kg.qq.com/fcgi-bin/fcg_lyric?jsonpCallback=jsopgetlrcdata&outCharset=utf-8&ksongmid=' + ksong_mid 
+    lyric_data = get_content(lyric_url)
+    lyric_string = lyric_data[len('jsopgetlrcdata('):-1]
+    lyric_json = json.loads(lyric_string)
+    lyric = lyric_json['data']['lyric']
+
+    title = match1(lyric, r'\[ti:([^\]]*)\]')
+
+    type, ext, size = url_info(real_url)
+    if not title:
+        title = shareid
+
+    print_info('腾讯全民K歌', title, type, size)
+    if not info_only:
+        download_urls([real_url], title, ext, size, output_dir, merge=False)
+        if caption:
+            caption_filename = title + '.lrc'
+            caption_path = output_dir + '/' + caption_filename
+            with open(caption_path, 'w') as f:
+                lrc_list = lyric.split('\r\n')
+                for line in lrc_list:
+                    f.write(line)
+                    f.write('\n')
 
 def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     """"""
+    if 'kg.qq.com' in url or 'kg2.qq.com' in url:
+        shareid = url.split('?s=')[-1]
+        caption = kwargs['caption']
+        kg_qq_download_by_shareid(shareid, output_dir=output_dir, info_only=info_only, caption=caption)
+        return
+
     if 'live.qq.com' in url:
         qieDownload(url, output_dir=output_dir, merge=merge, info_only=info_only)
         return
