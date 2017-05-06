@@ -479,7 +479,13 @@ def url_locations(urls, faker = False, headers = {}):
     return locations
 
 def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, headers = {}, timeout = None, **kwargs):
-    file_size = url_size(url, faker = faker, headers = headers)
+    new_headers = headers.copy()
+    if refer is not None:
+        for k in new_headers:
+            if k.lower() == 'referer':
+                del new_headers[k]
+        new_headers['referer'] = refer
+    file_size = url_size(url, faker = faker, headers = new_headers)
 
     if os.path.exists(filepath):
         if not force and file_size == os.path.getsize(filepath):
