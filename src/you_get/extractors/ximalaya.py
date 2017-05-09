@@ -15,7 +15,8 @@ stream_types = [
 
 def ximalaya_download_by_id(id, title = None, output_dir = '.', info_only = False, stream_id = None):
     BASE_URL = 'http://www.ximalaya.com/tracks/'
-    json_data = json.loads(get_content(BASE_URL + id + '.json'))
+    json_url = BASE_URL + id + '.json'
+    json_data = json.loads(get_content(json_url, headers=fake_headers))
     if 'res' in json_data:
         if json_data['res'] == False:
             raise ValueError('Server reported id %s is invalid' % id)
