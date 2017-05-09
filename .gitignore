@@ -59,8 +59,6 @@ docs/_build/
 target/
 
 # Misc
-_*
-*_
 *.3gp
 *.asf
 *.download
