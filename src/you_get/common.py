@@ -57,6 +57,7 @@ SITES = {
     'naver'            : 'naver',
     '7gogo'            : 'nanagogo',
     'nicovideo'        : 'nicovideo',
+    'otomads'          : 'otomads',
     'panda'            : 'panda',
     'pinterest'        : 'pinterest',
     'pixnet'           : 'pixnet',
