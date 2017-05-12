@@ -29,7 +29,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         j = loads(get_content("http://music.163.com/api/album/%s?id=%s&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
 
         artist_name = j['album']['artists'][0]['name']
-        album_name = j['album']['name']
+        album_name = j['album']['name'].strip()
         new_dir = output_dir + '/' + fs.legitimize("%s - %s" % (artist_name, album_name))
         if not info_only:
             if not os.path.exists(new_dir):
