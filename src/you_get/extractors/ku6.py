@@ -14,7 +14,7 @@ def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
     title = title or t
     assert title
     urls = f.split(',')
-    ext = re.sub(r'.*\.', '', urls[0])
+    ext = match1(urls[0], r'.*\.(\w+)\??[^\.]*')
     assert ext in ('flv', 'mp4', 'f4v'), ext
     ext = {'f4v': 'flv'}.get(ext, ext)
     size = 0
