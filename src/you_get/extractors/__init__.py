@@ -66,6 +66,7 @@ from .tucao import *
 from .tudou import *
 from .tumblr import *
 from .twitter import *
+from .ucas import *
 from .veoh import *
 from .videomega import *
 from .vimeo import *
