@@ -80,6 +80,7 @@ SITES = {
     'vimeo'            : 'vimeo',
     'wanmen'           : 'wanmen',
     'weibo'            : 'miaopai',
+    'v1'               : 'v1',
     'veoh'             : 'veoh',
     'vine'             : 'vine',
     'vk'               : 'vk',
