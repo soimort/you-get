@@ -4,14 +4,14 @@ __all__ = ['ucas_download', 'ucas_download_single', 'ucas_download_playlist']
 
 from ..common import *
 import urllib.error
-import requests
+import http.client
 from time import time
 from random import random
 import xml.etree.ElementTree as ET
 from copy import copy
 
 """
-Do not replace request.get with get_content
+Do not replace http.client with get_content
 for UCAS's server is not correctly returning data!
 """
 
@@ -39,31 +39,32 @@ def _get_video_query_url(resourceID):
         'Referer': 'http://v.ucas.ac.cn/',
         'Connection': 'keep-alive',
     }
-    params = (
-        ('method', 'query'),
-        ('loginname', 'videocas'),
-        ('pwd', 'af1c7a4c5f77f790722f7cae474c37e281203765d423a23b'),
-        ('resource', '[{"resourceID":"' + resourceID + '","on":1,"time":60000,"eid":100,"w":800,"h":600}]'),
-        ('timeStamp', '{timeStamp}'.format(timeStamp = int(time()))),
-    )
-    a = requests.get('http://210.76.211.10/vplus/remote.do', headers=headers, params=params)
-    info =  a.content.decode('utf-8')
+    conn = http.client.HTTPConnection("210.76.211.10")
+    
+    conn.request("GET", "/vplus/remote.do?method=query2&loginname=videocas&pwd=af1c7a4c5f77f790722f7cae474c37e281203765d423a23b&resource=%5B%7B%22resourceID%22%3A%22" + resourceID + "%22%2C%22on%22%3A1%2C%22time%22%3A600%2C%22eid%22%3A100%2C%22w%22%3A800%2C%22h%22%3A600%7D%5D&timeStamp=" + str(int(time())), headers=headers)
+    res = conn.getresponse()
+    data = res.read()
+
+    info =  data.decode("utf-8")
     return match1(info, r'video":"(.+)"')
 
 def _get_virtualPath(video_query_url):
     #getResourceJsCode2
-    html = requests.get(video_query_url)
-    html =  html.content.decode('utf-8')
+    html = get_content(video_query_url)
     
     return match1(html, r"function\s+getVirtualPath\(\)\s+{\s+return\s+'(\w+)'")
 
 
-
 def _get_video_list(resourceID):
     """"""
-    video_xml = requests.get('http://210.76.211.10/vplus/member/resource.do?isyulan=0&method=queryFlashXmlByResourceId&resourceId={resourceID}&randoms={randoms}'.format(resourceID = resourceID,
-                                                                                                                                                                         randoms = random()))    
-    video_xml = video_xml.content.decode('utf-8')
+    conn = http.client.HTTPConnection("210.76.211.10")
+        
+    conn.request("GET", '/vplus/member/resource.do?isyulan=0&method=queryFlashXmlByResourceId&resourceId={resourceID}&randoms={randoms}'.format(resourceID = resourceID,
+                                                                                                                                            randoms = random()))
+    res = conn.getresponse()
+    data = res.read()
+
+    video_xml = data.decode("utf-8")
 
     root = ET.fromstring(video_xml.split('___!!!___')[0])
 
