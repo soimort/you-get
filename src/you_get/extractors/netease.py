@@ -5,7 +5,6 @@ __all__ = ['netease_download']
 
 import base64
 import hashlib
-import os
 from json import loads
 
 from ..common import *
@@ -40,7 +39,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             download_urls([cover_url], "cover", "jpg", 0, new_dir)
 
         for i in enumerate(j['album']['songs']):
-            song_position = i[1]['position']
+            song_position = i[0] + 1
             netease_song_download(i[1], output_dir=new_dir, info_only=info_only, song_position=song_position)
             try: # download lyrics
                 assert kwargs['caption']
