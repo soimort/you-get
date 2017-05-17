@@ -132,8 +132,14 @@ def letvcloud_download(url, output_dir='.', merge=True, info_only=False):
     letvcloud_download_by_vu(vu, uu, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
 def letv_download(url, output_dir='.', merge=True, info_only=False ,**kwargs):
+    url = url_locations([url])[0]
     if re.match(r'http://yuntv.letv.com/', url):
         letvcloud_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
+    elif 'sports.le.com' in url:
+        html = get_content(url)
+        vid = match1(url, r'video/(\d+)\.html')
+        title = match1(html, r'<h2 class="title">([^<]+)</h2>')
+        letv_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only,**kwargs)
     else:
         html = get_content(url)
         vid = match1(url, r'http://www.letv.com/ptv/vplay/(\d+).html') or \
