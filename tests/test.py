@@ -19,3 +19,6 @@ class YouGetTests(unittest.TestCase):
         youtube.download("http://www.youtube.com/watch?v=pzKerr0JIPA", info_only=True)
         youtube.download("http://youtu.be/pzKerr0JIPA", info_only=True)
         youtube.download("http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare", info_only=True)
+    
+    def test_pornhub(self):
+        pornhub.download("http://www.pornhub.com/view_video.php?viewkey=ph56d67b6c6505e", info_only=True)
