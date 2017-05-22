@@ -1068,6 +1068,8 @@ def print_info(site_info, title, type, size):
         type_info = "Portable Network Graphics (%s)" % type
     elif type in ['image/gif']:
         type_info = "Graphics Interchange Format (%s)" % type
+    elif type in ['m3u8']:
+        type_info = 'M3U8 Playlist {}'.format(type)
 
     else:
         type_info = "Unknown type (%s)" % type
@@ -1075,7 +1077,8 @@ def print_info(site_info, title, type, size):
     maybe_print("Site:      ", site_info)
     maybe_print("Title:     ", unescape_html(tr(title)))
     print("Type:      ", type_info)
-    print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
+    if type != 'm3u8':
+        print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     print()
 
 def mime_to_container(mime):
