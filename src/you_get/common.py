@@ -138,6 +138,29 @@ if sys.stdout.isatty():
 else:
     default_encoding = locale.getpreferredencoding().lower()
 
+def rc4(key, data):
+#all encryption algo should work on bytes
+    assert type(key)==type(data) and type(key) == type(b'')
+    state = list(range(256))
+    j = 0
+    for i in range(256):
+        j += state[i] + key[i % len(key)]
+        j &= 0xff
+        state[i], state[j] = state[j], state[i]
+
+    i = 0
+    j = 0
+    out_list = []
+    for char in data:
+        i += 1
+        i &= 0xff
+        j += state[i]
+        j &= 0xff
+        state[i], state[j] = state[j], state[i]
+        prn = state[(state[i] + state[j]) & 0xff]
+        out_list.append(char ^ prn)
+
+    return bytes(out_list)
 def maybe_print(*s):
     try: print(*s)
     except: pass
