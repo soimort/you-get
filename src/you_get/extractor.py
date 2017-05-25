@@ -39,7 +39,9 @@ class VideoExtractor():
         if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             set_proxy(parse_host(kwargs['extractor_proxy']))
         self.prepare(**kwargs)
-        if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
+        if 'proxy' in kwargs and kwargs['proxy']:
+            set_proxy(parse_host(kwargs['proxy']))
+        elif 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             unset_proxy()
 
         try:
