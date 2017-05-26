@@ -223,7 +223,8 @@ class Youku(VideoExtractor):
                         'size': stream['size'],
                         'pieces': [{
                             'segs': stream['segs']
-                        }]
+                        }],
+                        'm3u8_url': stream['m3u8_url']
                     }
                     src = []
                     for seg in stream['segs']:

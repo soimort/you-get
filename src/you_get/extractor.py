@@ -22,6 +22,7 @@ class VideoExtractor():
         self.url = None
         self.title = None
         self.vid = None
+        self.m3u8_url = None
         self.streams = {}
         self.streams_sorted = []
         self.audiolang = None
@@ -107,6 +108,9 @@ class VideoExtractor():
         if 'size' in stream and stream['container'].lower() != 'm3u8':
             if stream['size'] != float('inf')  and stream['size'] != 0:
                 print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
+
+        if 'm3u8_url' in stream:
+            print("      m3u8_url:      {}".format(stream['m3u8_url']))
 
         if 'itag' in stream:
             print("    # download-with: %s" % log.sprint("you-get --itag=%s [URL]" % stream_id, log.UNDERLINE))
