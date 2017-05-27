@@ -19,10 +19,10 @@ def get_srt_json(id):
     return get_content(url)
 
 def youku_acfun_proxy(vid, sign):
-    url = 'http://aplay-vod.cn-beijing.aliyuncs.com/acfun/web?vid={}&ct=85&ev=2&sign={}'.format(vid, sign)
+    url = 'http://aplay-vod.cn-beijing.aliyuncs.com/acfun/web?vid={}&ct=85&ev=3&sign={}'.format(vid, sign)
     json_data = json.loads(get_content(url))['data']
     enc_text = base64.b64decode(json_data)
-    dec_text = rc4(b'2da3ca9e', enc_text).decode('utf8')
+    dec_text = rc4(b'8bdc7e1a', enc_text).decode('utf8')
     youku_json = json.loads(dec_text)
 
     yk_streams = {}
