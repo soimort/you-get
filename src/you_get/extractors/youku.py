@@ -177,8 +177,11 @@ class Youku(VideoExtractor):
             data = youku_ups(self.vid, '0402')['data']
         else:
             data = youku_ups(self.vid)['data']
-        if data.get('error'):
-            log.wtf(data['error']['note'])
+        if data.get('stream') is None:
+            if data.get('error'):
+                log.wtf(data['error']['note'])
+            log.wtf('Unknown error')
+
         self.title = data['video']['title']
         stream_types = dict([(i['id'], i) for i in self.stream_types])
         audio_lang = data['stream'][0]['audio_lang']
