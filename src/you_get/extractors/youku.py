@@ -10,16 +10,23 @@ import time
 import traceback
 import json
 import urllib.request
+import urllib.parse
+
+def quote_cna(cna):
+    if '%' in cna:
+        return cna
+    return urllib.parse.quote(cna)
 
 def fetch_cna():
     if cookies:
         for cookie in cookies:
             if cookie.name == 'cna' and cookie.domain == '.youku.com':
                 log.i('Found cna in imported cookies. Use it')
-                return cookie.value
+                return quote_cna(cookie.value)
     url = 'http://gm.mmstat.com/yt/ykcomment.play.commentInit?cna='
     req = urllib.request.urlopen(url)
-    return req.info()['Set-Cookie'].split(';')[0].split('=')[1]
+    cna = req.info()['Set-Cookie'].split(';')[0].split('=')[1]
+    return quote_cna(cna)
 
 def youku_ups(vid, ccode='0401'):
     url = 'https://ups.youku.com/ups/get.json?vid={}&ccode={}'.format(vid, ccode)
