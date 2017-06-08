@@ -653,7 +653,7 @@ class SimpleProgressBar:
         total_str = '%5s' % round(self.total_size / 1048576, 1)
         total_str_width = max(len(total_str), 5)
         self.bar_size = self.term_size - 27 - 2*total_pieces_len - 2*total_str_width
-        self.bar = '{:>4}%% ({:>%s}/%sMB) ©À{:©¤<%s}©È[{:>%s}/{:>%s}] {}' % (
+        self.bar = '{:>4}%% ({:>%s}/%sMB) â”œ{:â”€<%s}â”¤[{:>%s}/{:>%s}] {}' % (
             total_str_width, total_str, self.bar_size, total_pieces_len, total_pieces_len)
 
     def update(self):
@@ -665,12 +665,12 @@ class SimpleProgressBar:
         dots = bar_size * int(percent) // 100
         plus = int(percent) - dots // bar_size * 100
         if plus > 0.8:
-            plus = '¨€'
+            plus = 'â–ˆ'
         elif plus > 0.4:
             plus = '>'
         else:
             plus = ''
-        bar = '¨€' * dots + plus
+        bar = 'â–ˆ' * dots + plus
         bar = self.bar.format(percent, round(self.received / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
@@ -1367,12 +1367,10 @@ def script_main(script_name, download, download_playlist, **kwargs):
                 else:
                     download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
             else:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
-        else:
-            if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
-            else:
-                download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                if not extractor_proxy:
+                    download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                else:
+                    download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
         except KeyboardInterrupt:
             if traceback:
                 raise
