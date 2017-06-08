@@ -77,6 +77,10 @@ def sina_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         sina_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
     else:
         vkey = match1(video_page, r'vkey\s*:\s*"([^"]+)"')
+        if vkey is None:
+            vid = match1(url, r'#(\d+)')
+            sina_download_by_vid(vid, output_dir=output_dir, merge=merge, info_only=info_only)
+            return
         title = match1(video_page, r'title\s*:\s*"([^"]+)"')
         sina_download_by_vkey(vkey, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 

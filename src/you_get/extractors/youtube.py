@@ -54,7 +54,7 @@ class YouTube(VideoExtractor):
             return code
 
         js = js.replace('\n', ' ')
-        f1 = match1(js, r'"signature",([\w]+)\(\w+\.\w+\)')
+        f1 = match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)')
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
                 match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
         f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
@@ -163,18 +163,6 @@ class YouTube(VideoExtractor):
             if 'use_cipher_signature' not in video_info or video_info['use_cipher_signature'] == ['False']:
                 self.title = parse.unquote_plus(video_info['title'][0])
 
-                # YouTube Live
-                if 'url_encoded_fmt_stream_map' not in video_info:
-                    hlsvp = video_info['hlsvp'][0]
-
-                    if 'info_only' in kwargs and kwargs['info_only']:
-                        return
-                    else:
-                        download_url_ffmpeg(hlsvp, self.title, 'mp4')
-                        exit(0)
-
-                stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
-
                 # Parse video page (for DASH)
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 try:
@@ -183,6 +171,7 @@ class YouTube(VideoExtractor):
                     # Workaround: get_video_info returns bad s. Why?
                     stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                 except:
+                    stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
                     self.html5player = None
 
             else:
@@ -227,6 +216,16 @@ class YouTube(VideoExtractor):
             # log.wtf('[Failed] Invalid status.')
             log.w('[Failed] Invalid status.')
             return
+
+        # YouTube Live
+        if ytplayer_config['args'].get('livestream') == '1' or ytplayer_config['args'].get('live_playback') == '1':
+            hlsvp = ytplayer_config['args']['hlsvp']
+
+            if 'info_only' in kwargs and kwargs['info_only']:
+                return
+            else:
+                download_url_ffmpeg(hlsvp, self.title, 'mp4')
+                exit(0)
 
         for stream in stream_list:
             metadata = parse.parse_qs(stream)

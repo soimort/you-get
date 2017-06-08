@@ -19,6 +19,8 @@ def nanagogo_download(url, output_dir='.', merge=True, info_only=False, **kwargs
     items = []
     if info['data']['posts']['post'] is None:
         return
+    if info['data']['posts']['post']['body'] is None:
+        return
     for i in info['data']['posts']['post']['body']:
         if 'image' in i:
             image_url = i['image']

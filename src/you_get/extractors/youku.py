@@ -53,18 +53,14 @@ class Youku(VideoExtractor):
 
         return result
 
-    def generate_ep(self, no, streamfileids, sid, token):
-        number = hex(int(str(no), 10))[2:].upper()
-        if len(number) == 1:
-            number = '0' + number
-        fileid = streamfileids[0:8] + number + streamfileids[10:]
+    def generate_ep(self, fileid, sid, token):
         ep = parse.quote(base64.b64encode(
             ''.join(self.__class__.trans_e(
                 self.f_code_2,  #use the 86 fcode if using 86
                 sid + '_' + fileid + '_' + token)).encode('latin1')),
             safe='~()*!.\''
         )
-        return fileid, ep
+        return ep
 
     # Obsolete -- used to parse m3u8 on pl.youku.com
     def parse_m3u8(m3u8):
@@ -228,14 +224,12 @@ class Youku(VideoExtractor):
                         'video_profile': stream_types[stream_id]['video_profile'],
                         'size': stream['size'],
                         'pieces': [{
-                            'fileid': stream['stream_fileid'],
                             'segs': stream['segs']
                         }]
                     }
                 else:
                     self.streams[stream_id]['size'] += stream['size']
                     self.streams[stream_id]['pieces'].append({
-                        'fileid': stream['stream_fileid'],
                         'segs': stream['segs']
                     })
 
@@ -252,14 +246,12 @@ class Youku(VideoExtractor):
                         'video_profile': stream_types[stream_id]['video_profile'],
                         'size': stream['size'],
                         'pieces': [{
-                            'fileid': stream['stream_fileid'],
                             'segs': stream['segs']
                         }]
                     }
                 else:
                     self.streams_fallback[stream_id]['size'] += stream['size']
                     self.streams_fallback[stream_id]['pieces'].append({
-                        'fileid': stream['stream_fileid'],
                         'segs': stream['segs']
                     })
 
@@ -294,12 +286,17 @@ class Youku(VideoExtractor):
                 pieces = self.streams[stream_id]['pieces']
                 for piece in pieces:
                     segs = piece['segs']
-                    streamfileid = piece['fileid']
-                    for no in range(0, len(segs)):
+                    seg_count = len(segs)
+                    for no in range(0, seg_count):
                         k = segs[no]['key']
-                        if k == -1: break # we hit the paywall; stop here
-                        fileid, ep = self.__class__.generate_ep(self, no, streamfileid,
-                                                                sid, token)
+                        fileid = segs[no]['fileid']
+                        if k == -1:
+                            # we hit the paywall; stop here
+                            log.w('Skipping %d out of %d segments due to paywall' %
+                                  (seg_count - no, seg_count))
+                            break
+                        ep = self.__class__.generate_ep(self, fileid,
+                                                        sid, token)
                         q = parse.urlencode(dict(
                             ctype = self.ctype,
                             ev    = 1,

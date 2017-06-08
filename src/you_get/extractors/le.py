@@ -26,7 +26,9 @@ def get_key(t):
 
 def calcTimeKey(t):
     ror = lambda val, r_bits, : ((val & (2**32-1)) >> r_bits%32) |  (val << (32-(r_bits%32)) & (2**32-1))
-    return ror(ror(t,773625421%13)^773625421,773625421%17)
+    magic = 185025305
+    return ror(t, magic % 17) ^ magic
+    #return ror(ror(t,773625421%13)^773625421,773625421%17)
 
 
 def decode(data):
@@ -52,9 +54,10 @@ def decode(data):
 
 
 def video_info(vid,**kwargs):
-    url = 'http://api.letv.com/mms/out/video/playJson?id={}&platid=1&splatid=101&format=1&tkey={}&domain=www.letv.com'.format(vid,calcTimeKey(int(time.time())))
+    url = 'http://player-pc.le.com/mms/out/video/playJson?id={}&platid=1&splatid=101&format=1&tkey={}&domain=www.le.com&region=cn&source=1000&accesyx=1'.format(vid,calcTimeKey(int(time.time())))
     r = get_content(url, decoded=False)
     info=json.loads(str(r,"utf-8"))
+    info = info['msgs']
 
 
     stream_id = None
@@ -73,15 +76,18 @@ def video_info(vid,**kwargs):
             stream_id =sorted(support_stream_id,key= lambda i: int(i[1:]))[-1]
 
     url =info["playurl"]["domain"][0]+info["playurl"]["dispatch"][stream_id][0]
+    uuid = hashlib.sha1(url.encode('utf8')).hexdigest() + '_0'
     ext = info["playurl"]["dispatch"][stream_id][1].split('.')[-1]
-    url+="&ctv=pc&m3v=1&termid=1&format=1&hwtype=un&ostype=Linux&tag=letv&sign=letv&expect=3&tn={}&pay=0&iscpn=f9051&rateid={}".format(random.random(),stream_id)
+    url = url.replace('tss=0', 'tss=ios')
+    url+="&m3v=1&termid=1&format=1&hwtype=un&ostype=MacOS10.12.4&p1=1&p2=10&p3=-&expect=3&tn={}&vid={}&uuid={}&sign=letv".format(random.random(), vid, uuid)
 
     r2=get_content(url,decoded=False)
     info2=json.loads(str(r2,"utf-8"))
 
     # hold on ! more things to do
     # to decode m3u8 (encoded)
-    m3u8 = get_content(info2["location"],decoded=False)
+    suffix = '&r=' + str(int(time.time() * 1000)) + '&appid=500'
+    m3u8 = get_content(info2["location"]+suffix,decoded=False)
     m3u8_list = decode(m3u8)
     urls = re.findall(r'^[^#][^\r]*',m3u8_list,re.MULTILINE)
     return ext,urls
@@ -126,8 +132,14 @@ def letvcloud_download(url, output_dir='.', merge=True, info_only=False):
     letvcloud_download_by_vu(vu, uu, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
 def letv_download(url, output_dir='.', merge=True, info_only=False ,**kwargs):
+    url = url_locations([url])[0]
     if re.match(r'http://yuntv.letv.com/', url):
         letvcloud_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
+    elif 'sports.le.com' in url:
+        html = get_content(url)
+        vid = match1(url, r'video/(\d+)\.html')
+        title = match1(html, r'<h2 class="title">([^<]+)</h2>')
+        letv_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only,**kwargs)
     else:
         html = get_content(url)
         vid = match1(url, r'http://www.letv.com/ptv/vplay/(\d+).html') or \
