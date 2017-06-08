@@ -36,6 +36,8 @@ class YouTube(VideoExtractor):
         {'itag': '17', 'container': '3GP', 'video_resolution': '144p', 'video_encoding': 'MPEG-4 Visual', 'video_profile': 'Simple', 'video_bitrate': '0.05', 'audio_encoding': 'AAC', 'audio_bitrate': '24'},
     ]
 
+    PREFER_FORMAT = 'mp4_hd720 mp4_medium'.split()
+
     def decipher(js, s):
         def tr_js(code):
             code = re.sub(r'function', r'def', code)
@@ -125,9 +127,21 @@ class YouTube(VideoExtractor):
 
         self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
         self.p_playlist()
+        video_list = []
         for video in videos:
             vid = parse_query_param(video, 'v')
             index = parse_query_param(video, 'index')
+            video_list.append((vid, index))
+
+        if 'sortbyidx' in kwargs.get('extra_opts'):
+            video_list.sort(key=lambda x: int(x[1]))
+
+        beginidx = int(kwargs.get('extra_opts').get('beginidx', 0))
+
+        for i, (vid, index) in enumerate(video_list):
+            if i < beginidx - 1:
+                continue
+            log.i('%d) index=%s, vid=%s' % (i+1, index, vid))
             self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
 
     def prepare(self, **kwargs):
@@ -201,13 +215,18 @@ class YouTube(VideoExtractor):
                     #stream_list = []
 
             elif video_info['errorcode'] == ['100']:
-                log.wtf('[Failed] This video does not exist.', exit_code=int(video_info['errorcode'][0]))
-
+                # log.wtf('[Failed] This video does not exist.', exit_code=int(video_info['errorcode'][0]))
+                log.w('[Failed] This video does not exist.')
+                return
             else:
-                log.wtf('[Failed] %s' % video_info['reason'][0], exit_code=int(video_info['errorcode'][0]))
+                # log.wtf('[Failed] %s' % video_info['reason'][0], exit_code=int(video_info['errorcode'][0]))
+                log.w('[Failed] %s' % video_info['reason'][0])
+                return
 
         else:
-            log.wtf('[Failed] Invalid status.')
+            # log.wtf('[Failed] Invalid status.')
+            log.w('[Failed] Invalid status.')
+            return
 
         for stream in stream_list:
             metadata = parse.parse_qs(stream)
@@ -378,6 +397,18 @@ class YouTube(VideoExtractor):
                                 'src': [dash_url, dash_webm_a_url],
                                 'size': int(dash_size) + int(dash_webm_a_size)
                             }
+
+    def sort_streams(self, **kwargs):
+        streams_sorted = []
+        for itag, stream in self.streams.copy().items():
+            stream['itag'] = itag
+            taginfo = '%s_%s' % (stream['container'], stream['quality'])
+            stream['taginfo'] = taginfo
+            streams_sorted.append(stream)
+
+        candidate_steams = filter(lambda x: x['taginfo'] in self.PREFER_FORMAT, streams_sorted)
+        self.streams_sorted = sorted(candidate_steams, key=lambda x: self.PREFER_FORMAT.index(x['taginfo']))
+
 
     def extract(self, **kwargs):
         if not self.streams_sorted:

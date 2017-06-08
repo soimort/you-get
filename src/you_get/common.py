@@ -100,6 +100,7 @@ import locale
 import logging
 import os
 import platform
+import functools
 import re
 import socket
 import sys
@@ -715,7 +716,7 @@ class DummyProgressBar:
     def done(self):
         pass
 
-def get_output_filename(urls, title, ext, output_dir, merge):
+def get_output_filename(urls, title, ext, output_dir, merge, **kwargs):
     # lame hack for the --output-filename option
     global output_filename
     if output_filename: return output_filename
@@ -735,7 +736,12 @@ def get_output_filename(urls, title, ext, output_dir, merge):
                 merged_ext = 'mkv'
             else:
                 merged_ext = 'ts'
-    return '%s.%s' % (title, merged_ext)
+
+    index = kwargs.get('index')
+    if index is not None:
+        return '%03d_%s.%s' % (index, title, merged_ext)
+    else:
+        return '%s.%s' % (title, merged_ext)
 
 def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
     assert urls
@@ -759,7 +765,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             pass
 
     title = tr(get_filename(title))
-    output_filename = get_output_filename(urls, title, ext, output_dir, merge)
+    output_filename = get_output_filename(urls, title, ext, output_dir, merge, **kwargs)
     output_filepath = os.path.join(output_dir, output_filename)
 
     if total_size:
@@ -1173,6 +1179,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
 
     short_opts = 'Vhfiuc:ndF:O:o:p:x:y:s:t:'
     opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'socks-proxy=', 'extractor-proxy=', 'lang=', 'timeout=']
+    EXTRA_OPTS = 'sortbyidx tofile beginidx='.split()
+    opts += EXTRA_OPTS
     if download_playlist:
         short_opts = 'l' + short_opts
         opts = ['playlist'] + opts
@@ -1204,6 +1212,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     extractor_proxy = None
     traceback = False
     timeout = 600
+    extra_opts = {}
     for o, a in opts:
         if o in ('-V', '--version'):
             version()
@@ -1282,13 +1291,17 @@ def script_main(script_name, download, download_playlist, **kwargs):
         elif o in ('-t', '--timeout'):
             timeout = int(a)
         else:
-            log.e("try 'you-get --help' for more options")
-            sys.exit(2)
+            oky = o.strip('-')
+            if oky in EXTRA_OPTS or oky + '=' in EXTRA_OPTS:
+                extra_opts[oky] = a
+            else:
+                log.e("try 'you-get --help' for more options")
+                sys.exit(2)
     if not args:
         print(help)
         sys.exit()
 
-    if (socks_proxy):
+    if socks_proxy:
         try:
             import socket
             import socks
@@ -1309,46 +1322,54 @@ def script_main(script_name, download, download_playlist, **kwargs):
 
     socket.setdefaulttimeout(timeout)
 
-    try:
-        if stream_id:
-            if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+    globals()['download_main'] = functools.partial(download_main, extra_opts=extra_opts)
+
+    retry_max = 10
+    for retry in range(retry_max):
+        try:
+            if stream_id:
+                if not extractor_proxy:
+                    download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                else:
+                    download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
             else:
-                download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
-        else:
-            if not extractor_proxy:
-                download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                if not extractor_proxy:
+                    download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+                else:
+                    download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+        except KeyboardInterrupt:
+            if traceback:
+                raise
             else:
-                download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
-    except KeyboardInterrupt:
-        if traceback:
-            raise
+                sys.exit(1)
+        except UnicodeEncodeError:
+            log.e('[error] oops, the current environment does not seem to support Unicode.')
+            log.e('please set it to a UTF-8-aware locale first,')
+            log.e('so as to save the video (with some Unicode characters) correctly.')
+            log.e('you can do it like this:')
+            log.e('    (Windows)    % chcp 65001 ')
+            log.e('    (Linux)      $ LC_CTYPE=en_US.UTF-8')
+            # sys.exit(1)
+        except Exception:
+            if not traceback:
+                log.e('[error] oops, something went wrong.')
+                log.e('don\'t panic, c\'est la vie. please try the following steps:')
+                log.e('  (1) Rule out any network problem.')
+                log.e('  (2) Make sure you-get is up-to-date.')
+                log.e('  (3) Check if the issue is already known, on')
+                log.e('        https://github.com/soimort/you-get/wiki/Known-Bugs')
+                log.e('        https://github.com/soimort/you-get/issues')
+                log.e('  (4) Run the command with \'--debug\' option,')
+                log.e('      and report this issue with the full output.')
+            else:
+                version()
+                log.i(args)
+                import traceback
+                log.w(traceback.format_exc())
+                # raise
+            # sys.exit(1)
         else:
-            sys.exit(1)
-    except UnicodeEncodeError:
-        log.e('[error] oops, the current environment does not seem to support Unicode.')
-        log.e('please set it to a UTF-8-aware locale first,')
-        log.e('so as to save the video (with some Unicode characters) correctly.')
-        log.e('you can do it like this:')
-        log.e('    (Windows)    % chcp 65001 ')
-        log.e('    (Linux)      $ LC_CTYPE=en_US.UTF-8')
-        sys.exit(1)
-    except Exception:
-        if not traceback:
-            log.e('[error] oops, something went wrong.')
-            log.e('don\'t panic, c\'est la vie. please try the following steps:')
-            log.e('  (1) Rule out any network problem.')
-            log.e('  (2) Make sure you-get is up-to-date.')
-            log.e('  (3) Check if the issue is already known, on')
-            log.e('        https://github.com/soimort/you-get/wiki/Known-Bugs')
-            log.e('        https://github.com/soimort/you-get/issues')
-            log.e('  (4) Run the command with \'--debug\' option,')
-            log.e('      and report this issue with the full output.')
-        else:
-            version()
-            log.i(args)
-            raise
-        sys.exit(1)
+            break
 
 def google_search(url):
     keywords = r1(r'https?://(.*)', url)
