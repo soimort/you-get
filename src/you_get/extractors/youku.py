@@ -165,8 +165,8 @@ class Youku(VideoExtractor):
         else:
             # api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
             # api12_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
-            api_url = 'https://ups.youku.com/ups/get.json?vid=%s&client_ip=&client_ts=&utid=&ccode=0401' % self.vid
-            api12_url = 'https://ups.youku.com/ups/get.json?vid=%s&client_ip=&client_ts=&utid=&ccode=0501' % self.vid
+            api_url = 'https://ups.youku.com/ups/get.json?vid=%s&client_ip=&client_ts=&utid=&ccode=0503' % self.vid
+            api12_url = 'https://ups.youku.com/ups/get.json?vid=%s&client_ip=&client_ts=&utid=&ccode=0502' % self.vid
 
         try:
             meta = json.loads(get_content(
