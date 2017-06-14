@@ -162,10 +162,10 @@ def fetch_photo_url_list(url, size):
     for pattern in url_patterns:
         # FIXME: fix multiple matching since the match group is dropped
         if match1(url, pattern[0]):
-            return fetch_photo_url_list_impl(url, *pattern[1:], size)
+            return fetch_photo_url_list_impl(url, size, *pattern[1:])
     raise NotImplementedError('Flickr extractor is not supported for %s.' % url)
 
-def fetch_photo_url_list_impl(url, method, id_field, id_parse_func, collection_name, size):
+def fetch_photo_url_list_impl(url, size, method, id_field, id_parse_func, collection_name):
     page = get_html(url)
     api_key = get_api_key(page)
     ext_field = ''
