@@ -19,6 +19,8 @@ def xingyan_download(url, output_dir = '.', merge = True, info_only = False, **k
     data = json.loads(m.group(1))
     vid_url = str.replace(data["videoinfo"]["streamurl"], "http:", "https:")
     title = data["roominfo"]["name"]
+    if data["videoinfo"]["playstatus"] == "0":
+        raise ValueError("The live stream is not online! (status:%s)" % data["videoinfo"]["playstatus"])
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
         download_urls([vid_url], title, 'flv', None, output_dir, merge=merge)
