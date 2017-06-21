@@ -5,8 +5,25 @@ __all__ = ['panda_download']
 from ..common import *
 import json
 import time
+import re
 
 def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+    if url.rfind("xingyan") != "":
+        xingyan_download(url, output_dir = '.', merge = True, info_only = False, **kwargs)
+    else:
+        standard_panda_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
+
+def xingyan_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+    content = get_html(url)
+    m = re.search("<script>window.HOSTINFO=(.*);</script>", content)
+    data = json.loads(m.group(1))
+    vid_url = str.replace(data["videoinfo"]["streamurl"], "http:", "https:")
+    title = data["roominfo"]["name"]
+    print_info(site_info, title, 'flv', float('inf'))
+    if not info_only:
+        download_urls([vid_url], title, 'flv', None, output_dir, merge=merge)
+
+def standard_panda_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     roomid = url[url.rfind('/')+1:]
     json_request_url ="http://www.panda.tv/api_room_v2?roomid={}&__plat=pc_web&_={}".format(roomid, int(time.time()))
     content = get_html(json_request_url)
