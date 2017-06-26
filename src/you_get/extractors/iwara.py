@@ -17,10 +17,11 @@ headers = {
 
 def iwara_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     global headers
-    video_hash=match1(url, r'http://ecchi.iwara.tv/videos/(\w+)')
+    video_hash=match1(url, r'http://\w+.iwara.tv/videos/(\w+)')
+    video_url=match1(url, r'(http://\w+.iwara.tv)/videos/\w+')
     html = get_content(url,headers=headers)
     title = r1(r'<title>(.*)</title>', html)
-    api_url='http://ecchi.iwara.tv/api/video/'+video_hash
+    api_url=video_url+'/api/video/'+video_hash
     content=get_content(api_url,headers=headers)
     data=json.loads(content)
     type,ext,size=url_info(data[0]['uri'], headers=headers)
