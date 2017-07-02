@@ -144,7 +144,7 @@ class YouTube(VideoExtractor):
 
         if 'status' not in video_info:
             log.wtf('[Failed] Unknown status.')
-
+        ytplayer_config = None
         elif video_info['status'] == ['ok']:
             if 'use_cipher_signature' not in video_info or video_info['use_cipher_signature'] == ['False']:
                 self.title = parse.unquote_plus(video_info['title'][0])
@@ -199,7 +199,7 @@ class YouTube(VideoExtractor):
             log.wtf('[Failed] Invalid status.')
 
         # YouTube Live
-        if ytplayer_config['args'].get('livestream') == '1' or ytplayer_config['args'].get('live_playback') == '1':
+        if ytplayer_config and (ytplayer_config['args'].get('livestream') == '1' or ytplayer_config['args'].get('live_playback') == '1'):
             hlsvp = ytplayer_config['args']['hlsvp']
 
             if 'info_only' in kwargs and kwargs['info_only']:
