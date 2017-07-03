@@ -142,9 +142,9 @@ class YouTube(VideoExtractor):
 
         video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}'.format(self.vid)))
 
+        ytplayer_config = None
         if 'status' not in video_info:
             log.wtf('[Failed] Unknown status.')
-        ytplayer_config = None
         elif video_info['status'] == ['ok']:
             if 'use_cipher_signature' not in video_info or video_info['use_cipher_signature'] == ['False']:
                 self.title = parse.unquote_plus(video_info['title'][0])
