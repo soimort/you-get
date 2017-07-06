@@ -114,17 +114,29 @@ class Bilibili(VideoExtractor):
                 self.url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, page)
         self.referer = self.url
         self.page = get_content(self.url)
-        self.title = re.search(r'<h1\s*title="([^"]+)"', self.page).group(1)
-        if 'subtitle' in kwargs:
-            subtitle = kwargs['subtitle']
-            self.title = '{} {}'.format(self.title, subtitle)
-
-        if 'bangumi.bilibili.com' in self.url:
+        try:
+            self.title = re.search(r'<h1\s*title="([^"]+)"', self.page).group(1)
+            if 'subtitle' in kwargs:
+                subtitle = kwargs['subtitle']
+                self.title = '{} {}'.format(self.title, subtitle)
+        except Exception:
+            pass
+        if 'bangumi.bilibili.com/movie' in self.url:
+            self.movie_entry(**kwargs)
+        elif 'bangumi.bilibili.com' in self.url:
             self.bangumi_entry(**kwargs)
         elif 'live.bilibili.com' in self.url:
             self.live_entry(**kwargs)
         else:
             self.entry(**kwargs)
+
+    def movie_entry(self, **kwargs):
+        patt = r"var\s*aid\s*=\s*'(\d+)'"
+        aid = re.search(patt, self.page).group(1)
+        page_list = json.loads(get_content('http://www.bilibili.com/widget/getPageList?aid={}'.format(aid)))
+        self.title = page_list[0]['pagename']
+# False for is_bangumi, old interface works for all free items
+        self.download_by_vid(page_list[0]['cid'], False, **kwargs)
 
     def entry(self, **kwargs):
 # tencent player
@@ -276,6 +288,7 @@ def parse_cid_playurl(xml):
 
 def bilibili_download_playlist_by_url(url, **kwargs):
     url = url_locations([url])[0]
+# a bangumi here? possible?
     if 'live.bilibili' in url:
         site.download_by_url(url)
     elif 'bangumi.bilibili' in url:
