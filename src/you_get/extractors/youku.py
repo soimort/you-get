@@ -53,14 +53,14 @@ class Youku(VideoExtractor):
 
         return result
 
-    def generate_ep(self, fileid, sid, token):
-        ep = parse.quote(base64.b64encode(
-            ''.join(self.__class__.trans_e(
-                self.f_code_2,  #use the 86 fcode if using 86
-                sid + '_' + fileid + '_' + token)).encode('latin1')),
-            safe='~()*!.\''
-        )
-        return ep
+    # def generate_ep(self, fileid, sid, token):
+    #     ep = parse.quote(base64.b64encode(
+    #         ''.join(self.__class__.trans_e(
+    #             self.f_code_2,  #use the 86 fcode if using 86
+    #             sid + '_' + fileid + '_' + token)).encode('latin1')),
+    #         safe='~()*!.\''
+    #     )
+    #     return ep
 
     # Obsolete -- used to parse m3u8 on pl.youku.com
     def parse_m3u8(m3u8):
@@ -163,8 +163,10 @@ class Youku(VideoExtractor):
             self.title = kwargs['title']
 
         else:
-            api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
-            api12_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
+            # api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
+            # api12_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
+            api_url = 'https://ups.youku.com/ups/get.json?vid=%s&client_ip=&client_ts=&utid=&ccode=0503' % self.vid
+            api12_url = 'https://ups.youku.com/ups/get.json?vid=%s&client_ip=&client_ts=&utid=&ccode=0502' % self.vid
 
         try:
             meta = json.loads(get_content(
@@ -203,8 +205,8 @@ class Youku(VideoExtractor):
 
         if not self.title:  #86
             self.title = data['video']['title']
-        self.ep = data12['security']['encrypt_string']
-        self.ip = data12['security']['ip']
+        # self.ep = data12['security']['encrypt_string']
+        # self.ip = data12['security']['ip']
 
         if 'stream' not in data and self.password_protected:
             log.wtf('[Failed] Wrong password.')
@@ -274,11 +276,11 @@ class Youku(VideoExtractor):
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
 
-        e_code = self.__class__.trans_e(
-            self.f_code_1,
-            base64.b64decode(bytes(self.ep, 'ascii'))
-        )
-        sid, token = e_code.split('_')
+        # e_code = self.__class__.trans_e(
+        #     self.f_code_1,
+        #     base64.b64decode(bytes(self.ep, 'ascii'))
+        # )
+        # sid, token = e_code.split('_')
 
         while True:
             try:
@@ -288,32 +290,34 @@ class Youku(VideoExtractor):
                     segs = piece['segs']
                     seg_count = len(segs)
                     for no in range(0, seg_count):
-                        k = segs[no]['key']
-                        fileid = segs[no]['fileid']
-                        if k == -1:
-                            # we hit the paywall; stop here
-                            log.w('Skipping %d out of %d segments due to paywall' %
-                                  (seg_count - no, seg_count))
-                            break
-                        ep = self.__class__.generate_ep(self, fileid,
-                                                        sid, token)
-                        q = parse.urlencode(dict(
-                            ctype = self.ctype,
-                            ev    = 1,
-                            K     = k,
-                            ep    = parse.unquote(ep),
-                            oip   = str(self.ip),
-                            token = token,
-                            yxon  = 1
-                        ))
-                        u = 'http://k.youku.com/player/getFlvPath/sid/{sid}_00' \
-                            '/st/{container}/fileid/{fileid}?{q}'.format(
-                                sid       = sid,
-                                container = self.streams[stream_id]['container'],
-                                fileid    = fileid,
-                                q         = q
-                            )
-                        ksegs += [i['server'] for i in json.loads(get_content(u))]
+                        cdn_url = segs[no]["cdn_url"]
+                        ksegs += [cdn_url]
+                        # k = segs[no]['key']
+                        # fileid = segs[no]['fileid']
+                        # if k == -1:
+                        #     # we hit the paywall; stop here
+                        #     log.w('Skipping %d out of %d segments due to paywall' %
+                        #           (seg_count - no, seg_count))
+                        #     break
+                        # ep = self.__class__.generate_ep(self, fileid,
+                        #                                 sid, token)
+                        # q = parse.urlencode(dict(
+                        #     ctype = self.ctype,
+                        #     ev    = 1,
+                        #     K     = k,
+                        #     ep    = parse.unquote(ep),
+                        #     oip   = str(self.ip),
+                        #     token = token,
+                        #     yxon  = 1
+                        # ))
+                        # u = 'http://k.youku.com/player/getFlvPath/sid/{sid}_00' \
+                        #     '/st/{container}/fileid/{fileid}?{q}'.format(
+                        #         sid       = sid,
+                        #         container = self.streams[stream_id]['container'],
+                        #         fileid    = fileid,
+                        #         q         = q
+                        #     )
+                        # ksegs += [i['server'] for i in json.loads(get_content(u))]
             except error.HTTPError as e:
                 # Use fallback stream data in case of HTTP 404
                 log.e('[Error] ' + str(e))
