@@ -328,6 +328,8 @@ class YouTube(VideoExtractor):
                                   parse.unquote(i.split('=')[1]))
                                  for i in afmt.split('&')])
                            for afmt in ytplayer_config['args']['adaptive_fmts'].split(',')]
+                for stream in streams: # get over speed limiting
+                    stream['url'] += '&ratebypass=yes'
                 for stream in streams: # audio
                     if stream['type'].startswith('audio/mp4'):
                         dash_mp4_a_url = stream['url']
