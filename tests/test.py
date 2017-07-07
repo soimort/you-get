@@ -2,12 +2,10 @@
 
 import unittest
 
-from you_get import *
 from you_get.extractors import *
-from you_get.common import *
+
 
 class YouGetTests(unittest.TestCase):
-
     def test_imgur(self):
         imgur.download("http://imgur.com/WVLk5nD", info_only=True)
         imgur.download("http://imgur.com/gallery/WVLk5nD", info_only=True)
@@ -18,4 +16,11 @@ class YouGetTests(unittest.TestCase):
     def test_youtube(self):
         youtube.download("http://www.youtube.com/watch?v=pzKerr0JIPA", info_only=True)
         youtube.download("http://youtu.be/pzKerr0JIPA", info_only=True)
-        youtube.download("http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare", info_only=True)
+        youtube.download("http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare",
+                         info_only=True)
+
+    def test_yixia(self):
+        yixia_download("http://m.miaopai.com/show/channel/vlvreCo4OZiNdk5Jn1WvdopmAvdIJwi8", info_only=True)
+
+if __name__ == '__main__':
+    unittest.main()
