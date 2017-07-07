@@ -61,7 +61,7 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False, **kwa
         vcode = match1(html, r'viden\s*[:=]\s*\"([\w+/=]+)\"')
     if vcode:
         from .youku import youku_download_by_vid
-        return youku_download_by_vid(vcode, title=title, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+        return youku_download_by_vid(vcode, title=title, output_dir=output_dir, merge=merge, info_only=info_only, src='tudou', **kwargs)
 
     iid = r1(r'iid\s*[:=]\s*(\d+)', html)
     if not iid:

@@ -8,6 +8,39 @@ import base64
 import ssl
 import time
 import traceback
+import json
+import urllib.request
+import urllib.parse
+
+def quote_cna(cna):
+    if '%' in cna:
+        return cna
+    return urllib.parse.quote(cna)
+
+def fetch_cna():
+    if cookies:
+        for cookie in cookies:
+            if cookie.name == 'cna' and cookie.domain == '.youku.com':
+                log.i('Found cna in imported cookies. Use it')
+                return quote_cna(cookie.value)
+    url = 'http://log.mmstat.com/eg.js'
+    req = urllib.request.urlopen(url)
+    headers = req.getheaders()
+    for header in headers:
+        if header[0].lower() == 'set-cookie':
+            n_v = header[1].split(';')[0]
+            name, value = n_v.split('=')
+            if name == 'cna':
+                return quote_cna(value)
+    log.w('It seems that the client failed to fetch a cna cookie. Please load your own cookie if possible')
+    return quote_cna('DOG4EdW4qzsCAbZyXbU+t7Jt')
+
+def youku_ups(vid, ccode='0401'):
+    url = 'https://ups.youku.com/ups/get.json?vid={}&ccode={}'.format(vid, ccode)
+    url += '&client_ip=192.168.1.1'
+    url += '&utid=' + fetch_cna()
+    url += '&client_ts=' + str(int(time.time()))
+    return json.loads(get_content(url))
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
@@ -154,66 +187,22 @@ class Youku(VideoExtractor):
             if self.vid is None:
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
-
-        #HACK!
-        if 'api_url' in kwargs:
-            api_url = kwargs['api_url']  #85
-            api12_url = kwargs['api12_url']  #86
-            self.ctype = kwargs['ctype']
-            self.title = kwargs['title']
-
+        if kwargs.get('src') and kwargs['src'] == 'tudou':
+            data = youku_ups(self.vid, '0402')['data']
         else:
-            api_url = 'http://play.youku.com/play/get.json?vid=%s&ct=10' % self.vid
-            api12_url = 'http://play.youku.com/play/get.json?vid=%s&ct=12' % self.vid
+            data = youku_ups(self.vid)['data']
+        if data.get('stream') is None:
+            if data.get('error'):
+                log.wtf(data['error']['note'])
+            log.wtf('Unknown error')
 
-        try:
-            meta = json.loads(get_content(
-                api_url,
-                headers={'Referer': 'http://static.youku.com/'}
-            ))
-            meta12 = json.loads(get_content(
-                api12_url,
-                headers={'Referer': 'http://static.youku.com/'}
-            ))
-            data = meta['data']
-            data12 = meta12['data']
-            assert 'stream' in data
-        except AssertionError:
-            if 'error' in data:
-                if data['error']['code'] == -202:
-                    # Password protected
-                    self.password_protected = True
-                    self.password = input(log.sprint('Password: ', log.YELLOW))
-                    api_url += '&pwd={}'.format(self.password)
-                    api12_url += '&pwd={}'.format(self.password)
-                    meta = json.loads(get_content(
-                        api_url,
-                        headers={'Referer': 'http://static.youku.com/'}
-                    ))
-                    meta12 = json.loads(get_content(
-                        api12_url,
-                        headers={'Referer': 'http://static.youku.com/'}
-                    ))
-                    data = meta['data']
-                    data12 = meta12['data']
-                else:
-                    log.wtf('[Failed] ' + data['error']['note'])
-            else:
-                log.wtf('[Failed] Video not found.')
-
-        if not self.title:  #86
-            self.title = data['video']['title']
-        self.ep = data12['security']['encrypt_string']
-        self.ip = data12['security']['ip']
-
-        if 'stream' not in data and self.password_protected:
-            log.wtf('[Failed] Wrong password.')
-
+        self.title = data['video']['title']
         stream_types = dict([(i['id'], i) for i in self.stream_types])
         audio_lang = data['stream'][0]['audio_lang']
 
         for stream in data['stream']:
             stream_id = stream['stream_type']
+            is_preview = False
             if stream_id in stream_types and stream['audio_lang'] == audio_lang:
                 if 'alias-of' in stream_types[stream_id]:
                     stream_id = stream_types[stream_id]['alias-of']
@@ -227,40 +216,34 @@ class Youku(VideoExtractor):
                             'segs': stream['segs']
                         }]
                     }
+                    src = []
+                    for seg in stream['segs']:
+                        if seg.get('cdn_url'):
+                            src.append(seg['cdn_url'])
+                        else:
+                            is_preview = True
+                    self.streams[stream_id]['src'] = src
                 else:
                     self.streams[stream_id]['size'] += stream['size']
                     self.streams[stream_id]['pieces'].append({
                         'segs': stream['segs']
                     })
-
-        self.streams_fallback = {}
-        for stream in data12['stream']:
-            stream_id = stream['stream_type']
-            if stream_id in stream_types and stream['audio_lang'] == audio_lang:
-                if 'alias-of' in stream_types[stream_id]:
-                    stream_id = stream_types[stream_id]['alias-of']
-
-                if stream_id not in self.streams_fallback:
-                    self.streams_fallback[stream_id] = {
-                        'container': stream_types[stream_id]['container'],
-                        'video_profile': stream_types[stream_id]['video_profile'],
-                        'size': stream['size'],
-                        'pieces': [{
-                            'segs': stream['segs']
-                        }]
-                    }
-                else:
-                    self.streams_fallback[stream_id]['size'] += stream['size']
-                    self.streams_fallback[stream_id]['pieces'].append({
-                        'segs': stream['segs']
-                    })
+                    src = []
+                    for seg in stream['segs']:
+                        if seg.get('cdn_url'):
+                            src.append(seg['cdn_url'])
+                        else:
+                            is_preview = True
+                    self.streams[stream_id]['src'].extend(src)
+            if is_preview:
+                log.w('{} is a preview'.format(stream_id))
 
         # Audio languages
         if 'dvd' in data and 'audiolang' in data['dvd']:
             self.audiolang = data['dvd']['audiolang']
             for i in self.audiolang:
                 i['url'] = 'http://v.youku.com/v_show/id_{}'.format(i['vid'])
-
+    '''
     def extract(self, **kwargs):
         if 'stream_id' in kwargs and kwargs['stream_id']:
             # Extract the stream
@@ -279,7 +262,6 @@ class Youku(VideoExtractor):
             base64.b64decode(bytes(self.ep, 'ascii'))
         )
         sid, token = e_code.split('_')
-
         while True:
             try:
                 ksegs = []
@@ -327,6 +309,7 @@ class Youku(VideoExtractor):
 
         if not kwargs['info_only']:
             self.streams[stream_id]['src'] = ksegs
+    '''
 
     def open_download_by_vid(self, client_id, vid, **kwargs):
         """self, str, str, **kwargs->None
@@ -394,3 +377,6 @@ download_playlist = site.download_playlist_by_url
 youku_download_by_vid = site.download_by_vid
 youku_open_download_by_vid = site.open_download_by_vid
 # Used by: acfun.py bilibili.py miomio.py tudou.py
+# acfun has its own proxy and won't use it
+# miomio is dead
+# tudou doesn't use ct85 so open_download_by_vid is uesless now.
