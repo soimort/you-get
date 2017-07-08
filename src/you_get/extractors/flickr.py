@@ -77,7 +77,7 @@ def get_api_key(page):
     # since there's no place for a user to add custom infomation that may
     # misguide the regex in the homepage
     if not match:
-        return match1(get_html('https://flickr.com'), r'"site_key"\s*:\s*"([^"]+)"')
+        return match1(get_html('https://flickr.com'), pattern_inline_api_key)
     return match
 
 def get_NSID(url, page):
