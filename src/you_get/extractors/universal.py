@@ -29,6 +29,17 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         if page_title:
             page_title = unescape_html(page_title)
 
+        hls_urls = re.findall(r'(https?://[^;"\'\\]+' + '\.m3u8?' +
+                              r'[^;"\'\\]*)', page)
+        if hls_urls:
+            for hls_url in hls_urls:
+                type_, ext, size = url_info(hls_url)
+                print_info(site_info, page_title, type_, size)
+                if not info_only:
+                    download_url_ffmpeg(url=hls_url, title=page_title,
+                                        ext='mp4', output_dir=output_dir)
+            return
+
         # most common media file extensions on the Internet
         media_exts = ['\.flv', '\.mp3', '\.mp4', '\.webm',
                       '[-_]1\d\d\d\.jpe?g', '[-_][6-9]\d\d\.jpe?g', # tumblr
