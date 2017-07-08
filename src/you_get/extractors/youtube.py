@@ -224,14 +224,10 @@ class YouTube(VideoExtractor):
 
         # Prepare caption tracks
         try:
-            caption_tracks = ytplayer_config['args']['caption_tracks'].split(',')
+            caption_tracks = json.loads(ytplayer_config['args']['player_response'])['captions']['playerCaptionsTracklistRenderer']['captionTracks']
             for ct in caption_tracks:
-                lang = None
-                for i in ct.split('&'):
-                    [k, v] = i.split('=')
-                    if k == 'lc' and lang is None: lang = v
-                    if k == 'v' and v[0] != '.': lang = v # auto-generated
-                    if k == 'u': ttsurl = parse.unquote_plus(v)
+                ttsurl, lang = ct['baseUrl'], ct['languageCode']
+
                 tts_xml = parseString(get_content(ttsurl))
                 transcript = tts_xml.getElementsByTagName('transcript')[0]
                 texts = transcript.getElementsByTagName('text')
