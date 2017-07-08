@@ -245,7 +245,7 @@ def fetch_sid(cid, aid):
 
 def collect_bangumi_epids(json_data):
     eps = json_data['result']['episodes']
-    eps = sorted(eps, key=lambda item: int(item['index']))
+    eps = sorted(eps, key=lambda item: float(item['index']))
     result = []
     for ep in eps:
         result.append(ep['episode_id'])
