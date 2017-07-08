@@ -35,11 +35,12 @@ def fetch_cna():
     log.w('It seems that the client failed to fetch a cna cookie. Please load your own cookie if possible')
     return quote_cna('DOG4EdW4qzsCAbZyXbU+t7Jt')
 
-def youku_ups(vid, ccode='0401'):
+def youku_ups(vid, ccode='0401', password=None):
     url = 'https://ups.youku.com/ups/get.json?vid={}&ccode={}'.format(vid, ccode)
     url += '&client_ip=192.168.1.1'
     url += '&utid=' + fetch_cna()
     url += '&client_ts=' + str(int(time.time()))
+    if password is not None: url += '&password=' + password
     return json.loads(get_content(url))
 
 class Youku(VideoExtractor):
@@ -193,8 +194,16 @@ class Youku(VideoExtractor):
             data = youku_ups(self.vid)['data']
         if data.get('stream') is None:
             if data.get('error'):
-                log.wtf(data['error']['note'])
-            log.wtf('Unknown error')
+                if data['error']['code'] == -2002:
+                    self.password_protected = True
+                    self.password = input(log.sprint('Password: ', log.YELLOW))
+                    data = youku_ups(self.vid, password=self.password)['data']
+                    if data.get('error'):
+                        log.wtf(data['error']['note'])
+                else:
+                    log.wtf(data['error']['note'])
+            else:
+                log.wtf('Unknown error')
 
         self.title = data['video']['title']
         stream_types = dict([(i['id'], i) for i in self.stream_types])
