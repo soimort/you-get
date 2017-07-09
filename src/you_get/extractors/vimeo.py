@@ -3,7 +3,10 @@
 __all__ = ['vimeo_download', 'vimeo_download_by_id', 'vimeo_download_by_channel', 'vimeo_download_by_channel_id']
 
 from ..common import *
+from ..util.log import *
 from json import loads
+import urllib.error
+
 access_token = 'f6785418277b72c7c87d3132c79eec24'  #By Beining
 
 #----------------------------------------------------------------------
@@ -25,7 +28,10 @@ def vimeo_download_by_channel_id(channel_id, output_dir='.', merge=False, info_o
         id_list.append(match1(i['uri'], r'/videos/(\w+)'))
 
     for id in id_list:
-        vimeo_download_by_id(id, None, output_dir, merge, info_only)
+        try:
+            vimeo_download_by_id(id, None, output_dir, merge, info_only)
+        except urllib.error.URLError as e:
+            log.w('{} failed with {}'.format(id, e))
 
 def vimeo_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False, **kwargs):
     try:
@@ -42,7 +48,7 @@ def vimeo_download_by_id(id, title=None, output_dir='.', merge=True, info_only=F
 
         video_page = get_content('http://player.vimeo.com/video/%s' % id, headers=fake_headers)
         title = r1(r'<title>([^<]+)</title>', video_page)
-        info = loads(match1(video_page, r'var t=(\{[^;]+\});'))
+        info = loads(match1(video_page, r'var t=(\{.+?\});'))
 
     streams = info['request']['files']['progressive']
     streams = sorted(streams, key=lambda i: i['height'])
