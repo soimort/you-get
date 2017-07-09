@@ -5,6 +5,16 @@ __all__ = ['miaopai_download']
 from ..common import *
 import urllib.error
 
+def build_m3u8_list(m3u8_url):
+    path_len = len(m3u8_url.split('/')[-1])
+    base_url = m3u8_url[:-path_len]
+    urls = []
+    m3u8 = get_content(m3u8_url).split('\n')
+    for line in m3u8:
+        if len(line) > 0 and line[0] != '#':
+            urls.append(base_url+line)
+    return urls
+
 def miaopai_download_by_fid(fid, output_dir = '.', merge = False, info_only = False, **kwargs):
     '''Source: Android mobile'''
     fake_headers_mobile = {
@@ -19,10 +29,16 @@ def miaopai_download_by_fid(fid, output_dir = '.', merge = False, info_only = Fa
     mobile_page = get_content(page_url, headers=fake_headers_mobile)
     url = match1(mobile_page, r'<video id=.*?src=[\'"](.*?)[\'"]\W')
     title = match1(mobile_page, r'<title>([^<]+)</title>')
-    type_, ext, size = url_info(url)
-    print_info(site_info, title, type_, size)
-    if not info_only:
-        download_urls([url], title.replace('\n',''), ext, total_size=None, output_dir=output_dir, merge=merge)
+    if not '.m3u8' in url:
+        type_, ext, size = url_info(url)
+        print_info(site_info, title, type_, size)
+        if not info_only:
+            download_urls([url], title.replace('\n',''), ext, total_size=None, output_dir=output_dir, merge=merge)
+    else:
+        urls = build_m3u8_list(url)
+        print_info(site_info, title, 'm3u8', 0)
+        if not info_only:
+            download_urls(urls, title.replace('\n', ''), 'mp4', total_size=None, output_dir=output_dir, merge=merge)
 
 #----------------------------------------------------------------------
 def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
