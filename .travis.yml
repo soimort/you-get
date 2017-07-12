@@ -9,7 +9,7 @@ python:
   - "nightly"
   - "pypy3"
 before_install: pip install flake8
-before_install: flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
+before_script: flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
 script: make test
 sudo: false
 notifications:
