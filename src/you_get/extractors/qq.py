@@ -30,6 +30,9 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
         key_api = "http://vv.video.qq.com/getkey?otype=json&platform=11&format={}&vid={}&filename={}&appver=3.2.19.333".format(part_format_id, vid, filename)
         part_info = get_content(key_api)
         key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
+        if key_json.get('key') is None:
+            log.w(key_json['msg'])
+            break
         vkey = key_json['key']
         url = '{}{}?vkey={}'.format(host, filename, vkey)
         part_urls.append(url)
