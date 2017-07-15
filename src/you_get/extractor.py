@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .common import match1, maybe_print, download_urls, get_filename, parse_host, set_proxy, unset_proxy, get_content, dry_run
+from .common import match1, maybe_print, download_urls, get_filename, parse_host, set_proxy, unset_proxy, get_content, dry_run, round_str
 from .common import print_more_compatible as print
 from .util import log
 from . import json_output
@@ -107,7 +107,7 @@ class VideoExtractor():
 
         if 'size' in stream and stream['container'].lower() != 'm3u8':
             if stream['size'] != float('inf')  and stream['size'] != 0:
-                print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
+                print("      size:          %s MiB (%s bytes)" % (round_str(stream['size'] / 1048576, 1), stream['size']))
 
         if 'm3u8_url' in stream:
             print("      m3u8_url:      {}".format(stream['m3u8_url']))
@@ -126,7 +126,7 @@ class VideoExtractor():
             stream = self.dash_streams[stream_id]
 
         maybe_print("    - title:         %s" % self.title)
-        print("       size:         %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
+        print("       size:         %s MiB (%s bytes)" % (round_str(stream['size'] / 1048576, 1), stream['size']))
         print("        url:         %s" % self.url)
         print()
 
