@@ -196,7 +196,9 @@ class Youku(VideoExtractor):
             if data.get('error'):
                 if data['error']['code'] == -2002:
                     self.password_protected = True
-                    self.password = input(log.sprint('Password: ', log.YELLOW))
+                    self.password = kwargs.get("password", None)
+                    if not self.password:
+                        self.password = input(log.sprint('Password: ', log.YELLOW))
                     data = youku_ups(self.vid, password=self.password)['data']
                     if data.get('error'):
                         log.wtf(data['error']['note'])
