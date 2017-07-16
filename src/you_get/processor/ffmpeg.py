@@ -207,7 +207,7 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
         os.remove(file + '.ts')
     return True
 
-def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
+def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.', stream=True):
     """str, str->True
     WARNING: NOT THE SAME PARMS AS OTHER FUNCTIONS!!!!!!
     You can basicly download anything with this function
@@ -219,7 +219,10 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.'):
         output = output_dir + '/' + output
 
     print('Downloading streaming content with FFmpeg, press q to stop recording...')
-    ffmpeg_params = [FFMPEG] + ['-y', '-re', '-i']
+    if stream:
+        ffmpeg_params = [FFMPEG] + ['-y', '-re', '-i']
+    else:
+        ffmpeg_params = [FFMPEG] + ['-y', '-i']
     ffmpeg_params.append(files)  #not the same here!!!!
 
     if FFMPEG == 'avconv':  #who cares?

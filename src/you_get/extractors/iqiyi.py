@@ -206,9 +206,7 @@ class Iqiyi(VideoExtractor):
             # For legacy main()
             
             #Here's the change!!
-            download_url_ffmpeg(urls[0], self.title, 'mp4',
-                          output_dir=kwargs['output_dir'],
-                          merge=kwargs['merge'],)
+            download_url_ffmpeg(urls[0], self.title, 'mp4', output_dir=kwargs['output_dir'], merge=kwargs['merge'], stream=False)
 
             if not kwargs['caption']:
                 print('Skipping captions.')
