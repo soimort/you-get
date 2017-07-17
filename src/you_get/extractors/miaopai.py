@@ -18,11 +18,14 @@ def miaopai_download_by_fid(fid, output_dir = '.', merge = False, info_only = Fa
 
     mobile_page = get_content(page_url, headers=fake_headers_mobile)
     url = match1(mobile_page, r'<video id=.*?src=[\'"](.*?)[\'"]\W')
-    title = match1(mobile_page, r'<title>([^<]+)</title>')
+    title = match1(mobile_page, r'<title>((.|\n)+?)</title>')
+    if not title:
+        title = fid
+    title = title.replace('\n', '_')
     type_, ext, size = url_info(url)
-    print_info(site_info, title, type_, size)
+    print_info(site_info, title, 'mp4', size)
     if not info_only:
-        download_urls([url], title.replace('\n',''), ext, total_size=None, output_dir=output_dir, merge=merge)
+        download_urls([url], title, ext, total_size=None, output_dir=output_dir, merge=merge)
 
 #----------------------------------------------------------------------
 def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
