@@ -31,10 +31,11 @@ context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
     nicovideo_login(user, password)
 
     html = get_html(url) # necessary!
-    title = unicodize(r1(r'<span class="videoHeaderTitle"[^>]*>([^<]+)</span>', html))
+    title = r1(r'<title>(.+?)</title>', html)
+    #title = unicodize(r1(r'<span class="videoHeaderTitle"[^>]*>([^<]+)</span>', html))
 
     vid = url.split('/')[-1].split('?')[0]
-    api_html = get_html('http://www.nicovideo.jp/api/getflv?v=%s' % vid)
+    api_html = get_html('http://flapi.nicovideo.jp/api/getflv?v=%s' % vid)
     real_url = parse.unquote(r1(r'url=([^&]+)&', api_html))
 
     type, ext, size = url_info(real_url)
