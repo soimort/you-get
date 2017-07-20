@@ -13,14 +13,16 @@ from .youku import youku_download_by_vid, youku_open_download_by_vid
 import json
 import re
 import base64
+import time
 
 def get_srt_json(id):
     url = 'http://danmu.aixifan.com/V2/%s' % id
     return get_content(url)
 
-def youku_acfun_proxy(vid, sign):
-    url = 'http://aplay-vod.cn-beijing.aliyuncs.com/acfun/web?vid={}&ct=85&ev=3&sign={}'.format(vid, sign)
-    json_data = json.loads(get_content(url))['data']
+def youku_acfun_proxy(vid, sign, ref):
+    endpoint = 'http://player.acfun.cn/flash_data?vid={}&ct=85&ev=3&sign={}&time={}'
+    url = endpoint.format(vid, sign, str(int(time.time() * 1000)))
+    json_data = json.loads(get_content(url, headers=dict(referer=ref)))['data']
     enc_text = base64.b64decode(json_data)
     dec_text = rc4(b'8bdc7e1a', enc_text).decode('utf8')
     youku_json = json.loads(dec_text)
@@ -70,7 +72,8 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
         #As in Jul.28.2016, Acfun is using embsig to anti hotlink so we need to pass this
 #In Mar. 2017 there is a dedicated ``acfun_proxy'' in youku cloud player
 #old code removed
-        yk_streams = youku_acfun_proxy(info['sourceId'], info['encode'])
+        url = 'http://www.acfun.cn/v/ac' + vid
+        yk_streams = youku_acfun_proxy(info['sourceId'], info['encode'], url)
         seq = ['mp4hd3', 'mp4hd2', 'mp4hd', 'flvhd']
         for t in seq:
             if yk_streams.get(t):
