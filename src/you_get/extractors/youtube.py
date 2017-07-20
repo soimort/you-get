@@ -237,7 +237,7 @@ class YouTube(VideoExtractor):
                     seq += 1
                     start = float(text.getAttribute('start'))
                     if text.getAttribute('dur'):
-                        durytplayer_config = float(text.getAttribute('dur'))
+                        dur = float(text.getAttribute('dur'))
                     else: dur = 1.0 # could be ill-formed XML
                     finish = start + dur
                     m, s = divmod(start, 60); h, m = divmod(m, 60)
