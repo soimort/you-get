@@ -366,14 +366,22 @@ class YouTube(VideoExtractor):
                                 dash_url += '&signature={}'.format(sig)
                             dash_size = stream['clen']
                             itag = stream['itag']
+                            audio_url = None
+                            audio_size = None
+                            try:
+                                audio_url = dash_webm_a_url
+                                audio_size = int(dash_webm_a_size)
+                            except UnboundLocalError as e:
+                                audio_url = dash_mp4_a_url
+                                audio_size = int(dash_mp4_a_size)
                             self.dash_streams[itag] = {
                                 'quality': stream['size'],
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
                                 'container': 'webm',
-                                'src': [dash_url, dash_webm_a_url],
-                                'size': int(dash_size) + int(dash_webm_a_size)
+                                'src': [dash_url, audio_url],
+                                'size': int(dash_size) + int(audio_size)
                             }
 
     def extract(self, **kwargs):
