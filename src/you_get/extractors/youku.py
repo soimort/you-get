@@ -35,13 +35,13 @@ def fetch_cna():
     log.w('It seems that the client failed to fetch a cna cookie. Please load your own cookie if possible')
     return quote_cna('DOG4EdW4qzsCAbZyXbU+t7Jt')
 
-def youku_ups(vid, ccode='0401', password=None):
+def youku_ups(vid, ccode='0401', password=None, referer='http://v.youku.com'):
     url = 'https://ups.youku.com/ups/get.json?vid={}&ccode={}'.format(vid, ccode)
     url += '&client_ip=192.168.1.1'
     url += '&utid=' + fetch_cna()
     url += '&client_ts=' + str(int(time.time()))
     if password is not None: url += '&password=' + password
-    return json.loads(get_content(url))
+    return json.loads(get_content(url, headers=dict(Referer=referer)))
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
