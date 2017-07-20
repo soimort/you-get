@@ -124,6 +124,7 @@ player = None
 extractor_proxy = None
 cookies = None
 output_filename = None
+output_extension = None
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -760,7 +761,10 @@ class DummyProgressBar:
 def get_output_filename(urls, title, ext, output_dir, merge):
     # lame hack for the --output-filename option
     global output_filename
+    global output_extension
     if output_filename:
+        if output_extension:
+            return output_filename + '.' + output_extension
         if ext:
             return output_filename + '.' + ext
         return output_filename
@@ -1205,6 +1209,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     -f | --force                        Force overwriting existed files.
     -F | --format <STREAM_ID>           Set video format to STREAM_ID.
     -O | --output-filename <FILE>       Set output filename.
+    -E | --output-extension <FILE_EXT>  Set output file extension
     -o | --output-dir <PATH>            Set output directory.
     -p | --player <PLAYER [OPTIONS]>    Stream extracted URL to a PLAYER.
     -c | --cookies <COOKIES_FILE>       Load cookies.txt or cookies.sqlite.
@@ -1217,8 +1222,10 @@ def script_main(script_name, download, download_playlist, **kwargs):
     -I | --input-file                   Read non-playlist urls from file.
     '''
 
-    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:s:t:I:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'socks-proxy=', 'extractor-proxy=', 'lang=', 'timeout=', 'input-file=']
+    short_opts = 'Vhfiuc:ndF:E:O:o:p:x:y:s:t:I:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug',
+            'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=',
+            'socks-proxy=', 'extractor-proxy=', 'lang=', 'timeout=', 'input-file=', '--output-extension']
 #dead code? download_playlist is a function and always True
 #if download_playlist:
     short_opts = 'l' + short_opts
@@ -1238,6 +1245,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     global extractor_proxy
     global cookies
     global output_filename
+    global output_extension
 
     info_only = False
     playlist = False
@@ -1315,6 +1323,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
             stream_id = a
         elif o in ('-O', '--output-filename'):
             output_filename = a
+        elif o in ('-E', '--output-extension'):
+            output_extension = a
         elif o in ('-o', '--output-dir'):
             output_dir = a
         elif o in ('-p', '--player'):
