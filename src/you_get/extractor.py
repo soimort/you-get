@@ -20,6 +20,7 @@ class Extractor():
 class VideoExtractor():
     def __init__(self, *args):
         self.url = None
+        self.index = 0
         self.title = None
         self.vid = None
         self.m3u8_url = None
@@ -54,6 +55,8 @@ class VideoExtractor():
         except:
             self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
 
+        self.sort_streams(**kwargs)
+
         self.extract(**kwargs)
 
         self.download(**kwargs)
@@ -80,6 +83,10 @@ class VideoExtractor():
     def prepare(self, **kwargs):
         pass
         #raise NotImplementedError()
+
+    def sort_streams(self, **kwargs):
+        pass
+        # raise NotImplementedError()
 
     def extract(self, **kwargs):
         pass
@@ -170,8 +177,14 @@ class VideoExtractor():
         print("videos:")
 
     def download(self, **kwargs):
+        if not self.streams_sorted:
+            # No stream is available
+            return
+
+        if 'index' in kwargs:
+            self.index = int(kwargs.get('index'))
         if 'json_output' in kwargs and kwargs['json_output']:
-            json_output.output(self)
+            json_output.output(self, tofile='tofile' in kwargs.get('extra_opts'))
         elif 'info_only' in kwargs and kwargs['info_only']:
             if 'stream_id' in kwargs and kwargs['stream_id']:
                 # Display the stream
@@ -221,7 +234,8 @@ class VideoExtractor():
             download_urls(urls, self.title, ext, total_size, headers=headers,
                           output_dir=kwargs['output_dir'],
                           merge=kwargs['merge'],
-                          av=stream_id in self.dash_streams)
+                          av=stream_id in self.dash_streams,
+                          index=self.index)
             if 'caption' not in kwargs or not kwargs['caption']:
                 print('Skipping captions or danmuku.')
                 return

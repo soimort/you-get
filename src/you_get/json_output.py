@@ -1,10 +1,10 @@
-
+import os
 import json
 
 # save info from common.print_info()
 last_info = None
 
-def output(video_extractor, pretty_print=True):
+def output(video_extractor, pretty_print=True, tofile=False):
     ve = video_extractor
     out = {}
     out['url'] = ve.url
@@ -17,9 +17,20 @@ def output(video_extractor, pretty_print=True):
     except AttributeError:
         pass
     if pretty_print:
-        print(json.dumps(out, indent=4, sort_keys=True, ensure_ascii=False))
+        json_content = json.dumps(out, indent=4, sort_keys=True, ensure_ascii=False)
     else:
-        print(json.dumps(out))
+        json_content = json.dumps(out)
+    if tofile:
+        jsondir = 'json'
+        if not os.path.exists(jsondir):
+            os.mkdir(jsondir)
+        filename = '%s/%03d_%s.json' % (jsondir, ve.index, ve.title)
+        f = open(filename, 'wb')
+        _output = f.write
+        json_content = json_content.encode('utf8')
+    else:
+        _output = print
+    _output(json_content)
 
 # a fake VideoExtractor object to save info
 class VideoExtractor(object):
