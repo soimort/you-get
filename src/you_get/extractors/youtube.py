@@ -237,7 +237,7 @@ class YouTube(VideoExtractor):
                     seq += 1
                     start = float(text.getAttribute('start'))
                     if text.getAttribute('dur'):
-                        dur = float(text.getAttribute('dur'))
+                        durytplayer_config = float(text.getAttribute('dur'))
                     else: dur = 1.0 # could be ill-formed XML
                     finish = start + dur
                     m, s = divmod(start, 60); h, m = divmod(m, 60)
@@ -366,15 +366,26 @@ class YouTube(VideoExtractor):
                                 dash_url += '&signature={}'.format(sig)
                             dash_size = stream['clen']
                             itag = stream['itag']
-                            self.dash_streams[itag] = {
-                                'quality': stream['size'],
-                                'itag': itag,
-                                'type': mimeType,
-                                'mime': mimeType,
-                                'container': 'webm',
-                                'src': [dash_url, dash_webm_a_url],
-                                'size': int(dash_size) + int(dash_webm_a_size)
-                            }
+                            try:
+                                self.dash_streams[itag] = {
+                                    'quality': stream['size'],
+                                    'itag': itag,
+                                    'type': mimeType,
+                                    'mime': mimeType,
+                                    'container': 'webm',
+                                    'src': [dash_url, dash_webm_a_url or dash_mp4_a_url],
+                                    'size': int(dash_size) + int(dash_webm_a_size or dash_mp4_a_size)
+                                }
+                            except:
+                                self.dash_streams[itag] = {
+                                    'quality': stream['size'],
+                                    'itag': itag,
+                                    'type': mimeType,
+                                    'mime': mimeType,
+                                    'container': 'webm',
+                                    'src': [dash_url, dash_mp4_a_url],
+                                    'size': int(dash_size) + int(dash_mp4_a_size)
+                                }
 
     def extract(self, **kwargs):
         if not self.streams_sorted:
