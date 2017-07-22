@@ -1215,10 +1215,11 @@ def script_main(script_name, download, download_playlist, **kwargs):
     -t | --timeout <SECONDS>            Set socket timeout.
     -d | --debug                        Show traceback and other debug info.
     -I | --input-file                   Read non-playlist urls from file.
+    -P | --password <PASSWORD>          Set video visit password to PASSWORD.
     '''
 
-    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:s:t:I:'
-    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'socks-proxy=', 'extractor-proxy=', 'lang=', 'timeout=', 'input-file=']
+    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:s:t:I:P:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'socks-proxy=', 'extractor-proxy=', 'lang=', 'timeout=', 'input-file=', 'password=']
 #dead code? download_playlist is a function and always True
 #if download_playlist:
     short_opts = 'l' + short_opts
@@ -1252,6 +1253,7 @@ def script_main(script_name, download, download_playlist, **kwargs):
     traceback = False
     timeout = 600
     urls_from_file = []
+    password = None
 
     for o, a in opts:
         if o in ('-V', '--version'):
@@ -1330,6 +1332,8 @@ def script_main(script_name, download, download_playlist, **kwargs):
             lang = a
         elif o in ('-t', '--timeout'):
             timeout = int(a)
+        elif o in ('-P', '--password',):
+            password = a
         elif o in ('-I', '--input-file'):
             logging.debug('you are trying to load urls from {}'.format(a))
             if playlist:
