@@ -16,29 +16,23 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
 
     json_request_url = "http://m.douyu.com/html5/live?roomId=%s" % room_id
     content = get_content(json_request_url)
-    data = json.loads(content)['data']
-    server_status = data.get('error',0)
+    json_content = json.loads(content)
+    data = json_content['data']
+    server_status = json_content.get('error',0)
     if server_status is not 0:
         raise ValueError("Server returned error:%s" % server_status)
 
-    title = data.get('room_name')
-    show_status = data.get('show_status')
+    room_info_url = "http://open.douyucdn.cn/api/RoomApi/room/%s" % room_id
+    room_info_content = get_content(room_info_url)
+    room_info_obj = json.loads(room_info_content)
+    room_info_data = room_info_obj.get('data')
+
+    title = room_info_data.get('room_name')
+    show_status = room_info_data.get('room_status')
     if show_status is not "1":
         raise ValueError("The live stream is not online! (Errno:%s)" % server_status)
 
-    tt = int(time.time())
-    sign_content = 'lapi/live/thirdPart/getPlay/%s?aid=pcclient&rate=0&time=%s9TUk5fjjUjg9qIMH3sdnh' % (room_id, tt)
-    sign = hashlib.md5(sign_content.encode('ascii')).hexdigest()
-
-    json_request_url = "http://coapi.douyucdn.cn/lapi/live/thirdPart/getPlay/%s?rate=0" % room_id
-    headers = {'auth': sign, 'time': str(tt), 'aid': 'pcclient'}
-    content = get_content(json_request_url, headers = headers)
-    data = json.loads(content)['data']
-    server_status = data.get('error',0)
-    if server_status is not 0:
-        raise ValueError("Server returned error:%s" % server_status)
-
-    real_url = data.get('live_url')
+    real_url = data.get('hls_url')
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
