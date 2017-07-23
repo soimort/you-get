@@ -656,6 +656,9 @@ class SimpleProgressBar:
             percent_str = '100'
         else:
             percent = math.floor(self.received * 100 / self.total_size)
+# near but not complete - kick it to 99.9
+            if percent_str == '100.0':
+                percent_str = '99.9'
         dots = bar_size * percent // 100
         plus = percent - dots // bar_size * 100
         if plus > 0.8:
