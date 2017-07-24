@@ -34,7 +34,7 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                                   title=title,
                                   ext=ext,
                                   total_size=size,
-                                  output_dir='.')
+                                  output_dir=output_dir)
         else:
             title = info['entry_data']['PostPage'][0]['graphql']['shortcode_media']['shortcode']
             image_url = info['entry_data']['PostPage'][0]['graphql']['shortcode_media']['display_url']
@@ -46,7 +46,7 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                               title=title,
                               ext=ext,
                               total_size=size,
-                              output_dir='.')
+                              output_dir=output_dir)
 
 site_info = "Instagram.com"
 download = instagram_download
