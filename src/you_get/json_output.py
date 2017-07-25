@@ -17,9 +17,9 @@ def output(video_extractor, pretty_print=True):
     except AttributeError:
         pass
     extra = {}
-    if ve.referer is not None:
+    if getattr(ve, 'referer', None) is not None:
         extra["referer"] = ve.referer
-    if ve.ua is not None:
+    if getattr(ve, 'ua', None) is not None:
         extra["ua"] = ve.ua
     if extra:
         out["extra"] = extra
