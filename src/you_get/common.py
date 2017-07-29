@@ -459,6 +459,9 @@ def url_info(url, faker = False, headers = {}):
         'video/x-ms-asf': 'asf',
         'audio/mp4': 'mp4',
         'audio/mpeg': 'mp3',
+        'audio/wav': 'wav',
+        'audio/x-wav': 'wav',
+        'audio/wave': 'wav',
         'image/jpeg': 'jpg',
         'image/png': 'png',
         'image/gif': 'gif',
@@ -1085,6 +1088,8 @@ def print_info(site_info, title, type, size):
         type_info = "MPEG-4 audio (%s)" % type
     elif type in ['audio/mpeg']:
         type_info = "MP3 (%s)" % type
+    elif type in ['audio/wav', 'audio/wave', 'audio/x-wav']:
+        type_info = 'Waveform Audio File Format ({})'.format(type)
 
     elif type in ['image/jpeg']:
         type_info = "JPEG Image (%s)" % type
