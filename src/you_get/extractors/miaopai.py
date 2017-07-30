@@ -4,16 +4,18 @@ __all__ = ['miaopai_download']
 
 from ..common import *
 import urllib.error
+import urllib.parse
+
+fake_headers_mobile = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Charset': 'UTF-8,*;q=0.5',
+    'Accept-Encoding': 'gzip,deflate,sdch',
+    'Accept-Language': 'en-US,en;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
+}
 
 def miaopai_download_by_fid(fid, output_dir = '.', merge = False, info_only = False, **kwargs):
     '''Source: Android mobile'''
-    fake_headers_mobile = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Charset': 'UTF-8,*;q=0.5',
-        'Accept-Encoding': 'gzip,deflate,sdch',
-        'Accept-Language': 'en-US,en;q=0.8',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
-    }
     page_url = 'http://video.weibo.com/show?fid=' + fid + '&type=mp4'
 
     mobile_page = get_content(page_url, headers=fake_headers_mobile)
@@ -36,7 +38,13 @@ def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **
         fid = match1(url, r'/p/230444(\w+)')
         miaopai_download_by_fid('1034:'+fid, output_dir, merge, info_only)
     else:
-        raise Exception('Unknown pattern')
+        mobile_page = get_content(url, headers = fake_headers_mobile)
+        hit = re.search(r'"page_url"\s*:\s*"([^"]+)"', mobile_page)
+        if not hit:
+            raise Exception('Unknown pattern')
+        else:
+            escaped_url = hit.group(1)
+            miaopai_download(urllib.parse.unquote(escaped_url), output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
 
 site_info = "miaopai"
 download = miaopai_download
