@@ -16,6 +16,11 @@ def output(video_extractor, pretty_print=True):
             out['audiolang'] = ve.audiolang
     except AttributeError:
         pass
+    try:
+        if ve.danmaku_url:
+            out['danmaku_url'] = ve.danmaku_url
+    except AttributeError:
+        pass
     if pretty_print:
         print(json.dumps(out, indent=4, sort_keys=True, ensure_ascii=False))
     else:

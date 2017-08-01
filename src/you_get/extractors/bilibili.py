@@ -95,6 +95,7 @@ class Bilibili(VideoExtractor):
             qlt = self.fmt2qlt.get(quality)
             api_xml = self.api_req(cid, qlt, bangumi)
             self.parse_bili_xml(api_xml)
+            self.danmaku_url = 'http://comment.bilibili.com/{}.xml'.format(cid)
             self.danmuku = get_danmuku_xml(cid)
         else:
             for qlt in range(4, 0, -1):
