@@ -39,7 +39,11 @@ def cntv_download(url, output_dir = '.', merge = True, info_only = False, **kwar
          re.match(r'http://(\w+).cntv.cn/(\w+)/classpage/video/(\d+)/(\d+).shtml', url) or \
          re.match(r'http://\w+.cctv.com/\d+/\d+/\d+/\w+.shtml', url) or \
          re.match(r'http://\w+.cntv.cn/\d+/\d+/\d+/\w+.shtml', url): 
-        id = r1(r'videoCenterId","(\w+)"', get_html(url))
+        page = get_content(url)
+        id = r1(r'videoCenterId","(\w+)"', page)
+        if id is None:
+            guid = re.search(r'guid\s*=\s*"([0-9a-z]+)"', page).group(1)
+            id = guid
     elif re.match(r'http://xiyou.cntv.cn/v-[\w-]+\.html', url):
         id = r1(r'http://xiyou.cntv.cn/v-([\w-]+)\.html', url)
     else:
