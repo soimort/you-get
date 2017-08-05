@@ -18,7 +18,9 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     title = video_json['vl']['vi'][0]['ti']
     host = video_json['vl']['vi'][0]['ul']['ui'][0]['url']
     streams = video_json['fl']['fi']
-    seg_cnt = len(video_json['vl']['vi'][0]['cl']['ci'])
+    seg_cnt = video_json['vl']['vi'][0]['cl']['fc']
+    if seg_cnt == 0:
+        seg_cnt = 1
 
     best_quality = streams[-1]['name']
     part_format_id = streams[-1]['id']
