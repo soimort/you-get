@@ -33,7 +33,8 @@ class Bilibili(VideoExtractor):
             {'id': 'flv'},
             {'id': 'hdmp4'},
             {'id': 'mp4'},
-            {'id': 'live'}
+            {'id': 'live'},
+            {'id': 'vc'}
     ]
     fmt2qlt = dict(hdflv=4, flv=3, hdmp4=2, mp4=1)
 
@@ -127,6 +128,8 @@ class Bilibili(VideoExtractor):
             self.bangumi_entry(**kwargs)
         elif 'live.bilibili.com' in self.url:
             self.live_entry(**kwargs)
+        elif 'vc.bilibili.com' in self.url:
+            self.vc_entry(**kwargs)
         else:
             self.entry(**kwargs)
 
@@ -181,6 +184,24 @@ class Bilibili(VideoExtractor):
         self.streams['live']['src'] = urls
         self.streams['live']['container'] = 'flv'
         self.streams['live']['size'] = 0
+
+    def vc_entry(self, **kwargs):
+        vc_id = re.search(r'video/(\d+)', self.url)
+        if not vc_id:
+            vc_id = re.search(r'vcdetail\?vc=(\d+)', self.url)
+            if not vc_id:
+                log.wtf('Unknown url pattern')
+        endpoint = 'http://api.vc.bilibili.com/clip/v1/video/detail?video_id={}&need_playurl=1'.format(vc_id.group(1))
+        vc_meta = json.loads(get_content(endpoint, headers=fake_headers))
+        if vc_meta['code'] != 0:
+            log.wtf('{}\n{}'.format(vc_meta['msg'], vc_meta['message']))
+        item = vc_meta['data']['item']
+        self.title = item['description']
+
+        self.streams['vc'] = {}
+        self.streams['vc']['src'] = [item['video_playurl']]
+        self.streams['vc']['container'] = 'mp4'
+        self.streams['vc']['size'] = int(item['video_size'])
 
     def bangumi_entry(self, **kwargs):
         bangumi_id = re.search(r'(\d+)', self.url).group(1)
