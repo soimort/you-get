@@ -3,11 +3,15 @@
 __all__ = ['panda_download']
 
 from ..common import *
+from ..util.log import *
 import json
 import time
 
 def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    roomid = url[url.rfind('/')+1:]
+    roomid = re.search('/(\d+)', url)
+    if roomid is None:
+        log.wtf('Cannot found room id for this url')
+    roomid = roomid.group(1)
     json_request_url ="http://www.panda.tv/api_room_v2?roomid={}&__plat=pc_web&_={}".format(roomid, int(time.time()))
     content = get_html(json_request_url)
     api_json = json.loads(content)
