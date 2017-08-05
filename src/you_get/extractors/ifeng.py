@@ -21,7 +21,9 @@ def ifeng_download_by_id(id, title = None, output_dir = '.', merge = True, info_
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
 def ifeng_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    id = r1(r'/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.shtml$', url)
+# old pattern /uuid.shtml
+# now it could be #uuid
+    id = r1(r'([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', url)
     if id:
         return ifeng_download_by_id(id, None, output_dir = output_dir, merge = merge, info_only = info_only)
 
