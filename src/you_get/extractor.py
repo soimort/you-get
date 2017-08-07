@@ -210,6 +210,9 @@ class VideoExtractor():
                 ext = self.dash_streams[stream_id]['container']
                 total_size = self.dash_streams[stream_id]['size']
 
+            if ext == 'm3u8':
+                ext = 'mp4'
+
             if not urls:
                 log.wtf('[Failed] Cannot extract video source.')
             # For legacy main()
