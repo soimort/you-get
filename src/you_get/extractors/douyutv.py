@@ -3,11 +3,43 @@
 __all__ = ['douyutv_download']
 
 from ..common import *
+from ..util.log import *
 import json
 import hashlib
 import time
+import re
+
+def douyutv_video_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    ep = 'http://vmobile.douyu.com/video/getInfo?vid='
+    patt = r'show/([0-9A-Za-z]+)'
+    title_patt = r'<h1>(.+?)</h1>'
+
+    hit = re.search(patt, url)
+    if hit is None:
+        log.wtf('Unknown url pattern')
+    vid = hit.group(1)
+
+    page = get_content(url)
+    hit = re.search(title_patt, page)
+    if hit is None:
+        title = vid
+    else:
+        title = hit.group(1)
+
+    meta = json.loads(get_content(ep + vid))
+    if meta['error'] != 0:
+        log.wtf('Error from API server')
+    m3u8_url = meta['data']['video_url']
+    print_info('Douyu Video', title, 'm3u8', 0, m3u8_url=m3u8_url)
+    if not info_only:
+        urls = general_m3u8_extractor(m3u8_url)
+        download_urls(urls, title, 'ts', 0, output_dir=output_dir, merge=merge, **kwargs)
 
 def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+    if 'v.douyu.com/show/' in url:
+        douyutv_video_download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+        return
+
     html = get_content(url)
     room_id_patt = r'"room_id"\s*:\s*(\d+),'
     room_id = match1(html, room_id_patt)
