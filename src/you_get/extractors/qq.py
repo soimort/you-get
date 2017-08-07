@@ -5,6 +5,7 @@ __all__ = ['qq_download']
 from ..common import *
 from ..util.log import *
 from .qie import download as qieDownload
+from .qie_video import download_by_url as qie_video_download
 from urllib.parse import urlparse,parse_qs
 
 def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
@@ -92,7 +93,10 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         return
 
     if 'live.qq.com' in url:
-        qieDownload(url, output_dir=output_dir, merge=merge, info_only=info_only)
+        if 'live.qq.com/video/v' in url:
+            qie_video_download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+        else:
+            qieDownload(url, output_dir=output_dir, merge=merge, info_only=info_only)
         return
 
     if 'mp.weixin.qq.com/s?' in url:
