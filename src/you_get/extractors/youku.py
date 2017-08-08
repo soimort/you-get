@@ -41,7 +41,9 @@ def youku_ups(vid, ccode='0401', password=None, referer='http://v.youku.com'):
     url += '&utid=' + fetch_cna()
     url += '&client_ts=' + str(int(time.time()))
     if password is not None: url += '&password=' + password
-    return json.loads(get_content(url, headers=dict(Referer=referer)))
+    headers = dict(Referer=referer)
+    headers['User-Agent'] = fake_headers['User-Agent']
+    return json.loads(get_content(url, headers=headers))
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
@@ -161,6 +163,7 @@ class Youku(VideoExtractor):
                 traceback.print_exception(exc_type, exc_value, exc_traceback)
 
     def prepare(self, **kwargs):
+        self.ua = fake_headers['User-Agent']
         # Hot-plug cookie handler
         ssl_context = request.HTTPSHandler(
             context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
