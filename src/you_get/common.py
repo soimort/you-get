@@ -110,6 +110,8 @@ import time
 from urllib import request, parse, error
 from http import cookiejar
 from importlib import import_module
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock
 
 from .version import __version__
 from .util import log, term
@@ -598,6 +600,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
                 received += len(buffer)
                 if bar:
                     bar.update_received(len(buffer))
+        bar.update_piece()
 
     assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (received, os.path.getsize(temp_filepath), temp_filepath)
 
@@ -669,6 +672,7 @@ def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore
                 response = urlopen_with_retry(request.Request(url, headers=headers))
             if bar:
                 bar.update_received(len(buffer))
+    bar.update_piece()
 
     assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (received, os.path.getsize(temp_filepath))
 
@@ -683,10 +687,12 @@ class SimpleProgressBar:
         self.displayed = False
         self.total_size = total_size
         self.total_pieces = total_pieces
-        self.current_piece = 1
+        self.current_piece = 0
         self.received = 0
         self.speed = ''
         self.last_updated = time.time()
+        self.data_lock = Lock()
+        self.ui_lock = Lock()
 
         total_pieces_len = len(str(total_pieces))
         # 38 is the size of all statically known size in self.bar
@@ -697,9 +703,13 @@ class SimpleProgressBar:
             total_str_width, total_str, self.bar_size, total_pieces_len, total_pieces_len)
 
     def update(self):
+        # Don't bother updating the UI if cannot aquire the lock
+        if not self.ui_lock.acquire(blocking=False): return
+        self.data_lock.acquire()
         self.displayed = True
         bar_size = self.bar_size
         percent = round(self.received * 100 / self.total_size, 1)
+        self.data_lock.release()
         if percent >= 100:
             percent = 100
         dots = bar_size * int(percent) // 100
@@ -714,8 +724,10 @@ class SimpleProgressBar:
         bar = self.bar.format(percent, round(self.received / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
+        self.ui_lock.release()
 
     def update_received(self, n):
+        self.data_lock.acquire()
         self.received += n
         time_diff = time.time() - self.last_updated
         bytes_ps = n / time_diff if time_diff else 0
@@ -728,15 +740,23 @@ class SimpleProgressBar:
         else:
             self.speed = '{:4.0f}  B/s'.format(bytes_ps)
         self.last_updated = time.time()
+        self.data_lock.release()
         self.update()
 
-    def update_piece(self, n):
-        self.current_piece = n
+    def update_piece(self):
+        self.data_lock.acquire()
+        self.current_piece += 1
+        self.data_lock.release()
 
     def done(self):
+        self.ui_lock.acquire()
+        self.data_lock.acquire()
         if self.displayed:
             print()
             self.displayed = False
+        self.data_lock.release()
+        self.ui_lock.release()
+
 
 class PiecesProgressBar:
     def __init__(self, total_size, total_pieces = 1):
@@ -745,31 +765,45 @@ class PiecesProgressBar:
         self.total_pieces = total_pieces
         self.current_piece = 1
         self.received = 0
+        self.data_lock = Lock()
+        self.ui_lock = Lock()
 
     def update(self):
+        self.ui_lock.acquire()
+        self.data_lock.acquire()
         self.displayed = True
+        self.data_lock.release()
         bar = '{0:>5}%[{1:<40}] {2}/{3}'.format('', '=' * 40, self.current_piece, self.total_pieces)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
+        self.ui_lock.release()
 
     def update_received(self, n):
+        self.data_lock.acquire()
         self.received += n
+        self.data_lock.release()
         self.update()
 
-    def update_piece(self, n):
-        self.current_piece = n
+    def update_piece(self):
+        self.data_lock.acquire()
+        self.current_piece += 1
+        self.data_lock.release()
 
     def done(self):
+        self.ui_lock.acquire()
+        self.data_lock.acquire()
         if self.displayed:
             print()
             self.displayed = False
+        self.data_lock.release()
+        self.ui_lock.release()
 
 class DummyProgressBar:
     def __init__(self, *args):
         pass
     def update_received(self, n):
         pass
-    def update_piece(self, n):
+    def update_piece(self):
         pass
     def done(self):
         pass
@@ -843,13 +877,14 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
         parts = []
         print('Downloading %s.%s ...' % (tr(title), ext))
         bar.update()
-        for i, url in enumerate(urls):
-            filename = '%s[%02d].%s' % (title, i, ext)
-            filepath = os.path.join(output_dir, filename)
-            parts.append(filepath)
-            #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
-            bar.update_piece(i + 1)
-            url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers, **kwargs)
+        with ThreadPoolExecutor(max_workers=16) as e:
+            for i, url in enumerate(urls):
+                filename = '%s[%02d].%s' % (title, i, ext)
+                filepath = os.path.join(output_dir, filename)
+                parts.append(filepath)
+                #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
+                bar.update_piece(i + 1)
+                e.submit(url_save, url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers, **kwargs)
         bar.done()
 
         if not merge:
@@ -969,13 +1004,14 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
     else:
         parts = []
         print('Downloading %s.%s ...' % (tr(title), ext))
-        for i, url in enumerate(urls):
-            filename = '%s[%02d].%s' % (title, i, ext)
-            filepath = os.path.join(output_dir, filename)
-            parts.append(filepath)
-            #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
-            bar.update_piece(i + 1)
-            url_save_chunked(url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers)
+        with ThreadPoolExecutor(max_workers=16) as e:
+            for i, url in enumerate(urls):
+                filename = '%s[%02d].%s' % (title, i, ext)
+                filepath = os.path.join(output_dir, filename)
+                parts.append(filepath)
+                #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
+                bar.update_piece(i + 1)
+                e.submit(url_save_chunked, url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers)
         bar.done()
 
         if not merge:
