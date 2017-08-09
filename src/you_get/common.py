@@ -162,11 +162,8 @@ def rc4(key, data):
 
     return bytes(out_list)
 
-def general_m3u8_extractor(url):
-    path_len = len(url.split('/')[-1])
-    base_url = url[:-path_len]
-
-    m3u8_list = get_content(url).split('\n')
+def general_m3u8_extractor(url, headers={}):
+    m3u8_list = get_content(url, headers=headers).split('\n')
     urls = []
     for line in m3u8_list:
         line = line.strip()
@@ -174,7 +171,8 @@ def general_m3u8_extractor(url):
             if line.startswith('http'):
                 urls.append(line)
             else:
-                urls.append(base_url + line)
+                seg_url = parse.urljoin(url, line)
+                urls.append(seg_url)
     return urls
 
 def maybe_print(*s):
