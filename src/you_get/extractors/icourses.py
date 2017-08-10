@@ -259,7 +259,12 @@ class ICousesExactor(object):
     @classmethod
     def get_date_str(self):
         fmt_str = '%-m-%-d/%-H:%-M:%-S'
-        return datetime.datetime.now().strftime(fmt_str)
+        now = datetime.datetime.now()
+        try:
+            date_str =  now.strftime(fmt_str)
+        except ValueError:  # msvcrt
+            date_str = '{}-{}/{}:{}:{}'.format(now.month, now.day, now.hour, now.minute, now.second)
+        return date_str
 
     def generate_url(self, received):
         media_host = self.get_media_host(self.api_data['host'])
