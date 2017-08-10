@@ -1046,12 +1046,9 @@ def print_more_compatible(*args, **kwargs):
     return ret
 
 
-
 def download_main(download, download_playlist, urls, playlist, **kwargs):
     for url in urls:
-        if url.startswith('https://'):
-            url = url[8:]
-        if not url.startswith('http://'):
+        if re.match(r'https?://', url) is None:
             url = 'http://' + url
 
         if playlist:
@@ -1315,7 +1312,7 @@ def url_to_module(url):
         video_host = r1(r'https?://([^/]+)/', url)
         video_url = r1(r'https?://[^/]+(.*)', url)
         assert video_host and video_url
-    except:
+    except AssertionError:
         url = google_search(url)
         video_host = r1(r'https?://([^/]+)/', url)
         video_url = r1(r'https?://[^/]+(.*)', url)
@@ -1330,7 +1327,10 @@ def url_to_module(url):
         return import_module('.'.join(['you_get', 'extractors', SITES[k]])), url
     else:
         import http.client
-        conn = http.client.HTTPConnection(video_host)
+        if url.startswith('https://'):
+            conn = http.client.HTTPSConnection(video_host)
+        else:
+            conn = http.client.HTTPConnection(video_host)
         conn.request("HEAD", video_url, headers=fake_headers)
         res = conn.getresponse()
         location = res.getheader('location')
