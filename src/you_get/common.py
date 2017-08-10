@@ -1327,6 +1327,7 @@ def url_to_module(url):
         return import_module('.'.join(['you_get', 'extractors', SITES[k]])), url
     else:
         import http.client
+        video_host = r1(r'https?://([^/]+)/', url) # .cn could be removed
         if url.startswith('https://'):
             conn = http.client.HTTPSConnection(video_host)
         else:
