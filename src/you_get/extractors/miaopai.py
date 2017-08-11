@@ -24,8 +24,8 @@ def miaopai_download_by_fid(fid, output_dir = '.', merge = False, info_only = Fa
     if not title:
         title = fid
     title = title.replace('\n', '_')
-    type_, ext, size = url_info(url)
-    print_info(site_info, title, 'mp4', size)
+    ext, size = 'mp4', url_info(url)[2]
+    print_info(site_info, title, ext, size)
     if not info_only:
         download_urls([url], title, ext, total_size=None, output_dir=output_dir, merge=merge)
 
