@@ -209,26 +209,24 @@ class Bilibili(VideoExtractor):
         bangumi_payment = bangumi_data.get('payment')
         if bangumi_payment and bangumi_payment['price'] != '0':
             log.w("It's a paid item")
-        ep_ids = collect_bangumi_epids(bangumi_data)
+        # ep_ids = collect_bangumi_epids(bangumi_data)
 
         frag = urllib.parse.urlparse(self.url).fragment
         if frag:
             episode_id = frag
         else:
             episode_id = re.search(r'first_ep_id\s*=\s*"(\d+)"', self.page)
-        cont = post_content('http://bangumi.bilibili.com/web_api/get_source', post_data=dict(episode_id=episode_id))
-        cid = json.loads(cont)['result']['cid']
+        # cont = post_content('http://bangumi.bilibili.com/web_api/get_source', post_data=dict(episode_id=episode_id))
+        # cid = json.loads(cont)['result']['cid']
         cont = get_content('http://bangumi.bilibili.com/web_api/episode/{}.json'.format(episode_id))
         ep_info = json.loads(cont)['result']['currentEpisode']
 
-        long_title = ep_info['longTitle']
-        aid = ep_info['avId']
+        index_title = ep_info['indexTitle']
+        long_title = ep_info['longTitle'].strip()
+        cid = ep_info['danmaku']
 
-        idx = 0
-        while ep_ids[idx] != episode_id:
-            idx += 1
-
-        self.title = '{} [{} {}]'.format(self.title, idx+1, long_title)
+        self.title = '{} [{} {}]'.format(self.title, index_title, long_title)
+        print(self.title)
         self.download_by_vid(cid, bangumi=True, **kwargs)
 
 
@@ -265,12 +263,8 @@ def fetch_sid(cid, aid):
     raise
 
 def collect_bangumi_epids(json_data):
-    eps = json_data['result']['episodes']
-    eps = sorted(eps, key=lambda item: float(item['index'].split('-')[0].split('+')[0]))
-    result = []
-    for ep in eps:
-        result.append(ep['episode_id'])
-    return result
+    eps = json_data['episodes'][::-1]
+    return [ep['episode_id'] for ep in eps]
 
 def get_bangumi_info(bangumi_id):
     BASE_URL = 'http://bangumi.bilibili.com/jsonp/seasoninfo/'
@@ -280,7 +274,7 @@ def get_bangumi_info(bangumi_id):
     season_data = season_data[len('seasonListCallback('):]
     season_data = season_data[: -1 * len(');')]
     json_data = json.loads(season_data)
-    return json_data
+    return json_data['result']
 
 def get_danmuku_xml(cid):
     return get_content('http://comment.bilibili.com/{}.xml'.format(cid))
