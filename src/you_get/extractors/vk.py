@@ -57,7 +57,7 @@ def vk_download(url, output_dir='.', stream_type=None, merge=True, info_only=Fal
     elif re.match(r'(.+)vk\.com\/photo(.+)', url):
         link, title, ext, size = get_image_info(url)
     elif re.search(r'vk\.com\/video\d+_\d+', url):
-        get_video_from_user_videolist(url)
+        link, title, ext, size = get_video_from_user_videolist(url)
     else:
         raise NotImplementedError('Nothing to download here')
 
