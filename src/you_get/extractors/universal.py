@@ -12,9 +12,11 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         content_type = get_head(url, headers=fake_headers, get_method='GET')['Content-Type']
     if content_type.startswith('text/html'):
         try:
-            embed_download(url, output_dir, merge=merge, info_only=info_only)
-        except: pass
-        else: return
+            embed_download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+        except Exception:
+            pass
+        else:
+            return
 
     domains = url.split('/')[2].split('.')
     if len(domains) > 2: domains = domains[1:]
