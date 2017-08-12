@@ -16,10 +16,10 @@ def vimeo_download_by_channel(url, output_dir='.', merge=False, info_only=False,
     """str->None"""
     # https://vimeo.com/channels/464686
     channel_id = match1(url, r'http://vimeo.com/channels/(\w+)')
-    vimeo_download_by_channel_id(channel_id, output_dir, merge, info_only)
+    vimeo_download_by_channel_id(channel_id, output_dir, merge, info_only, **kwargs)
 
 #----------------------------------------------------------------------
-def vimeo_download_by_channel_id(channel_id, output_dir='.', merge=False, info_only=False):
+def vimeo_download_by_channel_id(channel_id, output_dir='.', merge=False, info_only=False, **kwargs):
     """str/int->None"""
     html = get_content('https://api.vimeo.com/channels/{channel_id}/videos?access_token={access_token}'.format(channel_id=channel_id, access_token=access_token))
     data = loads(html)
@@ -31,7 +31,7 @@ def vimeo_download_by_channel_id(channel_id, output_dir='.', merge=False, info_o
 
     for id in id_list:
         try:
-            vimeo_download_by_id(id, None, output_dir, merge, info_only)
+            vimeo_download_by_id(id, None, output_dir, merge, info_only, **kwargs)
         except urllib.error.URLError as e:
             log.w('{} failed with {}'.format(id, e))
 

@@ -82,7 +82,7 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwa
     urls = matchall(content, vimeo_embed_patters)
     for url in urls:
         found = True
-        vimeo_download_by_id(url, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+        vimeo_download_by_id(url, title=title, output_dir=output_dir, merge=merge, info_only=info_only, referer=url)
 
     aids = matchall(content, bilibili_embed_patterns)
     for aid in aids:
