@@ -339,11 +339,14 @@ def get_location(url):
     return response.geturl()
 
 def urlopen_with_retry(*args, **kwargs):
-    for i in range(10):
+    for i in range(2):
         try:
             return request.urlopen(*args, **kwargs)
         except socket.timeout:
             logging.debug('request attempt %s timeout' % str(i + 1))
+# try to tackle youku CDN fails
+        except error.HTTPError as http_error:
+            logging.debug('HTTP Error with code{}'.format(http_error.code))
 
 def get_content(url, headers={}, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
