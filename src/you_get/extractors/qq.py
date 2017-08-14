@@ -86,6 +86,11 @@ def kg_qq_download_by_shareid(shareid, output_dir='.', info_only=False, caption=
 
 def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     """"""
+    if re.match(r'https?://egame.qq.com/live\?anchorid=(\d+)', url):
+        from . import qq_egame
+        qq_egame.qq_egame_download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+        return
+
     if 'kg.qq.com' in url or 'kg2.qq.com' in url:
         shareid = url.split('?s=')[-1]
         caption = kwargs['caption']
