@@ -10,11 +10,12 @@ from urllib.parse import urlparse
 def zhanqi_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     path = urlparse(url).path[1:]
 
-    if not path.startswith('videos'): #url = "https://www.zhanqi.tv/huashan?param_s=1_0.2.0"
+    if not (path.startswith('videos') or path.startswith('v2/videos')): #url = "https://www.zhanqi.tv/huashan?param_s=1_0.2.0"
         path_list = path.split('/')
         room_id = path_list[1] if path_list[0] == 'topic' else path_list[0]
         zhanqi_live(room_id, merge=merge, output_dir=output_dir, info_only=info_only, **kwargs)
     else: #url = 'https://www.zhanqi.tv/videos/Lyingman/2017/01/182308.html'
+        # https://www.zhanqi.tv/v2/videos/215593.html
         video_id = path.split('.')[0].split('/')[-1]
         zhanqi_video(video_id, merge=merge, output_dir=output_dir, info_only=info_only, **kwargs)
 
