@@ -98,6 +98,8 @@ class Youku(VideoExtractor):
         # at least a little more recoverable from HTTP 403
         if cls.dispatcher_url in url:
             return url
+        elif 'k.youku.com' in url:
+            return url
         else:
             url_seg_list = list(urllib.parse.urlsplit(url))
             url_seg_list[1] = cls.dispatcher_url
