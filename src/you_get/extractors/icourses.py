@@ -42,7 +42,7 @@ def icourses_download(url, output_dir='.', **kwargs):
         real_url = icourses_parser.update_url(0)
         headers = fake_headers.copy()
         headers['Referer'] = url
-        download_urls_icourses(real_url, title, 'flv',total_size=size, output_dir=output_dir, max_size=15000000, dyn_callback=icourses_parser.update_url)
+        download_urls_icourses(real_url, title, 'flv',total_size=size, output_dir=output_dir, max_size=15728640, dyn_callback=icourses_parser.update_url)
     return
 
 
@@ -245,7 +245,7 @@ class ICousesExactor(object):
 
     def update_url(self, received):
         args = self.common_args.copy()
-        play_type = 'empty' if received else 'play'
+        play_type = 'seek' if received else 'play'
         received = received if received else -1
         args['ls'] = play_type
         args['start'] = received + 1
