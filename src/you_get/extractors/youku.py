@@ -39,6 +39,7 @@ def fetch_cna():
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
     mobile_ua = 'Mozilla/5.0 (iPad; CPU OS 10_1_1 like Mac OS X) AppleWebKit/602.2.14 (KHTML, like Gecko) Mobile/14B100'
+    dispatcher_url = 'vali.cp31.ott.cibntv.net'
 
     # Last updated: 2015-11-24
     stream_types = [
@@ -88,6 +89,19 @@ class Youku(VideoExtractor):
         if 'videos' in self.api_data:
             if 'list' in self.api_data['videos']:
                 self.video_list = self.api_data['videos']['list']
+
+    @classmethod
+    def change_cdn(cls, url):
+        # if the cnd_url starts with an ip addr, it should be youku's old CDN
+        # which rejects http requests randomly with status code > 400
+        # change it to the dispatcher of aliCDN can do better
+        # at least a little more recoverable from HTTP 403
+        if cls.dispatcher_url in url:
+            return url
+        else:
+            url_seg_list = list(urllib.parse.urlsplit(url))
+            url_seg_list[1] = cls.dispatcher_url
+            return urllib.parse.urlunsplit(url_seg_list)
 
     def get_vid_from_url(self):
         # It's unreliable. check #1633
@@ -179,7 +193,7 @@ class Youku(VideoExtractor):
                     src = []
                     for seg in stream['segs']:
                         if seg.get('cdn_url'):
-                            src.append(seg['cdn_url'])
+                            src.append(self.__class__.change_cdn(seg['cdn_url']))
                         else:
                             is_preview = True
                     self.streams[stream_id]['src'] = src
@@ -191,7 +205,7 @@ class Youku(VideoExtractor):
                     src = []
                     for seg in stream['segs']:
                         if seg.get('cdn_url'):
-                            src.append(seg['cdn_url'])
+                            src.append(self.__class__.change_cdn(seg['cdn_url']))
                         else:
                             is_preview = True
                     self.streams[stream_id]['src'].extend(src)
