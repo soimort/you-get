@@ -17,6 +17,7 @@ from .douban import *
 from .douyutv import *
 from .ehow import *
 from .facebook import *
+from .fantasy import *
 from .fc2video import *
 from .flickr import *
 from .freesound import *

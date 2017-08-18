@@ -19,6 +19,7 @@ SITES = {
     'douyu'            : 'douyutv',
     'ehow'             : 'ehow',
     'facebook'         : 'facebook',
+    'fantasy'          : 'fantasy',
     'fc2'              : 'fc2video',
     'flickr'           : 'flickr',
     'freesound'        : 'freesound',
