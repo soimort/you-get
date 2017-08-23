@@ -38,7 +38,7 @@ def fetch_cna():
 
 class Youku(VideoExtractor):
     name = "优酷 (Youku)"
-    mobile_ua = 'Mozilla/5.0 (iPad; CPU OS 10_1_1 like Mac OS X) AppleWebKit/602.2.14 (KHTML, like Gecko) Mobile/14B100'
+    mobile_ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36'
     dispatcher_url = 'vali.cp31.ott.cibntv.net'
 
     # Last updated: 2015-11-24
