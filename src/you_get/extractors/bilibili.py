@@ -51,14 +51,15 @@ class Bilibili(VideoExtractor):
             return 'mp4', 'mp4'
         raise Exception('Unknown stream type')
 
-    def api_req(self, cid, quality, bangumi):
+    def api_req(self, cid, quality, bangumi, bangumi_movie=False, **kwargs):
         ts = str(int(time.time()))
         if not bangumi:
             params_str = 'cid={}&player=1&quality={}&ts={}'.format(cid, quality, ts)
             chksum = hashlib.md5(bytes(params_str+self.SEC1, 'utf8')).hexdigest()
             api_url = self.api_url + params_str + '&sign=' + chksum
         else:
-            params_str = 'cid={}&module=bangumi&player=1&quality={}&ts={}'.format(cid, quality, ts)
+            mod = 'movie' if bangumi_movie else 'bangumi'
+            params_str = 'cid={}&module={}&player=1&quality={}&ts={}'.format(cid, mod, quality, ts)
             chksum = hashlib.md5(bytes(params_str+self.SEC2, 'utf8')).hexdigest()
             api_url = self.bangumi_api_url + params_str + '&sign=' + chksum
 
@@ -94,12 +95,12 @@ class Bilibili(VideoExtractor):
         if not info_only or stream_id:
 # won't be None
             qlt = self.fmt2qlt.get(quality)
-            api_xml = self.api_req(cid, qlt, bangumi)
+            api_xml = self.api_req(cid, qlt, bangumi, **kwargs)
             self.parse_bili_xml(api_xml)
             self.danmuku = get_danmuku_xml(cid)
         else:
             for qlt in range(4, 0, -1):
-                api_xml = self.api_req(cid, qlt, bangumi)
+                api_xml = self.api_req(cid, qlt, bangumi, **kwargs)
                 self.parse_bili_xml(api_xml)
 
     def prepare(self, **kwargs):
@@ -137,9 +138,9 @@ class Bilibili(VideoExtractor):
         patt = r"var\s*aid\s*=\s*'(\d+)'"
         aid = re.search(patt, self.page).group(1)
         page_list = json.loads(get_content('http://www.bilibili.com/widget/getPageList?aid={}'.format(aid)))
+# better ideas for bangumi_movie titles?
         self.title = page_list[0]['pagename']
-# False for is_bangumi, old interface works for all free items
-        self.download_by_vid(page_list[0]['cid'], False, **kwargs)
+        self.download_by_vid(page_list[0]['cid'], True, bangumi_movie=True, **kwargs)
 
     def entry(self, **kwargs):
 # tencent player
