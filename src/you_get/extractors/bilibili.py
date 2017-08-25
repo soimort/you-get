@@ -41,11 +41,11 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_stream_type(urls):
         url = urls[0]
-        if 'hd.flv?' in url:
+        if 'hd.flv?' in url or '-112.flv' in url:
             return 'hdflv', 'flv'
         if '.flv?' in url:
             return 'flv', 'flv'
-        if 'hd.mp4?' in url:
+        if 'hd.mp4?' in url or '-48.mp4' in url:
             return 'hdmp4', 'mp4'
         if '.mp4?' in url:
             return 'mp4', 'mp4'
@@ -226,7 +226,6 @@ class Bilibili(VideoExtractor):
         cid = ep_info['danmaku']
 
         self.title = '{} [{} {}]'.format(self.title, index_title, long_title)
-        print(self.title)
         self.download_by_vid(cid, bangumi=True, **kwargs)
 
 
