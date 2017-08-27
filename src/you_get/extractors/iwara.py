@@ -28,7 +28,8 @@ def iwara_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     down_urls=data[0]['uri']
     print_info(down_urls,title+data[0]['resolution'],type,size)
 
-    download_urls([down_urls], title, ext, size, output_dir, merge = merge,headers=headers)
+    if not info_only:
+        download_urls([down_urls], title, ext, size, output_dir, merge = merge,headers=headers)
 
 site_info = "iwara"
 download = iwara_download
