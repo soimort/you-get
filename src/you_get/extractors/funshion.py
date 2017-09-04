@@ -1,150 +1,223 @@
 #!/usr/bin/env python
 
+import json
+import urllib.parse
+import base64
+import binascii
+import re
+
+from ..extractors import VideoExtractor
+from ..util import log
+from ..common import get_content, playlist_not_supported
+
 __all__ = ['funshion_download']
 
-from ..common import *
-import urllib.error
-import json
 
-#----------------------------------------------------------------------
-def funshion_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
-    """"""
-    if re.match(r'http://www.fun.tv/vplay/v-(\w+)', url):  #single video
-        funshion_download_by_url(url, output_dir=output_dir, merge=merge, info_only=info_only)
-    elif re.match(r'http://www.fun.tv/vplay/.*g-(\w+)', url):  #whole drama
-        funshion_download_by_drama_url(url, output_dir=output_dir, merge=merge, info_only=info_only)
-    else:
-        return
+class KBaseMapping:
+    def __init__(self, base=62):
+        self.base = base
+        mapping_table = [str(num) for num in range(10)]
+        for i in range(26):
+            mapping_table.append(chr(i + ord('a')))
+        for i in range(26):
+            mapping_table.append(chr(i + ord('A')))
 
-# Logics for single video until drama
-#----------------------------------------------------------------------
-def funshion_download_by_url(url, output_dir = '.', merge = False, info_only = False):
-    """lots of stuff->None
-    Main wrapper for single video download.
-    """
+        self.mapping_table = mapping_table[:self.base]
+
+    def mapping(self, num):
+        res = []
+        while num > 0:
+            res.append(self.mapping_table[num % self.base])
+            num = num // self.base
+        return ''.join(res[::-1])
+
+
+class Funshion(VideoExtractor):
+    name = "funshion"
+    stream_types = [
+        {'id': 'sdvd'},
+        {'id': 'sdvd_h265'},
+        {'id': 'hd'},
+        {'id': 'hd_h265'},
+        {'id': 'dvd'},
+        {'id': 'dvd_h265'},
+        {'id': 'tv'},
+        {'id': 'tv_h265'}
+    ]
+    a_mobile_url = 'http://m.fun.tv/implay/?mid=302555'
+    video_ep = 'http://pv.funshion.com/v7/video/play/?id={}&cl=mweb&uc=111'
+    media_ep = 'http://pm.funshion.com/v7/media/play/?id={}&cl=mweb&uc=111'
+    coeff = None
+
+    @classmethod
+    def fetch_magic(cls, url):
+        def search_dict(a_dict, target):
+            for key, val in a_dict.items():
+                if val == target:
+                    return key
+
+        magic_list = []
+
+        page = get_content(url)
+        src = re.findall(r'src="(.+?)"', page)
+        js = [path for path in src if path.endswith('.js')]
+
+        host = 'http://' + urllib.parse.urlparse(url).netloc
+        js_path = [urllib.parse.urljoin(host, rel_path) for rel_path in js]
+
+        for p in js_path:
+            if 'mtool' in p or 'mcore' in p:
+                js_text = get_content(p)
+                hit = re.search(r'\(\'(.+?)\',(\d+),(\d+),\'(.+?)\'\.split\(\'\|\'\),\d+,\{\}\)', js_text)
+
+                code = hit.group(1)
+                base = hit.group(2)
+                size = hit.group(3)
+                names = hit.group(4).split('|')
+
+                mapping = KBaseMapping(base=int(base))
+                sym_to_name = {}
+                for no in range(int(size), 0, -1):
+                    no_in_base = mapping.mapping(no)
+                    val = names[no] if no < len(names) and names[no] else no_in_base
+                    sym_to_name[no_in_base] = val
+
+                moz_ec_name = search_dict(sym_to_name, 'mozEcName')
+                push = search_dict(sym_to_name, 'push')
+                patt = '{}\.{}\("(.+?)"\)'.format(moz_ec_name, push)
+                ec_list = re.findall(patt, code)
+                [magic_list.append(sym_to_name[ec]) for ec in ec_list]
+        return magic_list
+
+    @classmethod
+    def get_coeff(cls, magic_list):
+        magic_set = set(magic_list)
+        no_dup = []
+        for item in magic_list:
+            if item in magic_set:
+                magic_set.remove(item)
+                no_dup.append(item)
+        # really necessary?
+
+        coeff = [0, 0, 0, 0]
+        for num_pair in no_dup:
+            idx = int(num_pair[-1])
+            val = int(num_pair[:-1], 16)
+            coeff[idx] = val
+
+        return coeff
+
+    @classmethod
+    def funshion_decrypt(cls, a_bytes, coeff):
+        res_list = []
+        pos = 0
+        while pos < len(a_bytes):
+            a = a_bytes[pos]
+            if pos == len(a_bytes) - 1:
+                res_list.append(a)
+                pos += 1
+            else:
+                b = a_bytes[pos + 1]
+                m = a * coeff[0] + b * coeff[2]
+                n = a * coeff[1] + b * coeff[3]
+                res_list.append(m & 0xff)
+                res_list.append(n & 0xff)
+                pos += 2
+        return bytes(res_list).decode('utf8')
+
+    @classmethod
+    def funshion_decrypt_str(cls, a_str, coeff):
+        # r'.{27}0' pattern, untested
+        if len(a_str) == 28 and a_str[-1] == '0':
+            data_bytes = base64.b64decode(a_str[:27] + '=')
+            clear = cls.funshion_decrypt(data_bytes, coeff)
+            return binascii.hexlify(clear.encode('utf8')).upper()
+
+        data_bytes = base64.b64decode(a_str[2:])
+        return cls.funshion_decrypt(data_bytes, coeff)
+
+    @classmethod
+    def checksum(cls, sha1_str):
+        if len(sha1_str) != 41:
+            return False
+        if not re.match(r'[0-9A-Za-z]{41}', sha1_str):
+            return False
+        sha1 = sha1_str[:-1]
+        if (15 & sum([int(char, 16) for char in sha1])) == int(sha1_str[-1], 16):
+            return True
+        return False
+
+    @classmethod
+    def get_cdninfo(cls, hashid):
+        url = 'http://jobsfe.funshion.com/query/v1/mp4/{}.json'.format(hashid)
+        meta = json.loads(get_content(url, decoded=False).decode('utf8'))
+        return meta['playlist'][0]['urls']
+
+    @classmethod
+    def dec_playinfo(cls, info, coeff):
+        res = None
+        clear = cls.funshion_decrypt_str(info['infohash'], coeff)
+        if cls.checksum(clear):
+            res = dict(hashid=clear[:40], token=cls.funshion_decrypt_str(info['token'], coeff))
+        else:
+            clear = cls.funshion_decrypt_str(info['infohash_prev'], coeff)
+            if cls.checksum(clear):
+                res = dict(hashid=clear[:40], token=cls.funshion_decrypt_str(info['token_prev'], coeff))
+        return res
+
+    def prepare(self, **kwargs):
+        if self.__class__.coeff is None:
+            magic_list = self.__class__.fetch_magic(self.__class__.a_mobile_url)
+            self.__class__.coeff = self.__class__.get_coeff(magic_list)
+
+        if 'title' not in kwargs:
+            url = 'http://pv.funshion.com/v5/video/profile/?id={}&cl=mweb&uc=111'.format(self.vid)
+            meta = json.loads(get_content(url))
+            self.title = meta['name']
+        else:
+            self.title = kwargs['title']
+
+        ep_url = self.__class__.video_ep if 'single_video' in kwargs else self.__class__.media_ep
+
+        url = ep_url.format(self.vid)
+        meta = json.loads(get_content(url))
+        streams = meta['playlist']
+        for stream in streams:
+            definition = stream['code']
+            for s in stream['playinfo']:
+                codec = 'h' + s['codec'][2:]
+                # h.264 -> h264
+                for st in self.__class__.stream_types:
+                    s_id = '{}_{}'.format(definition, codec)
+                    if codec == 'h264':
+                        s_id = definition
+                    if s_id == st['id']:
+                        clear_info = self.__class__.dec_playinfo(s, self.__class__.coeff)
+                        cdn_list = self.__class__.get_cdninfo(clear_info['hashid'])
+                        base_url = cdn_list[0]
+                        vf = urllib.parse.quote(s['vf'])
+                        video_size = int(s['filesize'])
+                        token = urllib.parse.quote(base64.b64encode(clear_info['token'].encode('utf8')))
+                        video_url = '{}?token={}&vf={}'.format(base_url, token, vf)
+                        self.streams[s_id] = dict(size=video_size, src=[video_url], container='mp4')
+
+
+def funshion_download(url, **kwargs):
     if re.match(r'http://www.fun.tv/vplay/v-(\w+)', url):
-        match = re.search(r'http://www.fun.tv/vplay/v-(\d+)(.?)', url)
-    vid = match.group(1)
-    funshion_download_by_vid(vid, output_dir=output_dir, merge=merge, info_only=info_only)
+        vid = re.search(r'http://www.fun.tv/vplay/v-(\w+)', url).group(1)
+        Funshion().download_by_vid(vid, single_video=True, **kwargs)
+    elif re.match(r'http://www.fun.tv/vplay/.*g-(\w+)', url):
+        epid = re.search(r'http://www.fun.tv/vplay/.*g-(\w+)', url).group(1)
+        url = 'http://pm.funshion.com/v5/media/episode?id={}&cl=mweb&uc=111'.format(epid)
+        meta = json.loads(get_content(url))
+        drama_name = meta['name']
 
-#----------------------------------------------------------------------
-def funshion_download_by_vid(vid, output_dir = '.', merge = False, info_only = False):
-    """vid->None
-    Secondary wrapper for single video download.
-    """
-    title = funshion_get_title_by_vid(vid)
-    url_list = funshion_vid_to_urls(vid)
-
-    for url in url_list:
-        type, ext, size = url_info(url)
-        print_info(site_info, title, type, size)
-
-    if not info_only:
-        download_urls(url_list, title, ext, total_size=None, output_dir=output_dir, merge=merge)
-
-#----------------------------------------------------------------------
-def funshion_get_title_by_vid(vid):
-    """vid->str
-    Single video vid to title."""
-    html = get_content('http://pv.funshion.com/v5/video/profile?id={vid}&cl=aphone&uc=5'.format(vid = vid))
-    c = json.loads(html)
-    return c['name']
-
-#----------------------------------------------------------------------
-def funshion_vid_to_urls(vid):
-    """str->str
-    Select one resolution for single video download."""
-    html = get_content('http://pv.funshion.com/v5/video/play/?id={vid}&cl=aphone&uc=5'.format(vid = vid))
-    return select_url_from_video_api(html)
-
-#Logics for drama until helper functions
-#----------------------------------------------------------------------
-def funshion_download_by_drama_url(url, output_dir = '.', merge = False, info_only = False):
-    """str->None
-    url = 'http://www.fun.tv/vplay/g-95785/'
-    """
-    id = r1(r'http://www.fun.tv/vplay/.*g-(\d+)', url)
-    video_list = funshion_drama_id_to_vid(id)
-
-    for video in video_list:
-        funshion_download_by_id((video[0], id), output_dir=output_dir, merge=merge, info_only=info_only)
-        # id is for drama, vid not the same as the ones used in single video
-
-#----------------------------------------------------------------------
-def funshion_download_by_id(vid_id_tuple, output_dir = '.', merge = False, info_only = False):
-    """single_episode_id, drama_id->None
-    Secondary wrapper for single drama video download.
-    """
-    (vid, id) = vid_id_tuple
-    title = funshion_get_title_by_id(vid, id)
-    url_list = funshion_id_to_urls(vid)
-
-    for url in url_list:
-        type, ext, size = url_info(url)
-        print_info(site_info, title, type, size)
-
-    if not info_only:
-        download_urls(url_list, title, ext, total_size=None, output_dir=output_dir, merge=merge)
-
-#----------------------------------------------------------------------
-def funshion_drama_id_to_vid(episode_id):
-    """int->[(int,int),...]
-    id: 95785
-    ->[('626464', '1'), ('626466', '2'), ('626468', '3'),...
-    Drama ID to vids used in drama.
-
-    **THIS VID IS NOT THE SAME WITH THE ONES USED IN SINGLE VIDEO!!**
-    """
-    html = get_content('http://pm.funshion.com/v5/media/episode?id={episode_id}&cl=aphone&uc=5'.format(episode_id = episode_id))
-    c = json.loads(html)
-    #{'definition': [{'name': '流畅', 'code': 'tv'}, {'name': '标清', 'code': 'dvd'}, {'name': '高清', 'code': 'hd'}], 'retmsg': 'ok', 'total': '32', 'sort': '1', 'prevues': [], 'retcode': '200', 'cid': '2', 'template': 'grid', 'episodes': [{'num': '1', 'id': '624728', 'still': None, 'name': '第1集', 'duration': '45:55'}, ], 'name': '太行山上', 'share': 'http://pm.funshion.com/v5/media/share?id=201554&num=', 'media': '201554'}
-    return [(i['id'], i['num']) for i in c['episodes']]
-
-#----------------------------------------------------------------------
-def funshion_id_to_urls(id):
-    """int->list of URL
-    Select video URL for single drama video.
-    """
-    html = get_content('http://pm.funshion.com/v5/media/play/?id={id}&cl=aphone&uc=5'.format(id = id))
-    return select_url_from_video_api(html)
-
-#----------------------------------------------------------------------
-def funshion_get_title_by_id(single_episode_id, drama_id):
-    """single_episode_id, drama_id->str
-    This is for full drama.
-    Get title for single drama video."""
-    html = get_content('http://pm.funshion.com/v5/media/episode?id={id}&cl=aphone&uc=5'.format(id = drama_id))
-    c = json.loads(html)
-
-    for i in c['episodes']:
-        if i['id'] == str(single_episode_id):
-            return c['name'] + ' - ' + i['name']
-
-# Helper functions.
-#----------------------------------------------------------------------
-def select_url_from_video_api(html):
-    """str(html)->str(url)
-
-    Choose the best one.
-
-    Used in both single and drama download.
-
-    code definition:
-    {'tv': 'liuchang',
-    'dvd': 'biaoqing',
-    'hd': 'gaoqing',
-    'sdvd': 'chaoqing'}"""
-    c = json.loads(html)
-    #{'retmsg': 'ok', 'retcode': '200', 'selected': 'tv', 'mp4': [{'filename': '', 'http': 'http://jobsfe.funshion.com/query/v1/mp4/7FCD71C58EBD4336DF99787A63045A8F3016EC51.json', 'filesize': '96748671', 'code': 'tv', 'name': '流畅', 'infohash': '7FCD71C58EBD4336DF99787A63045A8F3016EC51'}...], 'episode': '626464'}
-    video_dic = {}
-    for i in c['mp4']:
-        video_dic[i['code']] = i['http']
-    quality_preference_list = ['sdvd', 'hd', 'dvd', 'sd']
-    url = [video_dic[quality] for quality in quality_preference_list if quality in video_dic][0]
-    html = get_html(url)
-    c = json.loads(html)
-    #'{"return":"succ","client":{"ip":"107.191.**.**","sp":"0","loc":"0"},"playlist":[{"bits":"1638400","tname":"dvd","size":"555811243","urls":["http:\\/\\/61.155.217.4:80\\/play\\/1E070CE31DAA1373B667FD23AA5397C192CA6F7F.mp4",...]}]}'
-    return [i['urls'][0] for i in c['playlist']]
+        extractor = Funshion()
+        for ep in meta['episodes']:
+            title = '{}_{}_{}'.format(drama_name, ep['num'], ep['name'])
+            extractor.download_by_vid(ep['id'], title=title, **kwargs)
+    else:
+        log.wtf('Unknown url pattern')
 
 site_info = "funshion"
 download = funshion_download
