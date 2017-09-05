@@ -15,6 +15,7 @@ from .vimeo import vimeo_download_by_id
 from .yinyuetai import yinyuetai_download_by_id
 from .youku import youku_download_by_vid
 from . import iqiyi
+from . import bokecc
 
 """
 refer to http://open.youku.com/tools
@@ -57,6 +58,8 @@ http://open.iqiyi.com/lib/player.html
 '''
 iqiyi_patterns = [r'(?:\"|\')(https?://dispatcher\.video\.qiyi\.com\/disp\/shareplayer\.swf\?.+?)(?:\"|\')',
                   r'(?:\"|\')(https?://open\.iqiyi\.com\/developer\/player_js\/coopPlayerIndex\.html\?.+?)(?:\"|\')']
+
+bokecc_patterns = [r'bokecc\.com/flash/pocle/player\.swf\?siteid=(.+?)&vid=(.{32})']
 
 recur_limit = 3
 
@@ -106,6 +109,11 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwa
     for url in iqiyi_urls:
         found = True
         iqiyi.download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+
+    bokecc_metas = matchall(content, bokecc_patterns)
+    for meta in bokecc_metas:
+        found = True
+        bokecc.bokecc_download_by_id(meta[1], output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
 
     if found:
         return True
