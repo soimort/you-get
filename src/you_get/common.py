@@ -62,6 +62,7 @@ SITES = {
     'pinterest'        : 'pinterest',
     'pixnet'           : 'pixnet',
     'pptv'             : 'pptv',
+    'qingting'         : 'qingting',
     'qq'               : 'qq',
     'quanmin'          : 'quanmin',
     'showroom-live'    : 'showroom',

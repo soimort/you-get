@@ -56,6 +56,7 @@ from .pinterest import *
 from .pixnet import *
 from .pptv import *
 from .qie import *
+from .qingting import *
 from .qq import *
 from .showroom import *
 from .sina import *
