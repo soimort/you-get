@@ -148,6 +148,7 @@ class Youku(VideoExtractor):
             self.password = kwargs['password']
 
         self.utid = fetch_cna()
+        time.sleep(3)
         self.youku_ups()
 
         if self.api_data.get('stream') is None:
