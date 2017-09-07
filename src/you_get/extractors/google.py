@@ -99,20 +99,34 @@ def google_download(url, output_dir = '.', merge = True, info_only = False, **kw
 
     elif service in ['docs', 'drive'] : # Google Docs
 
-        html = get_html(url, faker=True)
+        html = get_content(url, headers=fake_headers)
 
         title = r1(r'"title":"([^"]*)"', html) or r1(r'<meta itemprop="name" content="([^"]*)"', html)
         if len(title.split('.')) > 1:
             title = ".".join(title.split('.')[:-1])
 
-        docid = r1(r'"docid":"([^"]*)"', html)
+        docid = r1('/file/d/([^/]+)', url)
 
         request.install_opener(request.build_opener(request.HTTPCookieProcessor()))
 
-        request.urlopen(request.Request("https://docs.google.com/uc?id=%s&export=download" % docid))
-        real_url ="https://docs.google.com/uc?export=download&confirm=no_antivirus&id=%s" % docid
-
-        type, ext, size = url_info(real_url)
+        real_url = "https://docs.google.com/uc?export=download&confirm=no_antivirus&id=%s" % docid
+        redirected_url = get_location(real_url)
+        if real_url != redirected_url:
+# tiny file - get real url here
+            type, ext, size = url_info(redirected_url)
+            real_url = redirected_url
+        else:
+# huge file - the real_url is a confirm page and real url is in it
+            confirm_page = get_content(real_url)
+            hrefs = re.findall(r'href="(.+?)"', confirm_page)
+            for u in hrefs:
+                if u.startswith('/uc?export=download'):
+                    rel = unescape_html(u)
+            confirm_url = 'https://docs.google.com' + rel
+            real_url = get_location(confirm_url)
+            _, ext, size = url_info(real_url, headers=fake_headers)
+            if size is None:
+                size = 0
 
         print_info(site_info, title, ext, size)
         if not info_only:
