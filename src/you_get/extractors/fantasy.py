@@ -24,11 +24,13 @@ def fantasy_download_by_id_channelId(id = 0, channelId = 0, output_dir = '.', me
     title = html['data']['tv']['title']
 
     video_url = html['data']['tv']['videoPath']
-    type, ext, size = url_info(video_url)
+    headers = fake_headers.copy()
+    headers['Referer'] = api_url
+    type, ext, size = url_info(video_url, headers=headers)
 
     print_info(site_info, title, type, size)
     if not info_only:
-        download_urls([video_url], title, ext, size, output_dir, merge = merge, headers = fake_headers)
+        download_urls([video_url], title, ext, size, output_dir, merge = merge, headers = headers)
 
 
 def fantasy_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
