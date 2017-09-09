@@ -104,9 +104,12 @@ def baidu_download_album(aid, output_dir='.', merge=True, info_only=False):
 
 def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=False, **kwargs):
 
-    if re.match(r'http://pan.baidu.com', url):
+    if re.match(r'https?://pan.baidu.com', url):
         real_url, title, ext, size = baidu_pan_download(url)
+        print_info('BaiduPan', title, ext, size)
         if not info_only:
+            print('Hold on...')
+            time.sleep(5)
             download_urls([real_url], title, ext, size,
                           output_dir, url, merge=merge, faker=True)
     elif re.match(r'http://music.baidu.com/album/\d+', url):
@@ -209,9 +212,6 @@ def baidu_pan_download(url):
     title_wrapped = json.loads('{"wrapper":"%s"}' % title)
     title = title_wrapped['wrapper']
     logging.debug(real_url)
-    print_info(site_info, title, ext, size)
-    print('Hold on...')
-    time.sleep(5)
     return real_url, title, ext, size
 
 
