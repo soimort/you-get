@@ -12,6 +12,7 @@ class QieVideo(VideoExtractor):
     cdn = 'http://qietv-play.wcs.8686c.com/'
     ep = 'http://api.qiecdn.com/api/v1/video/stream/{}'
     stream_types = [
+        {'id':'1080p', 'video_profile':'1920x1080', 'container':'m3u8'},
         {'id':'720p', 'video_profile':'1280x720', 'container':'m3u8'},
         {'id':'480p', 'video_profile':'853x480', 'container':'m3u8'}
     ]
