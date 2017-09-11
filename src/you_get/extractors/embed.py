@@ -95,17 +95,17 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False ,**kwa
     urls = matchall(content, netease_embed_patterns)
     for url in urls:
         found = True
-        netease_download(url, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+        netease_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
 
     urls = matchall(content, vimeo_embed_patters)
     for url in urls:
         found = True
-        vimeo_download_by_id(url, title=title, output_dir=output_dir, merge=merge, info_only=info_only, referer=url)
+        vimeo_download_by_id(url, output_dir=output_dir, merge=merge, info_only=info_only, referer=url)
 
     urls = matchall(content, dailymotion_embed_patterns)
     for url in urls:
         found = True
-        dailymotion_download(url, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+        dailymotion_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
 
     aids = matchall(content, bilibili_embed_patterns)
     for aid in aids:
