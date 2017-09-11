@@ -41,5 +41,7 @@ setup(
 
     classifiers = proj_info['classifiers'],
 
-    entry_points = {'console_scripts': proj_info['console_scripts']}
+    entry_points = {'console_scripts': proj_info['console_scripts']},
+    install_requires = proj_info['install_requires'],
+    setup_requires = proj_info['setup_requires']
 )
