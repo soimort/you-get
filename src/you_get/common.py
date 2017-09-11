@@ -598,13 +598,18 @@ def url_save(url, filepath, bar, refer=None, is_part=False, faker=False, headers
 
         with open(temp_filepath, open_mode) as output:
             while True:
-                buffer = response.read(1024 * 256)
+                buffer = None
+                try:
+                    buffer = response.read(1024 * 256)
+                except socket.timeout:
+                    pass
                 if not buffer:
                     if received == file_size: # Download finished
                         break
-                    else: # Unexpected termination. Retry request
-                        tmp_headers['Range'] = 'bytes=' + str(received) + '-'
-                        response = urlopen_with_retry(request.Request(url, headers=tmp_headers))
+                    # Unexpected termination. Retry request
+                    tmp_headers['Range'] = 'bytes=' + str(received) + '-'
+                    response = urlopen_with_retry(request.Request(url, headers=tmp_headers))
+                    continue
                 output.write(buffer)
                 received += len(buffer)
                 if bar:
