@@ -10,7 +10,7 @@ def rebuilt_url(url):
     aid = path.split('/')[-1].split('_')[0]
     return 'http://www.dailymotion.com/embed/video/{}?autoplay=1'.format(aid)
 
-def dailymotion_download(url, info_only=False, **kwargs):
+def dailymotion_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     """Downloads Dailymotion videos by URL.
     """
 
@@ -32,7 +32,7 @@ def dailymotion_download(url, info_only=False, **kwargs):
 
     print_info(site_info, title, mime, size)
     if not info_only:
-        FUCK_OFF([real_url], title, ext, size, **kwargs)
+        download_urls([real_url], title, ext, size, output_dir=output_dir, merge=merge)
 
 site_info = "Dailymotion.com"
 download = dailymotion_download
