@@ -67,6 +67,13 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         urls += re.findall(r'href="(https?://[^"]+\.png)"', page)
         urls += re.findall(r'href="(https?://[^"]+\.gif)"', page)
 
+        # MPEG-DASH MPD
+        mpd_urls = re.findall(r'src="(https?://[^"]+\.mpd)"', page)
+        for mpd_url in mpd_urls:
+            cont = get_content(mpd_url)
+            base_url = r1(r'<BaseURL>(.*)</BaseURL>', cont)
+            urls += [ r1(r'(.*/)[^/]*', mpd_url) + base_url ]
+
         # have some candy!
         candies = []
         i = 1
