@@ -1265,7 +1265,7 @@ def script_main(download, download_playlist, **kwargs):
         download_main(
             download, download_playlist,
             URLs, args.playlist,
-            stream_id=stream_id, output_dir=args.output_dir, merge=not args.no_merge,
+            output_dir=args.output_dir, merge=not args.no_merge,
             info_only=info_only, json_output=json_output, caption=caption,
             **extra
         )
