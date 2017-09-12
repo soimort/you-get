@@ -1102,7 +1102,7 @@ def load_cookies(cookiefile):
 def set_socks_proxy(proxy):
     try:
         import socks
-        socks_proxy_addrs = socks_proxy.split(':')
+        socks_proxy_addrs = proxy.split(':')
         socks.set_default_proxy(socks.SOCKS5,
                                 socks_proxy_addrs[0],
                                 int(socks_proxy_addrs[1]))
