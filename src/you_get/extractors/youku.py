@@ -236,7 +236,7 @@ def youku_download_playlist_by_url(url, **kwargs):
         else:
             vid_list = [v['encodevid'] for v in youku_obj.video_list]
             for v in vid_list:
-                youku_obj.download_by_vid(v, **kwargs)
+                Youku().download_by_vid(v, **kwargs)
 
     elif re.match('https?://list.youku.com/show/id_', url):
         # http://list.youku.com/show/id_z2ae8ee1c837b11e18195.html
