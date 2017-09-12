@@ -62,6 +62,7 @@ class Youku(VideoExtractor):
 
         self.page = None
         self.video_list = None
+        self.video_next = None
         self.password = None
         self.api_data = None
         self.api_error_code = None
@@ -89,6 +90,8 @@ class Youku(VideoExtractor):
         if 'videos' in self.api_data:
             if 'list' in self.api_data['videos']:
                 self.video_list = self.api_data['videos']['list']
+            if 'next' in self.api_data['videos']:
+                self.video_next = self.api_data['videos']['next']
 
     @classmethod
     def change_cdn(cls, url):
@@ -231,12 +234,24 @@ def youku_download_playlist_by_url(url, **kwargs):
         youku_obj = Youku()
         youku_obj.url = url
         youku_obj.prepare(**kwargs)
+        total_episode = None
+        try:
+            total_episode = youku_obj.api_data['show']['episode_total']
+        except KeyError:
+            log.wtf('Cannot get total_episode for {}'.format(url))
+        next_vid = youku_obj.vid
+        for _ in range(total_episode):
+            this_extractor = Youku()
+            this_extractor.download_by_vid(next_vid, keep_obj=True, **kwargs)
+            next_vid = this_extractor.video_next['encodevid']
+        '''
         if youku_obj.video_list is None:
             log.wtf('Cannot find video list for {}'.format(url))
         else:
             vid_list = [v['encodevid'] for v in youku_obj.video_list]
             for v in vid_list:
                 Youku().download_by_vid(v, **kwargs)
+        '''
 
     elif re.match('https?://list.youku.com/show/id_', url):
         # http://list.youku.com/show/id_z2ae8ee1c837b11e18195.html
