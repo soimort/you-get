@@ -1074,12 +1074,12 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
 def load_cookies(cookiefile):
     global cookies
     try:
-        cookies = cookiejar.MozillaCookieJar(a)
+        cookies = cookiejar.MozillaCookieJar(cookiefile)
         cookies.load()
     except Exception:
         import sqlite3
         cookies = cookiejar.MozillaCookieJar()
-        con = sqlite3.connect(a)
+        con = sqlite3.connect(cookiefile)
         cur = con.cursor()
         try:
             cur.execute("""SELECT host, path, isSecure, expiry, name, value
