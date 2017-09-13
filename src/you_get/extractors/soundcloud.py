@@ -6,7 +6,7 @@ from ..common import *
 import json
 import urllib.error
 
-client_id = 'JlZIsxg2hY5WnBgtn3jfS0UYCl0K8DOg'
+client_id = 'WKcQQdEZw7Oi01KqtHWxeVSxNyRzgT8M'
 
 def soundcloud_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False):
     assert title
@@ -33,13 +33,8 @@ def soundcloud_download(url, output_dir='.', merge=True, info_only=False, **kwar
         real_url = info.get('steram_url')
     if real_url is None:
         raise Exception('Cannot get media URI for {}'.format(url))
-    real_url = '{}?client_id={}'.format(real_url, client_id)
-    try:
-        mime, ext, size = url_info(real_url)
-    except urllib.error.HTTPError as e:
-        if 401 == e.status:
-            real_url = soundcloud_i1_api(info['id'])
-            mime, ext, size = url_info(real_url)
+    real_url = soundcloud_i1_api(info['id'])
+    mime, ext, size = url_info(real_url)
     print_info(site_info, title, mime, size)
     if not info_only:
         download_urls([real_url], title, ext, size, output_dir, merge=merge)
