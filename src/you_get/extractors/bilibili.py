@@ -206,6 +206,10 @@ class Bilibili(VideoExtractor):
 
     def bangumi_entry(self, **kwargs):
         bangumi_id = re.search(r'(\d+)', self.url).group(1)
+        tmp_bangumi_id = re.search(r"varseason_id=\"(\d+)\"",re.sub("\s","",self.page)).group(1)
+        if int(bangumi_id) != int(tmp_bangumi_id):
+            bangumi_id = tmp_bangumi_id
+        
         bangumi_data = get_bangumi_info(bangumi_id)
         bangumi_payment = bangumi_data.get('payment')
         if bangumi_payment and bangumi_payment['price'] != '0':
