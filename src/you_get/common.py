@@ -100,10 +100,12 @@ SITES = {
     'zhanqi'           : 'zhanqi',
 }
 
+import getopt
 import json
 import locale
 import logging
 import os
+import platform
 import re
 import socket
 import sys
@@ -111,7 +113,6 @@ import time
 from urllib import request, parse, error
 from http import cookiejar
 from importlib import import_module
-import argparse
 
 from .version import __version__
 from .util import log, term
@@ -1071,211 +1072,217 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         else:
             download(url, **kwargs)
 
-def load_cookies(cookiefile):
-    global cookies
-    try:
-        cookies = cookiejar.MozillaCookieJar(a)
-        cookies.load()
-    except Exception:
-        import sqlite3
-        cookies = cookiejar.MozillaCookieJar()
-        con = sqlite3.connect(a)
-        cur = con.cursor()
-        try:
-            cur.execute("""SELECT host, path, isSecure, expiry, name, value
-                        FROM moz_cookies""")
-            for item in cur.fetchall():
-                c = cookiejar.Cookie(
-                    0, item[4], item[5], None, False, item[0],
-                    item[0].startswith('.'), item[0].startswith('.'),
-                    item[1], False, item[2], item[3], item[3]=="", None,
-                    None, {},
-                )
-                cookies.set_cookie(c)
-        except Exception:
-            pass
-        # TODO: Chromium Cookies
-        # SELECT host_key, path, secure, expires_utc, name, encrypted_value
-        # FROM cookies
-        # http://n8henrie.com/2013/11/use-chromes-cookies-for-easier-downloading-with-python-requests/
-
-def set_socks_proxy(proxy):
-    try:
-        import socks
-        socks_proxy_addrs = proxy.split(':')
-        socks.set_default_proxy(socks.SOCKS5,
-                                socks_proxy_addrs[0],
-                                int(socks_proxy_addrs[1]))
-        socket.socket = socks.socksocket
-        def getaddrinfo(*args):
-            return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
-        socket.getaddrinfo = getaddrinfo
-    except ImportError:
-        log.w('Error importing PySocks library, socks proxy ignored.'
-            'In order to use use socks proxy, please install PySocks.')
-
-def script_main(download, download_playlist, **kwargs):
-    logging.basicConfig(format='[%(levelname)s] %(message)s')
-
-    def print_version():
+def script_main(script_name, download, download_playlist, **kwargs):
+    def version():
         log.i('version %s, a tiny downloader that scrapes the web.'
-                % get_version(kwargs['repo_path']
+              % get_version(kwargs['repo_path']
             if 'repo_path' in kwargs else __version__))
 
-    parser = argparse.ArgumentParser(
-        prog='you-get',
-        usage='you-get [OPTION]... URL...',
-        description='A tiny downloader that scrapes the web',
-        add_help=False,
-    )
-    parser.add_argument('-V', '--version', action='store_true',
-                        help='Print version and exit')
-    parser.add_argument('-h', '--help', action='store_true',
-                        help='Print this help message and exit')
+    logging.basicConfig(format='[%(levelname)s] %(message)s')
 
-    dry_run_grp = parser.add_argument_group('Dry-run options', '(no actual downloading)')
-    dry_run_grp = dry_run_grp.add_mutually_exclusive_group()
-    dry_run_grp.add_argument('-i', '--info', action='store_true',
-                        help='Print extracted information')
-    dry_run_grp.add_argument('-u', '--url', action='store_true',
-                        help='Print extracted information with URLs')
-    dry_run_grp.add_argument('--json', action='store_true',
-                        help='Print extracted URLs in JSON format')
+    help = 'Usage: %s [OPTION]... [URL]...\n\n' % script_name
+    help += '''Startup options:
+    -V | --version                      Print version and exit.
+    -h | --help                         Print help and exit.
+    \n'''
+    help += '''Dry-run options: (no actual downloading)
+    -i | --info                         Print extracted information.
+    -u | --url                          Print extracted information with URLs.
+         --json                         Print extracted URLs in JSON format.
+    \n'''
+    help += '''Download options:
+    -n | --no-merge                     Do not merge video parts.
+         --no-caption                   Do not download captions.
+                                        (subtitles, lyrics, danmaku, ...)
+    -f | --force                        Force overwriting existed files.
+    -F | --format <STREAM_ID>           Set video format to STREAM_ID.
+    -O | --output-filename <FILE>       Set output filename.
+    -o | --output-dir <PATH>            Set output directory.
+    -p | --player <PLAYER [OPTIONS]>    Stream extracted URL to a PLAYER.
+    -c | --cookies <COOKIES_FILE>       Load cookies.txt or cookies.sqlite.
+    -x | --http-proxy <HOST:PORT>       Use an HTTP proxy for downloading.
+    -y | --extractor-proxy <HOST:PORT>  Use an HTTP proxy for extracting only.
+         --no-proxy                     Never use a proxy.
+    -s | --socks-proxy <HOST:PORT>      Use an SOCKS5 proxy for downloading.
+    -t | --timeout <SECONDS>            Set socket timeout.
+    -d | --debug                        Show traceback and other debug info.
+    -I | --input-file                   Read non-playlist urls from file.
+    -P | --password <PASSWORD>          Set video visit password to PASSWORD.
+    -l | --playlist                     Download a playlist.
+    '''
 
-    download_grp = parser.add_argument_group('Download options')
-    download_grp.add_argument('-n', '--no-merge', action='store_true', default=False,
-                        help='Do not merge video parts')
-    download_grp.add_argument('--no-caption', action='store_true',
-                        help='Do not download captions (subtitles, lyrics, danmaku, ...)')
-    download_grp.add_argument('-f', '--force', action='store_true', default=False,
-                        help='Force overwriting existing files')
-    download_grp.add_argument('-F', '--format', metavar='STREAM_ID',
-                        help='Set video format to STREAM_ID')
-    download_grp.add_argument('-O', '--output-filename', metavar='FILE',
-                        help='Set output filename')
-    download_grp.add_argument('-o', '--output-dir', metavar='DIR', default='.',
-                        help='Set output directory')
-    download_grp.add_argument('-p', '--player', metavar='PLAYER',
-                        help='Stream extracted URL to a PLAYER')
-    download_grp.add_argument('-c', '--cookies', metavar='COOKIES_FILE',
-                        help='Load cookies.txt or cookies.sqlite')
-    download_grp.add_argument('-t', '--timeout', metavar='SECONDS', type=int, default=600,
-                        help='Set socket timeout')
-    download_grp.add_argument('-d', '--debug', action='store_true',
-                        help='Show traceback and other debug info')
-    download_grp.add_argument('-I', '--input-file', metavar='FILE', type=argparse.FileType('r'),
-                        help='Read non-playlist URLs from FILE')
-    download_grp.add_argument('-P', '--password',
-                        help='Set video visit password to PASSWORD')
-    download_grp.add_argument('-l', '--playlist', action='store_true',
-                        help='Prefer to download a playlist')
+    short_opts = 'Vhfiuc:ndF:O:o:p:x:y:s:t:I:P:'
+    opts = ['version', 'help', 'force', 'info', 'url', 'cookies', 'no-caption', 'no-merge', 'no-proxy', 'debug', 'json', 'format=', 'stream=', 'itag=', 'output-filename=', 'output-dir=', 'player=', 'http-proxy=', 'socks-proxy=', 'extractor-proxy=', 'lang=', 'timeout=', 'input-file=', 'password=']
+#dead code? download_playlist is a function and always True
+#if download_playlist:
+    short_opts = 'l' + short_opts
+    opts = ['playlist'] + opts
 
-    proxy_grp = parser.add_argument_group('Proxy options')
-    proxy_grp = proxy_grp.add_mutually_exclusive_group()
-    proxy_grp.add_argument('-x', '--http-proxy', metavar='HOST:PORT',
-                        help='Use an HTTP proxy for downloading')
-    proxy_grp.add_argument('-y', '--extractor-proxy', metavar='HOST:PORT',
-                        help='Use an HTTP proxy for extracting only')
-    proxy_grp.add_argument('--no-proxy', action='store_true',
-                        help='Never use a proxy')
-    proxy_grp.add_argument('-s', '--socks-proxy', metavar='HOST:PORT',
-                        help='Use an SOCKS5 proxy for downloading')
-
-    download_grp.add_argument('--stream',
-                        help=argparse.SUPPRESS)
-    download_grp.add_argument('--itag',
-                        help=argparse.SUPPRESS)
-
-    parser.add_argument('URL', nargs='*',
-                        help=argparse.SUPPRESS)
-
-    args = parser.parse_args()
-
-    if args.help:
-        print_version()
-        parser.print_help()
-        sys.exit()
-    if args.version:
-        print_version()
-        sys.exit()
-
-    if args.debug:
-        # Set level of root logger to DEBUG
-        logging.getLogger().setLevel(logging.DEBUG)
+    try:
+        opts, args = getopt.gnu_getopt(sys.argv[1:], short_opts, opts)
+    except getopt.GetoptError as err:
+        log.e(err)
+        log.e("try 'you-get --help' for more options")
+        sys.exit(2)
 
     global force
     global dry_run
     global json_output
     global player
     global extractor_proxy
+    global cookies
     global output_filename
 
-    output_filename = args.output_filename
-    extractor_proxy = args.extractor_proxy
-
-    info_only = args.info
-    if args.url:
-        dry_run = True
-    if args.json:
-        json_output = True
-        # to fix extractors not use VideoExtractor
-        dry_run = True
-        info_only = False
-
-    if args.cookies:
-        load_cookies(args.cookies)
-
+    info_only = False
+    playlist = False
     caption = True
-    stream_id = args.format or args.stream or args.itag
-    if args.no_caption:
-        caption = False
-    if args.player:
-        player = args.player
-        caption = False
+    merge = True
+    stream_id = None
+    lang = None
+    output_dir = '.'
+    proxy = None
+    socks_proxy = None
+    extractor_proxy = None
+    traceback = False
+    timeout = 600
+    urls_from_file = []
+    password = None
 
-    if args.no_proxy:
-        set_http_proxy('')
-    else:
-        set_http_proxy(args.http_proxy)
-    if args.socks_proxy:
-        set_socks_proxy(args.socks_proxy)
+    for o, a in opts:
+        if o in ('-V', '--version'):
+            version()
+            sys.exit()
+        elif o in ('-h', '--help'):
+            version()
+            print(help)
+            sys.exit()
+        elif o in ('-f', '--force'):
+            force = True
+        elif o in ('-i', '--info'):
+            info_only = True
+        elif o in ('-u', '--url'):
+            dry_run = True
+        elif o in ('--json', ):
+            json_output = True
+            # to fix extractors not use VideoExtractor
+            dry_run = True
+            info_only = False
+        elif o in ('-c', '--cookies'):
+            try:
+                cookies = cookiejar.MozillaCookieJar(a)
+                cookies.load()
+            except:
+                import sqlite3
+                cookies = cookiejar.MozillaCookieJar()
+                con = sqlite3.connect(a)
+                cur = con.cursor()
+                try:
+                    cur.execute("SELECT host, path, isSecure, expiry, name, value FROM moz_cookies")
+                    for item in cur.fetchall():
+                        c = cookiejar.Cookie(0, item[4], item[5],
+                                             None, False,
+                                             item[0],
+                                             item[0].startswith('.'),
+                                             item[0].startswith('.'),
+                                             item[1], False,
+                                             item[2],
+                                             item[3], item[3]=="",
+                                             None, None, {})
+                        cookies.set_cookie(c)
+                except: pass
+                # TODO: Chromium Cookies
+                # SELECT host_key, path, secure, expires_utc, name, encrypted_value FROM cookies
+                # http://n8henrie.com/2013/11/use-chromes-cookies-for-easier-downloading-with-python-requests/
 
-    URLs = []
-    if args.input_file:
-        logging.debug('you are trying to load urls from %s', args.input_file)
-        if args.playlist:
-            log.e("reading playlist from a file is unsupported and won't make your life easier")
+        elif o in ('-l', '--playlist'):
+            playlist = True
+        elif o in ('--no-caption',):
+            caption = False
+        elif o in ('-n', '--no-merge'):
+            merge = False
+        elif o in ('--no-proxy',):
+            proxy = ''
+        elif o in ('-d', '--debug'):
+            traceback = True
+            # Set level of root logger to DEBUG
+            logging.getLogger().setLevel(logging.DEBUG)
+        elif o in ('-F', '--format', '--stream', '--itag'):
+            stream_id = a
+        elif o in ('-O', '--output-filename'):
+            output_filename = a
+        elif o in ('-o', '--output-dir'):
+            output_dir = a
+        elif o in ('-p', '--player'):
+            player = a
+            caption = False
+        elif o in ('-x', '--http-proxy'):
+            proxy = a
+        elif o in ('-s', '--socks-proxy'):
+            socks_proxy = a
+        elif o in ('-y', '--extractor-proxy'):
+            extractor_proxy = a
+        elif o in ('--lang',):
+            lang = a
+        elif o in ('-t', '--timeout'):
+            timeout = int(a)
+        elif o in ('-P', '--password',):
+            password = a
+        elif o in ('-I', '--input-file'):
+            logging.debug('you are trying to load urls from {}'.format(a))
+            if playlist:
+                log.e("reading playlist from a file is unsupported and won't make your life easier")
+                sys.exit(2)
+            with open(a, 'r') as input_file:
+                for line in input_file:
+                    url = line.strip()
+                    urls_from_file.append(url)
+        else:
+            log.e("try 'you-get --help' for more options")
             sys.exit(2)
-        URLs.extend(args.input_file.read().splitlines())
-        args.input_file.close()
-    URLs.extend(args.URL)
-
-    if not URLs:
-        parser.print_help()
+    if not args and not urls_from_file:
+        print(help)
         sys.exit()
+    args.extend(urls_from_file)
 
-    socket.setdefaulttimeout(args.timeout)
+    if (socks_proxy):
+        try:
+            import socket
+            import socks
+            socks_proxy_addrs = socks_proxy.split(':')
+            socks.set_default_proxy(socks.SOCKS5,
+                                    socks_proxy_addrs[0],
+                                    int(socks_proxy_addrs[1]))
+            socket.socket = socks.socksocket
+            def getaddrinfo(*args):
+                return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
+            socket.getaddrinfo = getaddrinfo
+        except ImportError:
+            log.w('Error importing PySocks library, socks proxy ignored.'
+                'In order to use use socks proxy, please install PySocks.')
+    else:
+        import socket
+        set_http_proxy(proxy)
+
+    socket.setdefaulttimeout(timeout)
 
     try:
-        extra = {}
-        if extractor_proxy:
-            extra['extractor_proxy'] = extractor_proxy
         if stream_id:
-            extra['stream_id'] = stream_id
-        download_main(
-            download, download_playlist,
-            URLs, args.playlist,
-            output_dir=args.output_dir, merge=not args.no_merge,
-            info_only=info_only, json_output=json_output, caption=caption,
-            **extra
-        )
+            if not extractor_proxy:
+                download_main(download, download_playlist, args, playlist, stream_id=stream_id, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+            else:
+                download_main(download, download_playlist, args, playlist, stream_id=stream_id, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+        else:
+            if not extractor_proxy:
+                download_main(download, download_playlist, args, playlist, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
+            else:
+                download_main(download, download_playlist, args, playlist, extractor_proxy=extractor_proxy, output_dir=output_dir, merge=merge, info_only=info_only, json_output=json_output, caption=caption)
     except KeyboardInterrupt:
-        if args.debug:
+        if traceback:
             raise
         else:
             sys.exit(1)
     except UnicodeEncodeError:
-        if args.debug:
+        if traceback:
             raise
         log.e('[error] oops, the current environment does not seem to support Unicode.')
         log.e('please set it to a UTF-8-aware locale first,')
@@ -1285,7 +1292,7 @@ def script_main(download, download_playlist, **kwargs):
         log.e('    (Linux)      $ LC_CTYPE=en_US.UTF-8')
         sys.exit(1)
     except Exception:
-        if not args.debug:
+        if not traceback:
             log.e('[error] oops, something went wrong.')
             log.e('don\'t panic, c\'est la vie. please try the following steps:')
             log.e('  (1) Rule out any network problem.')
@@ -1296,7 +1303,7 @@ def script_main(download, download_playlist, **kwargs):
             log.e('  (4) Run the command with \'--debug\' option,')
             log.e('      and report this issue with the full output.')
         else:
-            print_version()
+            version()
             log.i(args)
             raise
         sys.exit(1)
@@ -1359,4 +1366,4 @@ def any_download_playlist(url, **kwargs):
     m.download_playlist(url, **kwargs)
 
 def main(**kwargs):
-    script_main(any_download, any_download_playlist, **kwargs)
+    script_main('you-get', any_download, any_download_playlist, **kwargs)
