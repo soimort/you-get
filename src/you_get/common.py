@@ -1266,7 +1266,7 @@ def script_main(download, download_playlist, **kwargs):
             download, download_playlist,
             URLs, args.playlist,
             output_dir=args.output_dir, merge=not args.no_merge,
-            info_only=info_only, json_output=json_output, caption=caption,
+            info_only=info_only, json_output=json_output, caption=caption, password=args.password,
             **extra
         )
     except KeyboardInterrupt:
