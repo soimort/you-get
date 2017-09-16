@@ -22,7 +22,13 @@ def fantasy_download_by_id_channelId(id = 0, channelId = 0, output_dir = '.', me
         raise Exception('API error!')
 
     title = html['data']['tv']['title']
-
+```
+this website put the video source in the ali cdn and used the ali-prismplayer.js https://player.alicdn.com/prismplayer/index.html
+first send a get request of https://171-113-204-241-159305376.dns-detect.alicdn.com/api/cdnDetectHttps?method=commitDetectHttps&detectId=159305376&callback=jsonp_callback_6174&cb=jsonp_callback_6174
+to verify the referer host whether is allowed or not
+if the referer is empty or not in the whitelist the video will not allow to download
+ALL IN ALL : the prismplayer.js will verfiy the request referer. if the referer is allowed the the video will send
+```
     video_url = html['data']['tv']['videoPath']
     headers = fake_headers.copy()
     headers['Referer'] = api_url
