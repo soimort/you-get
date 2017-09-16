@@ -28,6 +28,7 @@ first send a get request of https://171-113-204-241-159305376.dns-detect.alicdn.
 to verify the referer host whether is allowed or not
 if the referer is empty or not in the whitelist the video will not allow to download
 ALL IN ALL : the prismplayer.js will verfiy the request referer. if the referer is allowed the the video will send
+so well have to make a fake referer in the https://171-113-204-241-159305376.dns-detect.alicdn.com request
 ```
     video_url = html['data']['tv']['videoPath']
     headers = fake_headers.copy()
