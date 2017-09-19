@@ -194,7 +194,13 @@ class VideoExtractor():
                 stream_id = kwargs['stream_id']
             else:
                 # Download stream with the best quality
-                stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
+                from .processor.ffmpeg import has_ffmpeg_installed
+                if has_ffmpeg_installed():
+                    itags = sorted(self.dash_streams,
+                                   key=lambda i: -self.dash_streams[i]['size'])
+                    stream_id = itags[0]
+                else:
+                    stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
 
             if 'index' not in kwargs:
                 self.p(stream_id)
