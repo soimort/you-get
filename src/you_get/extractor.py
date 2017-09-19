@@ -195,7 +195,7 @@ class VideoExtractor():
             else:
                 # Download stream with the best quality
                 from .processor.ffmpeg import has_ffmpeg_installed
-                if has_ffmpeg_installed():
+                if self.dash_streams and has_ffmpeg_installed():
                     itags = sorted(self.dash_streams,
                                    key=lambda i: -self.dash_streams[i]['size'])
                     stream_id = itags[0]
