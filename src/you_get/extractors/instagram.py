@@ -5,6 +5,7 @@ __all__ = ['instagram_download']
 from ..common import *
 
 def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    url = r1(r'([^?]*)', url)
     html = get_html(url)
 
     vid = r1(r'instagram.com/p/([^/]+)', url)
