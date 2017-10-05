@@ -643,7 +643,7 @@ class SimpleProgressBar:
         # 38 is the size of all statically known size in self.bar
         total_str = '%5s' % round(self.total_size / 1048576, 1)
         total_str_width = max(len(total_str), 5)
-        self.bar_size = self.term_size - 27 - 2*total_pieces_len - 2*total_str_width
+        self.bar_size = self.term_size - 28 - 2*total_pieces_len - 2*total_str_width
         self.bar = '{:>4}%% ({:>%s}/%sMB) ├{:─<%s}┤[{:>%s}/{:>%s}] {}' % (
             total_str_width, total_str, self.bar_size, total_pieces_len, total_pieces_len)
 
