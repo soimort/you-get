@@ -25,6 +25,7 @@ SITES = {
     'freesound'        : 'freesound',
     'fun'              : 'funshion',
     'google'           : 'google',
+    'giphy'            : 'giphy',
     'heavy-music'      : 'heavymusic',
     'huaban'           : 'huaban',
     'huomao'           : 'huomaotv',
