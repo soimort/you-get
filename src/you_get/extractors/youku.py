@@ -43,8 +43,12 @@ class Youku(VideoExtractor):
 
     # Last updated: 2015-11-24
     stream_types = [
+        {'id': 'mp4hd3v2', 'alias-of': 'hd3v2'},
+        {'id': 'hd3v2',    'container': 'mp4', 'video_profile': '1080P'},
         {'id': 'mp4hd3', 'alias-of': 'hd3'},
         {'id': 'hd3',    'container': 'flv', 'video_profile': '1080P'},
+        {'id': 'mp4hd2v2', 'alias-of': 'hd2v2'},
+        {'id': 'hd2v2',    'container': 'mp4', 'video_profile': '超清'},
         {'id': 'mp4hd2', 'alias-of': 'hd2'},
         {'id': 'hd2',    'container': 'flv', 'video_profile': '超清'},
         {'id': 'mp4hd',  'alias-of': 'mp4'},
