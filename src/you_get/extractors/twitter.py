@@ -7,9 +7,9 @@ from .vine import vine_download
 
 def extract_m3u(source):
     r1 = get_content(source)
-    s1 = re.findall(r'(/ext_tw_video/.*)', r1)
+    s1 = re.findall(r'(/amplify_video/.*)', r1)
     r2 = get_content('https://video.twimg.com%s' % s1[-1])
-    s2 = re.findall(r'(/ext_tw_video/.*)', r2)
+    s2 = re.findall(r'(/amplify_video/.*)', r2)
     return ['https://video.twimg.com%s' % i for i in s2]
 
 def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
