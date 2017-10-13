@@ -149,7 +149,37 @@ def xiami_download_album(aid, output_dir='.', info_only=False):
 
         track_nr += 1
 
-def xiami_download(url, output_dir='.', info_only=False, **kwargs):
+def xiami_download_mv(url, output_dir='.', merge=True, info_only=False):
+    # FIXME: broken merge
+    page = get_content(url, headers=fake_headers)
+    title = re.findall('<title>([^<]+)', page)[0]
+    vid, uid = re.findall(r'vid:"(\d+)",uid:"(\d+)"', page)[0]
+    api_url = 'http://cloud.video.taobao.com/videoapi/info.php?vid=%s&uid=%s' % (vid, uid)
+    result = get_content(api_url, headers=fake_headers)
+    doc = parseString(result)
+    video_url = doc.getElementsByTagName("video_url")[-1].firstChild.nodeValue
+    length = int(doc.getElementsByTagName("length")[-1].firstChild.nodeValue)
+
+    v_urls = []
+    k_start = 0
+    total_size = 0
+    while True:
+        k_end = k_start + 20000000
+        if k_end >= length: k_end = length - 1
+        v_url = video_url + '/start_%s/end_%s/1.flv' % (k_start, k_end)
+        try:
+            _, ext, size = url_info(v_url)
+        except:
+            break
+        v_urls.append(v_url)
+        total_size += size
+        k_start = k_end + 1
+
+    print_info(site_info, title, ext, total_size)
+    if not info_only:
+        download_urls(v_urls, title, ext, total_size, output_dir, merge=merge, headers=fake_headers)
+
+def xiami_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 #albums
     if re.match(r'http://www.xiami.com/album/\d+', url):
         id = r1(r'http://www.xiami.com/album/(\d+)', url)
@@ -176,6 +206,9 @@ def xiami_download(url, output_dir='.', info_only=False, **kwargs):
     if re.match('http://www.xiami.com/song/detail/id/\d+', url):
         id = r1(r'http://www.xiami.com/song/detail/id/(\d+)', url)
         xiami_download_song(id, output_dir, info_only)
+
+    if re.match('http://www.xiami.com/mv', url):
+        xiami_download_mv(url, output_dir, merge=merge, info_only=info_only)
 
 site_info = "Xiami.com"
 download = xiami_download
