@@ -174,7 +174,7 @@ def make_url(stream):
     src = []
     for i, seg in enumerate(stream['segs']):
         url = 'http://{}/{}/{}?key={}&k={}'.format(host, i, rid, key, key_expr)
-        url += '&fpp.ver=1.3.0.4&type=web.fpp'
+        url += '&fpp.ver=1.3.0.4&type='
         src.append(url)
     return src
 
@@ -198,7 +198,7 @@ class PPTV(VideoExtractor):
         if not self.vid:
             raise('Cannot find id')
         api_url = 'http://web-play.pptv.com/webplay3-0-{}.xml'.format(self.vid)
-        api_url += '?type=web.fpp&version=4'
+        api_url += '?appplt=flp&appid=pptv.flashplayer.vod&appver=3.4.2.28&type=&version=4'
         dom = parseString(get_content(api_url))
         self.title, m_items, m_streams, m_segs = parse_pptv_xml(dom)
         xml_streams = merge_meta(m_items, m_streams, m_segs)
