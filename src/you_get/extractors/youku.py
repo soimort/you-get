@@ -53,9 +53,10 @@ class Youku(VideoExtractor):
         {'id': 'mp4hd2',   'container': 'mp4', 'video_profile': '超清'},
         {'id': 'mp4hd2v2', 'container': 'mp4', 'video_profile': '超清'},
 
-        {'id': 'flvhd',    'container': 'flv', 'video_profile': '高清'},
         {'id': 'mp4hd',    'container': 'mp4', 'video_profile': '高清'},
-        {'id': '3gphd',    'container': 'mp4', 'video_profile': '高清'},
+        # not really equivalent to mp4hd
+        {'id': 'flvhd',    'container': 'flv', 'video_profile': '渣清'},
+        {'id': '3gphd',    'container': 'mp4', 'video_profile': '渣清'},
 
         {'id': 'mp4sd',    'container': 'mp4', 'video_profile': '标清'},
         # obsolete?
