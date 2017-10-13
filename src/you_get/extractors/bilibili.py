@@ -106,6 +106,11 @@ class Bilibili(VideoExtractor):
     def prepare(self, **kwargs):
         socket.setdefaulttimeout(1) # fail fast, very speedy!
 
+        # handle "watchlater" URLs
+        if '/watchlater/' in self.url:
+            aid = re.search(r'av(\d+)', self.url).group(1)
+            self.url = 'http://www.bilibili.com/video/av{}/'.format(aid)
+
         self.ua = fake_headers['User-Agent']
         self.url = url_locations([self.url])[0]
         frag = urllib.parse.urlparse(self.url).fragment
@@ -125,6 +130,7 @@ class Bilibili(VideoExtractor):
                 self.title = '{} {}'.format(self.title, subtitle)
         except Exception:
             pass
+
         if 'bangumi.bilibili.com/movie' in self.url:
             self.movie_entry(**kwargs)
         elif 'bangumi.bilibili.com' in self.url:
