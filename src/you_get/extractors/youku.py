@@ -52,6 +52,7 @@ class Youku(VideoExtractor):
         {'id': 'mp4hd2', 'alias-of': 'hd2'},
         {'id': 'hd2',    'container': 'flv', 'video_profile': '超清'},
         {'id': 'mp4hd',  'alias-of': 'mp4'},
+        {'id': 'mp4sd',  'alias-of': 'mp4'},
         {'id': 'mp4',    'container': 'mp4', 'video_profile': '高清'},
         {'id': 'flvhd',  'container': 'flv', 'video_profile': '标清'},
         {'id': 'flv',    'container': 'flv', 'video_profile': '标清'},
