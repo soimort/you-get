@@ -13,8 +13,6 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     info = get_content(info_api)
     video_json = json.loads(match1(info, r'QZOutputJson=(.*)')[:-1])
 
-    if video_json['exem'] != 0:
-        log.wtf(video_json['msg'])
     fn_pre = video_json['vl']['vi'][0]['lnk']
     title = video_json['vl']['vi'][0]['ti']
     host = video_json['vl']['vi'][0]['ul']['ui'][0]['url']
@@ -63,7 +61,7 @@ def kg_qq_download_by_shareid(shareid, output_dir='.', info_only=False, caption=
     real_url = real_url.replace('\/', '/')
 
     ksong_mid = json_data['data']['ksong_mid']
-    lyric_url = 'http://cgi.kg.qq.com/fcgi-bin/fcg_lyric?jsonpCallback=jsopgetlrcdata&outCharset=utf-8&ksongmid=' + ksong_mid 
+    lyric_url = 'http://cgi.kg.qq.com/fcgi-bin/fcg_lyric?jsonpCallback=jsopgetlrcdata&outCharset=utf-8&ksongmid=' + ksong_mid
     lyric_data = get_content(lyric_url)
     lyric_string = lyric_data[len('jsopgetlrcdata('):-1]
     lyric_json = json.loads(lyric_string)
