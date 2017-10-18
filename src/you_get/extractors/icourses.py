@@ -18,7 +18,7 @@ def icourses_download(url, output_dir='.', **kwargs):
         hit = re.search(r'id=(\d+)&courseId=(\d+)', url)
         url = 'http://www.icourses.cn/jpk/changeforVideo.action?resId={}&courseId={}'.format(hit.group(1), hit.group(2))
     if re.match(r'http://www.icourses.cn/coursestatic/course_(\d+).html', url):
-        raise Exception('You can donwload it with -l flag')
+        raise Exception('You can download it with -l flag')
     icourses_parser = ICousesExactor(url=url)
     icourses_parser.basic_extract()
     title = icourses_parser.title
