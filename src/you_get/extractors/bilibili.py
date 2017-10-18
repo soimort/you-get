@@ -123,13 +123,17 @@ class Bilibili(VideoExtractor):
                 self.url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, page)
         self.referer = self.url
         self.page = get_content(self.url)
-        try:
-            self.title = re.search(r'<h1\s*title="([^"]+)"', self.page).group(1)
-            if 'subtitle' in kwargs:
-                subtitle = kwargs['subtitle']
-                self.title = '{} {}'.format(self.title, subtitle)
-        except Exception:
-            pass
+
+        m = re.search(r'<h1\s*title="([^"]+)"', self.page)
+        if m is not None:
+            self.title = m.group(1)
+        if self.title is None:
+            m = re.search(r'<meta property="og:title" content="([^"]+)">', self.page)
+            if m is not None:
+                self.title = m.group(1)
+        if 'subtitle' in kwargs:
+            subtitle = kwargs['subtitle']
+            self.title = '{} {}'.format(self.title, subtitle)
 
         if 'bangumi.bilibili.com/movie' in self.url:
             self.movie_entry(**kwargs)
