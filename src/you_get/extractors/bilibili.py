@@ -104,7 +104,8 @@ class Bilibili(VideoExtractor):
                 self.parse_bili_xml(api_xml)
 
     def prepare(self, **kwargs):
-        socket.setdefaulttimeout(2) # fail fast, very speedy!
+        if socket.getdefaulttimeout() == 600: # no timeout specified
+            socket.setdefaulttimeout(2) # fail fast, very speedy!
 
         # handle "watchlater" URLs
         if '/watchlater/' in self.url:
