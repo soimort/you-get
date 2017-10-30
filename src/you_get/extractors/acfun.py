@@ -117,7 +117,9 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
     vid = r1('data-vid="(\d+)"', html)
     up = r1('data-name="([^"]+)"', html)
-    title = title + ' - ' + up
+    p_title = r1('active">([^<]+)', html)
+    title = '%s (%s)' % (title, up)
+    if p_title: title = '%s - %s' % (title, p_title)
     acfun_download_by_vid(vid, title,
                           output_dir=output_dir,
                           merge=merge,
