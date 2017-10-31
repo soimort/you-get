@@ -49,25 +49,25 @@ def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **k
     if room_id == "0":
         room_id = url[url.rfind('/')+1:]
 
-    json_request_url = "http://m.douyu.com/html5/live?roomId=%s" % room_id
-    content = get_content(json_request_url)
+    api_url = "http://www.douyutv.com/api/v1/"
+    args = "room/%s?aid=wp&client_sys=wp&time=%d" % (room_id, int(time.time()))
+    auth_md5 = (args + "zNzMV1y4EMxOHS6I5WKm").encode("utf-8")
+    auth_str = hashlib.md5(auth_md5).hexdigest()
+    json_request_url = "%s%s&auth=%s" % (api_url, args, auth_str)
+
+    content = get_content(json_request_url, headers)
     json_content = json.loads(content)
     data = json_content['data']
     server_status = json_content.get('error',0)
     if server_status is not 0:
         raise ValueError("Server returned error:%s" % server_status)
 
-    room_info_url = "http://open.douyucdn.cn/api/RoomApi/room/%s" % room_id
-    room_info_content = get_content(room_info_url)
-    room_info_obj = json.loads(room_info_content)
-    room_info_data = room_info_obj.get('data')
-
-    title = room_info_data.get('room_name')
-    show_status = room_info_data.get('room_status')
+    title = data.get('room_name')
+    show_status = data.get('show_status')
     if show_status is not "1":
         raise ValueError("The live stream is not online! (Errno:%s)" % server_status)
 
-    real_url = data.get('hls_url')
+    real_url = data.get('rtmp_url') + '/' + data.get('rtmp_live')
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
