@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 SITES = {
     '163'              : 'netease',
     '56'               : 'w56',
@@ -730,8 +733,8 @@ def get_output_filename(urls, title, ext, output_dir, merge):
     global output_filename
     if output_filename:
         if ext:
-            return output_filename + '.' + ext
-        return output_filename
+            return output_filename + '-' + title + '.' + ext
+        return output_filename + '-' + title
 
     merged_ext = ext
     if (len(urls) > 1) and merge:
@@ -904,11 +907,12 @@ def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', 
 
     global output_filename
     if output_filename:
-        dotPos = output_filename.rfind(".")
-        title = output_filename[:dotPos]
-        ext = output_filename[dotPos+1:]
+        title = output_filename + '-' + title
 
     title = tr(get_filename(title))
+
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
 
     ffmpeg_download_stream(url, title, ext, params, output_dir, stream=stream)
 
