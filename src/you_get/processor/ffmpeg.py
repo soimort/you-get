@@ -238,7 +238,7 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.', stream=
 
     ffmpeg_params.append(output)
 
-    print(' '.join(ffmpeg_params))
+    # print(' '.join(ffmpeg_params))
 
     try:
         a = subprocess.Popen(ffmpeg_params, stdin= subprocess.PIPE)
