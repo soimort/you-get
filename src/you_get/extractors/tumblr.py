@@ -32,15 +32,17 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             tumblr_id = r1(r'^tumblr_(.+)_\d+$', title)
             quality = int(r1(r'^tumblr_.+_(\d+)$', title))
             ext = filename.split('.')[-1]
-            size = int(get_head(url)['Content-Length'])
-            if tumblr_id not in tuggles or tuggles[tumblr_id]['quality'] < quality:
-                tuggles[tumblr_id] = {
-                    'title': title,
-                    'url': url,
-                    'quality': quality,
-                    'ext': ext,
-                    'size': size,
-                }
+            try:
+                size = int(get_head(url)['Content-Length'])
+                if tumblr_id not in tuggles or tuggles[tumblr_id]['quality'] < quality:
+                    tuggles[tumblr_id] = {
+                        'title': title,
+                        'url': url,
+                        'quality': quality,
+                        'ext': ext,
+                        'size': size,
+                    }
+            except: pass
 
         if tuggles:
             size = sum([tuggles[t]['size'] for t in tuggles])
