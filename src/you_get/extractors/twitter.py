@@ -62,7 +62,8 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         i = json.loads(unescape_html(data_config))
         if 'video_url' in i:
             source = i['video_url']
-            if not item_id: page_title = i['tweet_id']
+            item_id = i['tweet_id']
+            page_title = "{} [{}]".format(screen_name, item_id)
         elif 'playlist' in i:
             source = i['playlist'][0]['source']
             if not item_id: page_title = i['playlist'][0]['contentId']
@@ -70,7 +71,8 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             vmap_url = i['vmap_url']
             vmap = get_content(vmap_url)
             source = r1(r'<MediaFile>\s*<!\[CDATA\[(.*)\]\]>', vmap)
-            if not item_id: page_title = i['tweet_id']
+            item_id = i['tweet_id']
+            page_title = "{} [{}]".format(screen_name, item_id)
         elif 'scribe_playlist_url' in i:
             scribe_playlist_url = i['scribe_playlist_url']
             return vine_download(scribe_playlist_url, output_dir, merge=merge, info_only=info_only)
