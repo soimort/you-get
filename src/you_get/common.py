@@ -725,7 +725,8 @@ class DummyProgressBar:
     def done(self):
         pass
 
-def get_output_filename(urls, title, ext, output_dir, merge):
+
+def get_output_filename(spilted, title, ext, output_dir, merge):
     # lame hack for the --output-filename option
     global output_filename
     if output_filename:
@@ -734,7 +735,7 @@ def get_output_filename(urls, title, ext, output_dir, merge):
         return output_filename
 
     merged_ext = ext
-    if (len(urls) > 1) and merge:
+    if spilted and merge:
         from .processor.ffmpeg import has_ffmpeg_installed
         if ext in ['flv', 'f4v']:
             if has_ffmpeg_installed():
@@ -750,7 +751,9 @@ def get_output_filename(urls, title, ext, output_dir, merge):
                 merged_ext = 'ts'
     return '%s.%s' % (title, merged_ext)
 
-def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
+
+def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers={},
+                  segments=1, **kwargs):
     assert urls
     if json_output:
         json_output_.download_urls(urls=urls, title=title, ext=ext, total_size=total_size, refer=refer)
@@ -771,8 +774,9 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             traceback.print_exc(file=sys.stdout)
             pass
 
+    segments = len(urls) if isinstance(urls, list) else segments  # if urls is a generator
     title = tr(get_filename(title))
-    output_filename = get_output_filename(urls, title, ext, output_dir, merge)
+    output_filename = get_output_filename(segments > 1, title, ext, output_dir, merge)
     output_filepath = os.path.join(output_dir, output_filename)
 
     if total_size:
@@ -780,12 +784,12 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             print('Skipping %s: file already exists' % output_filepath)
             print()
             return
-        bar = SimpleProgressBar(total_size, len(urls))
+        bar = SimpleProgressBar(total_size, segments)
     else:
-        bar = PiecesProgressBar(total_size, len(urls))
+        bar = PiecesProgressBar(total_size, segments)
 
-    if len(urls) == 1:
-        url = urls[0]
+    if segments == 1:
+        url = urls[0] if isinstance(urls, list) else urls.__next__()
         print('Downloading %s ...' % tr(output_filename))
         bar.update()
         url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers, **kwargs)

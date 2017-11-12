@@ -10,6 +10,10 @@ def output(video_extractor, pretty_print=True):
     out['url'] = ve.url
     out['title'] = ve.title
     out['site'] = ve.name
+    for stream in ve.streams.values():
+        if 'src' in stream:
+            stream['src'] = list(stream['src'])  # convert generator to list
+    map(list, ve.streams.values())
     out['streams'] = ve.streams
     try:
         if ve.audiolang:
