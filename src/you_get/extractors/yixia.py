@@ -51,14 +51,14 @@ def yixia_download(url, output_dir = '.', merge = True, info_only = False, **kwa
         yixia_download_by_scid = yixia_miaopai_download_by_scid
         site_info = "Yixia Miaopai"
         
-        if re.match(r'http://www.miaopai.com/show/channel/.+', url):  #PC
-            scid = match1(url, r'http://www.miaopai.com/show/channel/(.+)\.htm')
-        elif re.match(r'http://www.miaopai.com/show/.+', url):  #PC
-            scid = match1(url, r'http://www.miaopai.com/show/(.+)\.htm')
-        elif re.match(r'http://m.miaopai.com/show/channel/.+', url):  #Mobile
-            scid = match1(url, r'http://m.miaopai.com/show/channel/(.+)\.htm')
+        if re.match(r'https?://www.miaopai.com/show/channel/.+', url):  #PC
+            scid = match1(url, r'https?://www.miaopai.com/show/channel/(.+)\.htm')
+        elif re.match(r'https?://www.miaopai.com/show/.+', url):  #PC
+            scid = match1(url, r'https?://www.miaopai.com/show/(.+)\.htm')
+        elif re.match(r'https?://m.miaopai.com/show/channel/.+', url):  #Mobile
+            scid = match1(url, r'https?://m.miaopai.com/show/channel/(.+)\.htm')
             if scid == None :
-                scid = match1(url, r'http://m.miaopai.com/show/channel/(.+)')
+                scid = match1(url, r'https?://m.miaopai.com/show/channel/(.+)')
 
     elif 'xiaokaxiu.com' in hostname:  #Xiaokaxiu
         yixia_download_by_scid = yixia_xiaokaxiu_download_by_scid
