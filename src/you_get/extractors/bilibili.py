@@ -104,6 +104,12 @@ class Bilibili(VideoExtractor):
                 self.parse_bili_xml(api_xml)
 
     def prepare(self, **kwargs):
+        m = re.match(r"http(?:s)?://www.bilibili.com/watchlater/#/av(\d+)(?:/p(\d+))?", self.url, re.I)
+        if m is not None:
+            self.url = 'http://www.bilibili.com/video/av{}'.format(m.group(1))
+            if m.group(2) is not None:
+                self.url += "/index_{}.html".format(m.group(2))
+
         if socket.getdefaulttimeout() == 600: # no timeout specified
             socket.setdefaulttimeout(2) # fail fast, very speedy!
 
