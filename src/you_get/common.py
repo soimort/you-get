@@ -109,6 +109,7 @@ import re
 import socket
 import sys
 import time
+import math
 from urllib import request, parse, error
 from http import cookiejar
 from importlib import import_module
@@ -177,6 +178,11 @@ def general_m3u8_extractor(url, headers={}):
                 seg_url = parse.urljoin(url, line)
                 urls.append(seg_url)
     return urls
+
+def round_str(num, cnt):
+# workaround for braken builtin round on some android py
+    fmt_str = '{:.' + str(cnt) + 'f}'
+    return fmt_str.format(num)
 
 def maybe_print(*s):
     try: print(*s)
@@ -641,7 +647,7 @@ class SimpleProgressBar:
 
         total_pieces_len = len(str(total_pieces))
         # 38 is the size of all statically known size in self.bar
-        total_str = '%5s' % round(self.total_size / 1048576, 1)
+        total_str = '%5s' % round_str(self.total_size / 1048576, 1)
         total_str_width = max(len(total_str), 5)
         self.bar_size = self.term_size - 28 - 2*total_pieces_len - 2*total_str_width
         self.bar = '{:>4}%% ({:>%s}/%sMB) ├{:─<%s}┤[{:>%s}/{:>%s}] {}' % (
@@ -650,11 +656,17 @@ class SimpleProgressBar:
     def update(self):
         self.displayed = True
         bar_size = self.bar_size
-        percent = round(self.received * 100 / self.total_size, 1)
-        if percent >= 100:
+        percent_str = round_str(self.received * 100 / self.total_size, 1)
+        if self.received == self.total_size:
             percent = 100
-        dots = bar_size * int(percent) // 100
-        plus = int(percent) - dots // bar_size * 100
+            percent_str = '100'
+        else:
+            percent = math.floor(self.received * 100 / self.total_size)
+# near but not complete - kick it to 99.9
+            if percent_str == '100.0':
+                percent_str = '99.9'
+        dots = bar_size * percent // 100
+        plus = percent - dots // bar_size * 100
         if plus > 0.8:
             plus = '█'
         elif plus > 0.4:
@@ -662,7 +674,7 @@ class SimpleProgressBar:
         else:
             plus = ''
         bar = '█' * dots + plus
-        bar = self.bar.format(percent, round(self.received / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
+        bar = self.bar.format(percent_str, round_str(self.received / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
@@ -997,10 +1009,9 @@ def print_info(site_info, title, type, size, **kwargs):
     maybe_print("Title:     ", unescape_html(tr(title)))
     print("Type:      ", type_info)
     if type != 'm3u8':
-        print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
+        print("Size:      ", round_str(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
     if type == 'm3u8' and 'm3u8_url' in kwargs:
         print('M3U8 Url:   {}'.format(kwargs['m3u8_url']))
-    print()
 
 def mime_to_container(mime):
     mapping = {
