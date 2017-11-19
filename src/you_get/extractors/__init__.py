@@ -11,6 +11,7 @@ from .bokecc import *
 from .cbs import *
 from .ckplayer import *
 from .cntv import *
+from .coub import *
 from .dailymotion import *
 from .dilidili import *
 from .douban import *
