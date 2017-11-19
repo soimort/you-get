@@ -250,3 +250,19 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.', stream=
             pass
 
     return True
+
+
+def ffmpeg_concat_audio_and_video(files, output, ext):
+    print('Merging video and audio parts... ', end="", flush=True)
+    if has_ffmpeg_installed:
+        params = [FFMPEG] + LOGLEVEL
+        for file in files:
+            if os.path.isfile(file):
+                params.extend(['-i', file])
+        params.extend(['-c:v', 'copy'])
+        params.extend(['-c:a', 'aac'])
+        params.extend(['-strict', 'experimental'])
+        params.append(output+"."+ext)
+        return subprocess.call(params, stdin=STDIN)
+    else:
+        raise EnvironmentError('No ffmpeg found')
