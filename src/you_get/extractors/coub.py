@@ -13,19 +13,35 @@ def coub_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     try:
         json_data = get_coub_data(html)
         title, video_url, audio_url = get_title_and_urls(json_data)
-        video_file_path = get_file_path(merge, output_dir, title, video_url)
-        audio_file_path = get_file_path(merge, output_dir, title, audio_url)
+        video_file_name, video_file_path = get_file_path(merge, output_dir, title, video_url)
+        audio_file_name, audio_file_path = get_file_path(merge, output_dir, title, audio_url)
         download_url(audio_url, merge, output_dir, title, info_only)
         download_url(video_url, merge, output_dir, title, info_only)
         if not info_only:
-            fix_coub_video_file(video_file_path)
             try:
-                ffmpeg.ffmpeg_concat_audio_and_video([video_file_path, audio_file_path], title + "_full", "mp4")
-                cleanup_files(video_file_path, audio_file_path)
+                fix_coub_video_file(video_file_path)
+                audio_duration = float(ffmpeg.ffprobe_get_media_duration(audio_file_path))
+                video_duration = float(ffmpeg.ffprobe_get_media_duration(video_file_path))
+                loop_file_path = get_loop_file_path(title, output_dir)
+                single_file_path = audio_file_path
+                if audio_duration > video_duration:
+                    write_loop_file(int(audio_duration / video_duration), loop_file_path, video_file_name)
+                else:
+                    single_file_path = audio_file_path
+                    write_loop_file(int(video_duration / audio_duration), loop_file_path, audio_file_name)
+
+                ffmpeg.ffmpeg_concat_audio_and_video([loop_file_path, single_file_path], title + "_full", "mp4")
+                cleanup_files([video_file_path, audio_file_path, loop_file_path])
             except EnvironmentError as err:
                 print("Error preparing full coub video. {}".format(err))
     except Exception as err:
         print("Error while downloading files. {}".format(err))
+
+
+def write_loop_file(records_number, loop_file_path, file_name):
+    with open(loop_file_path, 'a') as file:
+        for i in range(records_number):
+            file.write("file '{}'\n".format(file_name))
 
 
 def download_url(url, merge, output_dir, title, info_only):
@@ -58,12 +74,16 @@ def get_file_path(merge, output_dir, title, url):
     mime, ext, size = url_info(url)
     file_name = get_output_filename([], title, ext, output_dir, merge)
     file_path = os.path.join(output_dir, file_name)
-    return file_path
+    return file_name, file_path
 
 
-def cleanup_files(video_file_path, audio_file_path):
-    os.remove(video_file_path)
-    os.remove(audio_file_path)
+def get_loop_file_path(title, output_dir):
+    return os.path.join(output_dir, get_output_filename([], title, "txt", None, False))
+
+
+def cleanup_files(files):
+    for file in files:
+        os.remove(file)
 
 
 site_info = "coub.com"
