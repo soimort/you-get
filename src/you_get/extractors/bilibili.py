@@ -25,6 +25,8 @@ class Bilibili(VideoExtractor):
     live_api = 'http://live.bilibili.com/api/playurl?cid={}&otype=json'
     api_url = 'http://interface.bilibili.com/playurl?'
     bangumi_api_url = 'http://bangumi.bilibili.com/player/web_api/playurl?'
+    live_room_init_api_url = 'https://api.live.bilibili.com/room/v1/Room/room_init?id={}'
+    live_room_info_api_url = 'https://api.live.bilibili.com/room/v1/Room/get_info?room_id={}'
 
     SEC1 = '1c15888dc316e05a15fdd0a02ed6584f'
     SEC2 = '9b288147e5474dd2aa67085f716c560d'
@@ -188,8 +190,17 @@ class Bilibili(VideoExtractor):
             return
 
     def live_entry(self, **kwargs):
-        self.title = re.search(r'<title>([^<]+)', self.page).group(1)
-        self.room_id = re.search('ROOMID\s*=\s*(\d+)', self.page).group(1)
+        # Extract room ID from the short display ID (seen in the room
+        # URL). The room ID is usually the same as the short ID, but not
+        # always; case in point: https://live.bilibili.com/48, with 48
+        # as the short ID and 63727 as the actual ID.
+        room_short_id = re.search(r'live.bilibili.com/([^?]+)', self.url).group(1)
+        room_init_api_response = json.loads(get_content(self.live_room_init_api_url.format(room_short_id)))
+        self.room_id = room_init_api_response['data']['room_id']
+
+        room_info_api_response = json.loads(get_content(self.live_room_info_api_url.format(self.room_id)))
+        self.title = room_info_api_response['data']['title']
+
         api_url = self.live_api.format(self.room_id)
         json_data = json.loads(get_content(api_url))
         urls = [json_data['durl'][0]['url']]
