@@ -120,7 +120,7 @@ SITES = {
     'youtu'            : 'youtube',
     'youtube'          : 'youtube',
     'zhanqi'           : 'zhanqi',
-    '365yg': 'toutiao',
+    '365yg'            : 'toutiao',
 }
 
 dry_run = False
