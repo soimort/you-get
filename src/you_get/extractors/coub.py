@@ -58,9 +58,23 @@ def fix_coub_video_file(file_path):
 
 
 def get_title_and_urls(json_data):
-    title = legitimize(json_data['title'].replace(" ", "_"))
-    video_url = json_data['file_versions']['html5']['video']['high']['url']
-    audio_url = json_data['file_versions']['html5']['audio']['high']['url']
+    title = legitimize(re.sub('[\s*]', "_", json_data['title']))
+    video_info = json_data['file_versions']['html5']['video']
+    if 'high' not in video_info:
+        if 'med' not in video_info:
+            video_url = video_info['low']['url']
+        else:
+            video_url = video_info['med']['url']
+    else:
+        video_url = video_info['high']['url']
+    audio_info = json_data['file_versions']['html5']['audio']
+    if 'high' not in audio_info:
+        if 'med' not in audio_info:
+            audio_url = audio_info['low']['url']
+        else:
+            audio_url = audio_info['med']['url']
+    else:
+        audio_url = audio_info['high']['url']
     return title, video_url, audio_url
 
 
