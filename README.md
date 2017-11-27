@@ -414,19 +414,13 @@ For all other sites not on the list, the universal extractor will take care of f
 
 If something is broken and `you-get` can't get you things you want, don't panic. (Yes, this happens all the time!)
 
-Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>, and search on the [list of open issues](https://github.com/soimort/you-get/issues). If it has not been reported yet, open a new issue, with detailed command-line output attached.
+Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>. If not, follow the guidelines on [how to report a broken extractor](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md#report-a-broken-extractor).
 
 ## Getting Involved
 
 You can reach us on the Gitter channel [#soimort/you-get](https://gitter.im/soimort/you-get) (here's how you [set up your IRC client](http://irc.gitter.im) for Gitter). If you have a quick question regarding `you-get`, ask it there.
 
-All kinds of pull requests are welcome. However, there are a few guidelines to follow:
-
-* The [`develop`](https://github.com/soimort/you-get/tree/develop) branch is where your pull request should go.
-* Remember to rebase.
-* Document your PR clearly, and if applicable, provide some sample links for reviewers to test with.
-* Write well-formatted, easy-to-understand commit messages. If you don't know how, look at existing ones.
-* We will not ask you to sign a CLA, but you must assure that your code can be legally redistributed (under the terms of the MIT license).
+If you are seeking to report an issue or contribute, please make sure to read [the guidelines](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) first.
 
 ## Legal Issues
 
