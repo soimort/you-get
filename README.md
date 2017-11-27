@@ -109,7 +109,7 @@ $ brew install you-get
 
 ### Shell completion
 
-Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](contrib/completion). Please consult your shell's manual for how to take advantage of them.
+Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](https://github.com/soimort/you-get/tree/develop/contrib/completion). Please consult your shell's manual for how to take advantage of them.
 
 ## Upgrading
 
@@ -359,7 +359,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Facebook    | <https://www.facebook.com/>   |✓| | |
 | eHow        | <http://www.ehow.com/>        |✓| | |
 | Dailymotion | <http://www.dailymotion.com/> |✓| | |
-| Coub        | <http://coub.com>             |✓| | |
+| Coub        | <http://coub.com/>            |✓| | |
 | CBS         | <http://www.cbs.com/>         |✓| | |
 | Bandcamp    | <http://bandcamp.com/>        | | |✓|
 | AliveThai   | <http://alive.in.th/>         |✓| | |
@@ -405,7 +405,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
 | 芒果TV   | <http://www.mgtv.com/>         |✓| | |
 | 火猫TV   | <http://www.huomao.com/>       |✓| | |
-| 全民Tv   | <http://www.quanmin.tv/>       |✓| | |
+| 全民直播 | <http://www.quanmin.tv/>       |✓| | |
 | 阳光宽频网 | <http://www.365yg.com/>      |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
