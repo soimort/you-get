@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import io
 import os
 import re
 import sys
@@ -18,7 +19,7 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
-
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
 
 SITES = {
     '163'              : 'netease',
