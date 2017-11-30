@@ -22,5 +22,8 @@ class YouGetTests(unittest.TestCase):
     def test_yixia(self):
         yixia_download("http://m.miaopai.com/show/channel/vlvreCo4OZiNdk5Jn1WvdopmAvdIJwi8", info_only=True)
 
+    def test_youku(self):
+        youku_download("http://v.youku.com/v_show/id_XMzE5MDgzMjU2OA==.html", info_only=True)
+
 if __name__ == '__main__':
     unittest.main()
