@@ -1,7 +1,7 @@
 # You-Get
 
-[![PyPI version](https://badge.fury.io/py/you-get.png)](http://badge.fury.io/py/you-get)
-[![Build Status](https://api.travis-ci.org/soimort/you-get.png)](https://travis-ci.org/soimort/you-get)
+[![PyPI version](https://img.shields.io/pypi/v/you-get.svg)](https://pypi.python.org/pypi/you-get/)
+[![Build Status](https://travis-ci.org/soimort/you-get.svg)](https://travis-ci.org/soimort/you-get)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [You-Get](https://you-get.org/) is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.
@@ -37,33 +37,53 @@ Interested? [Install it](#installation) now and [get started by examples](#getti
 
 Are you a Python programmer? Then check out [the source](https://github.com/soimort/you-get) and fork it!
 
+![](https://i.imgur.com/GfthFAz.png)
+
 ## Installation
 
 ### Prerequisites
+
+The following dependencies are required and must be installed separately, unless you are using a pre-built package or chocolatey on Windows:
 
 * **[Python 3](https://www.python.org/downloads/)**
 * **[FFmpeg](https://www.ffmpeg.org/)** (strongly recommended) or [Libav](https://libav.org/)
 * (Optional) [RTMPDump](https://rtmpdump.mplayerhq.hu/)
 
-### Option 1. Install the official release
+### Option 1: Install via pip
 
-The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager. Note that you must use the Python 3 version of `pip`:
+The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi/you-get), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager. Note that you must use the Python 3 version of `pip`:
 
     $ pip3 install you-get
 
-### Option 2. Download from GitHub
+### Option 2: Install via [Antigen](https://github.com/zsh-users/antigen)
+
+Add the following line to your `.zshrc`:
+
+    antigen bundle soimort/you-get
+
+### Option 3: Use a pre-built package (Windows only)
+
+Download the `exe` (standalone) or `7z` (all dependencies included) from: <https://github.com/soimort/you-get/releases/latest>.
+
+### Option 4: Download from GitHub
 
 You may either download the [stable](https://github.com/soimort/you-get/archive/master.zip) (identical with the latest release on PyPI) or the [develop](https://github.com/soimort/you-get/archive/develop.zip) (more hotfixes, unstable features) branch of `you-get`. Unzip it, and put the directory containing the `you-get` script into your `PATH`.
 
 Alternatively, run
 
 ```
-$ make install
+$ [sudo] python3 setup.py install
+```
+
+Or
+
+```
+$ python3 setup.py install --user
 ```
 
 to install `you-get` to a permanent path.
 
-### Option 3. Git clone
+### Option 5: Git clone
 
 This is the recommended way for all developers, even if you don't often code in Python.
 
@@ -71,7 +91,25 @@ This is the recommended way for all developers, even if you don't often code in 
 $ git clone git://github.com/soimort/you-get.git
 ```
 
-Then put the cloned directory into your `PATH`, or run `make install` to install `you-get` to a permanent path.
+Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
+
+### Option 6: Using [Chocolatey](https://chocolatey.org/) (Windows only)
+
+```
+> choco install you-get
+```
+
+### Option 7: Homebrew (Mac only)
+
+You can install `you-get` easily via:
+
+```
+$ brew install you-get
+```
+
+### Shell completion
+
+Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](https://github.com/soimort/you-get/tree/develop/contrib/completion). Please consult your shell's manual for how to take advantage of them.
 
 ## Upgrading
 
@@ -85,6 +123,18 @@ or download the latest release via:
 
 ```
 $ you-get https://github.com/soimort/you-get/archive/master.zip
+```
+
+or use [chocolatey package manager](https://chocolatey.org):
+
+```
+> choco upgrade you-get
+```
+
+In order to get the latest ```develop``` branch without messing up the PIP, you can try:
+
+```
+$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop
 ```
 
 ## Getting Started
@@ -177,38 +227,19 @@ Downloading rms.jpg ...
 Otherwise, `you-get` will scrape the web page and try to figure out if there's anything interesting to you:
 
 ```
-$ you-get http://www.wired.com/2012/11/time-lapse-within-worlds/
-Site:       wired.com
-Title:      Geminid-Meteor-over-Castle-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.09 MiB (95581 Bytes)
+$ you-get http://kopasas.tumblr.com/post/69361932517
+Site:       Tumblr.com
+Title:      kopasas
+Type:       Unknown type (None)
+Size:       0.51 MiB (536583 Bytes)
 
-Downloading Geminid-Meteor-over-Castle-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  606 kB/s
+Site:       Tumblr.com
+Title:      tumblr_mxhg13jx4n1sftq6do1_1280
+Type:       Portable Network Graphics (image/png)
+Size:       0.51 MiB (536583 Bytes)
 
-Site:       wired.com
-Title:      Star-Trails-over-Mount-Shasta
-Type:       JPEG Image (image/jpeg)
-Size:       0.1 MiB (108263 Bytes)
-
-Downloading Star-Trails-over-Mount-Shasta.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  615 kB/s
-
-Site:       wired.com
-Title:      Milky-Way-and-Lyrid-Meteor-over-Crater-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.1 MiB (104196 Bytes)
-
-Downloading Milky-Way-and-Lyrid-Meteor-over-Crater-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  643 kB/s
-
-Site:       wired.com
-Title:      Aurora-over-Crater-Lake
-Type:       JPEG Image (image/jpeg)
-Size:       0.08 MiB (87666 Bytes)
-
-Downloading Aurora-over-Crater-Lake.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  365 kB/s
+Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
+100.0% (  0.5/0.5  MB) ├████████████████████████████████████████┤[1/1]   22 MB/s
 ```
 
 **Note:**
@@ -258,7 +289,6 @@ However, the system proxy setting (i.e. the environment variable `http_proxy`) i
 
 * If you need to use proxies a lot (in case your network is blocking certain sites), you might want to use `you-get` with [proxychains](https://github.com/rofl0r/proxychains-ng) and set `alias you-get="proxychains -q you-get"` (in Bash).
 * For some websites (e.g. Youku), if you need access to some videos that are only available in mainland China, there is an option of using a specific proxy to extract video information from the site: `--extractor-proxy`/`-y`.
-You may use `-y proxy.uku.im:8888` (thanks to the [Unblock Youku](https://github.com/zhuzhuor/Unblock-Youku) project).
 
 ### Watch a video
 
@@ -300,29 +330,36 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | :--: | :-- | :-----: | :-----: | :-----: |
 | **YouTube** | <https://www.youtube.com/>    |✓| | |
 | **Twitter** | <https://twitter.com/>        |✓|✓| |
-| VK          | <http://vk.com/>              |✓| | |
+| VK          | <http://vk.com/>              |✓|✓| |
 | Vine        | <https://vine.co/>            |✓| | |
 | Vimeo       | <https://vimeo.com/>          |✓| | |
 | Vidto       | <http://vidto.me/>            |✓| | |
+| Videomega   | <http://videomega.tv/>        |✓| | |
 | Veoh        | <http://www.veoh.com/>        |✓| | |
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
 | TED         | <http://www.ted.com/>         |✓| | |
 | SoundCloud  | <https://soundcloud.com/>     | | |✓|
+| SHOWROOM    | <https://www.showroom-live.com/> |✓| | |
+| Pinterest   | <https://www.pinterest.com/>  | |✓| |
+| MusicPlayOn | <http://en.musicplayon.com/>  |✓| | |
 | MTV81       | <http://www.mtv81.com/>       |✓| | |
 | Mixcloud    | <https://www.mixcloud.com/>   | | |✓|
 | Metacafe    | <http://www.metacafe.com/>    |✓| | |
 | Magisto     | <http://www.magisto.com/>     |✓| | |
 | Khan Academy | <https://www.khanacademy.org/> |✓| | |
-| JPopsuki TV | <http://www.jpopsuki.tv/>     |✓| | |
 | Internet Archive | <https://archive.org/>   |✓| | |
 | **Instagram** | <https://instagram.com/>    |✓|✓| |
+| InfoQ       | <http://www.infoq.com/presentations/> |✓| | |
+| Imgur       | <http://imgur.com/>           | |✓| |
 | Heavy Music Archive | <http://www.heavy-music.ru/> | | |✓|
 | **Google+** | <https://plus.google.com/>    |✓|✓| |
 | Freesound   | <http://www.freesound.org/>   | | |✓|
 | Flickr      | <https://www.flickr.com/>     |✓|✓| |
+| FC2 Video   | <http://video.fc2.com/>       |✓| | |
 | Facebook    | <https://www.facebook.com/>   |✓| | |
 | eHow        | <http://www.ehow.com/>        |✓| | |
 | Dailymotion | <http://www.dailymotion.com/> |✓| | |
+| Coub        | <http://coub.com/>            |✓| | |
 | CBS         | <http://www.cbs.com/>         |✓| | |
 | Bandcamp    | <http://bandcamp.com/>        | | |✓|
 | AliveThai   | <http://alive.in.th/>         |✓| | |
@@ -335,8 +372,10 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Baidu<br/>百度贴吧** | <http://tieba.baidu.com/> |✓|✓| |
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
 | **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
-| 豆瓣     | <http://www.douban.com/>       | | |✓|
+| Dilidili | <http://www.dilidili.com/>     |✓| | |
+| 豆瓣     | <http://www.douban.com/>       |✓| |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
+| Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
 | 风行网   | <http://www.fun.tv/>           |✓| | |
 | iQIYI<br/>爱奇艺 | <http://www.iqiyi.com/> |✓| | |
@@ -344,7 +383,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 酷6网    | <http://www.ku6.com/>          |✓| | |
 | 酷狗音乐 | <http://www.kugou.com/>        | | |✓|
 | 酷我音乐 | <http://www.kuwo.cn/>          | | |✓|
-| 乐视网   | <http://www.letv.com/>         |✓| | |
+| 乐视网   | <http://www.le.com/>           |✓| | |
 | 荔枝FM   | <http://www.lizhi.fm/>         | | |✓|
 | 秒拍     | <http://www.miaopai.com/>      |✓| | |
 | MioMio弹幕网 | <http://www.miomio.tv/>    |✓| | |
@@ -352,17 +391,22 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | PPTV聚力 | <http://www.pptv.com/>         |✓| | |
 | 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
 | QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
-| 阡陌视频 | <http://qianmo.com/>           |✓| | |
+| 企鹅直播 | <http://live.qq.com/>          |✓| | |
 | Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
 | Sohu<br/>搜狐视频 | <http://tv.sohu.com/> |✓| | |
-| 天天动听 | <http://www.dongting.com/>     | | |✓|
 | **Tudou<br/>土豆** | <http://www.tudou.com/> |✓| | |
-| 虾米     | <http://www.xiami.com/>        | | |✓|
+| 虾米     | <http://www.xiami.com/>        |✓| |✓|
 | 阳光卫视 | <http://www.isuntv.com/>       |✓| | |
 | **音悦Tai** | <http://www.yinyuetai.com/> |✓| | |
 | **Youku<br/>优酷** | <http://www.youku.com/> |✓| | |
 | 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
 | 央视网   | <http://www.cntv.cn/>          |✓| | |
+| 花瓣     | <http://huaban.com/>           | |✓| |
+| Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
+| 芒果TV   | <http://www.mgtv.com/>         |✓| | |
+| 火猫TV   | <http://www.huomao.com/>       |✓| | |
+| 全民直播 | <http://www.quanmin.tv/>       |✓| | |
+| 阳光宽频网 | <http://www.365yg.com/>      |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
@@ -370,19 +414,13 @@ For all other sites not on the list, the universal extractor will take care of f
 
 If something is broken and `you-get` can't get you things you want, don't panic. (Yes, this happens all the time!)
 
-Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>, and search on the [list of open issues](https://github.com/soimort/you-get/issues). If it has not been reported yet, open a new issue, with detailed command-line output attached.
+Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>. If not, follow the guidelines on [how to report a broken extractor](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md#report-a-broken-extractor).
 
 ## Getting Involved
 
 You can reach us on the Gitter channel [#soimort/you-get](https://gitter.im/soimort/you-get) (here's how you [set up your IRC client](http://irc.gitter.im) for Gitter). If you have a quick question regarding `you-get`, ask it there.
 
-All kinds of pull requests are welcome. However, there are a few guidelines to follow:
-
-* The [`develop`](https://github.com/soimort/you-get/tree/develop) branch is where your pull request should go.
-* Remember to rebase.
-* Document your PR clearly, and if applicable, provide some sample links for reviewers to test with.
-* Write well-formatted, easy-to-understand commit messages. If you don't know how, look at existing ones.
-* We will not ask you to sign a CLA, but you must assure that your code can be legally redistributed (under the terms of the MIT license).
+If you are seeking to report an issue or contribute, please make sure to read [the guidelines](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) first.
 
 ## Legal Issues
 
@@ -406,6 +444,6 @@ We only ship the code here, and how you are going to use it is left to your own 
 
 ## Authors
 
-Made by [@soimort](https://github.com/soimort), who is in turn powered by :coffee:, :pizza: and :ramen:.
+Made by [@soimort](https://github.com/soimort), who is in turn powered by :coffee:, :beer: and :ramen:.
 
 You can find the [list of all contributors](https://github.com/soimort/you-get/graphs/contributors) here.

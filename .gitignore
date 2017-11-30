@@ -79,3 +79,7 @@ _*
 *.ts
 *.webm
 *.xml
+/.env
+/.idea
+*.m4a
+*.DS_Store

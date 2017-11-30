@@ -7,9 +7,10 @@ import json
 
 def ted_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
-    metadata = json.loads(match1(html, r'({"talks"(.*)})\)'))
+    patt = r'"__INITIAL_DATA__"\s*:\s*\{(.+)\}'
+    metadata = json.loads('{' + match1(html, patt) + '}')
     title = metadata['talks'][0]['title']
-    nativeDownloads = metadata['talks'][0]['nativeDownloads']
+    nativeDownloads = metadata['talks'][0]['downloads']['nativeDownloads']
     for quality in ['high', 'medium', 'low']:
         if quality in nativeDownloads:
             url = nativeDownloads[quality]

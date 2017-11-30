@@ -3,28 +3,41 @@
 __all__ = ['soundcloud_download', 'soundcloud_download_by_id']
 
 from ..common import *
+import json
+import urllib.error
 
-def soundcloud_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
+client_id = 'WKcQQdEZw7Oi01KqtHWxeVSxNyRzgT8M'
+
+def soundcloud_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False):
     assert title
+    url = 'https://api.soundcloud.com/tracks/{}/{}?client_id={}'.format(id, 'stream', client_id)
     
-    #if info["downloadable"]:
-    #   url = 'https://api.soundcloud.com/tracks/' + id + '/download?client_id=b45b1aa10f1ac2941910a7f0d10f8e28'
-    url = 'https://api.soundcloud.com/tracks/' + id + '/stream?client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea'
-    assert url
     type, ext, size = url_info(url)
     
     print_info(site_info, title, type, size)
+
     if not info_only:
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
-def soundcloud_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    metadata = get_html('https://api.soundcloud.com/resolve.json?url=' + url + '&client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea')
-    import json
+def soundcloud_i1_api(track_id):
+    url = 'https://api.soundcloud.com/i1/tracks/{}/streams?client_id={}'.format(track_id, client_id)
+    return json.loads(get_content(url))['http_mp3_128_url']
+
+def soundcloud_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    url = 'https://api.soundcloud.com/resolve.json?url={}&client_id={}'.format(url, client_id)
+    metadata = get_content(url)
     info = json.loads(metadata)
     title = info["title"]
-    id = str(info["id"])
-    
-    soundcloud_download_by_id(id, title, output_dir, merge = merge, info_only = info_only)
+    real_url = info.get('download_url')
+    if real_url is None:
+        real_url = info.get('steram_url')
+    if real_url is None:
+        raise Exception('Cannot get media URI for {}'.format(url))
+    real_url = soundcloud_i1_api(info['id'])
+    mime, ext, size = url_info(real_url)
+    print_info(site_info, title, mime, size)
+    if not info_only:
+        download_urls([real_url], title, ext, size, output_dir, merge=merge)
 
 site_info = "SoundCloud.com"
 download = soundcloud_download
