@@ -4,17 +4,17 @@ __all__ = ['tudou_download', 'tudou_download_playlist', 'tudou_download_by_id', 
 
 from ..common import *
 from xml.dom.minidom import parseString
+import you_get.extractors.acfun
 
 def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only = False):
     data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?iid=%s' % iid))
     temp = max([data[i] for i in data if 'size' in data[i][0]], key=lambda x:sum([part['size'] for part in x]))
     vids, size = [t["k"] for t in temp], sum([t["size"] for t in temp])
-    urls = [[n.firstChild.nodeValue.strip()
-             for n in
-                parseString(
-                    get_html('http://ct.v2.tudou.com/f?id=%s' % vid))
-                .getElementsByTagName('f')][0]
-            for vid in vids]
+
+    urls = []
+    for vid in vids:
+        for i in parseString(get_html('http://ct.v2.tudou.com/f?id=%s' % vid)).getElementsByTagName('f'):
+            urls.append(i.firstChild.nodeValue.strip())
 
     ext = r1(r'http://[\w.]*/(\w+)/[\w.]*', urls[0])
 
@@ -26,28 +26,42 @@ def tudou_download_by_id(id, title, output_dir = '.', merge = True, info_only = 
     html = get_html('http://www.tudou.com/programs/view/%s/' % id)
 
     iid = r1(r'iid\s*[:=]\s*(\S+)', html)
-    title = r1(r'kw\s*[:=]\s*[\'\"]([^\n]+?)\'\s*\n', html).replace("\\'", "\'")
+    try:
+        title = r1(r'kw\s*[:=]\s*[\'\"]([^\n]+?)\'\s*\n', html).replace("\\'", "\'")
+    except AttributeError:
+        title = ''
     tudou_download_by_iid(iid, title, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def tudou_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+    if 'acfun.tudou.com' in url:  #wrong way!
+        url = url.replace('acfun.tudou.com', 'www.acfun.tv')
+        you_get.extractors.acfun.acfun_download(url, output_dir,
+                                               merge,
+                                               info_only)
+        return  #throw you back
+
     # Embedded player
     id = r1(r'http://www.tudou.com/v/([^/]+)/', url)
     if id:
         return tudou_download_by_id(id, title="", info_only=info_only)
 
-    html = get_decoded_html(url)
+    html = get_content(url)
 
-    title = r1(r'kw\s*[:=]\s*[\'\"]([^\n]+?)\'\s*\n', html).replace("\\'", "\'")
-    assert title
-    title = unescape_html(title)
+    try:
+        title = r1(r'\Wkw\s*[:=]\s*[\'\"]([^\n]+?)\'\s*\n', html).replace("\\'", "\'")
+        assert title
+        title = unescape_html(title)
+    except AttributeError:
+        title = match1(html, r'id=\"subtitle\"\s*title\s*=\s*\"([^\"]+)\"')
+        if title is None:
+            title = ''
 
     vcode = r1(r'vcode\s*[:=]\s*\'([^\']+)\'', html)
+    if vcode is None:
+        vcode = match1(html, r'viden\s*[:=]\s*\"([\w+/=]+)\"')
     if vcode:
         from .youku import youku_download_by_vid
-        if 'stream_id' in kwargs:
-            return youku_download_by_vid(vcode, title=title, output_dir=output_dir, merge=merge, info_only=info_only, stream_id=kwargs['stream_id'])
-        else:
-            return youku_download_by_vid(vcode, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+        return youku_download_by_vid(vcode, title=title, output_dir=output_dir, merge=merge, info_only=info_only, src='tudou', **kwargs)
 
     iid = r1(r'iid\s*[:=]\s*(\d+)', html)
     if not iid:

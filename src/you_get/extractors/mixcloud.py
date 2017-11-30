@@ -4,38 +4,25 @@ __all__ = ['mixcloud_download']
 
 from ..common import *
 
-def mixcloud_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+def mixcloud_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url, faker=True)
     title = r1(r'<meta property="og:title" content="([^"]*)"', html)
-    preview_url = r1("m-preview=\"([^\"]+)\"", html)
+    preview_url = r1(r'm-preview=\"([^\"]+)\"', html)
+    preview = r1(r'previews(.*)\.mp3$', preview_url)
 
-    url = re.sub(r'previews', r'c/originals', preview_url)
     for i in range(10, 30):
-        url = re.sub(r'stream[^.]*', r'stream' + str(i), url)
-
+        url = 'https://stream{i}.mixcloud.com/c/m4a/64{p}.m4a'.format(
+            i = i,
+            p = preview
+        )
         try:
-            type, ext, size = url_info(url)
+            mime, ext, size = url_info(url)
             break
-        except:
-            continue
+        except: continue
 
-    try:
-        type
-    except:
-        url = re.sub('c/originals', r'c/m4a/64', url)
-        url = re.sub('.mp3', '.m4a', url)
-        for i in range(10, 30):
-            url = re.sub(r'stream[^.]*', r'stream' + str(i), url)
-
-            try:
-                type, ext, size = url_info(url)
-                break
-            except:
-                continue
-
-    print_info(site_info, title, type, size)
+    print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls([url], title, ext, size, output_dir, merge = merge)
+        download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
 site_info = "Mixcloud.com"
 download = mixcloud_download

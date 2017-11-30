@@ -16,7 +16,7 @@ Changelog:
 '''
 
 def real_url(host,vid,tvid,new,clipURL,ck):
-    url = 'http://'+host+'/?prot=9&prod=flash&pt=1&file='+clipURL+'&new='+new +'&key='+ ck+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))+'&t='+str(random())
+    url = 'http://'+host+'/?prot=9&prod=flash&pt=1&file='+clipURL+'&new='+new +'&key='+ ck+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))+'&t='+str(random())+'&rb=1'
     return json.loads(get_html(url))['url']
 
 def sohu_download(url, output_dir = '.', merge = True, info_only = False, extractor_proxy=None, **kwargs):
@@ -27,14 +27,19 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         vid = r1(r'\Wvid\s*[\:=]\s*[\'"]?(\d+)[\'"]?', html)
     assert vid
 
-    if re.match(r'http://tv.sohu.com/', url):
+    if re.match(r'http[s]://tv.sohu.com/', url):
         if extractor_proxy:
             set_proxy(tuple(extractor_proxy.split(":")))
         info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))
         for qtyp in ["oriVid","superVid","highVid" ,"norVid","relativeId"]:
-            hqvid = info['data'][qtyp]
+            if 'data' in info:
+                hqvid = info['data'][qtyp]
+            else:
+                hqvid = info[qtyp]
             if hqvid != 0 and hqvid != vid :
                 info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % hqvid))
+                if not 'allot' in info:
+                    continue
                 break
         if extractor_proxy:
             unset_proxy()
