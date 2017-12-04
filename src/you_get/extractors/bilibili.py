@@ -87,7 +87,7 @@ class Bilibili(VideoExtractor):
 
     def download_by_vid(self, cid, bangumi, **kwargs):
         stream_id = kwargs.get('stream_id')
-# guard here. if stream_id invalid, fallback as not stream_id
+        # guard here. if stream_id invalid, fallback as not stream_id
         if stream_id and stream_id in self.fmt2qlt:
             quality = stream_id
         else:
@@ -95,7 +95,7 @@ class Bilibili(VideoExtractor):
 
         info_only = kwargs.get('info_only')
         if not info_only or stream_id:
-# won't be None
+            # won't be None
             qlt = self.fmt2qlt.get(quality)
             api_xml = self.api_req(cid, qlt, bangumi, **kwargs)
             self.parse_bili_xml(api_xml)
@@ -117,7 +117,7 @@ class Bilibili(VideoExtractor):
         self.ua = fake_headers['User-Agent']
         self.url = url_locations([self.url])[0]
         frag = urllib.parse.urlparse(self.url).fragment
-# http://www.bilibili.com/video/av3141144/index_2.html#page=3
+        # http://www.bilibili.com/video/av3141144/index_2.html#page=3
         if frag:
             hit = re.search(r'page=(\d+)', frag)
             if hit is not None:
@@ -153,12 +153,12 @@ class Bilibili(VideoExtractor):
         patt = r"var\s*aid\s*=\s*'(\d+)'"
         aid = re.search(patt, self.page).group(1)
         page_list = json.loads(get_content('http://www.bilibili.com/widget/getPageList?aid={}'.format(aid)))
-# better ideas for bangumi_movie titles?
+        # better ideas for bangumi_movie titles?
         self.title = page_list[0]['pagename']
         self.download_by_vid(page_list[0]['cid'], True, bangumi_movie=True, **kwargs)
 
     def entry(self, **kwargs):
-# tencent player
+        # tencent player
         tc_flashvars = re.search(r'"bili-cid=\d+&bili-aid=\d+&vid=([^"]+)"', self.page)
         if tc_flashvars:
             tc_flashvars = tc_flashvars.group(1)
@@ -171,7 +171,7 @@ class Bilibili(VideoExtractor):
         if cid is not None:
             self.download_by_vid(cid, False, **kwargs)
         else:
-# flashvars?
+            # flashvars?
             flashvars = re.search(r'flashvars="([^"]+)"', self.page).group(1)
             if flashvars is None:
                 raise Exception('Unsupported page {}'.format(self.url))
@@ -327,7 +327,7 @@ def parse_cid_playurl(xml):
 
 def bilibili_download_playlist_by_url(url, **kwargs):
     url = url_locations([url])[0]
-# a bangumi here? possible?
+    # a bangumi here? possible?
     if 'live.bilibili' in url:
         site.download_by_url(url)
     elif 'bangumi.bilibili' in url:
