@@ -94,16 +94,11 @@ class Bilibili(VideoExtractor):
             quality = 'hdflv' if bangumi else 'flv'
 
         info_only = kwargs.get('info_only')
-        if not info_only or stream_id:
-            # won't be None
-            qlt = self.fmt2qlt.get(quality)
+        for qlt in range(4, -1, -1):
             api_xml = self.api_req(cid, qlt, bangumi, **kwargs)
             self.parse_bili_xml(api_xml)
+        if not info_only or stream_id:
             self.danmuku = get_danmuku_xml(cid)
-        else:
-            for qlt in range(4, 0, -1):
-                api_xml = self.api_req(cid, qlt, bangumi, **kwargs)
-                self.parse_bili_xml(api_xml)
 
     def prepare(self, **kwargs):
         if socket.getdefaulttimeout() == 600: # no timeout specified
