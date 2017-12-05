@@ -61,6 +61,7 @@ SITES = {
     'interest'         : 'interest',
     'iqilu'            : 'iqilu',
     'iqiyi'            : 'iqiyi',
+	'ixigua'           : 'ixigua',
     'isuntv'           : 'suntv',
     'joy'              : 'joy',
     'kankanews'        : 'bilibili',
