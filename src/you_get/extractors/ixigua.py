@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-__all__ = ['ixigua_download', '']
+__all__ = ['ixigua_download', 'ixigua_download_playlist']
 import base64
 import random
 import binascii
@@ -66,8 +66,6 @@ def ixigua_download(url, output_dir='.', info_only=False, **kwargs):
     try:
         video_url = base64.b64decode(video_info["data"]["video_list"]["video_1"]["main_url"]).decode()
     except Exception:
-        import traceback
-        traceback.print_exc()
         raise NotImplementedError(url)
     filetype, ext, size = url_info(video_url)
     print_info(site_info, title, filetype, size)
