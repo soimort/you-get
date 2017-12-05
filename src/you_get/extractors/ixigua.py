@@ -5,12 +5,6 @@ import random
 import binascii
 from ..common import *
 
-
-# radio_id: e.g. 549759 from http://www.lizhi.fm/549759/
-#
-# Returns a list of tuples (audio_id, title, url) for each episode
-# (audio) in the radio playlist. url is the direct link to the audio
-# file.
 def get_video_id(text):
     re_id = r"videoId: '(.*?)'"
     return re.findall(re_id, text)[0]
