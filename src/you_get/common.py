@@ -61,6 +61,7 @@ SITES = {
     'interest'         : 'interest',
     'iqilu'            : 'iqilu',
     'iqiyi'            : 'iqiyi',
+	'ixigua'           : 'ixigua',
     'isuntv'           : 'suntv',
     'joy'              : 'joy',
     'kankanews'        : 'bilibili',
@@ -122,7 +123,6 @@ SITES = {
     'youtube'          : 'youtube',
     'zhanqi'           : 'zhanqi',
     '365yg'            : 'toutiao',
-    'ixigua'           : 'ixigua',
 }
 
 dry_run = False
