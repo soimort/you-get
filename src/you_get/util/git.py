@@ -17,18 +17,23 @@ def get_head(repo_path):
 def get_version(repo_path):
     try:
         version = __version__.split('.')
-        major, minor = version[0], version[1]
-
-        p = subprocess.Popen(['git', 'rev-list', 'HEAD', '--count'],
+        major, minor, cn = [int(i) for i in version]
+        p = subprocess.Popen(['git',
+                              '--git-dir', os.path.join(repo_path, '.git'),
+                              '--work-tree', repo_path,
+                              'rev-list', 'HEAD', '--count'],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         raw, err = p.communicate()
         c_head = int(raw.decode('ascii'))
-        q = subprocess.Popen(['git', 'rev-list', 'master', '--count'],
+        q = subprocess.Popen(['git',
+                              '--git-dir', os.path.join(repo_path, '.git'),
+                              '--work-tree', repo_path,
+                              'rev-list', 'master', '--count'],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         raw, err = q.communicate()
         c_master = int(raw.decode('ascii'))
         cc = c_head - c_master
         assert cc
-        return '%s.%s.%s' % (major, minor, cc)
+        return '%s.%s.%s' % (major, minor, cn + cc)
     except:
         return __version__

@@ -1,41 +1,67 @@
 #!/usr/bin/env python
 
-__all__ = ['cntv_download', 'cntv_download_by_id']
-
-from ..common import *
-
 import json
 import re
 
-def cntv_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
-    assert id
-    info = json.loads(get_html('http://vdn.apps.cntv.cn/api/getHttpVideoInfo.do?pid=' + id))
-    title = title or info['title']
-    video = info['video']
-    alternatives = [x for x in video.keys() if x.endswith('hapters')]
-    #assert alternatives in (['chapters'], ['lowChapters', 'chapters'], ['chapters', 'lowChapters']), alternatives
-    chapters = video['chapters'] if 'chapters' in video else video['lowChapters']
-    urls = [x['url'] for x in chapters]
-    ext = r1(r'\.([^.]+)$', urls[0])
-    assert ext in ('flv', 'mp4')
-    size = 0
-    for url in urls:
-        _, _, temp = url_info(url)
-        size += temp
-    
-    print_info(site_info, title, ext, size)
-    if not info_only:
-        download_urls(urls, title, ext, size, output_dir = output_dir, merge = merge)
+from ..common import get_content, r1, match1, playlist_not_supported
+from ..extractor import VideoExtractor
 
-def cntv_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    if re.match(r'http://\w+\.cntv\.cn/(\w+/\w+/(classpage/video/)?)?\d+/\d+\.shtml', url) or re.match(r'http://\w+.cntv.cn/(\w+/)*VIDE\d+.shtml', url):
-        id = r1(r'videoCenterId","(\w+)"', get_html(url))
+__all__ = ['cntv_download', 'cntv_download_by_id']
+
+
+class CNTV(VideoExtractor):
+    name = 'CNTV.com'
+    stream_types = [
+        {'id': '1', 'video_profile': '1280x720_2000kb/s', 'map_to': 'chapters4'},
+        {'id': '2', 'video_profile': '1280x720_1200kb/s', 'map_to': 'chapters3'},
+        {'id': '3', 'video_profile': '640x360_850kb/s', 'map_to': 'chapters2'},
+        {'id': '4', 'video_profile': '480x270_450kb/s', 'map_to': 'chapters'},
+        {'id': '5', 'video_profile': '320x180_200kb/s', 'map_to': 'lowChapters'},
+    ]
+
+    ep = 'http://vdn.apps.cntv.cn/api/getHttpVideoInfo.do?pid={}'
+
+    def __init__(self):
+        super().__init__()
+        self.api_data = None
+
+    def prepare(self, **kwargs):
+        self.api_data = json.loads(get_content(self.__class__.ep.format(self.vid)))
+        self.title = self.api_data['title']
+        for s in self.api_data['video']:
+            for st in self.__class__.stream_types:
+                if st['map_to'] == s:
+                    urls = self.api_data['video'][s]
+                    src = [u['url'] for u in urls]
+                    stream_data = dict(src=src, size=0, container='mp4', video_profile=st['video_profile'])
+                    self.streams[st['id']] = stream_data
+
+
+def cntv_download_by_id(rid, **kwargs):
+    CNTV().download_by_vid(rid, **kwargs)
+
+
+def cntv_download(url, **kwargs):
+    if re.match(r'http://tv\.cntv\.cn/video/(\w+)/(\w+)', url):
+        rid = match1(url, r'http://tv\.cntv\.cn/video/\w+/(\w+)')
+    elif re.match(r'http://tv\.cctv\.com/\d+/\d+/\d+/\w+.shtml', url):
+        rid = r1(r'var guid = "(\w+)"', get_content(url))
+    elif re.match(r'http://\w+\.cntv\.cn/(\w+/\w+/(classpage/video/)?)?\d+/\d+\.shtml', url) or \
+         re.match(r'http://\w+.cntv.cn/(\w+/)*VIDE\d+.shtml', url) or \
+         re.match(r'http://(\w+).cntv.cn/(\w+)/classpage/video/(\d+)/(\d+).shtml', url) or \
+         re.match(r'http://\w+.cctv.com/\d+/\d+/\d+/\w+.shtml', url) or \
+         re.match(r'http://\w+.cntv.cn/\d+/\d+/\d+/\w+.shtml', url): 
+        page = get_content(url)
+        rid = r1(r'videoCenterId","(\w+)"', page)
+        if rid is None:
+            guid = re.search(r'guid\s*=\s*"([0-9a-z]+)"', page).group(1)
+            rid = guid
     elif re.match(r'http://xiyou.cntv.cn/v-[\w-]+\.html', url):
-        id = r1(r'http://xiyou.cntv.cn/v-([\w-]+)\.html', url)
+        rid = r1(r'http://xiyou.cntv.cn/v-([\w-]+)\.html', url)
     else:
         raise NotImplementedError(url)
-    
-    cntv_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
+
+    CNTV().download_by_vid(rid, **kwargs)
 
 site_info = "CNTV.com"
 download = cntv_download

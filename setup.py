@@ -36,7 +36,7 @@ setup(
     test_suite = 'tests',
 
     platforms = 'any',
-    zip_safe = False,
+    zip_safe = True,
     include_package_data = True,
 
     classifiers = proj_info['classifiers'],

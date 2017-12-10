@@ -10,6 +10,7 @@ def legitimize(text, os=platform.system()):
     text = text.translate({
         0: None,
         ord('/'): '-',
+        ord('|'): '-',
     })
 
     if os == 'Windows':
@@ -20,7 +21,6 @@ def legitimize(text, os=platform.system()):
             ord('*'): '-',
             ord('?'): '-',
             ord('\\'): '-',
-            ord('|'): '-',
             ord('\"'): '\'',
             # Reserved in Windows VFAT
             ord('+'): '-',
@@ -41,5 +41,5 @@ def legitimize(text, os=platform.system()):
         if text.startswith("."):
             text = text[1:]
 
-    text = text[:82] # Trim to 82 Unicode characters long
+    text = text[:80] # Trim to 82 Unicode characters long
     return text

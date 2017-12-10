@@ -42,14 +42,31 @@ def download_rtmpdump_stream(url, title, ext,params={},output_dir='.'):
     return
 
 #
-#To be refactor
-#
 def play_rtmpdump_stream(player, url, params={}):
-    cmdline="rtmpdump -r '%s' "%url
+    
+    #construct left side of pipe
+    cmdline = [RTMPDUMP, '-r']
+    cmdline.append(url)
+    
+    #append other params if exist
     for key in params.keys():
-        cmdline+=key+" "+params[key] if params[key]!=None else ""+" "
-    cmdline+=" -o - | %s -"%player
-    print(cmdline)
-    os.system(cmdline)
+        cmdline.append(key)
+        if params[key]!=None:
+            cmdline.append(params[key])
+
+    cmdline.append('-o')
+    cmdline.append('-')
+
+    #pipe start
+    cmdline.append('|')
+    cmdline.append(player)
+    cmdline.append('-')
+
+    #logging
+    print("Call rtmpdump:\n"+" ".join(cmdline)+"\n")
+
+    #call RTMPDump!
+    subprocess.call(cmdline)
+    
     # os.system("rtmpdump -r '%s' -y '%s' -o - | %s -" % (url, playpath, player))
     return

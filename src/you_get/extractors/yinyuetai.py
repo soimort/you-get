@@ -17,7 +17,8 @@ def yinyuetai_download_by_id(vid, title=None, output_dir='.', merge=True, info_o
         download_urls([url], title, ext, size, output_dir, merge = merge)
 
 def yinyuetai_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    id = r1(r'http://\w+.yinyuetai.com/video/(\d+)', url)
+    id = r1(r'http://\w+.yinyuetai.com/video/(\d+)', url) or \
+         r1(r'http://\w+.yinyuetai.com/video/h5/(\d+)', url)
     if not id:
         yinyuetai_download_playlist(url, output_dir=output_dir, merge=merge, info_only=info_only)
         return

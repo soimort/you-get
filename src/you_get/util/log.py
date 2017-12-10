@@ -5,13 +5,13 @@ from ..version import script_name
 
 import os, sys
 
-IS_ANSI_TERMINAL = os.getenv('TERM') in (
+TERM = os.getenv('TERM', '')
+IS_ANSI_TERMINAL = TERM in (
     'eterm-color',
     'linux',
     'screen',
     'vt100',
-    'xterm',
-)
+) or TERM.startswith('xterm')
 
 # ANSI escape code
 # See <http://en.wikipedia.org/wiki/ANSI_escape_code>
@@ -89,10 +89,10 @@ def e(message, exit_code=None):
     """Print an error log message."""
     print_log(message, YELLOW, BOLD)
     if exit_code is not None:
-        exit(exit_code)
+        sys.exit(exit_code)
 
 def wtf(message, exit_code=1):
     """What a Terrible Failure!"""
     print_log(message, RED, BOLD)
     if exit_code is not None:
-        exit(exit_code)
+        sys.exit(exit_code)
