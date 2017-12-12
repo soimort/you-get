@@ -1022,8 +1022,11 @@ def download_url_ffmpeg(
     global output_filename
     if output_filename:
         dotPos = output_filename.rfind('.')
-        title = output_filename[:dotPos]
-        ext = output_filename[dotPos+1:]
+        if dotPos > 0:
+            title = output_filename[:dotPos]
+            ext = output_filename[dotPos+1:]
+        else:
+            title = output_filename
 
     title = tr(get_filename(title))
 
