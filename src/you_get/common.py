@@ -67,6 +67,7 @@ SITES = {
     'kankanews'        : 'bilibili',
     'khanacademy'      : 'khan',
     'ku6'              : 'ku6',
+    'kuaishou'         : 'kuaishou',
     'kugou'            : 'kugou',
     'kuwo'             : 'kuwo',
     'le'               : 'le',
