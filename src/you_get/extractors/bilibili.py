@@ -32,6 +32,7 @@ class Bilibili(VideoExtractor):
     SEC2 = '9b288147e5474dd2aa67085f716c560d'
     stream_types = [
             {'id': 'hdflv'},
+            {'id': 'flv720'},
             {'id': 'flv'},
             {'id': 'hdmp4'},
             {'id': 'mp4'},
@@ -43,13 +44,15 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_stream_type(urls):
         url = urls[0]
-        if 'hd.flv?' in url or '-112.flv' in url:
+        if 'hd.flv' in url or '-112.flv' in url:
             return 'hdflv', 'flv'
-        if '.flv?' in url:
+        if '-64.flv' in url:
+            return 'flv720', 'flv'
+        if '.flv' in url:
             return 'flv', 'flv'
-        if 'hd.mp4?' in url or '-48.mp4' in url:
+        if 'hd.mp4' in url or '-48.mp4' in url:
             return 'hdmp4', 'mp4'
-        if '.mp4?' in url:
+        if '.mp4' in url:
             return 'mp4', 'mp4'
         raise Exception('Unknown stream type')
 
@@ -122,7 +125,7 @@ class Bilibili(VideoExtractor):
         self.referer = self.url
         self.page = get_content(self.url)
 
-        m = re.search(r'<h1\s*title="([^"]+)"', self.page)
+        m = re.search(r'<h1.*?>(.*?)</h1>', self.page)
         if m is not None:
             self.title = m.group(1)
         if self.title is None:
