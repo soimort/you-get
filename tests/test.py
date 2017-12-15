@@ -8,6 +8,7 @@ from you_get.extractors import (
     youtube,
     yixia,
     bilibili,
+    douyin,
 )
 
 
@@ -44,6 +45,12 @@ class YouGetTests(unittest.TestCase):
         )
         bilibili.download(
             'https://www.bilibili.com/video/av13228063/', info_only=True
+        )
+
+    def test_douyin(self):
+        douyin.download(
+            'https://www.douyin.com/share/video/6492273288897629454',
+            info_only=True
         )
 
 

@@ -38,6 +38,7 @@ SITES = {
     'dailymotion'      : 'dailymotion',
     'dilidili'         : 'dilidili',
     'douban'           : 'douban',
+    'douyin'           : 'douyin',
     'douyu'            : 'douyutv',
     'ehow'             : 'ehow',
     'facebook'         : 'facebook',

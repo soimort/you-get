@@ -15,6 +15,7 @@ from .coub import *
 from .dailymotion import *
 from .dilidili import *
 from .douban import *
+from .douyin import *
 from .douyutv import *
 from .ehow import *
 from .facebook import *
