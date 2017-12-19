@@ -47,12 +47,6 @@ class YouGetTests(unittest.TestCase):
             'https://www.bilibili.com/video/av13228063/', info_only=True
         )
 
-    def test_douyin(self):
-        douyin.download(
-            'https://www.douyin.com/share/video/6492273288897629454',
-            info_only=True
-        )
-
 
 if __name__ == '__main__':
     unittest.main()
