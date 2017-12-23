@@ -78,7 +78,7 @@ class Youku(VideoExtractor):
         self.api_error_code = None
         self.api_error_msg = None
 
-        self.ccode = '0508'
+        self.ccode = '0512'
         self.utid = None
 
     def youku_ups(self):
@@ -154,7 +154,7 @@ class Youku(VideoExtractor):
                     log.wtf('Cannot fetch vid')
 
         if kwargs.get('src') and kwargs['src'] == 'tudou':
-            self.ccode = '0501'
+            self.ccode = '0512'
 
         if kwargs.get('password') and kwargs['password']:
             self.password_protected = True
