@@ -165,7 +165,10 @@ class Bilibili(VideoExtractor):
             qq_download_by_vid(tc_flashvars, self.title, output_dir=kwargs['output_dir'], merge=kwargs['merge'], info_only=kwargs['info_only'])
             return
 
-        cid = re.search(r'cid=(\d+)', self.page).group(1)
+        try:
+            cid = re.search(r'cid=(\d+)', self.page).group(1)
+        except:
+            cid = re.search(r'"cid":(\d+)', self.page).group(1)
         if cid is not None:
             self.download_by_vid(cid, False, **kwargs)
         else:
