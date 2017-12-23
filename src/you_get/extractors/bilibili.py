@@ -165,6 +165,10 @@ class Bilibili(VideoExtractor):
             qq_download_by_vid(tc_flashvars, self.title, output_dir=kwargs['output_dir'], merge=kwargs['merge'], info_only=kwargs['info_only'])
             return
 
+        has_plist = re.search(r'<option', self.page)
+        if has_plist and r1('index_(\d+).html', self.url) is None:
+            log.w('This page contains a playlist. (use --playlist to download all videos.)')
+
         try:
             cid = re.search(r'cid=(\d+)', self.page).group(1)
         except:
