@@ -174,7 +174,7 @@ class Bilibili(VideoExtractor):
         except:
             cid = re.search(r'"cid":(\d+)', self.page).group(1)
         if cid is not None:
-            self.download_by_vid(cid, False, **kwargs)
+            self.download_by_vid(cid, re.search('bangumi', self.url) is not None, **kwargs)
         else:
             # flashvars?
             flashvars = re.search(r'flashvars="([^"]+)"', self.page).group(1)
