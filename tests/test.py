@@ -9,6 +9,7 @@ from you_get.extractors import (
     yixia,
     bilibili,
     douyin,
+    netease,
 )
 
 
@@ -50,6 +51,12 @@ class YouGetTests(unittest.TestCase):
     def test_douyin(self):
         douyin.download(
             'https://www.douyin.com/share/video/6492273288897629454',
+            info_only=True
+        )
+
+    def test_netease(self):
+        netease.download(
+            'http://v.ent.163.com/video/2017/12/9/V/VD5BG8P9V.html',
             info_only=True
         )
 
