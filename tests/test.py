@@ -40,6 +40,11 @@ class YouGetTests(unittest.TestCase):
             info_only=True
         )
 
+        yixia.download(
+            'http://m.miaopai.com/show/channel/RjJnaplo7c~T~1BhGrzVWUVKg3dK4A8wCy~ucg__?from=groupmessage&isappinstalled=0',  # noqa
+            info_only=True
+        )
+
     def test_bilibili(self):
         bilibili.download(
             'https://www.bilibili.com/video/av16907446/', info_only=True
@@ -53,6 +58,7 @@ class YouGetTests(unittest.TestCase):
             'http://v.ent.163.com/video/2017/12/9/V/VD5BG8P9V.html',
             info_only=True
         )
+
 
 if __name__ == '__main__':
     unittest.main()
