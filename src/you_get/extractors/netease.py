@@ -12,7 +12,6 @@ import base64
 import os
 
 ################################################################################
-import requests
 from Crypto.Cipher import AES
 import codecs
 
@@ -43,9 +42,8 @@ def get_mp3_link(song_id):
     data = {'params': params, 'encSecKey': encSecKey}
     url = "http://music.163.com/weapi/song/enhance/player/url?csrf_token="
     try:
-        req = requests.post(url, headers=header, data=data, timeout=10).json()
-        if req['code'] == 200:
-            return req['data'][0]['url']
+        req = loads(post_content(url, headers=header, post_data=data, decoded=True))
+        return req['data'][0]['url']
     except Exception as e:
         raise
 ################################################################################
@@ -149,10 +147,7 @@ def netease_video_download(vinfo, output_dir='.', info_only=False):
 
 def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix=""):
     title = "%s%s. %s" % (playlist_prefix, song['position'], song['name'])
-    print(song)
-    print(song['id'])
     url_best = get_mp3_link(song['id'])
-    print(url_best)
     # songNet = 'p' + song['mp3Url'].split('/')[2][1:]
 
     # if 'hMusic' in song and song['hMusic'] != None:
