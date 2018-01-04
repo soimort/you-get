@@ -11,7 +11,7 @@ import hashlib
 import base64
 import os
 
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES  # pip install pycrypto==2.6.1
 import codecs
 HEADER = {"Referer": "http://music.163.com/"}
 
