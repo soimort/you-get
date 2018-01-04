@@ -68,7 +68,7 @@ class Bilibili(VideoExtractor):
             chksum = hashlib.md5(bytes(params_str+self.SEC2, 'utf8')).hexdigest()
             api_url = self.bangumi_api_url + params_str + '&sign=' + chksum
 
-        xml_str = get_content(api_url)
+        xml_str = get_content(api_url, headers=dict(referer='http://www.bilibili.com'))
         return xml_str
 
     def parse_bili_xml(self, xml_str):
