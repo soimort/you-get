@@ -125,7 +125,7 @@ class Bilibili(VideoExtractor):
         self.referer = self.url
         self.page = get_content(self.url)
 
-        m = re.search(r'<h1.*?>(.*?)</h1>', self.page)
+        m = re.search(r'<h1.*?>(?:<!-+>)?[\n ]*(.*?)[\n ]*</h1>', self.page, flags=re.DOTALL)
         if m is not None:
             self.title = m.group(1)
         if self.title is None:
@@ -135,7 +135,7 @@ class Bilibili(VideoExtractor):
         if 'subtitle' in kwargs:
             subtitle = kwargs['subtitle']
             self.title = '{} {}'.format(self.title, subtitle)
-
+            
         if 'bangumi.bilibili.com/movie' in self.url:
             self.movie_entry(**kwargs)
         elif 'bangumi.bilibili.com' in self.url:

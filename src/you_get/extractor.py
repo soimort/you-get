@@ -4,7 +4,9 @@ from .common import match1, maybe_print, download_urls, get_filename, parse_host
 from .common import print_more_compatible as print
 from .util import log
 from . import json_output
+from subprocess import DEVNULL
 import os
+import subprocess
 
 class Extractor():
     def __init__(self, *args):
@@ -242,6 +244,8 @@ class VideoExtractor():
                 print('Downloading {} ...\n'.format(filename))
                 with open(os.path.join(kwargs['output_dir'], filename), 'w', encoding='utf8') as fp:
                     fp.write(self.danmuku)
+                output = get_filename(self.title)
+                subprocess.check_call(['danmaku2ass', '-o', output + '.ass', '-s', '1920x1080', '-fn', 'MS PGothic', '-fs', '48', '-a', '0.8', '-dm', '15', '-ds', '10', output + '.cmt.xml'], stdin=DEVNULL);
 
             # For main_dev()
             #download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'])
