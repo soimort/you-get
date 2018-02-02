@@ -49,7 +49,7 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
     """
 
     #first call the main parasing API
-    info = json.loads(get_content('http://www.acfun.tv/video/getVideo.aspx?id=' + vid))
+    info = json.loads(get_content('http://www.acfun.cn/video/getVideo.aspx?id=' + vid))
 
     sourceType = info['sourceType']
 
