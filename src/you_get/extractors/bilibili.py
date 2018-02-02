@@ -125,11 +125,11 @@ class Bilibili(VideoExtractor):
         self.referer = self.url
         self.page = get_content(self.url)
 
-        m = re.search(r'<h1.*?>(.*?)</h1>', self.page)
+        m = re.search(r'<h1.*?>(.*?)</h1>', self.page) or re.search(r'<h1 title="([^"]+)">', self.page)
         if m is not None:
             self.title = m.group(1)
         if self.title is None:
-            m = re.search(r'<meta property="og:title" content="([^"]+)">', self.page)
+            m = re.search(r'property="og:title" content="([^"]+)"', self.page)
             if m is not None:
                 self.title = m.group(1)
         if 'subtitle' in kwargs:
