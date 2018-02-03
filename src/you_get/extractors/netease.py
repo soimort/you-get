@@ -131,6 +131,20 @@ def netease_download(url, output_dir = '.', merge = True, info_only = False, **k
         url = get_location(url)
     if "music.163.com" in url:
         netease_cloud_music_download(url, output_dir, merge, info_only, **kwargs)
+    elif "v.ent.163.com/video" in url:
+        # Parse and download video pages like:
+        # http://v.ent.163.com/video/2017/12/9/V/VD5BG8P9V.html
+        html = get_decoded_html(url)
+
+        title = r1(r'<h1[^>]*?><span[^>]*?>([^<]*?)</span></h1>', html)
+        title = title.strip() if title else ''
+        video_url = r1(r'"url_mp4": "([^"]*?)"', html)
+        if video_url:
+            _, ext, size = url_info(video_url)
+            print_info(site_info, title, ext, size)
+
+            if not info_only:
+                download_urls([video_url], title, ext, size, output_dir=output_dir, merge=merge)
     else:
         html = get_decoded_html(url)
 

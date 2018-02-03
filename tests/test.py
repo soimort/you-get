@@ -9,6 +9,7 @@ from you_get.extractors import (
     yixia,
     bilibili,
     douyin,
+    netease,
 )
 
 
@@ -47,6 +48,11 @@ class YouGetTests(unittest.TestCase):
             'https://www.bilibili.com/video/av13228063/', info_only=True
         )
 
+    def test_netease(self):
+        netease.download(
+            'http://v.ent.163.com/video/2017/12/9/V/VD5BG8P9V.html',
+            info_only=True
+        )
 
 if __name__ == '__main__':
     unittest.main()
