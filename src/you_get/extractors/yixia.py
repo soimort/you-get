@@ -58,7 +58,7 @@ def yixia_download(url, output_dir = '.', merge = True, info_only = False, **kwa
         elif re.match(r'https?://m.miaopai.com/show/channel/.+', url):  #Mobile
             scid = match1(url, r'https?://m.miaopai.com/show/channel/(.+)\.htm')
             if scid == None :
-                scid = match1(url, r'https?://m.miaopai.com/show/channel/(.+)')
+                scid = match1(url, r'https?://m.miaopai.com/show/channel/([^\?]+)')
 
     elif 'xiaokaxiu.com' in hostname:  #Xiaokaxiu
         yixia_download_by_scid = yixia_xiaokaxiu_download_by_scid
