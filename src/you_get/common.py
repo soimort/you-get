@@ -845,6 +845,10 @@ def get_output_filename(urls, title, ext, output_dir, merge):
                 merged_ext = 'ts'
     return '%s.%s' % (title, merged_ext)
 
+def print_user_agent(faker=False):
+    urllib_default_user_agent = 'Python-urllib/%d.%d' % sys.version_info[:2]
+    user_agent = fake_headers['User-Agent'] if faker else urllib_default_user_agent
+    print('User Agent: %s' % user_agent)
 
 def download_urls(
     urls, title, ext, total_size, output_dir='.', refer=None, merge=True,
@@ -858,6 +862,7 @@ def download_urls(
         )
         return
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URLs:\n%s' % '\n'.join(urls))
         return
 
@@ -986,6 +991,7 @@ def download_rtmp_url(
 ):
     assert url
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URL:\n%s\n' % [url])
         if params.get('-y', False):  # None or unset -> False
             print('Real Playpath:\n%s\n' % [params.get('-y')])
@@ -1009,6 +1015,7 @@ def download_url_ffmpeg(
 ):
     assert url
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URL:\n%s\n' % [url])
         if params.get('-y', False):  # None or unset ->False
             print('Real Playpath:\n%s\n' % [params.get('-y')])
