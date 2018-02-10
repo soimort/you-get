@@ -726,7 +726,7 @@ class SimpleProgressBar:
         total_str_width = max(len(total_str), 5)
         self.bar_size = self.term_size - 28 - 2 * total_pieces_len \
             - 2 * total_str_width
-        self.bar = '{:>4}%% ({:>%s}/%sMB) ├{:─<%s}┤[{:>%s}/{:>%s}] {}' % (
+        self.bar = '{:>4}%% ({:>%s}/%sMB) [{:=<%s}][{:>%s}/{:>%s}] {}' % (
             total_str_width, total_str, self.bar_size, total_pieces_len,
             total_pieces_len
         )
@@ -740,12 +740,12 @@ class SimpleProgressBar:
         dots = bar_size * int(percent) // 100
         plus = int(percent) - dots // bar_size * 100
         if plus > 0.8:
-            plus = '█'
+            plus = '>'
         elif plus > 0.4:
             plus = '>'
         else:
             plus = ''
-        bar = '█' * dots + plus
+        bar = '=' * dots + plus
         bar = self.bar.format(
             percent, round(self.received / 1048576, 1), bar,
             self.current_piece, self.total_pieces, self.speed
