@@ -140,6 +140,8 @@ class Bilibili(VideoExtractor):
             self.movie_entry(**kwargs)
         elif 'bangumi.bilibili.com' in self.url:
             self.bangumi_entry(**kwargs)
+        elif 'bangumi/' in self.url:
+            self.bangumi_entry(**kwargs)
         elif 'live.bilibili.com' in self.url:
             self.live_entry(**kwargs)
         elif 'vc.bilibili.com' in self.url:
@@ -235,21 +237,21 @@ class Bilibili(VideoExtractor):
 
     def bangumi_entry(self, **kwargs):
         bangumi_id = re.search(r'(\d+)', self.url).group(1)
-        bangumi_data = get_bangumi_info(bangumi_id)
-        bangumi_payment = bangumi_data.get('payment')
-        if bangumi_payment and bangumi_payment['price'] != '0':
-            log.w("It's a paid item")
-        # ep_ids = collect_bangumi_epids(bangumi_data)
-
         frag = urllib.parse.urlparse(self.url).fragment
         if frag:
             episode_id = frag
         else:
-            episode_id = re.search(r'first_ep_id\s*=\s*"(\d+)"', self.page)
+            episode_id = re.search(r'first_ep_id\s*=\s*"(\d+)"', self.page) or re.search(r'\/ep(\d+)', self.url).group(1)
         # cont = post_content('http://bangumi.bilibili.com/web_api/get_source', post_data=dict(episode_id=episode_id))
         # cid = json.loads(cont)['result']['cid']
         cont = get_content('http://bangumi.bilibili.com/web_api/episode/{}.json'.format(episode_id))
         ep_info = json.loads(cont)['result']['currentEpisode']
+
+        bangumi_data = get_bangumi_info(str(ep_info['seasonId']))
+        bangumi_payment = bangumi_data.get('payment')
+        if bangumi_payment and bangumi_payment['price'] != '0':
+            log.w("It's a paid item")
+        # ep_ids = collect_bangumi_epids(bangumi_data)
 
         index_title = ep_info['indexTitle']
         long_title = ep_info['longTitle'].strip()
@@ -295,10 +297,10 @@ def collect_bangumi_epids(json_data):
     eps = json_data['episodes'][::-1]
     return [ep['episode_id'] for ep in eps]
 
-def get_bangumi_info(bangumi_id):
+def get_bangumi_info(season_id):
     BASE_URL = 'http://bangumi.bilibili.com/jsonp/seasoninfo/'
     long_epoch = int(time.time() * 1000)
-    req_url = BASE_URL + bangumi_id + '.ver?callback=seasonListCallback&jsonp=jsonp&_=' + str(long_epoch)
+    req_url = BASE_URL + season_id + '.ver?callback=seasonListCallback&jsonp=jsonp&_=' + str(long_epoch)
     season_data = get_content(req_url)
     season_data = season_data[len('seasonListCallback('):]
     season_data = season_data[: -1 * len(');')]
