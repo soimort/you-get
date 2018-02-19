@@ -74,6 +74,7 @@ SITES = {
     'le'               : 'le',
     'letv'             : 'le',
     'lizhi'            : 'lizhi',
+	'longzhu'          : 'longzhu',
     'magisto'          : 'magisto',
     'metacafe'         : 'metacafe',
     'mgtv'             : 'mgtv',
