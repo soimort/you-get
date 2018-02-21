@@ -78,7 +78,7 @@ class Youku(VideoExtractor):
         self.api_error_code = None
         self.api_error_msg = None
 
-        self.ccode = '0507'
+        self.ccode = '0502'
         self.utid = None
 
     def youku_ups(self):
@@ -86,6 +86,7 @@ class Youku(VideoExtractor):
         url += '&client_ip=192.168.1.1'
         url += '&utid=' + self.utid
         url += '&client_ts=' + str(int(time.time()))
+        url += '&ckey=XXX' #Please replace XXX above with your own ckey, you have to obtain your ckey from any youku video webpage first.
         if self.password_protected:
             url += '&password=' + self.password
         headers = dict(Referer=self.referer)
