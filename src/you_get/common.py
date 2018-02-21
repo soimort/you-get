@@ -134,6 +134,7 @@ player = None
 extractor_proxy = None
 cookies = None
 output_filename = None
+auto_rename = False
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -598,27 +599,40 @@ def url_save(
         tmp_headers['Referer'] = refer
     file_size = url_size(url, faker=faker, headers=tmp_headers)
 
-    if os.path.exists(filepath):
-        if not force and file_size == os.path.getsize(filepath):
-            if not is_part:
-                if bar:
-                    bar.done()
-                print(
-                    'Skipping {}: file already exists'.format(
-                        tr(os.path.basename(filepath))
+    continue_renameing = True
+    while continue_renameing:
+        continue_renameing = False
+        if os.path.exists(filepath):
+            if not force and file_size == os.path.getsize(filepath):
+                if not is_part:
+                    if bar:
+                        bar.done()
+                    print(
+                        'Skipping {}: file already exists'.format(
+                            tr(os.path.basename(filepath))
+                        )
                     )
-                )
+                else:
+                    if bar:
+                        bar.update_received(file_size)
+                return
             else:
-                if bar:
-                    bar.update_received(file_size)
-            return
-        else:
-            if not is_part:
-                if bar:
-                    bar.done()
-                print('Overwriting %s' % tr(os.path.basename(filepath)), '...')
-    elif not os.path.exists(os.path.dirname(filepath)):
-        os.mkdir(os.path.dirname(filepath))
+                if not is_part:
+                    if bar:
+                        bar.done()
+                    if not force and auto_rename:
+                        path, ext = os.path.basename(filepath).rsplit('.', 1)
+                        if (re.compile(' \(\d\)').match(path[-4:]) is None):
+                            thisfile = path + ' (1).' + ext
+                        else:
+                            thisfile = path[:-2] + str(int(path[-2]) + 1) + ').' + ext 
+                        filepath = os.path.join(os.path.dirname(filepath), thisfile)
+                        print('Changing name to %s' % tr(os.path.basename(filepath)), '...')
+                        continue_renameing = True
+                        continue
+                    print('Overwriting %s' % tr(os.path.basename(filepath)), '...')
+        elif not os.path.exists(os.path.dirname(filepath)):
+            os.mkdir(os.path.dirname(filepath))
 
     temp_filepath = filepath + '.download' if file_size != float('inf') \
         else filepath
@@ -883,7 +897,7 @@ def download_urls(
     output_filepath = os.path.join(output_dir, output_filename)
 
     if total_size:
-        if not force and os.path.exists(output_filepath) \
+        if not force and os.path.exists(output_filepath) and not auto_rename\
                 and os.path.getsize(output_filepath) >= total_size * 0.9:
             print('Skipping %s: file already exists' % output_filepath)
             print()
@@ -1370,6 +1384,10 @@ def script_main(download, download_playlist, **kwargs):
         '-l', '--playlist', action='store_true',
         help='Prefer to download a playlist'
     )
+    download_grp.add_argument(
+        '-a', '--auto-rename', action='store_true', default=False,
+        help='Auto rename same name different files'
+    )
 
     proxy_grp = parser.add_argument_group('Proxy options')
     proxy_grp = proxy_grp.add_mutually_exclusive_group()
@@ -1414,11 +1432,16 @@ def script_main(download, download_playlist, **kwargs):
     global player
     global extractor_proxy
     global output_filename
+    global auto_rename
 
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
     info_only = args.info
+    if args.force:
+        force = True
+    if args.auto_rename:
+        auto_rename = True
     if args.url:
         dry_run = True
     if args.json:
