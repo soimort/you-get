@@ -622,10 +622,13 @@ def url_save(
                         bar.done()
                     if not force and auto_rename:
                         path, ext = os.path.basename(filepath).rsplit('.', 1)
-                        if (re.compile(' \(\d\)').match(path[-4:]) is None):
+                        finder = re.compile(' \([1-9]\d*?\)$')
+                        if (finder.search(path) is None):
                             thisfile = path + ' (1).' + ext
                         else:
-                            thisfile = path[:-2] + str(int(path[-2]) + 1) + ').' + ext 
+                            def numreturn(a):
+                                return ' (' + str(int(a.group()[2:-1]) + 1) + ').'
+                            thisfile = finder.sub(numreturn, path) + ext
                         filepath = os.path.join(os.path.dirname(filepath), thisfile)
                         print('Changing name to %s' % tr(os.path.basename(filepath)), '...')
                         continue_renameing = True
