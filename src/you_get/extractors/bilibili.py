@@ -123,7 +123,7 @@ class Bilibili(VideoExtractor):
                 aid = re.search(r'av(\d+)', self.url).group(1)
                 self.url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, page)
         self.referer = self.url
-        self.page = get_content(self.url)
+        self.page = get_content(self.url, headers={'referer': self.url, 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'})
 
         m = re.search(r'<h1.*?>(.*?)</h1>', self.page) or re.search(r'<h1 title="([^"]+)">', self.page)
         if m is not None:
