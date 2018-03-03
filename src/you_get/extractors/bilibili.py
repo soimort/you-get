@@ -99,7 +99,10 @@ class Bilibili(VideoExtractor):
         info_only = kwargs.get('info_only')
         for qlt in range(4, -1, -1):
             api_xml = self.api_req(cid, qlt, bangumi, **kwargs)
-            self.parse_bili_xml(api_xml)
+            try:
+                self.parse_bili_xml(api_xml)
+            except IndexError as e:
+                pass # url = urls[0]: list index out of range; try next
         if not info_only or stream_id:
             self.danmuku = get_danmuku_xml(cid)
 
