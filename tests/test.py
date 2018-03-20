@@ -7,6 +7,7 @@ from you_get.extractors import (
     magisto,
     youtube,
     bilibili,
+    pptv,
 )
 
 
@@ -39,6 +40,8 @@ class YouGetTests(unittest.TestCase):
             'https://www.bilibili.com/video/av13228063/', info_only=True
         )
 
+    def test_pptv(self):
+        pptv.download('http://v.pptv.com/show/2wkRjlOgS4nsatI.html', info_only=True)
 
 if __name__ == '__main__':
     unittest.main()
