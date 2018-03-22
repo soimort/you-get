@@ -121,18 +121,6 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             qq_download_by_vid(vid, vid, output_dir, merge, info_only)
         return
 
-    #do redirect
-    if 'v.qq.com/x' in url:
-        # for URLs like this:
-        # https://v.qq.com/x/page/r05533mns3s.html
-        new_url = url_locations([url])[0]
-        if url == new_url:
-            #redirect in js?
-            content = get_content(url)
-            url = match1(content,r'window\.location\.href="(.*?)"')
-        else:
-            url = new_url
-
     if 'kuaibao.qq.com' in url or re.match(r'http://daxue.qq.com/content/content/id/\d+', url):
         content = get_content(url)
         vid = match1(content, r'vid\s*=\s*"\s*([^"]+)"')
