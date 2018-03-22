@@ -7,6 +7,7 @@ from you_get.extractors import (
     magisto,
     youtube,
     bilibili,
+    qq,
 )
 
 
@@ -20,7 +21,12 @@ class YouGetTests(unittest.TestCase):
             'http://www.magisto.com/album/video/f3x9AAQORAkfDnIFDA',
             info_only=True
         )
-
+        
+    def test_qq(self):
+        qq.download(
+            'https://v.qq.com/x/cover/t5jqhgw8pix81mw.html', info_only=True
+        )
+        
     def test_youtube(self):
         youtube.download(
             'http://www.youtube.com/watch?v=pzKerr0JIPA', info_only=True
