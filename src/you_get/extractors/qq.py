@@ -47,6 +47,9 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             else:
                 log.w(key_json['msg'])
             break
+        if key_json.get('filename') is None:
+            log.w(key_json['msg'])
+            break
 
         part_urls.append(url)
         _, ext, size = url_info(url)
