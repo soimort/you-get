@@ -15,6 +15,9 @@ def extract_m3u(source):
     return ['https://video.twimg.com%s' % i for i in s2]
 
 def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    if re.match(r'https?://mobile', url): # normalize mobile URL
+        url = 'https://' + match1(url, r'//mobile\.(.+)')
+
     html = get_html(url)
     screen_name = r1(r'data-screen-name="([^"]*)"', html) or \
         r1(r'<meta name="twitter:title" content="([^"]*)"', html)

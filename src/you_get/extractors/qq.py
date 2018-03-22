@@ -114,7 +114,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             qieDownload(url, output_dir=output_dir, merge=merge, info_only=info_only)
         return
 
-    if 'mp.weixin.qq.com/s?' in url:
+    if 'mp.weixin.qq.com/s' in url:
         content = get_content(url)
         vids = matchall(content, [r'\?vid=(\w+)'])
         for vid in vids:
@@ -122,9 +122,9 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         return
 
     #do redirect
-    if 'v.qq.com/page' in url:
+    if 'v.qq.com/x' in url:
         # for URLs like this:
-        # http://v.qq.com/page/k/9/7/k0194pwgw97.html
+        # https://v.qq.com/x/page/r05533mns3s.html
         new_url = url_locations([url])[0]
         if url == new_url:
             #redirect in js?
