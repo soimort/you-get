@@ -47,6 +47,9 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             else:
                 log.w(key_json['msg'])
             break
+        if key_json.get('filename') is None:
+            log.w(key_json['msg'])
+            break
 
         part_urls.append(url)
         _, ext, size = url_info(url)
@@ -120,18 +123,6 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         for vid in vids:
             qq_download_by_vid(vid, vid, output_dir, merge, info_only)
         return
-
-    #do redirect
-    if 'v.qq.com/page' in url:
-        # for URLs like this:
-        # http://v.qq.com/page/k/9/7/k0194pwgw97.html
-        new_url = url_locations([url])[0]
-        if url == new_url:
-            #redirect in js?
-            content = get_content(url)
-            url = match1(content,r'window\.location\.href="(.*?)"')
-        else:
-            url = new_url
 
     if 'kuaibao.qq.com' in url or re.match(r'http://daxue.qq.com/content/content/id/\d+', url):
         content = get_content(url)
