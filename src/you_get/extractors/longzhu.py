@@ -5,6 +5,7 @@ __all__ = ['longzhu_download']
 import json
 from ..common import (
     get_content,
+    general_m3u8_extractor,
     match1,
     print_info,
     download_urls,
