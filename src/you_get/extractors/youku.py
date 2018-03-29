@@ -78,7 +78,10 @@ class Youku(VideoExtractor):
         self.api_error_code = None
         self.api_error_msg = None
 
-        self.ccode = '0590'
+        self.ccode = '0502'
+        # Found in http://g.alicdn.com/player/ykplayer/0.5.28/youku-player.min.js
+        # grep -oE '"[0-9a-zA-Z+/=]{256}"' youku-player.min.js
+        self.ckey = 'DIl58SLFxFNndSV1GFNnMQVYkx1PP5tKe1siZu/86PR1u/Wh1Ptd+WOZsHHWxysSfAOhNJpdVWsdVJNsfJ8Sxd8WKVvNfAS8aS8fAOzYARzPyPc3JvtnPHjTdKfESTdnuTW6ZPvk2pNDh4uFzotgdMEFkzQ5wZVXl2Pf1/Y6hLK0OnCNxBj3+nb0v72gZ6b0td+WOZsHHWxysSo/0y9D2K42SaB8Y/+aD2K42SaB8Y/+ahU+WOZsHcrxysooUeND'
         self.utid = None
 
     def youku_ups(self):
@@ -86,6 +89,7 @@ class Youku(VideoExtractor):
         url += '&client_ip=192.168.1.1'
         url += '&utid=' + self.utid
         url += '&client_ts=' + str(int(time.time()))
+        url += '&ckey=' + urllib.parse.quote(self.ckey)
         if self.password_protected:
             url += '&password=' + self.password
         headers = dict(Referer=self.referer)
