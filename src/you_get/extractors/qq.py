@@ -140,7 +140,8 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         vid = ""
         if rurl:
             vid = rurl.split('/')[-1].split('.')[0]
-            if vid == "undefined":
+            # https://v.qq.com/x/page/d0552xbadkl.html https://y.qq.com/n/yqq/mv/v/g00268vlkzy.html
+            if vid == "undefined" or vid == "index":
                 vid = ""
         vid = vid if vid else url.split('/')[-1].split('.')[0] #https://v.qq.com/x/cover/ps6mnfqyrfo7es3/q0181hpdvo5.html?
         vid = vid if vid else match1(content, r'vid"*\s*:\s*"\s*([^"]+)"') #general fallback
