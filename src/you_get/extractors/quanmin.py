@@ -4,7 +4,6 @@ __all__ = ['quanmin_download']
 
 from ..common import *
 import json
-import time
 
 def quanmin_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     roomid = url.split('/')[3].split('?')[0]
@@ -17,7 +16,8 @@ def quanmin_download(url, output_dir = '.', merge = True, info_only = False, **k
 
     if not data["play_status"]:
         raise ValueError("The live stream is not online!")
-    real_url = "http://flv.quanmin.tv/live/{}.flv".format(roomid)
+        
+    real_url = data["live"]["ws"]["flv"]["5"]["src"]
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
