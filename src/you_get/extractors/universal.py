@@ -31,6 +31,19 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         if page_title:
             page_title = unescape_html(page_title)
 
+        meta_videos = re.findall(r'<meta property="og:video:url" content="([^"]*)"', page)
+        if meta_videos:
+            for meta_video in meta_videos:
+                meta_video_url = unescape_html(meta_video)
+                type_, ext, size = url_info(meta_video_url)
+                print_info(site_info, page_title, type_, size)
+                if not info_only:
+                    download_urls([meta_video_url], page_title,
+                                  ext, size,
+                                  output_dir=output_dir, merge=merge,
+                                  faker=True)
+            return
+
         hls_urls = re.findall(r'(https?://[^;"\'\\]+' + '\.m3u8?' +
                               r'[^;"\'\\]*)', page)
         if hls_urls:
