@@ -130,6 +130,9 @@ class Bilibili(VideoExtractor):
         m = re.search(r'<h1.*?>(.*?)</h1>', self.page) or re.search(r'<h1 title="([^"]+)">', self.page)
         if m is not None:
             self.title = m.group(1)
+            s = re.search(r'<span>([^<]+)</span>', m.group(1))
+            if s:
+                self.title = unescape_html(s.group(1))
         if self.title is None:
             m = re.search(r'property="og:title" content="([^"]+)"', self.page)
             if m is not None:
