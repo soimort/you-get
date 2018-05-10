@@ -18,11 +18,14 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     host = video_json['vl']['vi'][0]['ul']['ui'][0]['url']
     streams = video_json['fl']['fi']
     seg_cnt = video_json['vl']['vi'][0]['cl']['fc']
+    filename = video_json['vl']['vi'][0]['fn']
     if seg_cnt == 0:
         seg_cnt = 1
+    else:
+        fn_pre, magic_str, video_type = filename.split('.')
 
     best_quality = streams[-1]['name']
-    part_format_id = streams[-1]['id']
+    #part_format_id = streams[-1]['id']
 
     part_urls= []
     total_size = 0
@@ -31,7 +34,17 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
         #    filename = fn_pre + '.mp4'
         #else:
         #    filename = fn_pre + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
-        filename = fn_pre + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
+        #filename = fn_pre + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
+
+        # fix some error cases("check vid&filename failed" and "format invalid")
+        # https://v.qq.com/x/page/q06058th9ll.html
+        # https://v.qq.com/x/page/t060789a21e.html
+        if seg_cnt == 1:
+            part_format_id = video_json['vl']['vi'][0]['cl']['keyid'].split('.')[-1]
+        else:
+            part_format_id = video_json['vl']['vi'][0]['cl']['ci'][part - 1]['keyid'].split('.')[1]
+            filename = '.'.join([fn_pre, magic_str, str(part), video_type])
+
         key_api = "http://vv.video.qq.com/getkey?otype=json&platform=11&format={}&vid={}&filename={}&appver=3.2.19.333".format(part_format_id, vid, filename)
         part_info = get_content(key_api)
         key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
