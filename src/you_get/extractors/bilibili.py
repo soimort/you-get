@@ -25,6 +25,9 @@ class Bilibili(VideoExtractor):
     live_api = 'http://live.bilibili.com/api/playurl?cid={}&otype=json'
     api_url = 'http://interface.bilibili.com/v2/playurl?'
     bangumi_api_url = 'http://bangumi.bilibili.com/player/web_api/playurl?'
+    '''
+    the new bangumi_api_url for paid members is http://www.biliplus.com/BPplayurl.php?
+    '''
     live_room_init_api_url = 'https://api.live.bilibili.com/room/v1/Room/room_init?id={}'
     live_room_info_api_url = 'https://api.live.bilibili.com/room/v1/Room/get_info?room_id={}'
 
