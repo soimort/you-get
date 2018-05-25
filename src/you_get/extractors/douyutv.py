@@ -74,7 +74,7 @@ def douyutv_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
-        download_url_ffmpeg(real_url, title, 'flv', params={}, output_dir=output_dir, merge=merge)
+        download_url_ffmpeg(real_url, title, 'flv', params={}, output_dir=output_dir, merge=merge, **kwargs)
 
 
 site_info = "douyu.com"

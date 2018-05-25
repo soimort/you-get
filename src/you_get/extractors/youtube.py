@@ -205,7 +205,7 @@ class YouTube(VideoExtractor):
             if 'info_only' in kwargs and kwargs['info_only']:
                 return
             else:
-                download_url_ffmpeg(hlsvp, self.title, 'mp4')
+                download_url_ffmpeg(hlsvp, self.title, 'mp4', **kwargs)
                 exit(0)
 
         for stream in stream_list:

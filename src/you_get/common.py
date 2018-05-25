@@ -134,7 +134,6 @@ force = False
 player = None
 extractor_proxy = None
 cookies = None
-output_filename = None
 auto_rename = False
 
 fake_headers = {
@@ -838,9 +837,8 @@ class DummyProgressBar:
         pass
 
 
-def get_output_filename(urls, title, ext, output_dir, merge):
+def get_output_filename(urls, title, ext, output_dir, merge, output_filename=None):
     # lame hack for the --output-filename option
-    global output_filename
     if output_filename:
         if ext:
             return output_filename + '.' + ext
@@ -897,7 +895,7 @@ def download_urls(
             pass
 
     title = tr(get_filename(title))
-    output_filename = get_output_filename(urls, title, ext, output_dir, merge)
+    output_filename = get_output_filename(urls, title, ext, output_dir, merge, **kwargs)
     output_filepath = os.path.join(output_dir, output_filename)
 
     if total_size:
@@ -1029,7 +1027,7 @@ def download_rtmp_url(
 
 def download_url_ffmpeg(
     url, title, ext, params={}, total_size=0, output_dir='.', refer=None,
-    merge=True, faker=False, stream=True
+    merge=True, faker=False, stream=True, output_filename=None
 ):
     assert url
     if dry_run:
@@ -1046,7 +1044,7 @@ def download_url_ffmpeg(
     from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
     assert has_ffmpeg_installed(), 'FFmpeg not installed.'
 
-    global output_filename
+    # global output_filename
     if output_filename:
         dotPos = output_filename.rfind('.')
         if dotPos > 0:
@@ -1435,7 +1433,6 @@ def script_main(download, download_playlist, **kwargs):
     global json_output
     global player
     global extractor_proxy
-    global output_filename
     global auto_rename
 
     output_filename = args.output_filename
@@ -1497,6 +1494,8 @@ def script_main(download, download_playlist, **kwargs):
             extra['extractor_proxy'] = extractor_proxy
         if stream_id:
             extra['stream_id'] = stream_id
+        if output_filename:
+            extra['output_filename'] = output_filename
         download_main(
             download, download_playlist,
             URLs, args.playlist,
