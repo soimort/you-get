@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-__all__ = ['ixigua_download', 'ixigua_download_playlist']
+__all__ = ['ixigua_download']
+
 from .toutiao import download as toutiao_download
 from .toutiao import download_playlist as toutiao_download_playlist
 

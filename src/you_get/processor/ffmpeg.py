@@ -3,6 +3,7 @@
 import logging
 import os.path
 import subprocess
+import sys
 from ..util.strings import parameterize
 from ..common import print_more_compatible as print
 
@@ -25,8 +26,8 @@ def get_usable_ffmpeg(cmd):
         try:
             version = [int(i) for i in vers[2].split('.')]
         except:
-            print('It seems that your ffmpeg is a nightly build.')
-            print('Please switch to the latest stable if merging failed.')
+            print('It seems that your ffmpeg is a nightly build.', file=sys.stderr)
+            print('Please switch to the latest stable if merging failed.', file=sys.stderr)
             version = [1, 0]
         return cmd, 'ffprobe', version
     except:
