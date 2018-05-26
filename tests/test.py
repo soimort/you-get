@@ -7,6 +7,7 @@ from you_get.extractors import (
     magisto,
     youtube,
     bilibili,
+    iqiyi,
 )
 
 
@@ -38,7 +39,11 @@ class YouGetTests(unittest.TestCase):
         bilibili.download(
             'https://www.bilibili.com/video/av13228063/', info_only=True
         )
-
-
+        
+    def test_iqiyi(self):
+        iqiyi.download(
+            'https://www.iqiyi.com/v_19rrd80n98.html?list=19rrlegukq',
+            info_only=True
+        )
 if __name__ == '__main__':
     unittest.main()
