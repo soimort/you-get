@@ -7,6 +7,7 @@ from you_get.extractors import (
     magisto,
     youtube,
     bilibili,
+    tumblr,
 )
 
 
@@ -37,6 +38,11 @@ class YouGetTests(unittest.TestCase):
         )
         bilibili.download(
             'https://www.bilibili.com/video/av13228063/', info_only=True
+        )
+        
+    def test_tumblr(self):
+        tumblr.download(
+            'you-get http://kopasas.tumblr.com/post/69361932517', infor_only=True
         )
 
 
