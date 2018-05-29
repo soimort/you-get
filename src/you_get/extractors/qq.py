@@ -9,7 +9,7 @@ from .qie_video import download_by_url as qie_video_download
 from urllib.parse import urlparse,parse_qs
 
 def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
-    info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3.2.19.333&platform=11&defnpayver=1&vid={}'.format(vid)
+    info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3.2.19.333&platform=11&defnpayver=1&defn=shd&vid={}'.format(vid)
     info = get_content(info_api)
     video_json = json.loads(match1(info, r'QZOutputJson=(.*)')[:-1])
 
