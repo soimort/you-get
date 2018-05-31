@@ -7,6 +7,7 @@ from you_get.extractors import (
     magisto,
     youtube,
     bilibili,
+    twitter,
 )
 
 
@@ -38,6 +39,10 @@ class YouGetTests(unittest.TestCase):
         bilibili.download(
             'https://www.bilibili.com/video/av13228063/', info_only=True
         )
+
+    def test_twitter(self):
+        twitter.download(
+            'https://twitter.com/realDonaldTrump/status/1001873279597064194', info_only=True)
 
 
 if __name__ == '__main__':
