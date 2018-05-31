@@ -3,6 +3,7 @@
 import logging
 import os.path
 import subprocess
+import sys
 from ..util.strings import parameterize
 from ..common import print_more_compatible as print
 
@@ -25,14 +26,14 @@ def get_usable_ffmpeg(cmd):
         try:
             version = [int(i) for i in vers[2].split('.')]
         except:
-            print('It seems that your ffmpeg is a nightly build.')
-            print('Please switch to the latest stable if merging failed.')
+            print('It seems that your ffmpeg is a nightly build.', file=sys.stderr)
+            print('Please switch to the latest stable if merging failed.', file=sys.stderr)
             version = [1, 0]
-        return cmd, version
+        return cmd, 'ffprobe', version
     except:
         return None
 
-FFMPEG, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv') or (None, None)
+FFMPEG, FFPROBE, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv') or (None, None, None)
 if logging.getLogger().isEnabledFor(logging.DEBUG):
     LOGLEVEL = ['-loglevel', 'info']
     STDIN = None
@@ -250,3 +251,30 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.', stream=
             pass
 
     return True
+
+
+def ffmpeg_concat_audio_and_video(files, output, ext):
+    print('Merging video and audio parts... ', end="", flush=True)
+    if has_ffmpeg_installed:
+        params = [FFMPEG] + LOGLEVEL
+        params.extend(['-f', 'concat'])
+        for file in files:
+            if os.path.isfile(file):
+                params.extend(['-i', file])
+        params.extend(['-c:v', 'copy'])
+        params.extend(['-c:a', 'aac'])
+        params.extend(['-strict', 'experimental'])
+        params.append(output+"."+ext)
+        return subprocess.call(params, stdin=STDIN)
+    else:
+        raise EnvironmentError('No ffmpeg found')
+
+
+def ffprobe_get_media_duration(file):
+    print('Getting {} duration'.format(file))
+    params = [FFPROBE]
+    params.extend(['-i', file])
+    params.extend(['-show_entries', 'format=duration'])
+    params.extend(['-v', 'quiet'])
+    params.extend(['-of', 'csv=p=0'])
+    return subprocess.check_output(params, stdin=STDIN, stderr=subprocess.STDOUT).decode().strip()

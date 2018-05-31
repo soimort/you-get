@@ -18,30 +18,52 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     host = video_json['vl']['vi'][0]['ul']['ui'][0]['url']
     streams = video_json['fl']['fi']
     seg_cnt = video_json['vl']['vi'][0]['cl']['fc']
+    filename = video_json['vl']['vi'][0]['fn']
     if seg_cnt == 0:
         seg_cnt = 1
+    else:
+        fn_pre, magic_str, video_type = filename.split('.')
 
     best_quality = streams[-1]['name']
-    part_format_id = streams[-1]['id']
+    #part_format_id = streams[-1]['id']
 
     part_urls= []
     total_size = 0
     for part in range(1, seg_cnt+1):
-        if seg_cnt == 1 and video_json['vl']['vi'][0]['vh'] <= 480:
-            filename = fn_pre + '.mp4'
+        #if seg_cnt == 1 and video_json['vl']['vi'][0]['vh'] <= 480:
+        #    filename = fn_pre + '.mp4'
+        #else:
+        #    filename = fn_pre + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
+        #filename = fn_pre + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
+
+        # fix some error cases("check vid&filename failed" and "format invalid")
+        # https://v.qq.com/x/page/q06058th9ll.html
+        # https://v.qq.com/x/page/t060789a21e.html
+        if seg_cnt == 1:
+            part_format_id = video_json['vl']['vi'][0]['cl']['keyid'].split('.')[-1]
         else:
-            filename = fn_pre + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
+            part_format_id = video_json['vl']['vi'][0]['cl']['ci'][part - 1]['keyid'].split('.')[1]
+            filename = '.'.join([fn_pre, magic_str, str(part), video_type])
+
         key_api = "http://vv.video.qq.com/getkey?otype=json&platform=11&format={}&vid={}&filename={}&appver=3.2.19.333".format(part_format_id, vid, filename)
         part_info = get_content(key_api)
         key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
         if key_json.get('key') is None:
+            vkey = video_json['vl']['vi'][0]['fvkey']
+            url = '{}{}?vkey={}'.format(video_json['vl']['vi'][0]['ul']['ui'][0]['url'], fn_pre + '.mp4', vkey)
+        else:
+            vkey = key_json['key']
+            url = '{}{}?vkey={}'.format(host, filename, vkey)
+        if not vkey:
             if part == 1:
                 log.wtf(key_json['msg'])
             else:
                 log.w(key_json['msg'])
             break
-        vkey = key_json['key']
-        url = '{}{}?vkey={}'.format(host, filename, vkey)
+        if key_json.get('filename') is None:
+            log.w(key_json['msg'])
+            break
+
         part_urls.append(url)
         _, ext, size = url_info(url)
         total_size += size
@@ -108,24 +130,12 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             qieDownload(url, output_dir=output_dir, merge=merge, info_only=info_only)
         return
 
-    if 'mp.weixin.qq.com/s?' in url:
+    if 'mp.weixin.qq.com/s' in url:
         content = get_content(url)
         vids = matchall(content, [r'\?vid=(\w+)'])
         for vid in vids:
             qq_download_by_vid(vid, vid, output_dir, merge, info_only)
         return
-
-    #do redirect
-    if 'v.qq.com/page' in url:
-        # for URLs like this:
-        # http://v.qq.com/page/k/9/7/k0194pwgw97.html
-        new_url = url_locations([url])[0]
-        if url == new_url:
-            #redirect in js?
-            content = get_content(url)
-            url = match1(content,r'window\.location\.href="(.*?)"')
-        else:
-            url = new_url
 
     if 'kuaibao.qq.com' in url or re.match(r'http://daxue.qq.com/content/content/id/\d+', url):
         content = get_content(url)
@@ -138,9 +148,17 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         title = vid
     else:
         content = get_content(url)
-        vid = parse_qs(urlparse(url).query).get('vid') #for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5
-        vid = vid[0] if vid else match1(content, r'vid"*\s*:\s*"\s*([^"]+)"') #general fallback
-        if vid is None:
+        #vid = parse_qs(urlparse(url).query).get('vid') #for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5
+        rurl = match1(content, r'<link.*?rel\s*=\s*"canonical".*?href\s*="(.+?)".*?>') #https://v.qq.com/x/cover/9hpjiv5fhiyn86u/t0522x58xma.html
+        vid = ""
+        if rurl:
+            vid = rurl.split('/')[-1].split('.')[0]
+            # https://v.qq.com/x/page/d0552xbadkl.html https://y.qq.com/n/yqq/mv/v/g00268vlkzy.html
+            if vid == "undefined" or vid == "index":
+                vid = ""
+        vid = vid if vid else url.split('/')[-1].split('.')[0] #https://v.qq.com/x/cover/ps6mnfqyrfo7es3/q0181hpdvo5.html?
+        vid = vid if vid else match1(content, r'vid"*\s*:\s*"\s*([^"]+)"') #general fallback
+        if not vid:
             vid = match1(content, r'id"*\s*:\s*"(.+?)"')
         title = match1(content,r'<a.*?id\s*=\s*"%s".*?title\s*=\s*"(.+?)".*?>'%vid)
         title = match1(content, r'title">([^"]+)</p>') if not title else title

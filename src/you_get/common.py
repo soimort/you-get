@@ -1,5 +1,26 @@
 #!/usr/bin/env python
 
+import io
+import os
+import re
+import sys
+import time
+import json
+import socket
+import locale
+import logging
+import argparse
+from http import cookiejar
+from importlib import import_module
+from urllib import request, parse, error
+
+from .version import __version__
+from .util import log, term
+from .util.git import get_version
+from .util.strings import get_filename, unescape_html
+from . import json_output as json_output_
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+
 SITES = {
     '163'              : 'netease',
     '56'               : 'w56',
@@ -13,9 +34,11 @@ SITES = {
     'cctv'             : 'cntv',
     'cntv'             : 'cntv',
     'cbs'              : 'cbs',
+    'coub'             : 'coub',
     'dailymotion'      : 'dailymotion',
     'dilidili'         : 'dilidili',
     'douban'           : 'douban',
+    'douyin'           : 'douyin',
     'douyu'            : 'douyutv',
     'ehow'             : 'ehow',
     'facebook'         : 'facebook',
@@ -39,16 +62,19 @@ SITES = {
     'interest'         : 'interest',
     'iqilu'            : 'iqilu',
     'iqiyi'            : 'iqiyi',
+    'ixigua'           : 'ixigua',
     'isuntv'           : 'suntv',
     'joy'              : 'joy',
     'kankanews'        : 'bilibili',
     'khanacademy'      : 'khan',
     'ku6'              : 'ku6',
+    'kuaishou'         : 'kuaishou',
     'kugou'            : 'kugou',
     'kuwo'             : 'kuwo',
     'le'               : 'le',
     'letv'             : 'le',
     'lizhi'            : 'lizhi',
+    'longzhu'          : 'longzhu',
     'magisto'          : 'magisto',
     'metacafe'         : 'metacafe',
     'mgtv'             : 'mgtv',
@@ -99,26 +125,8 @@ SITES = {
     'youtu'            : 'youtube',
     'youtube'          : 'youtube',
     'zhanqi'           : 'zhanqi',
+    '365yg'            : 'toutiao',
 }
-
-import json
-import locale
-import logging
-import os
-import re
-import socket
-import sys
-import time
-from urllib import request, parse, error
-from http import cookiejar
-from importlib import import_module
-import argparse
-
-from .version import __version__
-from .util import log, term
-from .util.git import get_version
-from .util.strings import get_filename, unescape_html
-from . import json_output as json_output_
 
 dry_run = False
 json_output = False
@@ -127,13 +135,14 @@ player = None
 extractor_proxy = None
 cookies = None
 output_filename = None
+auto_rename = False
 
 fake_headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0',  # noqa
 }
 
 if sys.stdout.isatty():
@@ -141,9 +150,10 @@ if sys.stdout.isatty():
 else:
     default_encoding = locale.getpreferredencoding().lower()
 
+
 def rc4(key, data):
-#all encryption algo should work on bytes
-    assert type(key)==type(data) and type(key) == type(b'')
+    # all encryption algo should work on bytes
+    assert type(key) == type(data) and type(key) == type(b'')
     state = list(range(256))
     j = 0
     for i in range(256):
@@ -165,6 +175,7 @@ def rc4(key, data):
 
     return bytes(out_list)
 
+
 def general_m3u8_extractor(url, headers={}):
     m3u8_list = get_content(url, headers=headers).split('\n')
     urls = []
@@ -178,16 +189,21 @@ def general_m3u8_extractor(url, headers={}):
                 urls.append(seg_url)
     return urls
 
+
 def maybe_print(*s):
-    try: print(*s)
-    except: pass
+    try:
+        print(*s)
+    except:
+        pass
+
 
 def tr(s):
     if default_encoding == 'utf-8':
         return s
     else:
         return s
-        #return str(s.encode('utf-8'))[2:-1]
+        # return str(s.encode('utf-8'))[2:-1]
+
 
 # DEPRECATED in favor of match1()
 def r1(pattern, text):
@@ -195,12 +211,14 @@ def r1(pattern, text):
     if m:
         return m.group(1)
 
+
 # DEPRECATED in favor of match1()
 def r1_of(patterns, text):
     for p in patterns:
         x = r1(p, text)
         if x:
             return x
+
 
 def match1(text, *patterns):
     """Scans through a string for substrings matched some patterns (first-subgroups only).
@@ -229,6 +247,7 @@ def match1(text, *patterns):
                 ret.append(match.group(1))
         return ret
 
+
 def matchall(text, patterns):
     """Scans through a string for substrings matched some patterns.
 
@@ -247,10 +266,12 @@ def matchall(text, patterns):
 
     return ret
 
+
 def launch_player(player, urls):
     import subprocess
     import shlex
     subprocess.call(shlex.split(player) + list(urls))
+
 
 def parse_query_param(url, param):
     """Parses the query string of a URL and returns the value of a parameter.
@@ -268,8 +289,14 @@ def parse_query_param(url, param):
     except:
         return None
 
+
 def unicodize(text):
-    return re.sub(r'\\u([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])', lambda x: chr(int(x.group(0)[2:], 16)), text)
+    return re.sub(
+        r'\\u([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f])',
+        lambda x: chr(int(x.group(0)[2:], 16)),
+        text
+    )
+
 
 # DEPRECATED in favor of util.legitimize()
 def escape_file_path(path):
@@ -278,6 +305,7 @@ def escape_file_path(path):
     path = path.replace('*', '-')
     path = path.replace('?', '-')
     return path
+
 
 def ungzip(data):
     """Decompresses data for Content-Encoding: gzip.
@@ -288,6 +316,7 @@ def ungzip(data):
     f = gzip.GzipFile(fileobj=buffer)
     return f.read()
 
+
 def undeflate(data):
     """Decompresses data for Content-Encoding: deflate.
     (the zlib compression is used.)
@@ -296,8 +325,9 @@ def undeflate(data):
     decompressobj = zlib.decompressobj(-zlib.MAX_WBITS)
     return decompressobj.decompress(data)+decompressobj.flush()
 
+
 # DEPRECATED in favor of get_content()
-def get_response(url, faker = False):
+def get_response(url, faker=False):
     logging.debug('get_response: %s' % url)
 
     # install cookies
@@ -306,7 +336,9 @@ def get_response(url, faker = False):
         request.install_opener(opener)
 
     if faker:
-        response = request.urlopen(request.Request(url, headers = fake_headers), None)
+        response = request.urlopen(
+            request.Request(url, headers=fake_headers), None
+        )
     else:
         response = request.urlopen(url)
 
@@ -318,13 +350,15 @@ def get_response(url, faker = False):
     response.data = data
     return response
 
+
 # DEPRECATED in favor of get_content()
-def get_html(url, encoding = None, faker = False):
+def get_html(url, encoding=None, faker=False):
     content = get_response(url, faker).data
     return str(content, 'utf-8', 'ignore')
 
+
 # DEPRECATED in favor of get_content()
-def get_decoded_html(url, faker = False):
+def get_decoded_html(url, faker=False):
     response = get_response(url, faker)
     data = response.data
     charset = r1(r'charset=([\w-]+)', response.headers['content-type'])
@@ -333,6 +367,7 @@ def get_decoded_html(url, faker = False):
     else:
         return data
 
+
 def get_location(url):
     logging.debug('get_location: %s' % url)
 
@@ -340,6 +375,7 @@ def get_location(url):
     # urllib will follow redirections and it's too much code to tell urllib
     # not to do that
     return response.geturl()
+
 
 def urlopen_with_retry(*args, **kwargs):
     retry_time = 3
@@ -350,11 +386,12 @@ def urlopen_with_retry(*args, **kwargs):
             logging.debug('request attempt %s timeout' % str(i + 1))
             if i + 1 == retry_time:
                 raise e
-# try to tackle youku CDN fails
+        # try to tackle youku CDN fails
         except error.HTTPError as http_error:
             logging.debug('HTTP Error with code{}'.format(http_error.code))
             if i + 1 == retry_time:
                 raise http_error
+
 
 def get_content(url, headers={}, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
@@ -387,13 +424,16 @@ def get_content(url, headers={}, decoded=True):
 
     # Decode the response body
     if decoded:
-        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
+        charset = match1(
+            response.getheader('Content-Type'), r'charset=([\w-]+)'
+        )
         if charset is not None:
             data = data.decode(charset)
         else:
             data = data.decode('utf-8', 'ignore')
 
     return data
+
 
 def post_content(url, headers={}, post_data={}, decoded=True):
     """Post the content of a URL via sending a HTTP POST request.
@@ -426,7 +466,9 @@ def post_content(url, headers={}, post_data={}, decoded=True):
 
     # Decode the response body
     if decoded:
-        charset = match1(response.getheader('Content-Type'), r'charset=([\w-]+)')
+        charset = match1(
+            response.getheader('Content-Type'), r'charset=([\w-]+)'
+        )
         if charset is not None:
             data = data.decode(charset)
         else:
@@ -434,21 +476,26 @@ def post_content(url, headers={}, post_data={}, decoded=True):
 
     return data
 
-def url_size(url, faker = False, headers = {}):
+
+def url_size(url, faker=False, headers={}):
     if faker:
-        response = urlopen_with_retry(request.Request(url, headers=fake_headers))
+        response = urlopen_with_retry(
+            request.Request(url, headers=fake_headers)
+        )
     elif headers:
         response = urlopen_with_retry(request.Request(url, headers=headers))
     else:
         response = urlopen_with_retry(url)
 
     size = response.headers['content-length']
-    return int(size) if size!=None else float('inf')
+    return int(size) if size is not None else float('inf')
 
-def urls_size(urls, faker = False, headers = {}):
+
+def urls_size(urls, faker=False, headers={}):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
-def get_head(url, headers = {}, get_method = 'HEAD'):
+
+def get_head(url, headers={}, get_method='HEAD'):
     logging.debug('get_head: %s' % url)
 
     if headers:
@@ -459,11 +506,14 @@ def get_head(url, headers = {}, get_method = 'HEAD'):
     res = urlopen_with_retry(req)
     return dict(res.headers)
 
-def url_info(url, faker = False, headers = {}):
+
+def url_info(url, faker=False, headers={}):
     logging.debug('url_info: %s' % url)
 
     if faker:
-        response = urlopen_with_retry(request.Request(url, headers=fake_headers))
+        response = urlopen_with_retry(
+            request.Request(url, headers=fake_headers)
+        )
     elif headers:
         response = urlopen_with_retry(request.Request(url, headers=headers))
     else:
@@ -472,7 +522,8 @@ def url_info(url, faker = False, headers = {}):
     headers = response.headers
 
     type = headers['content-type']
-    if type == 'image/jpg; charset=UTF-8' or type == 'image/jpg' : type = 'audio/mpeg'    #fix for netease
+    if type == 'image/jpg; charset=UTF-8' or type == 'image/jpg':
+        type = 'audio/mpeg'  # fix for netease
     mapping = {
         'video/3gpp': '3gp',
         'video/f4v': 'flv',
@@ -498,7 +549,9 @@ def url_info(url, faker = False, headers = {}):
         type = None
         if headers['content-disposition']:
             try:
-                filename = parse.unquote(r1(r'filename="?([^"]+)"?', headers['content-disposition']))
+                filename = parse.unquote(
+                    r1(r'filename="?([^"]+)"?', headers['content-disposition'])
+                )
                 if len(filename.split('.')) > 1:
                     ext = filename.split('.')[-1]
                 else:
@@ -515,15 +568,20 @@ def url_info(url, faker = False, headers = {}):
 
     return type, ext, size
 
-def url_locations(urls, faker = False, headers = {}):
+
+def url_locations(urls, faker=False, headers={}):
     locations = []
     for url in urls:
         logging.debug('url_locations: %s' % url)
 
         if faker:
-            response = urlopen_with_retry(request.Request(url, headers=fake_headers))
+            response = urlopen_with_retry(
+                request.Request(url, headers=fake_headers)
+            )
         elif headers:
-            response = urlopen_with_retry(request.Request(url, headers=headers))
+            response = urlopen_with_retry(
+                request.Request(url, headers=headers)
+            )
         else:
             response = urlopen_with_retry(request.Request(url))
 
@@ -531,32 +589,57 @@ def url_locations(urls, faker = False, headers = {}):
     return locations
 
 
-def url_save(url, filepath, bar, refer=None, is_part=False, faker=False, headers=None, timeout=None, **kwargs):
+def url_save(
+    url, filepath, bar, refer=None, is_part=False, faker=False,
+    headers=None, timeout=None, **kwargs
+):
     tmp_headers = headers.copy() if headers is not None else {}
-# When a referer specified with param refer, the key must be 'Referer' for the hack here
+    # When a referer specified with param refer,
+    # the key must be 'Referer' for the hack here
     if refer is not None:
         tmp_headers['Referer'] = refer
     file_size = url_size(url, faker=faker, headers=tmp_headers)
 
-    if os.path.exists(filepath):
-        if not force and file_size == os.path.getsize(filepath):
-            if not is_part:
-                if bar:
-                    bar.done()
-                print('Skipping %s: file already exists' % tr(os.path.basename(filepath)))
+    continue_renameing = True
+    while continue_renameing:
+        continue_renameing = False
+        if os.path.exists(filepath):
+            if not force and file_size == os.path.getsize(filepath):
+                if not is_part:
+                    if bar:
+                        bar.done()
+                    print(
+                        'Skipping {}: file already exists'.format(
+                            tr(os.path.basename(filepath))
+                        )
+                    )
+                else:
+                    if bar:
+                        bar.update_received(file_size)
+                return
             else:
-                if bar:
-                    bar.update_received(file_size)
-            return
-        else:
-            if not is_part:
-                if bar:
-                    bar.done()
-                print('Overwriting %s' % tr(os.path.basename(filepath)), '...')
-    elif not os.path.exists(os.path.dirname(filepath)):
-        os.mkdir(os.path.dirname(filepath))
+                if not is_part:
+                    if bar:
+                        bar.done()
+                    if not force and auto_rename:
+                        path, ext = os.path.basename(filepath).rsplit('.', 1)
+                        finder = re.compile(' \([1-9]\d*?\)$')
+                        if (finder.search(path) is None):
+                            thisfile = path + ' (1).' + ext
+                        else:
+                            def numreturn(a):
+                                return ' (' + str(int(a.group()[2:-1]) + 1) + ').'
+                            thisfile = finder.sub(numreturn, path) + ext
+                        filepath = os.path.join(os.path.dirname(filepath), thisfile)
+                        print('Changing name to %s' % tr(os.path.basename(filepath)), '...')
+                        continue_renameing = True
+                        continue
+                    print('Overwriting %s' % tr(os.path.basename(filepath)), '...')
+        elif not os.path.exists(os.path.dirname(filepath)):
+            os.mkdir(os.path.dirname(filepath))
 
-    temp_filepath = filepath + '.download' if file_size!=float('inf') else filepath
+    temp_filepath = filepath + '.download' if file_size != float('inf') \
+        else filepath
     received = 0
     if not force:
         open_mode = 'ab'
@@ -584,16 +667,27 @@ def url_save(url, filepath, bar, refer=None, is_part=False, faker=False, headers
             tmp_headers['Referer'] = refer
 
         if timeout:
-            response = urlopen_with_retry(request.Request(url, headers=tmp_headers), timeout=timeout)
+            response = urlopen_with_retry(
+                request.Request(url, headers=tmp_headers), timeout=timeout
+            )
         else:
-            response = urlopen_with_retry(request.Request(url, headers=tmp_headers))
+            response = urlopen_with_retry(
+                request.Request(url, headers=tmp_headers)
+            )
         try:
-            range_start = int(response.headers['content-range'][6:].split('/')[0].split('-')[0])
-            end_length = int(response.headers['content-range'][6:].split('/')[1])
+            range_start = int(
+                response.headers[
+                    'content-range'
+                ][6:].split('/')[0].split('-')[0]
+            )
+            end_length = int(
+                response.headers['content-range'][6:].split('/')[1]
+            )
             range_length = end_length - range_start
         except:
             content_length = response.headers['content-length']
-            range_length = int(content_length) if content_length!=None else float('inf')
+            range_length = int(content_length) if content_length is not None \
+                else float('inf')
 
         if file_size != received + range_length:
             received = 0
@@ -609,28 +703,33 @@ def url_save(url, filepath, bar, refer=None, is_part=False, faker=False, headers
                 except socket.timeout:
                     pass
                 if not buffer:
-                    if received == file_size: # Download finished
+                    if received == file_size:  # Download finished
                         break
                     # Unexpected termination. Retry request
                     tmp_headers['Range'] = 'bytes=' + str(received) + '-'
-                    response = urlopen_with_retry(request.Request(url, headers=tmp_headers))
+                    response = urlopen_with_retry(
+                        request.Request(url, headers=tmp_headers)
+                    )
                     continue
                 output.write(buffer)
                 received += len(buffer)
                 if bar:
                     bar.update_received(len(buffer))
 
-    assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (received, os.path.getsize(temp_filepath), temp_filepath)
+    assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (
+        received, os.path.getsize(temp_filepath), temp_filepath
+    )
 
     if os.access(filepath, os.W_OK):
-        os.remove(filepath) # on Windows rename could fail if destination filepath exists
+        # on Windows rename could fail if destination filepath exists
+        os.remove(filepath)
     os.rename(temp_filepath, filepath)
 
 
 class SimpleProgressBar:
     term_size = term.get_terminal_size()[1]
 
-    def __init__(self, total_size, total_pieces = 1):
+    def __init__(self, total_size, total_pieces=1):
         self.displayed = False
         self.total_size = total_size
         self.total_pieces = total_pieces
@@ -643,9 +742,12 @@ class SimpleProgressBar:
         # 38 is the size of all statically known size in self.bar
         total_str = '%5s' % round(self.total_size / 1048576, 1)
         total_str_width = max(len(total_str), 5)
-        self.bar_size = self.term_size - 27 - 2*total_pieces_len - 2*total_str_width
+        self.bar_size = self.term_size - 28 - 2 * total_pieces_len \
+            - 2 * total_str_width
         self.bar = '{:>4}%% ({:>%s}/%sMB) ├{:─<%s}┤[{:>%s}/{:>%s}] {}' % (
-            total_str_width, total_str, self.bar_size, total_pieces_len, total_pieces_len)
+            total_str_width, total_str, self.bar_size, total_pieces_len,
+            total_pieces_len
+        )
 
     def update(self):
         self.displayed = True
@@ -662,7 +764,10 @@ class SimpleProgressBar:
         else:
             plus = ''
         bar = '█' * dots + plus
-        bar = self.bar.format(percent, round(self.received / 1048576, 1), bar, self.current_piece, self.total_pieces, self.speed)
+        bar = self.bar.format(
+            percent, round(self.received / 1048576, 1), bar,
+            self.current_piece, self.total_pieces, self.speed
+        )
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
@@ -689,8 +794,9 @@ class SimpleProgressBar:
             print()
             self.displayed = False
 
+
 class PiecesProgressBar:
-    def __init__(self, total_size, total_pieces = 1):
+    def __init__(self, total_size, total_pieces=1):
         self.displayed = False
         self.total_size = total_size
         self.total_pieces = total_pieces
@@ -699,7 +805,9 @@ class PiecesProgressBar:
 
     def update(self):
         self.displayed = True
-        bar = '{0:>5}%[{1:<40}] {2}/{3}'.format('', '=' * 40, self.current_piece, self.total_pieces)
+        bar = '{0:>5}%[{1:<40}] {2}/{3}'.format(
+            '', '=' * 40, self.current_piece, self.total_pieces
+        )
         sys.stdout.write('\r' + bar)
         sys.stdout.flush()
 
@@ -715,15 +823,20 @@ class PiecesProgressBar:
             print()
             self.displayed = False
 
+
 class DummyProgressBar:
     def __init__(self, *args):
         pass
+
     def update_received(self, n):
         pass
+
     def update_piece(self, n):
         pass
+
     def done(self):
         pass
+
 
 def get_output_filename(urls, title, ext, output_dir, merge):
     # lame hack for the --output-filename option
@@ -750,12 +863,24 @@ def get_output_filename(urls, title, ext, output_dir, merge):
                 merged_ext = 'ts'
     return '%s.%s' % (title, merged_ext)
 
-def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
+def print_user_agent(faker=False):
+    urllib_default_user_agent = 'Python-urllib/%d.%d' % sys.version_info[:2]
+    user_agent = fake_headers['User-Agent'] if faker else urllib_default_user_agent
+    print('User Agent: %s' % user_agent)
+
+def download_urls(
+    urls, title, ext, total_size, output_dir='.', refer=None, merge=True,
+    faker=False, headers={}, **kwargs
+):
     assert urls
     if json_output:
-        json_output_.download_urls(urls=urls, title=title, ext=ext, total_size=total_size, refer=refer)
+        json_output_.download_urls(
+            urls=urls, title=title, ext=ext, total_size=total_size,
+            refer=refer
+        )
         return
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URLs:\n%s' % '\n'.join(urls))
         return
 
@@ -776,7 +901,8 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
     output_filepath = os.path.join(output_dir, output_filename)
 
     if total_size:
-        if not force and os.path.exists(output_filepath) and os.path.getsize(output_filepath) >= total_size * 0.9:
+        if not force and os.path.exists(output_filepath) and not auto_rename\
+                and os.path.getsize(output_filepath) >= total_size * 0.9:
             print('Skipping %s: file already exists' % output_filepath)
             print()
             return
@@ -788,7 +914,10 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
         url = urls[0]
         print('Downloading %s ...' % tr(output_filename))
         bar.update()
-        url_save(url, output_filepath, bar, refer = refer, faker = faker, headers = headers, **kwargs)
+        url_save(
+            url, output_filepath, bar, refer=refer, faker=faker,
+            headers=headers, **kwargs
+        )
         bar.done()
     else:
         parts = []
@@ -798,9 +927,12 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
             filename = '%s[%02d].%s' % (title, i, ext)
             filepath = os.path.join(output_dir, filename)
             parts.append(filepath)
-            #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
+            # print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
-            url_save(url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers, **kwargs)
+            url_save(
+                url, filepath, bar, refer=refer, is_part=True, faker=faker,
+                headers=headers, **kwargs
+            )
         bar.done()
 
         if not merge:
@@ -814,7 +946,8 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 ret = ffmpeg_concat_av(parts, output_filepath, ext)
                 print('Merged into %s' % output_filename)
                 if ret == 0:
-                    for part in parts: os.remove(part)
+                    for part in parts:
+                        os.remove(part)
 
         elif ext in ['flv', 'f4v']:
             try:
@@ -848,7 +981,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
                 for part in parts:
                     os.remove(part)
 
-        elif ext == "ts":
+        elif ext == 'ts':
             try:
                 from .processor.ffmpeg import has_ffmpeg_installed
                 if has_ffmpeg_installed():
@@ -870,12 +1003,16 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
     print()
 
 
-def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=False):
+def download_rtmp_url(
+    url, title, ext, params={}, total_size=0, output_dir='.', refer=None,
+    merge=True, faker=False
+):
     assert url
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URL:\n%s\n' % [url])
-        if params.get("-y",False): #None or unset ->False
-            print('Real Playpath:\n%s\n' % [params.get("-y")])
+        if params.get('-y', False):  # None or unset -> False
+            print('Real Playpath:\n%s\n' % [params.get('-y')])
         return
 
     if player:
@@ -883,16 +1020,23 @@ def download_rtmp_url(url,title, ext,params={}, total_size=0, output_dir='.', re
         play_rtmpdump_stream(player, url, params)
         return
 
-    from .processor.rtmpdump import has_rtmpdump_installed, download_rtmpdump_stream
-    assert has_rtmpdump_installed(), "RTMPDump not installed."
-    download_rtmpdump_stream(url,  title, ext,params, output_dir)
+    from .processor.rtmpdump import (
+        has_rtmpdump_installed, download_rtmpdump_stream
+    )
+    assert has_rtmpdump_installed(), 'RTMPDump not installed.'
+    download_rtmpdump_stream(url,  title, ext, params, output_dir)
 
-def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', refer=None, merge=True, faker=False, stream=True):
+
+def download_url_ffmpeg(
+    url, title, ext, params={}, total_size=0, output_dir='.', refer=None,
+    merge=True, faker=False, stream=True
+):
     assert url
     if dry_run:
+        print_user_agent(faker=faker)
         print('Real URL:\n%s\n' % [url])
-        if params.get("-y",False): #None or unset ->False
-            print('Real Playpath:\n%s\n' % [params.get("-y")])
+        if params.get('-y', False):  # None or unset ->False
+            print('Real Playpath:\n%s\n' % [params.get('-y')])
         return
 
     if player:
@@ -900,26 +1044,33 @@ def download_url_ffmpeg(url,title, ext,params={}, total_size=0, output_dir='.', 
         return
 
     from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
-    assert has_ffmpeg_installed(), "FFmpeg not installed."
+    assert has_ffmpeg_installed(), 'FFmpeg not installed.'
 
     global output_filename
     if output_filename:
-        dotPos = output_filename.rfind(".")
-        title = output_filename[:dotPos]
-        ext = output_filename[dotPos+1:]
+        dotPos = output_filename.rfind('.')
+        if dotPos > 0:
+            title = output_filename[:dotPos]
+            ext = output_filename[dotPos+1:]
+        else:
+            title = output_filename
 
     title = tr(get_filename(title))
 
     ffmpeg_download_stream(url, title, ext, params, output_dir, stream=stream)
+
 
 def playlist_not_supported(name):
     def f(*args, **kwargs):
         raise NotImplementedError('Playlist is not supported for ' + name)
     return f
 
+
 def print_info(site_info, title, type, size, **kwargs):
     if json_output:
-        json_output_.print_info(site_info=site_info, title=title, type=type, size=size)
+        json_output_.print_info(
+            site_info=site_info, title=title, type=type, size=size
+        )
         return
     if type:
         type = type.lower()
@@ -950,40 +1101,40 @@ def print_info(site_info, title, type, size, **kwargs):
         type = 'image/gif'
 
     if type in ['video/3gpp']:
-        type_info = "3GPP multimedia file (%s)" % type
+        type_info = '3GPP multimedia file (%s)' % type
     elif type in ['video/x-flv', 'video/f4v']:
-        type_info = "Flash video (%s)" % type
+        type_info = 'Flash video (%s)' % type
     elif type in ['video/mp4', 'video/x-m4v']:
-        type_info = "MPEG-4 video (%s)" % type
+        type_info = 'MPEG-4 video (%s)' % type
     elif type in ['video/MP2T']:
-        type_info = "MPEG-2 transport stream (%s)" % type
+        type_info = 'MPEG-2 transport stream (%s)' % type
     elif type in ['video/webm']:
-        type_info = "WebM video (%s)" % type
-    #elif type in ['video/ogg']:
-    #    type_info = "Ogg video (%s)" % type
+        type_info = 'WebM video (%s)' % type
+    # elif type in ['video/ogg']:
+    #    type_info = 'Ogg video (%s)' % type
     elif type in ['video/quicktime']:
-        type_info = "QuickTime video (%s)" % type
+        type_info = 'QuickTime video (%s)' % type
     elif type in ['video/x-matroska']:
-        type_info = "Matroska video (%s)" % type
-    #elif type in ['video/x-ms-wmv']:
-    #    type_info = "Windows Media video (%s)" % type
+        type_info = 'Matroska video (%s)' % type
+    # elif type in ['video/x-ms-wmv']:
+    #    type_info = 'Windows Media video (%s)' % type
     elif type in ['video/x-ms-asf']:
-        type_info = "Advanced Systems Format (%s)" % type
-    #elif type in ['video/mpeg']:
-    #    type_info = "MPEG video (%s)" % type
+        type_info = 'Advanced Systems Format (%s)' % type
+    # elif type in ['video/mpeg']:
+    #    type_info = 'MPEG video (%s)' % type
     elif type in ['audio/mp4', 'audio/m4a']:
-        type_info = "MPEG-4 audio (%s)" % type
+        type_info = 'MPEG-4 audio (%s)' % type
     elif type in ['audio/mpeg']:
-        type_info = "MP3 (%s)" % type
+        type_info = 'MP3 (%s)' % type
     elif type in ['audio/wav', 'audio/wave', 'audio/x-wav']:
         type_info = 'Waveform Audio File Format ({})'.format(type)
 
     elif type in ['image/jpeg']:
-        type_info = "JPEG Image (%s)" % type
+        type_info = 'JPEG Image (%s)' % type
     elif type in ['image/png']:
-        type_info = "Portable Network Graphics (%s)" % type
+        type_info = 'Portable Network Graphics (%s)' % type
     elif type in ['image/gif']:
-        type_info = "Graphics Interchange Format (%s)" % type
+        type_info = 'Graphics Interchange Format (%s)' % type
     elif type in ['m3u8']:
         if 'm3u8_type' in kwargs:
             if kwargs['m3u8_type'] == 'master':
@@ -991,16 +1142,20 @@ def print_info(site_info, title, type, size, **kwargs):
         else:
             type_info = 'M3U8 Playlist {}'.format(type)
     else:
-        type_info = "Unknown type (%s)" % type
+        type_info = 'Unknown type (%s)' % type
 
-    maybe_print("Site:      ", site_info)
-    maybe_print("Title:     ", unescape_html(tr(title)))
-    print("Type:      ", type_info)
+    maybe_print('Site:      ', site_info)
+    maybe_print('Title:     ', unescape_html(tr(title)))
+    print('Type:      ', type_info)
     if type != 'm3u8':
-        print("Size:      ", round(size / 1048576, 2), "MiB (" + str(size) + " Bytes)")
+        print(
+            'Size:      ', round(size / 1048576, 2),
+            'MiB (' + str(size) + ' Bytes)'
+        )
     if type == 'm3u8' and 'm3u8_url' in kwargs:
         print('M3U8 Url:   {}'.format(kwargs['m3u8_url']))
     print()
+
 
 def mime_to_container(mime):
     mapping = {
@@ -1014,6 +1169,7 @@ def mime_to_container(mime):
     else:
         return mime.split('/')[1]
 
+
 def parse_host(host):
     """Parses host name and port number from a string.
     """
@@ -1026,6 +1182,7 @@ def parse_host(host):
     port = o.port or 0
     return (hostname, port)
 
+
 def set_proxy(proxy):
     proxy_handler = request.ProxyHandler({
         'http': '%s:%s' % proxy,
@@ -1034,27 +1191,33 @@ def set_proxy(proxy):
     opener = request.build_opener(proxy_handler)
     request.install_opener(opener)
 
+
 def unset_proxy():
     proxy_handler = request.ProxyHandler({})
     opener = request.build_opener(proxy_handler)
     request.install_opener(opener)
 
+
 # DEPRECATED in favor of set_proxy() and unset_proxy()
 def set_http_proxy(proxy):
-    if proxy == None: # Use system default setting
+    if proxy is None:  # Use system default setting
         proxy_support = request.ProxyHandler()
-    elif proxy == '': # Don't use any proxy
+    elif proxy == '':  # Don't use any proxy
         proxy_support = request.ProxyHandler({})
-    else: # Use proxy
-        proxy_support = request.ProxyHandler({'http': '%s' % proxy, 'https': '%s' % proxy})
+    else:  # Use proxy
+        proxy_support = request.ProxyHandler(
+            {'http': '%s' % proxy, 'https': '%s' % proxy}
+        )
     opener = request.build_opener(proxy_support)
     request.install_opener(opener)
+
 
 def print_more_compatible(*args, **kwargs):
     import builtins as __builtin__
     """Overload default print function as py (<3.3) does not support 'flush' keyword.
     Although the function name can be same as print to get itself overloaded automatically,
-    I'd rather leave it with a different name and only overload it when importing to make less confusion. """
+    I'd rather leave it with a different name and only overload it when importing to make less confusion.
+    """
     # nothing happens on py3.3 and later
     if sys.version_info[:2] >= (3, 3):
         return __builtin__.print(*args, **kwargs)
@@ -1077,6 +1240,7 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         else:
             download(url, **kwargs)
 
+
 def load_cookies(cookiefile):
     global cookies
     try:
@@ -1094,7 +1258,7 @@ def load_cookies(cookiefile):
                 c = cookiejar.Cookie(
                     0, item[4], item[5], None, False, item[0],
                     item[0].startswith('.'), item[0].startswith('.'),
-                    item[1], False, item[2], item[3], item[3]=="", None,
+                    item[1], False, item[2], item[3], item[3] == '', None,
                     None, {},
                 )
                 cookies.set_cookie(c)
@@ -1105,28 +1269,42 @@ def load_cookies(cookiefile):
         # FROM cookies
         # http://n8henrie.com/2013/11/use-chromes-cookies-for-easier-downloading-with-python-requests/
 
+
 def set_socks_proxy(proxy):
     try:
         import socks
         socks_proxy_addrs = proxy.split(':')
-        socks.set_default_proxy(socks.SOCKS5,
-                                socks_proxy_addrs[0],
-                                int(socks_proxy_addrs[1]))
+        socks.set_default_proxy(
+            socks.SOCKS5,
+            socks_proxy_addrs[0],
+            int(socks_proxy_addrs[1])
+        )
         socket.socket = socks.socksocket
+
         def getaddrinfo(*args):
-            return [(socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))]
+            return [
+                (socket.AF_INET, socket.SOCK_STREAM, 6, '', (args[0], args[1]))
+            ]
         socket.getaddrinfo = getaddrinfo
     except ImportError:
-        log.w('Error importing PySocks library, socks proxy ignored.'
-            'In order to use use socks proxy, please install PySocks.')
+        log.w(
+            'Error importing PySocks library, socks proxy ignored.'
+            'In order to use use socks proxy, please install PySocks.'
+        )
+
 
 def script_main(download, download_playlist, **kwargs):
     logging.basicConfig(format='[%(levelname)s] %(message)s')
 
     def print_version():
-        log.i('version %s, a tiny downloader that scrapes the web.'
-                % get_version(kwargs['repo_path']
-            if 'repo_path' in kwargs else __version__))
+        version = get_version(
+            kwargs['repo_path'] if 'repo_path' in kwargs else __version__
+        )
+        log.i(
+            'version {}, a tiny downloader that scrapes the web.'.format(
+                version
+            )
+        )
 
     parser = argparse.ArgumentParser(
         prog='you-get',
@@ -1134,66 +1312,109 @@ def script_main(download, download_playlist, **kwargs):
         description='A tiny downloader that scrapes the web',
         add_help=False,
     )
-    parser.add_argument('-V', '--version', action='store_true',
-                        help='Print version and exit')
-    parser.add_argument('-h', '--help', action='store_true',
-                        help='Print this help message and exit')
+    parser.add_argument(
+        '-V', '--version', action='store_true',
+        help='Print version and exit'
+    )
+    parser.add_argument(
+        '-h', '--help', action='store_true',
+        help='Print this help message and exit'
+    )
 
-    dry_run_grp = parser.add_argument_group('Dry-run options', '(no actual downloading)')
+    dry_run_grp = parser.add_argument_group(
+        'Dry-run options', '(no actual downloading)'
+    )
     dry_run_grp = dry_run_grp.add_mutually_exclusive_group()
-    dry_run_grp.add_argument('-i', '--info', action='store_true',
-                        help='Print extracted information')
-    dry_run_grp.add_argument('-u', '--url', action='store_true',
-                        help='Print extracted information with URLs')
-    dry_run_grp.add_argument('--json', action='store_true',
-                        help='Print extracted URLs in JSON format')
+    dry_run_grp.add_argument(
+        '-i', '--info', action='store_true', help='Print extracted information'
+    )
+    dry_run_grp.add_argument(
+        '-u', '--url', action='store_true',
+        help='Print extracted information with URLs'
+    )
+    dry_run_grp.add_argument(
+        '--json', action='store_true',
+        help='Print extracted URLs in JSON format'
+    )
 
     download_grp = parser.add_argument_group('Download options')
-    download_grp.add_argument('-n', '--no-merge', action='store_true', default=False,
-                        help='Do not merge video parts')
-    download_grp.add_argument('--no-caption', action='store_true',
-                        help='Do not download captions (subtitles, lyrics, danmaku, ...)')
-    download_grp.add_argument('-f', '--force', action='store_true', default=False,
-                        help='Force overwriting existing files')
-    download_grp.add_argument('-F', '--format', metavar='STREAM_ID',
-                        help='Set video format to STREAM_ID')
-    download_grp.add_argument('-O', '--output-filename', metavar='FILE',
-                        help='Set output filename')
-    download_grp.add_argument('-o', '--output-dir', metavar='DIR', default='.',
-                        help='Set output directory')
-    download_grp.add_argument('-p', '--player', metavar='PLAYER',
-                        help='Stream extracted URL to a PLAYER')
-    download_grp.add_argument('-c', '--cookies', metavar='COOKIES_FILE',
-                        help='Load cookies.txt or cookies.sqlite')
-    download_grp.add_argument('-t', '--timeout', metavar='SECONDS', type=int, default=600,
-                        help='Set socket timeout')
-    download_grp.add_argument('-d', '--debug', action='store_true',
-                        help='Show traceback and other debug info')
-    download_grp.add_argument('-I', '--input-file', metavar='FILE', type=argparse.FileType('r'),
-                        help='Read non-playlist URLs from FILE')
-    download_grp.add_argument('-P', '--password',
-                        help='Set video visit password to PASSWORD')
-    download_grp.add_argument('-l', '--playlist', action='store_true',
-                        help='Prefer to download a playlist')
+    download_grp.add_argument(
+        '-n', '--no-merge', action='store_true', default=False,
+        help='Do not merge video parts'
+    )
+    download_grp.add_argument(
+        '--no-caption', action='store_true',
+        help='Do not download captions (subtitles, lyrics, danmaku, ...)'
+    )
+    download_grp.add_argument(
+        '-f', '--force', action='store_true', default=False,
+        help='Force overwriting existing files'
+    )
+    download_grp.add_argument(
+        '-F', '--format', metavar='STREAM_ID',
+        help='Set video format to STREAM_ID'
+    )
+    download_grp.add_argument(
+        '-O', '--output-filename', metavar='FILE', help='Set output filename'
+    )
+    download_grp.add_argument(
+        '-o', '--output-dir', metavar='DIR', default='.',
+        help='Set output directory'
+    )
+    download_grp.add_argument(
+        '-p', '--player', metavar='PLAYER',
+        help='Stream extracted URL to a PLAYER'
+    )
+    download_grp.add_argument(
+        '-c', '--cookies', metavar='COOKIES_FILE',
+        help='Load cookies.txt or cookies.sqlite'
+    )
+    download_grp.add_argument(
+        '-t', '--timeout', metavar='SECONDS', type=int, default=600,
+        help='Set socket timeout'
+    )
+    download_grp.add_argument(
+        '-d', '--debug', action='store_true',
+        help='Show traceback and other debug info'
+    )
+    download_grp.add_argument(
+        '-I', '--input-file', metavar='FILE', type=argparse.FileType('r'),
+        help='Read non-playlist URLs from FILE'
+    )
+    download_grp.add_argument(
+        '-P', '--password', help='Set video visit password to PASSWORD'
+    )
+    download_grp.add_argument(
+        '-l', '--playlist', action='store_true',
+        help='Prefer to download a playlist'
+    )
+    download_grp.add_argument(
+        '-a', '--auto-rename', action='store_true', default=False,
+        help='Auto rename same name different files'
+    )
 
     proxy_grp = parser.add_argument_group('Proxy options')
     proxy_grp = proxy_grp.add_mutually_exclusive_group()
-    proxy_grp.add_argument('-x', '--http-proxy', metavar='HOST:PORT',
-                        help='Use an HTTP proxy for downloading')
-    proxy_grp.add_argument('-y', '--extractor-proxy', metavar='HOST:PORT',
-                        help='Use an HTTP proxy for extracting only')
-    proxy_grp.add_argument('--no-proxy', action='store_true',
-                        help='Never use a proxy')
-    proxy_grp.add_argument('-s', '--socks-proxy', metavar='HOST:PORT',
-                        help='Use an SOCKS5 proxy for downloading')
+    proxy_grp.add_argument(
+        '-x', '--http-proxy', metavar='HOST:PORT',
+        help='Use an HTTP proxy for downloading'
+    )
+    proxy_grp.add_argument(
+        '-y', '--extractor-proxy', metavar='HOST:PORT',
+        help='Use an HTTP proxy for extracting only'
+    )
+    proxy_grp.add_argument(
+        '--no-proxy', action='store_true', help='Never use a proxy'
+    )
+    proxy_grp.add_argument(
+        '-s', '--socks-proxy', metavar='HOST:PORT',
+        help='Use an SOCKS5 proxy for downloading'
+    )
 
-    download_grp.add_argument('--stream',
-                        help=argparse.SUPPRESS)
-    download_grp.add_argument('--itag',
-                        help=argparse.SUPPRESS)
+    download_grp.add_argument('--stream', help=argparse.SUPPRESS)
+    download_grp.add_argument('--itag', help=argparse.SUPPRESS)
 
-    parser.add_argument('URL', nargs='*',
-                        help=argparse.SUPPRESS)
+    parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
     args = parser.parse_args()
 
@@ -1215,11 +1436,16 @@ def script_main(download, download_playlist, **kwargs):
     global player
     global extractor_proxy
     global output_filename
+    global auto_rename
 
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
     info_only = args.info
+    if args.force:
+        force = True
+    if args.auto_rename:
+        auto_rename = True
     if args.url:
         dry_run = True
     if args.json:
@@ -1250,7 +1476,10 @@ def script_main(download, download_playlist, **kwargs):
     if args.input_file:
         logging.debug('you are trying to load urls from %s', args.input_file)
         if args.playlist:
-            log.e("reading playlist from a file is unsupported and won't make your life easier")
+            log.e(
+                "reading playlist from a file is unsupported "
+                "and won't make your life easier"
+            )
             sys.exit(2)
         URLs.extend(args.input_file.read().splitlines())
         args.input_file.close()
@@ -1272,7 +1501,8 @@ def script_main(download, download_playlist, **kwargs):
             download, download_playlist,
             URLs, args.playlist,
             output_dir=args.output_dir, merge=not args.no_merge,
-            info_only=info_only, json_output=json_output, caption=caption, password=args.password,
+            info_only=info_only, json_output=json_output, caption=caption,
+            password=args.password,
             **extra
         )
     except KeyboardInterrupt:
@@ -1283,9 +1513,14 @@ def script_main(download, download_playlist, **kwargs):
     except UnicodeEncodeError:
         if args.debug:
             raise
-        log.e('[error] oops, the current environment does not seem to support Unicode.')
+        log.e(
+            '[error] oops, the current environment does not seem to support '
+            'Unicode.'
+        )
         log.e('please set it to a UTF-8-aware locale first,')
-        log.e('so as to save the video (with some Unicode characters) correctly.')
+        log.e(
+            'so as to save the video (with some Unicode characters) correctly.'
+        )
         log.e('you can do it like this:')
         log.e('    (Windows)    % chcp 65001 ')
         log.e('    (Linux)      $ LC_CTYPE=en_US.UTF-8')
@@ -1293,7 +1528,9 @@ def script_main(download, download_playlist, **kwargs):
     except Exception:
         if not args.debug:
             log.e('[error] oops, something went wrong.')
-            log.e('don\'t panic, c\'est la vie. please try the following steps:')
+            log.e(
+                'don\'t panic, c\'est la vie. please try the following steps:'
+            )
             log.e('  (1) Rule out any network problem.')
             log.e('  (2) Make sure you-get is up-to-date.')
             log.e('  (3) Check if the issue is already known, on')
@@ -1307,21 +1544,27 @@ def script_main(download, download_playlist, **kwargs):
             raise
         sys.exit(1)
 
+
 def google_search(url):
     keywords = r1(r'https?://(.*)', url)
     url = 'https://www.google.com/search?tbm=vid&q=%s' % parse.quote(keywords)
     page = get_content(url, headers=fake_headers)
-    videos = re.findall(r'<a href="(https?://[^"]+)" onmousedown="[^"]+">([^<]+)<', page)
+    videos = re.findall(
+        r'<a href="(https?://[^"]+)" onmousedown="[^"]+">([^<]+)<', page
+    )
     vdurs = re.findall(r'<span class="vdur _dwc">([^<]+)<', page)
     durs = [r1(r'(\d+:\d+)', unescape_html(dur)) for dur in vdurs]
-    print("Google Videos search:")
+    print('Google Videos search:')
     for v in zip(videos, durs):
-        print("- video:  %s [%s]" % (unescape_html(v[0][1]),
-                                     v[1] if v[1] else '?'))
-        print("# you-get %s" % log.sprint(v[0][0], log.UNDERLINE))
+        print('- video:  {} [{}]'.format(
+            unescape_html(v[0][1]),
+            v[1] if v[1] else '?'
+        ))
+        print('# you-get %s' % log.sprint(v[0][0], log.UNDERLINE))
         print()
-    print("Best matched result:")
+    print('Best matched result:')
     return(videos[0][0])
+
 
 def url_to_module(url):
     try:
@@ -1338,17 +1581,25 @@ def url_to_module(url):
     domain = r1(r'(\.[^.]+\.[^.]+)$', video_host) or video_host
     assert domain, 'unsupported url: ' + url
 
+    # all non-ASCII code points must be quoted (percent-encoded UTF-8)
+    url = ''.join([ch if ord(ch) in range(128) else parse.quote(ch) for ch in url])
+    video_host = r1(r'https?://([^/]+)/', url)
+    video_url = r1(r'https?://[^/]+(.*)', url)
+
     k = r1(r'([^.]+)', domain)
     if k in SITES:
-        return import_module('.'.join(['you_get', 'extractors', SITES[k]])), url
+        return (
+            import_module('.'.join(['you_get', 'extractors', SITES[k]])),
+            url
+        )
     else:
         import http.client
-        video_host = r1(r'https?://([^/]+)/', url) # .cn could be removed
+        video_host = r1(r'https?://([^/]+)/', url)  # .cn could be removed
         if url.startswith('https://'):
             conn = http.client.HTTPSConnection(video_host)
         else:
             conn = http.client.HTTPConnection(video_host)
-        conn.request("HEAD", video_url, headers=fake_headers)
+        conn.request('HEAD', video_url, headers=fake_headers)
         res = conn.getresponse()
         location = res.getheader('location')
         if location and location != url and not location.startswith('/'):
@@ -1356,13 +1607,16 @@ def url_to_module(url):
         else:
             return import_module('you_get.extractors.universal'), url
 
+
 def any_download(url, **kwargs):
     m, url = url_to_module(url)
     m.download(url, **kwargs)
 
+
 def any_download_playlist(url, **kwargs):
     m, url = url_to_module(url)
     m.download_playlist(url, **kwargs)
+
 
 def main(**kwargs):
     script_main(any_download, any_download_playlist, **kwargs)

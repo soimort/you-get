@@ -6,17 +6,23 @@
 
 [You-Get](https://you-get.org/) is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.
 
-Here's how you use `you-get` to download a video from [this web page](http://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-free-society):
+Here's how you use `you-get` to download a video from [YouTube](https://www.youtube.com/watch?v=jNQXAC9IVRw):
 
 ```console
-$ you-get http://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-free-society
-Site:       fsf.org
-Title:      TEDxGE2014_Stallman05_LQ
-Type:       WebM video (video/webm)
-Size:       27.12 MiB (28435804 Bytes)
+$ you-get 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+site:                YouTube
+title:               Me at the zoo
+stream:
+    - itag:          43
+      container:     webm
+      quality:       medium
+      size:          0.5 MiB (564215 bytes)
+    # download-with: you-get --itag=43 [URL]
 
-Downloading TEDxGE2014_Stallman05_LQ.webm ...
-100.0% ( 27.1/27.1 MB) ├████████████████████████████████████████┤[1/1]   12 MB/s
+Downloading Me at the zoo.webm ...
+ 100% (  0.5/  0.5MB) ├██████████████████████████████████┤[1/1]    6 MB/s
+
+Saving Me at the zoo.en.srt ... Done.
 ```
 
 And here's why you might want to use it:
@@ -109,7 +115,7 @@ $ brew install you-get
 
 ### Shell completion
 
-Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](contrib/completion). Please consult your shell's manual for how to take advantage of them.
+Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](https://github.com/soimort/you-get/tree/develop/contrib/completion). Please consult your shell's manual for how to take advantage of them.
 
 ## Upgrading
 
@@ -359,6 +365,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Facebook    | <https://www.facebook.com/>   |✓| | |
 | eHow        | <http://www.ehow.com/>        |✓| | |
 | Dailymotion | <http://www.dailymotion.com/> |✓| | |
+| Coub        | <http://coub.com/>            |✓| | |
 | CBS         | <http://www.cbs.com/>         |✓| | |
 | Bandcamp    | <http://bandcamp.com/>        | | |✓|
 | AliveThai   | <http://alive.in.th/>         |✓| | |
@@ -403,8 +410,12 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 花瓣     | <http://huaban.com/>           | |✓| |
 | Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
 | 芒果TV   | <http://www.mgtv.com/>         |✓| | |
-| 火猫TV   | <http://www.huomao.com/>         |✓| | |
-| 全民Tv   | <http://www.quanmin.tv/>         |✓| | |
+| 火猫TV   | <http://www.huomao.com/>       |✓| | |
+| 全民直播 | <http://www.quanmin.tv/>       |✓| | |
+| 阳光宽频网 | <http://www.365yg.com/>      |✓| | |
+| 西瓜视频 | <https://www.ixigua.com/>      |✓| | |
+| 快手 | <https://www.kuaishou.com/>      |✓|✓| |
+| 抖音 | <https://www.douyin.com/>      |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
@@ -412,19 +423,13 @@ For all other sites not on the list, the universal extractor will take care of f
 
 If something is broken and `you-get` can't get you things you want, don't panic. (Yes, this happens all the time!)
 
-Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>, and search on the [list of open issues](https://github.com/soimort/you-get/issues). If it has not been reported yet, open a new issue, with detailed command-line output attached.
+Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>. If not, follow the guidelines on [how to report a broken extractor](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md#report-a-broken-extractor).
 
 ## Getting Involved
 
 You can reach us on the Gitter channel [#soimort/you-get](https://gitter.im/soimort/you-get) (here's how you [set up your IRC client](http://irc.gitter.im) for Gitter). If you have a quick question regarding `you-get`, ask it there.
 
-All kinds of pull requests are welcome. However, there are a few guidelines to follow:
-
-* The [`develop`](https://github.com/soimort/you-get/tree/develop) branch is where your pull request should go.
-* Remember to rebase.
-* Document your PR clearly, and if applicable, provide some sample links for reviewers to test with.
-* Write well-formatted, easy-to-understand commit messages. If you don't know how, look at existing ones.
-* We will not ask you to sign a CLA, but you must assure that your code can be legally redistributed (under the terms of the MIT license).
+If you are seeking to report an issue or contribute, please make sure to read [the guidelines](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) first.
 
 ## Legal Issues
 

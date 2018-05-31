@@ -9,6 +9,10 @@ import hashlib
 import time
 import re
 
+headers = {
+        'user-agent': 'Mozilla/5.0 (iPad; CPU OS 8_1_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B466 Safari/600.1.4'
+    }
+
 def douyutv_video_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     ep = 'http://vmobile.douyu.com/video/getInfo?vid='
     patt = r'show/([0-9A-Za-z]+)'
@@ -19,7 +23,7 @@ def douyutv_video_download(url, output_dir='.', merge=True, info_only=False, **k
         log.wtf('Unknown url pattern')
     vid = hit.group(1)
 
-    page = get_content(url)
+    page = get_content(url, headers=headers)
     hit = re.search(title_patt, page)
     if hit is None:
         title = vid
@@ -35,40 +39,43 @@ def douyutv_video_download(url, output_dir='.', merge=True, info_only=False, **k
         urls = general_m3u8_extractor(m3u8_url)
         download_urls(urls, title, 'ts', 0, output_dir=output_dir, merge=merge, **kwargs)
 
-def douyutv_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+
+def douyutv_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if 'v.douyu.com/show/' in url:
         douyutv_video_download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
         return
 
-    html = get_content(url)
-    room_id_patt = r'"room_id"\s*:\s*(\d+),'
+    url = re.sub(r'[w.]*douyu.com', 'm.douyu.com', url)
+    html = get_content(url, headers)
+    room_id_patt = r'room_id\s*:\s*(\d+),'
     room_id = match1(html, room_id_patt)
     if room_id == "0":
-        room_id = url[url.rfind('/')+1:]
+        room_id = url[url.rfind('/') + 1:]
 
-    json_request_url = "http://m.douyu.com/html5/live?roomId=%s" % room_id
-    content = get_content(json_request_url)
+    api_url = "http://www.douyutv.com/api/v1/"
+    args = "room/%s?aid=wp&client_sys=wp&time=%d" % (room_id, int(time.time()))
+    auth_md5 = (args + "zNzMV1y4EMxOHS6I5WKm").encode("utf-8")
+    auth_str = hashlib.md5(auth_md5).hexdigest()
+    json_request_url = "%s%s&auth=%s" % (api_url, args, auth_str)
+
+    content = get_content(json_request_url, headers)
     json_content = json.loads(content)
     data = json_content['data']
-    server_status = json_content.get('error',0)
+    server_status = json_content.get('error', 0)
     if server_status is not 0:
         raise ValueError("Server returned error:%s" % server_status)
 
-    room_info_url = "http://open.douyucdn.cn/api/RoomApi/room/%s" % room_id
-    room_info_content = get_content(room_info_url)
-    room_info_obj = json.loads(room_info_content)
-    room_info_data = room_info_obj.get('data')
-
-    title = room_info_data.get('room_name')
-    show_status = room_info_data.get('room_status')
+    title = data.get('room_name')
+    show_status = data.get('show_status')
     if show_status is not "1":
         raise ValueError("The live stream is not online! (Errno:%s)" % server_status)
 
-    real_url = data.get('hls_url')
+    real_url = data.get('rtmp_url') + '/' + data.get('rtmp_live')
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
-        download_url_ffmpeg(real_url, title, 'flv', None, output_dir = output_dir, merge = merge)
+        download_url_ffmpeg(real_url, title, 'flv', params={}, output_dir=output_dir, merge=merge)
+
 
 site_info = "douyu.com"
 download = douyutv_download

@@ -27,7 +27,7 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         vid = r1(r'\Wvid\s*[\:=]\s*[\'"]?(\d+)[\'"]?', html)
     assert vid
 
-    if re.match(r'http://tv.sohu.com/', url):
+    if re.match(r'http[s]://tv.sohu.com/', url):
         if extractor_proxy:
             set_proxy(tuple(extractor_proxy.split(":")))
         info = json.loads(get_decoded_html('http://hot.vrs.sohu.com/vrs_flash.action?vid=%s' % vid))

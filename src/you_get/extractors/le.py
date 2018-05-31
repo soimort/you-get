@@ -65,9 +65,6 @@ def video_info(vid,**kwargs):
     if "stream_id" in kwargs and kwargs["stream_id"].lower() in support_stream_id:
         stream_id = kwargs["stream_id"]
     else:
-        print("Current Video Supports:")
-        for i in support_stream_id:
-            print("\t--format",i,"<URL>")
         if "1080p" in support_stream_id:
             stream_id = '1080p'
         elif "720p" in support_stream_id:
