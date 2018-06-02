@@ -8,8 +8,14 @@ from .qie import download as qieDownload
 from .qie_video import download_by_url as qie_video_download
 from urllib.parse import urlparse,parse_qs
 
-def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
-    info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3.2.19.333&platform=11&defnpayver=1&vid={}'.format(vid)
+def qq_download_by_vid(vid, title, default_from, output_dir='.', merge=True, info_only=False):
+
+    if default_from:
+        platform = 11
+    else:
+        platform = 4100201
+
+    info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3.2.19.333&platform={}&defnpayver=1&vid={}'.format(platform, vid)
     info = get_content(info_api)
     video_json = json.loads(match1(info, r'QZOutputJson=(.*)')[:-1])
 
@@ -17,7 +23,8 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     title = video_json['vl']['vi'][0]['ti']
     host = video_json['vl']['vi'][0]['ul']['ui'][0]['url']
     streams = video_json['fl']['fi']
-    seg_cnt = video_json['vl']['vi'][0]['cl']['fc']
+    seg_cnt = fc_cnt = video_json['vl']['vi'][0]['cl']['fc']
+
     filename = video_json['vl']['vi'][0]['fn']
     if seg_cnt == 0:
         seg_cnt = 1
@@ -39,7 +46,10 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
         # fix some error cases("check vid&filename failed" and "format invalid")
         # https://v.qq.com/x/page/q06058th9ll.html
         # https://v.qq.com/x/page/t060789a21e.html
-        if seg_cnt == 1:
+
+        if fc_cnt == 0:
+            # fix jason error 
+            # https://v.qq.com/x/page/w0674l9yrrh.html
             part_format_id = video_json['vl']['vi'][0]['cl']['keyid'].split('.')[-1]
         else:
             part_format_id = video_json['vl']['vi'][0]['cl']['ci'][part - 1]['keyid'].split('.')[1]
@@ -112,6 +122,8 @@ def kg_qq_download_by_shareid(shareid, output_dir='.', info_only=False, caption=
 
 def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     """"""
+    default_from = True
+
     if re.match(r'https?://egame.qq.com/live\?anchorid=(\d+)', url):
         from . import qq_egame
         qq_egame.qq_egame_download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
@@ -134,7 +146,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         content = get_content(url)
         vids = matchall(content, [r'\?vid=(\w+)'])
         for vid in vids:
-            qq_download_by_vid(vid, vid, output_dir, merge, info_only)
+            qq_download_by_vid(vid, vid, default_from, output_dir, merge, info_only)
         return
 
     if 'kuaibao.qq.com' in url or re.match(r'http://daxue.qq.com/content/content/id/\d+', url):
@@ -165,7 +177,12 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         title = match1(content, r'"title":"([^"]+)"') if not title else title
         title = vid if not title else title #general fallback
 
-    qq_download_by_vid(vid, title, output_dir, merge, info_only)
+        if 'v.sports.qq.com' in url:
+            # fix url forbidden
+            # http://v.sports.qq.com/#/cover/t0fqsm1y83r8v5j/a0026nvw5jr
+            default_from = False
+            
+    qq_download_by_vid(vid, title, default_from, output_dir, merge, info_only)
 
 site_info = "QQ.com"
 download = qq_download
