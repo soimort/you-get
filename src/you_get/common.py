@@ -24,6 +24,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
 SITES = {
     '163'              : 'netease',
     '56'               : 'w56',
+    '365yg'            : 'toutiao',
     'acfun'            : 'acfun',
     'archive'          : 'archive',
     'baidu'            : 'baidu',
@@ -64,6 +65,7 @@ SITES = {
     'iqiyi'            : 'iqiyi',
     'ixigua'           : 'ixigua',
     'isuntv'           : 'suntv',
+    'iwara'            : 'iwara',
     'joy'              : 'joy',
     'kankanews'        : 'bilibili',
     'khanacademy'      : 'khan',
@@ -82,6 +84,7 @@ SITES = {
     'mixcloud'         : 'mixcloud',
     'mtv81'            : 'mtv81',
     'musicplayon'      : 'musicplayon',
+    'miaopai'          : 'yixia',
     'naver'            : 'naver',
     '7gogo'            : 'nanagogo',
     'nicovideo'        : 'nicovideo',
@@ -118,14 +121,12 @@ SITES = {
     'xiaojiadianvideo' : 'fc2video',
     'ximalaya'         : 'ximalaya',
     'yinyuetai'        : 'yinyuetai',
-    'miaopai'          : 'yixia',
     'yizhibo'          : 'yizhibo',
     'youku'            : 'youku',
-    'iwara'            : 'iwara',
     'youtu'            : 'youtube',
     'youtube'          : 'youtube',
     'zhanqi'           : 'zhanqi',
-    '365yg'            : 'toutiao',
+    'zhibo'            : 'zhibo',
 }
 
 dry_run = False
