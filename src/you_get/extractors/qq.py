@@ -13,6 +13,7 @@ def qq_download_by_vid(vid, title, default_from, output_dir='.', merge=True, inf
     if default_from:
         platform = 11
     else:
+        # fix return {,"msg":"cannot play outside"}
         platform = 4100201
 
     info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3.2.19.333&platform={}&defnpayver=1&vid={}'.format(platform, vid)
@@ -32,24 +33,13 @@ def qq_download_by_vid(vid, title, default_from, output_dir='.', merge=True, inf
         fn_pre, magic_str, video_type = filename.split('.')
 
     best_quality = streams[-1]['name']
-    #part_format_id = streams[-1]['id']
 
     part_urls= []
     total_size = 0
     for part in range(1, seg_cnt+1):
-        #if seg_cnt == 1 and video_json['vl']['vi'][0]['vh'] <= 480:
-        #    filename = fn_pre + '.mp4'
-        #else:
-        #    filename = fn_pre + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
-        #filename = fn_pre + '.p' + str(part_format_id % 10000) + '.' + str(part) + '.mp4'
-
-        # fix some error cases("check vid&filename failed" and "format invalid")
-        # https://v.qq.com/x/page/q06058th9ll.html
-        # https://v.qq.com/x/page/t060789a21e.html
-
         if fc_cnt == 0:
-            # fix jason error 
-            # https://v.qq.com/x/page/w0674l9yrrh.html
+            # fix json parsing error
+            # example:https://v.qq.com/x/page/w0674l9yrrh.html
             part_format_id = video_json['vl']['vi'][0]['cl']['keyid'].split('.')[-1]
         else:
             part_format_id = video_json['vl']['vi'][0]['cl']['ci'][part - 1]['keyid'].split('.')[1]
@@ -179,7 +169,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
         if 'v.sports.qq.com' in url:
             # fix url forbidden
-            # http://v.sports.qq.com/#/cover/t0fqsm1y83r8v5j/a0026nvw5jr
+            # example:http://v.sports.qq.com/#/cover/t0fqsm1y83r8v5j/a0026nvw5jr
             default_from = False
             
     qq_download_by_vid(vid, title, default_from, output_dir, merge, info_only)
