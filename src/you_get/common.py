@@ -1581,6 +1581,11 @@ def url_to_module(url):
     domain = r1(r'(\.[^.]+\.[^.]+)$', video_host) or video_host
     assert domain, 'unsupported url: ' + url
 
+    # all non-ASCII code points must be quoted (percent-encoded UTF-8)
+    url = ''.join([ch if ord(ch) in range(128) else parse.quote(ch) for ch in url])
+    video_host = r1(r'https?://([^/]+)/', url)
+    video_url = r1(r'https?://[^/]+(.*)', url)
+
     k = r1(r'([^.]+)', domain)
     if k in SITES:
         return (

@@ -19,7 +19,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         url = 'https://' + match1(url, r'//mobile\.(.+)')
 
     if re.match(r'https?://twitter\.com/i/moments/', url): # moments
-        html = get_html(url)
+        html = get_html(url, faker=True)
         paths = re.findall(r'data-permalink-path="([^"]+)"', html)
         for path in paths:
             twitter_download('https://twitter.com' + path,
@@ -29,7 +29,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                              **kwargs)
         return
 
-    html = get_html(url)
+    html = get_html(url, faker=True)
     screen_name = r1(r'data-screen-name="([^"]*)"', html) or \
         r1(r'<meta name="twitter:title" content="([^"]*)"', html)
     item_id = r1(r'data-item-id="([^"]*)"', html) or \

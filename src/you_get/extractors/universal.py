@@ -111,16 +111,25 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
         for candy in candies:
             try:
-                mime, ext, size = url_info(candy['url'], faker=True)
-                if not size: size = float('Int')
+                try:
+                    mime, ext, size = url_info(candy['url'], faker=False)
+                    assert size
+                except:
+                    mime, ext, size = url_info(candy['url'], faker=True)
+                    if not size: size = float('Inf')
             except:
                 continue
             else:
                 print_info(site_info, candy['title'], ext, size)
                 if not info_only:
-                    download_urls([candy['url']], candy['title'], ext, size,
-                                  output_dir=output_dir, merge=merge,
-                                  faker=True)
+                    try:
+                        download_urls([candy['url']], candy['title'], ext, size,
+                                      output_dir=output_dir, merge=merge,
+                                      faker=False)
+                    except:
+                        download_urls([candy['url']], candy['title'], ext, size,
+                                      output_dir=output_dir, merge=merge,
+                                      faker=True)
         return
 
     else:
