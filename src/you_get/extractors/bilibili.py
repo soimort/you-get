@@ -169,7 +169,7 @@ class Bilibili(VideoExtractor):
             tc_flashvars = tc_flashvars.group(1)
         if tc_flashvars is not None:
             self.out = True
-            qq_download_by_vid(tc_flashvars, self.title, output_dir=kwargs['output_dir'], merge=kwargs['merge'], info_only=kwargs['info_only'])
+            qq_download_by_vid(tc_flashvars, self.title, True, output_dir=kwargs['output_dir'], merge=kwargs['merge'], info_only=kwargs['info_only'])
             return
 
         has_plist = re.search(r'"page":2', self.page)

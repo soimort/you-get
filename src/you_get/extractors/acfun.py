@@ -65,7 +65,7 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
     elif sourceType == 'tudou':
         tudou_download_by_iid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'qq':
-        qq_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        qq_download_by_vid(sourceId, title, True, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'letv':
         letvcloud_download_by_vu(sourceId, '2d8c027396', title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'zhuzhan':
