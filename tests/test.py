@@ -7,6 +7,7 @@ from you_get.extractors import (
     magisto,
     youtube,
     bilibili,
+    qq
 )
 
 
@@ -37,6 +38,9 @@ class YouGetTests(unittest.TestCase):
         )
         bilibili.download(
             'https://www.bilibili.com/video/av13228063/', info_only=True
+        )
+    def test_qq(self):
+        qq.download('https://v.qq.com/x/page/r0379xxdvc7.html', info_only=True
         )
 
 
