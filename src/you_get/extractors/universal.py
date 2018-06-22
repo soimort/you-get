@@ -67,12 +67,12 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
         urls = []
         for i in media_exts:
-            urls += re.findall(r'(https?://[^;"\'\\]+' + i + r'[^;"\'\\]*)', page)
+            urls += re.findall(r'(https?://[^ ;"\'\\]+' + i + r'[^ ;"\'\\]*)', page)
 
             p_urls = re.findall(r'(https?%3A%2F%2F[^;&]+' + i + r'[^;&]*)', page)
             urls += [parse.unquote(url) for url in p_urls]
 
-            q_urls = re.findall(r'(https?:\\\\/\\\\/[^;"\']+' + i + r'[^;"\']*)', page)
+            q_urls = re.findall(r'(https?:\\\\/\\\\/[^ ;"\']+' + i + r'[^ ;"\']*)', page)
             urls += [url.replace('\\\\/', '/') for url in q_urls]
 
         # a link href to an image is often an interesting one
