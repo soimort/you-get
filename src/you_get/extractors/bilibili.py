@@ -177,7 +177,7 @@ class Bilibili(VideoExtractor):
             log.w('This page contains a playlist. (use --playlist to download all videos.)')
 
         try:
-            cid = re.search(r'cid=(\d+)', self.page).group(1)
+            cid = list(filter(lambda cid:re.findall(cid+'/'+cid,self.page),re.findall(r'"cid":(\d+)', self.page)))[0]
         except:
             cid = re.search(r'"cid":(\d+)', self.page).group(1)
         if cid is not None:
@@ -356,7 +356,7 @@ def bilibili_download_playlist_by_url(url, **kwargs):
         page_list = json.loads(get_content('http://www.bilibili.com/widget/getPageList?aid={}'.format(aid)))
         page_cnt = len(page_list)
         for no in range(1, page_cnt+1):
-            page_url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, no)
+            page_url = 'http://www.bilibili.com/video/av{}/?p={}'.format(aid, no)
             subtitle = page_list[no-1]['pagename']
             Bilibili().download_by_url(page_url, subtitle=subtitle, **kwargs)
 
