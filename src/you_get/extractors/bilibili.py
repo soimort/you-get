@@ -177,7 +177,9 @@ class Bilibili(VideoExtractor):
             log.w('This page contains a playlist. (use --playlist to download all videos.)')
 
         try:
-            cid = re.search(r'cid=(\d+)', self.page).group(1)
+            page_list = json.loads(re.search(r'"pages":(\[.*?\])', self.page).group(1))
+            index_id = int(re.search(r'index_(\d+)', self.url).group(1))
+            cid = page_list[index_id-1]['cid'] # change cid match rule
         except:
             cid = re.search(r'"cid":(\d+)', self.page).group(1)
         if cid is not None:
