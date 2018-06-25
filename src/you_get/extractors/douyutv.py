@@ -45,9 +45,9 @@ def douyutv_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         douyutv_video_download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
         return
 
-    url = re.sub(r'[w.]*douyu.com', 'm.douyu.com', url)
+    url = re.sub(r'.*douyu.com','https://m.douyu.com/room', url)
     html = get_content(url, headers)
-    room_id_patt = r'room_id\s*:\s*(\d+),'
+    room_id_patt = r'"rid"\s*:\s*(\d+),'
     room_id = match1(html, room_id_patt)
     if room_id == "0":
         room_id = url[url.rfind('/') + 1:]
