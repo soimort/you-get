@@ -173,7 +173,7 @@ class Bilibili(VideoExtractor):
             return
 
         has_plist = re.search(r'"page":2', self.page)
-        if has_plist:
+        if has_plist and not kwargs.get('playlist'):
             log.w('This page contains a playlist. (use --playlist to download all videos.)')
 
         try:
@@ -341,6 +341,7 @@ def parse_cid_playurl(xml):
 
 def bilibili_download_playlist_by_url(url, **kwargs):
     url = url_locations([url])[0]
+    kwargs['playlist'] = True
     # a bangumi here? possible?
     if 'live.bilibili' in url:
         site.download_by_url(url)
