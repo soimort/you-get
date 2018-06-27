@@ -360,7 +360,7 @@ def bilibili_download_playlist_by_url(url, **kwargs):
         page_cnt = len(page_list)
         for no in range(1, page_cnt+1):
             page_url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, no)
-            subtitle = page_list[no-1]['pagename']
+            subtitle = '#%s. %s'% (page_list[no-1]['page'], page_list[no-1]['pagename'])
             Bilibili().download_by_url(page_url, subtitle=subtitle, **kwargs)
 
 site = Bilibili()
