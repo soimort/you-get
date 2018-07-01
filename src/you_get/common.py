@@ -505,7 +505,7 @@ def get_head(url, headers={}, get_method='HEAD'):
         req = request.Request(url)
     req.get_method = lambda: get_method
     res = urlopen_with_retry(req)
-    return dict(res.headers)
+    return res.headers
 
 
 def url_info(url, faker=False, headers={}):
