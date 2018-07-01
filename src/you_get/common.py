@@ -369,13 +369,16 @@ def get_decoded_html(url, faker=False):
         return data
 
 
-def get_location(url):
+def get_location(url, headers=None, get_method='HEAD'):
     logging.debug('get_location: %s' % url)
 
-    response = request.urlopen(url)
-    # urllib will follow redirections and it's too much code to tell urllib
-    # not to do that
-    return response.geturl()
+    if headers:
+        req = request.Request(url, headers=headers)
+    else:
+        req = request.Request(url)
+    req.get_method = lambda: get_method
+    res = urlopen_with_retry(req)
+    return res.geturl()
 
 
 def urlopen_with_retry(*args, **kwargs):
@@ -1594,7 +1597,10 @@ def url_to_module(url):
             url
         )
     else:
-        location = get_location(url)
+        try:
+            location = get_location(url) # t.co isn't happy with fake_headers
+        except:
+            location = get_location(url, headers=fake_headers)
 
         if location and location != url and not location.startswith('/'):
             return url_to_module(location)
