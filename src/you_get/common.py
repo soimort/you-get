@@ -499,7 +499,7 @@ def urls_size(urls, faker=False, headers={}):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
 
-def get_head(url, headers={}, get_method='HEAD'):
+def get_head(url, headers=None, get_method='HEAD'):
     logging.debug('get_head: %s' % url)
 
     if headers:
