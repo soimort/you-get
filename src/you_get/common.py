@@ -1594,15 +1594,8 @@ def url_to_module(url):
             url
         )
     else:
-        import http.client
-        video_host = r1(r'https?://([^/]+)/', url)  # .cn could be removed
-        if url.startswith('https://'):
-            conn = http.client.HTTPSConnection(video_host)
-        else:
-            conn = http.client.HTTPConnection(video_host)
-        conn.request('HEAD', video_url, headers=fake_headers)
-        res = conn.getresponse()
-        location = res.getheader('location')
+        location = get_location(url)
+
         if location and location != url and not location.startswith('/'):
             return url_to_module(location)
         else:
