@@ -29,6 +29,7 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                 image_url = edge['node']['display_url']
                 if 'video_url' in edge['node']:
                     image_url = edge['node']['video_url']
+                image_url = image_url.split('?')[0]
                 ext = image_url.split('.')[-1]
                 size = int(get_head(image_url)['Content-Length'])
                 print_info(site_info, title, ext, size)
@@ -43,6 +44,7 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
             image_url = info['entry_data']['PostPage'][0]['graphql']['shortcode_media']['display_url']
             if 'video_url' in info['entry_data']['PostPage'][0]['graphql']['shortcode_media']:
                 image_url =info['entry_data']['PostPage'][0]['graphql']['shortcode_media']['video_url']
+            image_url = image_url.split('?')[0]
             ext = image_url.split('.')[-1]
             size = int(get_head(image_url)['Content-Length'])
             print_info(site_info, title, ext, size)
