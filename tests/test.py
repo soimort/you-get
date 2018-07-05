@@ -39,6 +39,14 @@ class YouGetTests(unittest.TestCase):
             'https://www.bilibili.com/video/av13228063/', info_only=True
         )
 
+    def test_sohu(self):
+        sohu_download.download(
+            'https://tv.sohu.com/v/cGwvOTQ0Nzk1Ni8xMDIxMTMwMjguc2h0bWw=.html', info_only=True
+        )
+        sohu_download.download(
+            'https://tv.sohu.com/v/cGwvOTI5ODkyOC85OTk0ODY5Mi5zaHRtbA==.html', info_only=True
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
