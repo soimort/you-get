@@ -7,6 +7,7 @@ from you_get.extractors import (
     magisto,
     youtube,
     bilibili,
+    mgtv
 )
 
 
@@ -37,6 +38,14 @@ class YouGetTests(unittest.TestCase):
         )
         bilibili.download(
             'https://www.bilibili.com/video/av13228063/', info_only=True
+        )
+
+    def test_mgtv(self):
+        mgtv.download(
+            'https://www.mgtv.com/b/319123/4154260.html', info_only=True
+        )
+        mgtv.download(
+            'https://www.mgtv.com/b/319123/4154260.html', info_only=True
         )
 
 
