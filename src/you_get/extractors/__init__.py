@@ -89,3 +89,4 @@ from .khan import *
 from .zhanqi import *
 from .kuaishou import *
 from .zhibo import *
+from .snrtv import *
