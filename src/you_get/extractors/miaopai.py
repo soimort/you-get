@@ -31,7 +31,7 @@ def miaopai_download_by_fid(fid, output_dir = '.', merge = False, info_only = Fa
 
 #----------------------------------------------------------------------
 def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
-    fid = match1(url, r'\?fid=(\d{4}:\w{32})')
+    fid = match1(url, r'\?fid=(\d{4}:\w+)')
     if fid is not None:
         miaopai_download_by_fid(fid, output_dir, merge, info_only)
     elif '/p/230444' in url:
