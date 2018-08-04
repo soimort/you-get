@@ -137,9 +137,18 @@ class Bilibili(VideoExtractor):
             m = re.search(r'property="og:title" content="([^"]+)"', self.page)
             if m is not None:
                 self.title = m.group(1)
+
         if 'subtitle' in kwargs:
             subtitle = kwargs['subtitle']
             self.title = '{} {}'.format(self.title, subtitle)
+        else:
+            m_pages = re.search(r'"pages":(\[[^\]]+])', self.page)
+            if m_pages is not None:
+                pages = json.loads(m_pages.group(1))
+                if len(pages) > 1:
+                    qs = dict(parse.parse_qsl(urllib.parse.urlparse(self.url).query))
+                    page = pages[int(qs.get('p', 1)) - 1]
+                    self.title = '{} #{}. {}'.format(self.title, page['page'], page['part'])
 
         if 'bangumi.bilibili.com/movie' in self.url:
             self.movie_entry(**kwargs)
