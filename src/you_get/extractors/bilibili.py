@@ -142,9 +142,9 @@ class Bilibili(VideoExtractor):
             subtitle = kwargs['subtitle']
             self.title = '{} {}'.format(self.title, subtitle)
         else:
-            m_pages = re.search(r'"pages":(\[[^\]]+])', self.page)
-            if m_pages is not None:
-                pages = json.loads(m_pages.group(1))
+            playinfo = re.search(r'__INITIAL_STATE__=(.*?);\(function\(\)', self.page)
+            if playinfo is not None:
+                pages = json.loads(playinfo.group(1))['videoData']['pages']
                 if len(pages) > 1:
                     qs = dict(parse.parse_qsl(urllib.parse.urlparse(self.url).query))
                     page = pages[int(qs.get('p', 1)) - 1]
