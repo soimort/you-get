@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
+import urllib
 
 from you_get.extractors import (
     imgur,
@@ -32,12 +33,23 @@ class YouGetTests(unittest.TestCase):
         )
 
     def test_bilibili(self):
-        bilibili.download(
-            'https://www.bilibili.com/video/av16907446/', info_only=True
-        )
-        bilibili.download(
-            'https://www.bilibili.com/video/av13228063/', info_only=True
-        )
+        maxRetry = 3
+
+        # the bilibi is not stable, it got 502 occasionally
+        for i in range(maxRetry):
+            try:
+                bilibili.download(
+                    'https://www.bilibili.com/video/av16907446/', info_only=True
+                )
+                bilibili.download(
+                    'https://www.bilibili.com/video/av13228063/', info_only=True
+                )
+                return
+            except urllib.error.HTTPError as e:
+                if e.error == 502 and i + 1 < maxRetry:
+                    continue
+                else:
+                    raise e
 
 
 if __name__ == '__main__':
