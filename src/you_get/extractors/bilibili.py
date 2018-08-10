@@ -358,7 +358,7 @@ def download_video_from_favlist(url, **kwargs):
         vmid = m.group(1)
         favid = m.group(2)
         jsonresult = json.loads(get_content("https://api.bilibili.com/x/space/fav/arc?vmid={}&ps=300&fid={}&order=fav_time&tid=0&keyword=&pn=1&jsonp=jsonp".format(vmid, favid)))
-        print(jsonresult)
+
         # log.wtf("Got files list for vmid" + vmid + " favid:" + favid)
         if jsonresult['code'] != 0:
             log.wtf("Fail to get the files of page " + jsonresult)
