@@ -127,6 +127,7 @@ SITES = {
     'youtube'          : 'youtube',
     'zhanqi'           : 'zhanqi',
     'zhibo'            : 'zhibo',
+    'eslkidslab'       : 'eslkidslab',
 }
 
 dry_run = False

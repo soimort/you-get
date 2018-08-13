@@ -417,6 +417,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 快手 | <https://www.kuaishou.com/>      |✓|✓| |
 | 抖音 | <https://www.douyin.com/>      |✓| | |
 | 中国体育(TV) | <http://v.zhibo.tv/> </br><http://video.zhibo.tv/>    |✓| | |
+| eslkidslab | <http://www.eslkidslab.com/> |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
