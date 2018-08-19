@@ -270,12 +270,35 @@ def youku_download_playlist_by_url(url, **kwargs):
     elif re.match('https?://list.youku.com/show/id_', url):
         # http://list.youku.com/show/id_z2ae8ee1c837b11e18195.html
         # official playlist
+        uniqe_video_urls = []
         page = get_content(url)
         show_id = re.search(r'showid:"(\d+)"', page).group(1)
         ep = 'http://list.youku.com/show/module?id={}&tab=showInfo&callback=jQuery'.format(show_id)
         xhr_page = get_content(ep).replace('\/', '/').replace('\"', '"')
-        video_url = re.search(r'(v.youku.com/v_show/id_(?:[A-Za-z0-9=]+)\.html)', xhr_page).group(1)
-        youku_download_playlist_by_url('http://'+video_url, **kwargs)
+
+        reload_ids = re.findall(r'data-id=\\"(reload_\d+)\\"', xhr_page)
+        if len(reload_ids) > 1:
+            for reload_id in reload_ids:
+                ep = 'http://list.youku.com/show/episode?id={}&stage={}&callback=jQuery'.format(show_id, reload_id)
+                xhr_page = get_content(ep).replace('\/', '/').replace('\"', '"')
+                video_urls = re.findall(r'(v.youku.com/v_show/id_(?:[A-Za-z0-9=]+)\.html)', xhr_page)
+
+                for video_url in video_urls:
+                    if video_url not in uniqe_video_urls:
+                        uniqe_video_urls.append(video_url)
+
+        elif len(reload_ids) == 1:
+            video_url = re.search(r'(v.youku.com/v_show/id_(?:[A-Za-z0-9=]+)\.html)', xhr_page).group(1)
+
+            if video_url not in uniqe_video_urls:
+                uniqe_video_urls.append(video_url)
+
+        else:
+            return
+
+        for video_url in uniqe_video_urls:
+            youku_download_by_url('http://'+video_url, **kwargs)
+
         return
     elif re.match('https?://list.youku.com/albumlist/show/id_(\d+)\.html', url):
         # http://list.youku.com/albumlist/show/id_2336634.html
