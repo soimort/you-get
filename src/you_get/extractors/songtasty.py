@@ -13,8 +13,8 @@ def songtasty_download(url, output_dir = '.', merge=True, info_only=False, **kwa
         html = get_content(url)
         # example: <span id="play_musicname">不加糖先生° ▍ - 童年不能忘却的音乐 - 地球仪 电音版</span>
         title = r1(r'<title(.*)</title>', html)
-        # <div id="audios" data-rel="http://newst.bailemi.com/20180822/GwKAYKwzCTzkmQQi86CPSneApmwbfMhM.mp3" class="bdsharebuttonbox">
-        # example <audio id="jp_audio_0" preload="metadata" src="http://newst.bailemi.com/20180822/GwKAYKwzCTzkmQQi86CPSneApmwbfMhM.mp3"></audio>
+
+        # example: <div id="audios" data-rel="http://newst.bailemi.com/20180822/GwKAYKwzCTzkmQQi86CPSneApmwbfMhM.mp3" class="bdsharebuttonbox">
         downloadurl = r1(r'<div id="audios" data-rel="(.*)" .*>', html)
         if not info_only:
             download_urls([downloadurl], title, 'MP3', total_size=0, output_dir = output_dir, merge = merge)
