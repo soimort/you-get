@@ -144,11 +144,13 @@ class Bilibili(VideoExtractor):
         else:
             playinfo = re.search(r'__INITIAL_STATE__=(.*?);\(function\(\)', self.page)
             if playinfo is not None:
-                pages = json.loads(playinfo.group(1))['videoData']['pages']
-                if len(pages) > 1:
-                    qs = dict(parse.parse_qsl(urllib.parse.urlparse(self.url).query))
-                    page = pages[int(qs.get('p', 1)) - 1]
-                    self.title = '{} #{}. {}'.format(self.title, page['page'], page['part'])
+                jsonPlayinfo = json.loads(playinfo.group(1))
+                if 'videoData' in jsonPlayinfo:
+                    pages = jsonPlayinfo['videoData']['pages']
+                    if len(pages) > 1:
+                        qs = dict(parse.parse_qsl(urllib.parse.urlparse(self.url).query))
+                        page = pages[int(qs.get('p', 1)) - 1]
+                        self.title = '{} #{}. {}'.format(self.title, page['page'], page['part'])
 
         if 'bangumi.bilibili.com/movie' in self.url:
             self.movie_entry(**kwargs)
