@@ -19,9 +19,11 @@ def detect_os():
     elif 'linux' in syst:
         os = 'linux'
         # detect WSL https://github.com/Microsoft/BashOnWindows/issues/423
-        with open('/proc/version', 'r') as f:
-            if 'microsoft' in f.read().lower():
-                os = 'wsl'
+        try:
+            with open('/proc/version', 'r') as f:
+                if 'microsoft' in f.read().lower():
+                    os = 'wsl'
+        except: pass
     elif 'windows' in syst:
         os = 'windows'
     elif 'bsd' in syst:
