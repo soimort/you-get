@@ -9,7 +9,7 @@ from urllib.parse import quote
 from json import loads
 
 def songtasty_download(url, output_dir = '.', merge=True, info_only=False, **kwargs):
-    if re.match(r'http://www.songtasty.com/song/(\d)+', url):
+    if re.match(r'http://.*\.songtasty\.com/song/(\d)+', url):
         html = get_content(url)
         # example: <span id="play_musicname">不加糖先生° ▍ - 童年不能忘却的音乐 - 地球仪 电音版</span>
         title = r1(r'<title(.*)</title>', html)
@@ -19,7 +19,7 @@ def songtasty_download(url, output_dir = '.', merge=True, info_only=False, **kwa
         if not info_only:
             download_urls([downloadurl], title, 'MP3', total_size=0, output_dir = output_dir, merge = merge)
     else:
-        log.wtf("Not support songtasty url, should be http://www.songtasty.com/song/12345", 1)
+        log.wtf("Not support songtasty url, should be http://www|m.songtasty.com/song/12345", 1)
 site_info = "songtasty"
 download = songtasty_download
 download_playlist = playlist_not_supported('songtasty')
