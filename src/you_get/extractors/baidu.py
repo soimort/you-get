@@ -129,7 +129,8 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
             html = get_html(url)
             title = r1(r'title:"([^"]+)"', html)
 
-            vhsrc = re.findall(r'"BDE_Image"[^>]+src="([^"]+)"', html) or re.findall(r'vhsrc="([^"]+)"', html)
+            vhsrc = re.findall(r'"BDE_Image"[^>]+src="([^"]+\.mp4)"', html) or \
+                re.findall(r'vhsrc="([^"]+)"', html)
             if len(vhsrc) > 0:
                 ext = 'mp4'
                 size = url_size(vhsrc[0])
