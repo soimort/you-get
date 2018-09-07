@@ -31,5 +31,8 @@ class YouGetTests(unittest.TestCase):
             info_only=True
         )
 
+        # failure!
+        youtube.download('https://www.youtube.com/watch?v=Ewjb4bGzb6w', info_only=True)
+
 if __name__ == '__main__':
     unittest.main()
