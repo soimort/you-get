@@ -37,6 +37,9 @@ class YouTube(VideoExtractor):
     ]
 
     def decipher(js, s):
+        # Examples:
+        # - https://www.youtube.com/yts/jsbin/player-da_DK-vflWlK-zq/base.js
+        # - https://www.youtube.com/yts/jsbin/player-vflvABTsY/da_DK/base.js
         def tr_js(code):
             code = re.sub(r'function', r'def', code)
             code = re.sub(r'(\W)(as|if|in|is|or)\(', r'\1_\2(', code)
@@ -52,7 +55,8 @@ class YouTube(VideoExtractor):
             return code
 
         js = js.replace('\n', ' ')
-        f1 = match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)')
+        f1 = match1(js, r'\.set\(\w+\.sp,([$\w]+)\(\w+\.s\)\)') or \
+            match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)')
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
                 match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
         f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
