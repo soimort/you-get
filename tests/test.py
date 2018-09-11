@@ -31,5 +31,8 @@ class YouGetTests(unittest.TestCase):
             info_only=True
         )
 
+    def test_bilibili(self):
+        bilibili.download('https://www.bilibili.com/video/av31400623/', info_only=True)
+
 if __name__ == '__main__':
     unittest.main()
