@@ -450,8 +450,10 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
     Returns:
         The content as a string.
     """
-
-    logging.debug('post_content: %s \n post_data: %s' % (url, post_data))
+    if kwargs.get('post_data_raw'):
+        logging.debug('post_content: %s\npost_data_raw: %s' % (url, kwargs['post_data_raw']))
+    else:
+        logging.debug('post_content: %s\npost_data: %s' % (url, post_data))
 
     req = request.Request(url, headers=headers)
     if cookies:
