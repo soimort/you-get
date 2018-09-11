@@ -115,7 +115,7 @@ class Bilibili(VideoExtractor):
             self.url = 'http://www.bilibili.com/video/av{}/'.format(aid)
 
         self.ua = fake_headers['User-Agent']
-        self.url = url_locations([self.url])[0]
+        self.url = url_locations([self.url], faker=True)[0]
         frag = urllib.parse.urlparse(self.url).fragment
         # http://www.bilibili.com/video/av3141144/index_2.html#page=3
         if frag:
@@ -125,7 +125,7 @@ class Bilibili(VideoExtractor):
                 aid = re.search(r'av(\d+)', self.url).group(1)
                 self.url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, page)
         self.referer = self.url
-        self.page = get_content(self.url)
+        self.page = get_content(self.url, headers=fake_headers)
 
         m = re.search(r'<h1.*?>(.*?)</h1>', self.page) or re.search(r'<h1 title="([^"]+)">', self.page)
         if m is not None:
