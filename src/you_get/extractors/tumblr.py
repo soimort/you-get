@@ -13,7 +13,29 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         universal_download(url, output_dir, merge=merge, info_only=info_only)
         return
 
-    html = parse.unquote(get_html(url)).replace('\/', '/')
+    import ssl
+    ssl_context = request.HTTPSHandler(context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
+    cookie_handler = request.HTTPCookieProcessor()
+    opener = request.build_opener(ssl_context, cookie_handler)
+    request.install_opener(opener)
+
+    page = get_html(url)
+    form_key = match1(page, r'id="tumblr_form_key" content="([^"]+)"')
+    if form_key is not None:
+        # bypass GDPR consent page
+        referer = 'https://www.tumblr.com/privacy/consent?redirect=%s' % parse.quote_plus(url)
+        post_content('https://www.tumblr.com/svc/privacy/consent',
+                     headers={
+                         'Content-Type': 'application/json',
+                         'User-Agent': fake_headers['User-Agent'],
+                         'Referer': referer,
+                         'X-tumblr-form-key': form_key,
+                         'X-Requested-With': 'XMLHttpRequest'
+                     },
+                     post_data_raw='{"eu_resident":true,"gdpr_is_acceptable_age":true,"gdpr_consent_core":true,"gdpr_consent_first_party_ads":true,"gdpr_consent_third_party_ads":true,"gdpr_consent_search_history":true,"redirect_to":"%s","gdpr_reconsent":false}' % url)
+        page = get_html(url)
+
+    html = parse.unquote(page).replace('\/', '/')
     feed = r1(r'<meta property="og:type" content="tumblr-feed:(\w+)" />', html)
 
     if feed in ['photo', 'photoset', 'entry'] or feed is None:
