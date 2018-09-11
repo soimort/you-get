@@ -602,7 +602,12 @@ def url_save(
     # the key must be 'Referer' for the hack here
     if refer is not None:
         tmp_headers['Referer'] = refer
-    file_size = url_size(url, faker=faker, headers=tmp_headers)
+    if type(url) is list:
+        file_size = urls_size(url, faker=faker, headers=tmp_headers)
+        is_chunked, urls = True, url
+    else:
+        file_size = url_size(url, faker=faker, headers=tmp_headers)
+        is_chunked, urls = False, [url]
 
     continue_renameing = True
     while continue_renameing:
@@ -655,70 +660,78 @@ def url_save(
     else:
         open_mode = 'wb'
 
-    if received < file_size:
-        if faker:
-            tmp_headers = fake_headers
-        '''
-        if parameter headers passed in, we have it copied as tmp_header
-        elif headers:
-            headers = headers
-        else:
-            headers = {}
-        '''
-        if received:
-            tmp_headers['Range'] = 'bytes=' + str(received) + '-'
-        if refer:
-            tmp_headers['Referer'] = refer
+    for url in urls:
+        received_chunk = 0
+        if received < file_size:
+            if faker:
+                tmp_headers = fake_headers
+            '''
+            if parameter headers passed in, we have it copied as tmp_header
+            elif headers:
+                headers = headers
+            else:
+                headers = {}
+            '''
+            if received and not is_chunked:  # only request a range when not chunked
+                tmp_headers['Range'] = 'bytes=' + str(received) + '-'
+            if refer:
+                tmp_headers['Referer'] = refer
 
-        if timeout:
-            response = urlopen_with_retry(
-                request.Request(url, headers=tmp_headers), timeout=timeout
-            )
-        else:
-            response = urlopen_with_retry(
-                request.Request(url, headers=tmp_headers)
-            )
-        try:
-            range_start = int(
-                response.headers[
-                    'content-range'
-                ][6:].split('/')[0].split('-')[0]
-            )
-            end_length = int(
-                response.headers['content-range'][6:].split('/')[1]
-            )
-            range_length = end_length - range_start
-        except:
-            content_length = response.headers['content-length']
-            range_length = int(content_length) if content_length is not None \
-                else float('inf')
+            if timeout:
+                response = urlopen_with_retry(
+                    request.Request(url, headers=tmp_headers), timeout=timeout
+                )
+            else:
+                response = urlopen_with_retry(
+                    request.Request(url, headers=tmp_headers)
+                )
+            try:
+                range_start = int(
+                    response.headers[
+                        'content-range'
+                    ][6:].split('/')[0].split('-')[0]
+                )
+                end_length = int(
+                    response.headers['content-range'][6:].split('/')[1]
+                )
+                range_length = end_length - range_start
+            except:
+                content_length = response.headers['content-length']
+                range_length = int(content_length) if content_length is not None \
+                    else float('inf')
 
-        if file_size != received + range_length:
-            received = 0
-            if bar:
-                bar.received = 0
-            open_mode = 'wb'
-
-        with open(temp_filepath, open_mode) as output:
-            while True:
-                buffer = None
-                try:
-                    buffer = response.read(1024 * 256)
-                except socket.timeout:
-                    pass
-                if not buffer:
-                    if received == file_size:  # Download finished
-                        break
-                    # Unexpected termination. Retry request
-                    tmp_headers['Range'] = 'bytes=' + str(received) + '-'
-                    response = urlopen_with_retry(
-                        request.Request(url, headers=tmp_headers)
-                    )
-                    continue
-                output.write(buffer)
-                received += len(buffer)
+            if is_chunked:  # always append if chunked
+                open_mode = 'ab'
+            elif file_size != received + range_length:  # is it ever necessary?
+                received = 0
                 if bar:
-                    bar.update_received(len(buffer))
+                    bar.received = 0
+                open_mode = 'wb'
+
+            with open(temp_filepath, open_mode) as output:
+                while True:
+                    buffer = None
+                    try:
+                        buffer = response.read(1024 * 256)
+                    except socket.timeout:
+                        pass
+                    if not buffer:
+                        if is_chunked and received_chunk == range_length:
+                            break
+                        elif not is_chunked and received == file_size:  # Download finished
+                            break
+                        # Unexpected termination. Retry request
+                        if not is_chunked:  # when
+                            tmp_headers['Range'] = 'bytes=' + str(received) + '-'
+                        response = urlopen_with_retry(
+                            request.Request(url, headers=tmp_headers)
+                        )
+                        continue
+                    output.write(buffer)
+                    received += len(buffer)
+                    received_chunk += len(buffer)
+                    if bar:
+                        bar.update_received(len(buffer))
 
     assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (
         received, os.path.getsize(temp_filepath), temp_filepath

@@ -81,6 +81,16 @@ class YouTube(VideoExtractor):
         exec(code, globals(), locals())
         return locals()['sig']
 
+    def chunk_by_range(url, size):
+        urls = []
+        chunk_size = 10485760
+        start, end = 0, chunk_size - 1
+        urls.append('%s&range=%s-%s' % (url, start, end))
+        while end + 1 < size:  # processed size < expected size
+            start, end = end + 1, end + chunk_size
+            urls.append('%s&range=%s-%s' % (url, start, end))
+        return urls
+
     def get_url_from_vid(vid):
         return 'https://youtu.be/{}'.format(vid)
 
@@ -290,13 +300,15 @@ class YouTube(VideoExtractor):
                         if not dash_size:
                             try: dash_size = url_size(dash_url)
                             except: continue
+                        dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                        dash_mp4_a_urls = self.__class__.chunk_by_range(dash_mp4_a_url, int(dash_mp4_a_size))
                         self.dash_streams[itag] = {
                             'quality': '%sx%s' % (w, h),
                             'itag': itag,
                             'type': mimeType,
                             'mime': mimeType,
                             'container': 'mp4',
-                            'src': [dash_url, dash_mp4_a_url],
+                            'src': [dash_urls, dash_mp4_a_urls],
                             'size': int(dash_size) + int(dash_mp4_a_size)
                         }
                 elif mimeType == 'video/webm':
@@ -310,13 +322,15 @@ class YouTube(VideoExtractor):
                         if not dash_size:
                             try: dash_size = url_size(dash_url)
                             except: continue
+                        dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                        dash_webm_a_urls = self.__class__.chunk_by_range(dash_webm_a_url, int(dash_webm_a_size))
                         self.dash_streams[itag] = {
                             'quality': '%sx%s' % (w, h),
                             'itag': itag,
                             'type': mimeType,
                             'mime': mimeType,
                             'container': 'webm',
-                            'src': [dash_url, dash_webm_a_url],
+                            'src': [dash_urls, dash_webm_a_urls],
                             'size': int(dash_size) + int(dash_webm_a_size)
                         }
         except:
@@ -353,13 +367,15 @@ class YouTube(VideoExtractor):
                                 dash_url += '&signature={}'.format(sig)
                             dash_size = stream['clen']
                             itag = stream['itag']
+                            dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                            dash_mp4_a_urls = self.__class__.chunk_by_range(dash_mp4_a_url, int(dash_mp4_a_size))
                             self.dash_streams[itag] = {
                                 'quality': stream['size'],
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
                                 'container': 'mp4',
-                                'src': [dash_url, dash_mp4_a_url],
+                                'src': [dash_urls, dash_mp4_a_urls],
                                 'size': int(dash_size) + int(dash_mp4_a_size)
                             }
                         elif stream['type'].startswith('video/webm'):
@@ -378,13 +394,15 @@ class YouTube(VideoExtractor):
                             except UnboundLocalError as e:
                                 audio_url = dash_mp4_a_url
                                 audio_size = int(dash_mp4_a_size)
+                            dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                            audio_urls = self.__class__.chunk_by_range(audio_url, int(audio_size))
                             self.dash_streams[itag] = {
                                 'quality': stream['size'],
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
                                 'container': 'webm',
-                                'src': [dash_url, audio_url],
+                                'src': [dash_urls, audio_urls],
                                 'size': int(dash_size) + int(audio_size)
                             }
 
