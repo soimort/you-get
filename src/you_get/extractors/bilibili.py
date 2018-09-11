@@ -381,7 +381,7 @@ def download_video_from_favlist(url, **kwargs):
 
 
 def bilibili_download_playlist_by_url(url, **kwargs):
-    url = url_locations([url])[0]
+    url = url_locations([url], faker=True)[0]
     kwargs['playlist'] = True
     # a bangumi here? possible?
     if 'live.bilibili' in url:
