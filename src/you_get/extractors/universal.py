@@ -106,6 +106,9 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                 title = '%s' % i
                 i += 1
 
+            if r1(r'(https://pinterest.com/pin/)', url):
+                continue
+
             candies.append({'url': url,
                             'title': title})
 
