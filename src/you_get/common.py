@@ -439,7 +439,7 @@ def get_content(url, headers={}, decoded=True):
     return data
 
 
-def post_content(url, headers={}, post_data={}, decoded=True):
+def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
     """Post the content of a URL via sending a HTTP POST request.
 
     Args:
@@ -457,7 +457,10 @@ def post_content(url, headers={}, post_data={}, decoded=True):
     if cookies:
         cookies.add_cookie_header(req)
         req.headers.update(req.unredirected_hdrs)
-    post_data_enc = bytes(parse.urlencode(post_data), 'utf-8')
+    if kwargs.get('post_data_raw'):
+        post_data_enc = bytes(kwargs['post_data_raw'], 'utf-8')
+    else:
+        post_data_enc = bytes(parse.urlencode(post_data), 'utf-8')
     response = urlopen_with_retry(req, data=post_data_enc)
     data = response.read()
 
