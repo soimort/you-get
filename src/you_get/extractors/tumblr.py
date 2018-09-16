@@ -121,11 +121,15 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         r1(r'<meta property="og:description" content="([^"]*)" />', html) or
         r1(r'<title>([^<\n]*)', html) or url.split("/")[4]).replace('\n', '')
 
-    type, ext, size = url_info(real_url)
+    # this is better
+    vcode = r1(r'tumblr_(\w+)', real_url)
+    real_url = 'https://vt.media.tumblr.com/tumblr_%s.mp4' % vcode
+
+    type, ext, size = url_info(real_url, faker=True)
 
     print_info(site_info, title, type, size)
     if not info_only:
-        download_urls([real_url], title, ext, size, output_dir, merge = merge)
+        download_urls([real_url], title, ext, size, output_dir, merge=merge)
 
 site_info = "Tumblr.com"
 download = tumblr_download
