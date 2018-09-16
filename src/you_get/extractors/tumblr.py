@@ -33,7 +33,7 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
                          'X-Requested-With': 'XMLHttpRequest'
                      },
                      post_data_raw='{"eu_resident":true,"gdpr_is_acceptable_age":true,"gdpr_consent_core":true,"gdpr_consent_first_party_ads":true,"gdpr_consent_third_party_ads":true,"gdpr_consent_search_history":true,"redirect_to":"%s","gdpr_reconsent":false}' % url)
-        page = get_html(url)
+        page = get_html(url, faker=True)
 
     html = parse.unquote(page).replace('\/', '/')
     feed = r1(r'<meta property="og:type" content="tumblr-feed:(\w+)" />', html)
@@ -43,9 +43,9 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         page_title = r1(r'<meta name="description" content="([^"\n]+)', html) or \
                      r1(r'<meta property="og:description" content="([^"\n]+)', html) or \
                      r1(r'<title>([^<\n]*)', html)
-        urls = re.findall(r'(https?://[^;"&]+/tumblr_[^;"]+_\d+\.jpg)', html) +\
-               re.findall(r'(https?://[^;"&]+/tumblr_[^;"]+_\d+\.png)', html) +\
-               re.findall(r'(https?://[^;"&]+/tumblr_[^";]+_\d+\.gif)', html)
+        urls = re.findall(r'(https?://[^;"&]+/tumblr_[^;"&]+_\d+\.jpg)', html) +\
+               re.findall(r'(https?://[^;"&]+/tumblr_[^;"&]+_\d+\.png)', html) +\
+               re.findall(r'(https?://[^;"&]+/tumblr_[^";&]+_\d+\.gif)', html)
 
         tuggles = {}
         for url in urls:
