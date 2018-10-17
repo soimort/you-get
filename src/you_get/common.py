@@ -622,7 +622,7 @@ def url_save(
                 if not is_part:
                     if bar:
                         bar.done()
-                    print(
+                    log.w(
                         'Skipping {}: file already exists'.format(
                             tr(os.path.basename(filepath))
                         )
@@ -648,7 +648,10 @@ def url_save(
                         print('Changing name to %s' % tr(os.path.basename(filepath)), '...')
                         continue_renameing = True
                         continue
-                    print('Overwriting %s' % tr(os.path.basename(filepath)), '...')
+                    if log.yes_or_no('File with this name already exists. Overwrite?'):
+                        log.w('Overwriting %s ...' % tr(os.path.basename(filepath)))
+                    else:
+                        return
         elif not os.path.exists(os.path.dirname(filepath)):
             os.mkdir(os.path.dirname(filepath))
 
@@ -925,7 +928,7 @@ def download_urls(
     if total_size:
         if not force and os.path.exists(output_filepath) and not auto_rename\
                 and os.path.getsize(output_filepath) >= total_size * 0.9:
-            print('Skipping %s: file already exists' % output_filepath)
+            log.w('Skipping %s: file already exists' % output_filepath)
             print()
             return
         bar = SimpleProgressBar(total_size, len(urls))
