@@ -192,14 +192,14 @@ class PPTV(VideoExtractor):
         if self.url and not self.vid:
             if not re.match(r'http://v.pptv.com/show/(\w+)\.html', self.url):
                 raise('Unknown url pattern')
-            page_content = get_content(self.url)
+            page_content = get_content(self.url,{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"})
             self.vid = match1(page_content, r'webcfg\s*=\s*{"id":\s*(\d+)')
 
         if not self.vid:
             raise('Cannot find id')
         api_url = 'http://web-play.pptv.com/webplay3-0-{}.xml'.format(self.vid)
         api_url += '?appplt=flp&appid=pptv.flashplayer.vod&appver=3.4.2.28&type=&version=4'
-        dom = parseString(get_content(api_url))
+        dom = parseString(get_content(api_url,{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"}))
         self.title, m_items, m_streams, m_segs = parse_pptv_xml(dom)
         xml_streams = merge_meta(m_items, m_streams, m_segs)
         for stream_id in xml_streams:
