@@ -8,6 +8,24 @@ from json import loads
 import re
 
 #----------------------------------------------------------------------
+def miaopai_download_by_smid(smid, output_dir = '.', merge = True, info_only = False):
+    """"""
+    api_endpoint = 'https://n.miaopai.com/api/aj_media/info.json?smid={smid}'.format(smid = smid)
+
+    html = get_content(api_endpoint)
+
+    api_content = loads(html)
+
+    video_url = api_content['data']['meta_data'][0]['play_urls']['l']
+    title = api_content['data']['description']
+
+    type, ext, size = url_info(video_url)
+
+    print_info(site_info, title, type, size)
+    if not info_only:
+        download_urls([video_url], title, ext, size, output_dir, merge=merge)
+
+#----------------------------------------------------------------------
 def yixia_miaopai_download_by_scid(scid, output_dir = '.', merge = True, info_only = False):
     """"""
     api_endpoint = 'http://api.miaopai.com/m/v2_channel.json?fillType=259&scid={scid}&vend=miaopai'.format(scid = scid)
@@ -47,7 +65,11 @@ def yixia_xiaokaxiu_download_by_scid(scid, output_dir = '.', merge = True, info_
 def yixia_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     """wrapper"""
     hostname = urlparse(url).hostname
-    if 'miaopai.com' in hostname:  #Miaopai
+    if 'n.miaopai.com' == hostname: 
+        smid = match1(url, r'n\.miaopai\.com/media/([^.]+)') 
+        miaopai_download_by_smid(smid, output_dir, merge, info_only)
+        return
+    elif 'miaopai.com' in hostname:  #Miaopai
         yixia_download_by_scid = yixia_miaopai_download_by_scid
         site_info = "Yixia Miaopai"
 
