@@ -33,7 +33,7 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
                          'X-Requested-With': 'XMLHttpRequest'
                      },
                      post_data_raw='{"eu_resident":true,"gdpr_is_acceptable_age":true,"gdpr_consent_core":true,"gdpr_consent_first_party_ads":true,"gdpr_consent_third_party_ads":true,"gdpr_consent_search_history":true,"redirect_to":"%s","gdpr_reconsent":false}' % url)
-        page = get_html(url)
+        page = get_html(url, faker=True)
 
     html = parse.unquote(page).replace('\/', '/')
     feed = r1(r'<meta property="og:type" content="tumblr-feed:(\w+)" />', html)
@@ -43,9 +43,9 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         page_title = r1(r'<meta name="description" content="([^"\n]+)', html) or \
                      r1(r'<meta property="og:description" content="([^"\n]+)', html) or \
                      r1(r'<title>([^<\n]*)', html)
-        urls = re.findall(r'(https?://[^;"&]+/tumblr_[^;"]+_\d+\.jpg)', html) +\
-               re.findall(r'(https?://[^;"&]+/tumblr_[^;"]+_\d+\.png)', html) +\
-               re.findall(r'(https?://[^;"&]+/tumblr_[^";]+_\d+\.gif)', html)
+        urls = re.findall(r'(https?://[^;"&]+/tumblr_[^;"&]+_\d+\.jpg)', html) +\
+               re.findall(r'(https?://[^;"&]+/tumblr_[^;"&]+_\d+\.png)', html) +\
+               re.findall(r'(https?://[^;"&]+/tumblr_[^";&]+_\d+\.gif)', html)
 
         tuggles = {}
         for url in urls:
@@ -121,11 +121,15 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         r1(r'<meta property="og:description" content="([^"]*)" />', html) or
         r1(r'<title>([^<\n]*)', html) or url.split("/")[4]).replace('\n', '')
 
-    type, ext, size = url_info(real_url)
+    # this is better
+    vcode = r1(r'tumblr_(\w+)', real_url)
+    real_url = 'https://vt.media.tumblr.com/tumblr_%s.mp4' % vcode
+
+    type, ext, size = url_info(real_url, faker=True)
 
     print_info(site_info, title, type, size)
     if not info_only:
-        download_urls([real_url], title, ext, size, output_dir, merge = merge)
+        download_urls([real_url], title, ext, size, output_dir, merge=merge)
 
 site_info = "Tumblr.com"
 download = tumblr_download

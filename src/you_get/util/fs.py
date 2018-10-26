@@ -13,6 +13,7 @@ def legitimize(text, os=detect_os()):
         ord('|'): '-',
     })
 
+    # FIXME: do some filesystem detection
     if os == 'windows' or os == 'cygwin' or os == 'wsl':
         # Windows (non-POSIX namespace)
         text = text.translate({
@@ -28,6 +29,7 @@ def legitimize(text, os=detect_os()):
             ord('>'): '-',
             ord('['): '(',
             ord(']'): ')',
+            ord('\t'): ' ',
         })
     else:
         # *nix

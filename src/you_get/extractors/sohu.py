@@ -15,9 +15,9 @@ Changelog:
         new api
 '''
 
-def real_url(host,vid,tvid,new,clipURL,ck):
-    url = 'http://'+host+'/?prot=9&prod=flash&pt=1&file='+clipURL+'&new='+new +'&key='+ ck+'&vid='+str(vid)+'&uid='+str(int(time.time()*1000))+'&t='+str(random())+'&rb=1'
-    return json.loads(get_html(url))['url']
+def real_url(fileName, key, ch):
+    url = "https://data.vod.itc.cn/ip?new=" + fileName + "&num=1&key=" + key + "&ch=" + ch + "&pt=1&pg=2&prod=h5n"
+    return json.loads(get_html(url))['servers'][0]['url']
 
 def sohu_download(url, output_dir = '.', merge = True, info_only = False, extractor_proxy=None, **kwargs):
     if re.match(r'http://share.vrs.sohu.com', url):
@@ -51,9 +51,8 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         title = data['tvName']
         size = sum(data['clipsBytes'])
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
-        for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
-            clipURL = urlparse(clip).path
-            urls.append(real_url(host,hqvid,tvid,new,clipURL,ck))
+        for fileName, key in zip(data['su'], data['ck']):
+            urls.append(real_url(fileName, key, data['ch']))
         # assert data['clipsURL'][0].endswith('.mp4')
 
     else:
@@ -66,9 +65,8 @@ def sohu_download(url, output_dir = '.', merge = True, info_only = False, extrac
         title = data['tvName']
         size = sum(map(int,data['clipsBytes']))
         assert len(data['clipsURL']) == len(data['clipsBytes']) == len(data['su'])
-        for new,clip,ck, in zip(data['su'], data['clipsURL'], data['ck']):
-            clipURL = urlparse(clip).path
-            urls.append(real_url(host,vid,tvid,new,clipURL,ck))
+        for fileName, key in zip(data['su'], data['ck']):
+            urls.append(real_url(fileName, key, data['ch']))
 
     print_info(site_info, title, 'mp4', size)
     if not info_only:
