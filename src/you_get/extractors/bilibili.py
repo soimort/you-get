@@ -192,7 +192,12 @@ class Bilibili(VideoExtractor):
             index_id = int(re.search(r'index_(\d+)', self.url).group(1))
             cid = page_list[index_id-1]['cid'] # change cid match rule
         except:
-            cid = re.search(r'"cid":(\d+)', self.page).group(1)
+            page = re.search(r'p=(\d+)', self.url)
+            if page is None:
+                p = 1
+            else:
+                p = int(page.group(1))
+            cid = re.search(r'"cid":(\d+),"page":%s' % p, self.page).group(1)
         if cid is not None:
             self.download_by_vid(cid, re.search('bangumi', self.url) is not None, **kwargs)
         else:
