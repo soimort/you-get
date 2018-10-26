@@ -8,9 +8,10 @@ python:
   - "3.6"
   - "nightly"
   - "pypy3"
-before_install: pip install flake8
+before_install:
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2'* && $TRAVIS_PYTHON_VERSION != '3.3'* ]]; then pip install flake8; fi
 before_script:
-  - if [[ $TRAVIS_PYTHON_VERSION != '3.2'* ]]; then flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2'* && $TRAVIS_PYTHON_VERSION != '3.3'* ]]; then flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics; fi
 script: make test
 sudo: false
 notifications:
