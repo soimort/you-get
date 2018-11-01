@@ -22,7 +22,7 @@ from .youku import youku_download_by_vid
 
 class Bilibili(VideoExtractor):
     name = 'Bilibili'
-    live_api = 'http://live.bilibili.com/api/playurl?cid={}&otype=json'
+    live_api = 'https://api.live.bilibili.com/room/v1/Room/playUrl?cid={}&quality=0&platform=web'
     api_url = 'http://interface.bilibili.com/v2/playurl?'
     bangumi_api_url = 'http://bangumi.bilibili.com/player/web_api/playurl?'
     live_room_init_api_url = 'https://api.live.bilibili.com/room/v1/Room/room_init?id={}'
@@ -233,7 +233,7 @@ class Bilibili(VideoExtractor):
 
         api_url = self.live_api.format(self.room_id)
         json_data = json.loads(get_content(api_url))
-        urls = [json_data['durl'][0]['url']]
+        urls = [json_data['data']['durl'][0]['url']]
 
         self.streams['live'] = {}
         self.streams['live']['src'] = urls
