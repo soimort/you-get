@@ -384,6 +384,38 @@ def download_video_from_favlist(url, **kwargs):
     else:
         log.wtf("Fail to parse the fav title" + url, "")
 
+def download_video_from_totallist(url, page, **kwargs):
+    # the url has format: https://space.bilibili.com/64169458/#/video
+    m = re.search(r'space\.bilibili\.com/(\d+)/.*?video', url)
+    mid = ""
+    if m is not None:
+        mid = m.group(1)
+        jsonresult = json.loads(get_content("https://space.bilibili.com/ajax/member/getSubmitVideos?mid={}&pagesize=100&tid=0&page={}&keyword=&order=pubdate&jsonp=jsonp".format(mid, page)))
+        if jsonresult['status']:
+            videos = jsonresult['data']['vlist']
+            videocount = len(videos)
+            for i in range(videocount):
+                videoid = videos[i]["aid"]
+                videotitle = videos[i]["title"]
+                videourl = "https://www.bilibili.com/video/av{}".format(videoid)
+                print("Start downloading ", videotitle, " video ", videotitle)
+                kwargs["output_dir"] = kwargs["output_dir"] + '/' + str(videoid)
+                download_cover(videos[i]['pic'], videotitle, **kwargs)
+                Bilibili().download_by_url(videourl, subtitle=videotitle, **kwargs)
+            if page <= jsonresult['pages']:
+                page += 1
+                download_video_from_totallist(url, page, **kwargs)
+        else:
+            log.wtf("Fail to get the files of page " + jsonresult)
+            sys.exit(2)
+
+    else:
+        log.wtf("Fail to parse the fav title" + url, "")
+
+def download_cover(url, title, **kwargs):
+    if re.match(r'https?://', url) is None:
+        url = 'https:' + url
+    download_urls([url], title, "jpg", 0, kwargs["output_dir"])
 
 def bilibili_download_playlist_by_url(url, **kwargs):
     url = url_locations([url], faker=True)[0]
@@ -403,6 +435,8 @@ def bilibili_download_playlist_by_url(url, **kwargs):
     elif 'favlist' in url:
         # this a fav list folder
         download_video_from_favlist(url, **kwargs)
+    elif 'video' in url:
+        download_video_from_totallist(url, 1, **kwargs)
     else:
         aid = re.search(r'av(\d+)', url).group(1)
         page_list = json.loads(get_content('http://www.bilibili.com/widget/getPageList?aid={}'.format(aid)))
