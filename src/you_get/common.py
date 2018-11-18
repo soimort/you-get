@@ -1575,9 +1575,9 @@ def google_search(url):
     url = 'https://www.google.com/search?tbm=vid&q=%s' % parse.quote(keywords)
     page = get_content(url, headers=fake_headers)
     videos = re.findall(
-        r'<a href="(https?://[^"]+)" onmousedown="[^"]+">([^<]+)<', page
+        r'<a href="(https?://[^"]+)" onmousedown="[^"]+"><h3 class="[^"]*">([^<]+)<', page
     )
-    vdurs = re.findall(r'<span class="vdur _dwc">([^<]+)<', page)
+    vdurs = re.findall(r'<span class="vdur[^"]*">([^<]+)<', page)
     durs = [r1(r'(\d+:\d+)', unescape_html(dur)) for dur in vdurs]
     print('Google Videos search:')
     for v in zip(videos, durs):
