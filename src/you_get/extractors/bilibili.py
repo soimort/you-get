@@ -265,22 +265,9 @@ class Bilibili(VideoExtractor):
             episode_id = frag
         else:
             episode_id = re.search(r'first_ep_id\s*=\s*"(\d+)"', self.page) or re.search(r'\/ep(\d+)', self.url).group(1)
-        # cont = post_content('http://bangumi.bilibili.com/web_api/get_source', post_data=dict(episode_id=episode_id))
-        # cid = json.loads(cont)['result']['cid']
-        cont = get_content('http://bangumi.bilibili.com/web_api/episode/{}.json'.format(episode_id))
-        ep_info = json.loads(cont)['result']['currentEpisode']
-
-        bangumi_data = get_bangumi_info(str(ep_info['seasonId']))
-        bangumi_payment = bangumi_data.get('payment')
-        if bangumi_payment and bangumi_payment['price'] != '0':
-            log.w("It's a paid item")
-        # ep_ids = collect_bangumi_epids(bangumi_data)
-
-        index_title = ep_info['indexTitle']
-        long_title = ep_info['longTitle'].strip()
-        cid = ep_info['danmaku']
-
-        self.title = '{} [{} {}]'.format(self.title, index_title, long_title)
+        data = json.loads(re.search(r'__INITIAL_STATE__=(.+);\(function', self.page).group(1))
+        cid = data['epInfo']['cid']
+        # index_title = data['epInfo']['index_title']
         self.download_by_vid(cid, bangumi=True, **kwargs)
 
 
