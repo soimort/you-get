@@ -34,6 +34,8 @@ def not_supported():
     print('You can try some other page url like gallery, scripts, favorites or view page.')
     exit(0)
 
+# Download from single view page
+# Example: http://www.furaffinity.net/view/29176666/
 def furaffinity_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if gallery_page(url) or scripts_page(url) or favorites_page(url):
         print('This page contains a list of picture, use --playlist to download all.')
@@ -55,6 +57,8 @@ def furaffinity_download(url, output_dir='.', merge=True, info_only=False, **kwa
     print_info(site_info, filetitle, filetype, filesize)
     download_urls([parseurl], filename, filetype, filesize, output_dir=output_dir)
 
+# Download from list page
+# Example: http://www.furaffinity.net/gallery/rudragon/
 def furaffinity_download_playlist(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if view_page(url):
         furaffinity_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
