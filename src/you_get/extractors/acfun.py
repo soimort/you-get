@@ -85,9 +85,13 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
             _, _, seg_size = url_info(url)
             size += seg_size
 #fallback to flvhd is not quite possible
-        print_info(site_info, title, 'mp4', size)
+        if re.search(r'fid=[0-9A-Z\-]*.flv', preferred[0][0]):
+            ext = 'flv'
+        else:
+            ext = 'mp4'
+        print_info(site_info, title, ext, size)
         if not info_only:
-            download_urls(preferred[0], title, 'mp4', size, output_dir=output_dir, merge=merge)
+            download_urls(preferred[0], title, ext, size, output_dir=output_dir, merge=merge)
     else:
         raise NotImplementedError(sourceType)
 
