@@ -137,7 +137,6 @@ class Bilibili(VideoExtractor):
             m = re.search(r'property="og:title" content="([^"]+)"', self.page)
             if m is not None:
                 self.title = m.group(1)
-
         if 'subtitle' in kwargs:
             subtitle = kwargs['subtitle']
             self.title = '{} {}'.format(self.title, subtitle)
@@ -162,6 +161,8 @@ class Bilibili(VideoExtractor):
             self.live_entry(**kwargs)
         elif 'vc.bilibili.com' in self.url:
             self.vc_entry(**kwargs)
+        elif 'audio/au' in self.url:
+            self.audio_entry(**kwargs)
         else:
             self.entry(**kwargs)
 
@@ -172,6 +173,30 @@ class Bilibili(VideoExtractor):
         # better ideas for bangumi_movie titles?
         self.title = page_list[0]['pagename']
         self.download_by_vid(page_list[0]['cid'], True, bangumi_movie=True, **kwargs)
+
+    def audio_entry(self, **kwargs):
+        assert re.match(r'https?://www.bilibili.com/audio/au\d+', self.url)
+        patt = r"(\d+)"
+        audio_id = re.search(patt, self.url).group(1)
+        audio_info_url = \
+            'https://www.bilibili.com/audio/music-service-c/web/song/info?sid={}'.format(audio_id)
+        audio_info_response = json.loads(get_content(audio_info_url))
+        if audio_info_response['msg'] != 'success':
+            log.wtf('fetch audio information failed!')
+            sys.exit(2)
+        self.title = audio_info_response['data']['title']
+        # TODO:there is no quality option for now
+        audio_download_url = \
+            'https://www.bilibili.com/audio/music-service-c/web/url?sid={}&privilege=2&quality=2'.format(audio_id)
+        audio_download_response = json.loads(get_content(audio_download_url))
+        if audio_download_response['msg'] != 'success':
+            log.wtf('fetch audio resource failed!')
+            sys.exit(2)
+        self.streams['mp4'] = {}
+        self.streams['mp4']['src'] = [audio_download_response['data']['cdns'][0]]
+        self.streams['mp4']['container'] = 'm4a'
+        self.streams['mp4']['size'] = audio_download_response['data']['size']
+
 
     def entry(self, **kwargs):
         # tencent player
@@ -370,6 +395,29 @@ def download_video_from_favlist(url, **kwargs):
 
     else:
         log.wtf("Fail to parse the fav title" + url, "")
+def download_music_from_favlist(url, page, **kwargs):
+    m = re.search(r'https?://www.bilibili.com/audio/mycollection/(\d+)', url)
+    if m is not None:
+        sid = m.group(1)
+        json_result = json.loads(get_content("https://www.bilibili.com/audio/music-service-c/web/song/of-coll?"
+                                             "sid={}&pn={}&ps=100".format(sid, page)))
+        if json_result['msg'] == 'success':
+            music_list = json_result['data']['data']
+            music_count = len(music_list)
+            for i in range(music_count):
+                audio_id = music_list[i]['id']
+                audio_title = music_list[i]['title']
+                audio_url = "https://www.bilibili.com/audio/au{}".format(audio_id)
+                print("Start downloading music ", audio_title)
+                Bilibili().download_by_url(audio_url, **kwargs)
+            if page < json_result['data']['pageCount']:
+                page += 1
+                download_music_from_favlist(url, page, **kwargs)
+        else:
+            log.wtf("Fail to get music list of page " + json_result)
+            sys.exit(2)
+    else:
+        log.wtf("Fail to parse the sid from " + url, "")
 
 def download_video_from_totallist(url, page, **kwargs):
     # the url has format: https://space.bilibili.com/64169458/#/video
@@ -397,6 +445,30 @@ def download_video_from_totallist(url, page, **kwargs):
     else:
         log.wtf("Fail to parse the video title" + url, "")
 
+def download_music_from_totallist(url, page, **kwargs):
+    m = re.search(r'https?://www.bilibili.com/audio/am(\d+)\?type=\d', url)
+    if m is not None:
+        sid = m.group(1)
+        json_result = json.loads(get_content("https://www.bilibili.com/audio/music-service-c/web/song/of-menu?"
+                                             "sid={}&pn={}&ps=100".format(sid, page)))
+        if json_result['msg'] == 'success':
+            music_list = json_result['data']['data']
+            music_count = len(music_list)
+            for i in range(music_count):
+                audio_id = music_list[i]['id']
+                audio_title = music_list[i]['title']
+                audio_url = "https://www.bilibili.com/audio/au{}".format(audio_id)
+                print("Start downloading music ",audio_title)
+                Bilibili().download_by_url(audio_url, **kwargs)
+            if page < json_result['data']['pageCount']:
+                page += 1
+                download_music_from_totallist(url, page, **kwargs)
+        else:
+            log.wtf("Fail to get music list of page " + json_result)
+            sys.exit(2)
+    else:
+        log.wtf("Fail to parse the sid from " + url, "")
+
 def bilibili_download_playlist_by_url(url, **kwargs):
     url = url_locations([url], faker=True)[0]
     kwargs['playlist'] = True
@@ -417,6 +489,10 @@ def bilibili_download_playlist_by_url(url, **kwargs):
         download_video_from_favlist(url, **kwargs)
     elif re.match(r'https?://space.bilibili.com/\d+/#/video', url):
         download_video_from_totallist(url, 1, **kwargs)
+    elif re.match(r'https://www.bilibili.com/audio/mycollection/\d+', url):
+        download_music_from_favlist(url, 1, **kwargs)
+    elif re.match(r'https?://www.bilibili.com/audio/am\d+\?type=\d', url):
+        download_music_from_totallist(url, 1, **kwargs)
     else:
         aid = re.search(r'av(\d+)', url).group(1)
         page_list = json.loads(get_content('http://www.bilibili.com/widget/getPageList?aid={}'.format(aid)))
