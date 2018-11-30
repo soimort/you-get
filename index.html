@@ -27,12 +27,12 @@
   <a href="https://you-get.org/"><img src="images/logo.jpg"/></a>
   <div id="desc">
     <h1>You-Get</h1>
-    <h2>version 0.4.1167</h2>
+    <h2>version 0.4.1181</h2>
     <a href="https://github.com/soimort/you-get">Star <i class="fa fa-github-square fa-2x"></i></a>
-    <a href="https://github.com/soimort/you-get/releases/download/v0.4.1167/you-get-0.4.1167.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
+    <a href="https://github.com/soimort/you-get/releases/download/v0.4.1181/you-get-0.4.1181.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
     <div id="msg">
-      <span id="checksum" onmouseover="this.innerHTML='96f62017f5e0866e59ce70d4e894854757069b87'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
-      <a href="https://github.com/soimort/you-get/releases/download/v0.4.1167/you-get-0.4.1167.tar.gz.asc">PGP SIGNATURE</a>
+      <span id="checksum" onmouseover="this.innerHTML='33d6dbb01e998b7bbb2656b5bb09eabe58539b64'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
+      <a href="https://github.com/soimort/you-get/releases/download/v0.4.1181/you-get-0.4.1181.tar.gz.asc">PGP SIGNATURE</a>
     </div>
   </div>
 </nav>
@@ -140,6 +140,9 @@ Saving Me at the zoo.en.srt ... Done.</code></pre>
 <h3 id="option-7-homebrew-mac-only">Option 7: Homebrew (Mac only)</h3>
 <p>You can install <code>you-get</code> easily via:</p>
 <pre><code>$ brew install you-get</code></pre>
+<h3 id="option-8-pkg-freebsd-only">Option 8: pkg (FreeBSD only)</h3>
+<p>You can install <code>you-get</code> easily via:</p>
+<pre><code># pkg install you-get</code></pre>
 <h3 id="shell-completion">Shell completion</h3>
 <p>Completion definitions for Bash, Fish and Zsh can be found in <a href="https://github.com/soimort/you-get/tree/develop/contrib/completion"><code>contrib/completion</code></a>. Please consult your shell’s manual for how to take advantage of them.</p>
 <h2 id="upgrading">Upgrading</h2>
@@ -261,7 +264,7 @@ Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
 <li>For some websites (e.g. Youku), if you need access to some videos that are only available in mainland China, there is an option of using a specific proxy to extract video information from the site: <code>--extractor-proxy</code>/<code>-y</code>.</li>
 </ul>
 <h3 id="watch-a-video">Watch a video</h3>
-<p>Use the <code>--player</code>/<code>-p</code> option to feed the video into your media player of choice, e.g. <code>mplayer</code> or <code>vlc</code>, instead of downloading it:</p>
+<p>Use the <code>--player</code>/<code>-p</code> option to feed the video into your media player of choice, e.g. <code>mplayer</code> or <code>vlc</code>, instead of downloading it:</p>
 <pre><code>$ you-get -p vlc &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;</code></pre>
 <p>Or, if you prefer to watch the video in a browser, just without ads or comment section:</p>
 <pre><code>$ you-get -p chromium &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;</code></pre>
@@ -863,6 +866,20 @@ Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
 <tr class="even">
 <td style="text-align: center;">抖音</td>
 <td style="text-align: left;"><a href="https://www.douyin.com/" class="uri">https://www.douyin.com/</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">TikTok</td>
+<td style="text-align: left;"><a href="https://www.tiktok.com/" class="uri">https://www.tiktok.com/</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">中国体育(TV)</td>
+<td style="text-align: left;"><a href="http://v.zhibo.tv/" class="uri">http://v.zhibo.tv/</a> </br><a href="http://video.zhibo.tv/" class="uri">http://video.zhibo.tv/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
