@@ -102,6 +102,7 @@ SITES = {
     'soundcloud'       : 'soundcloud',
     'ted'              : 'ted',
     'theplatform'      : 'theplatform',
+    'tiktok'           : 'tiktok',
     'tucao'            : 'tucao',
     'tudou'            : 'tudou',
     'tumblr'           : 'tumblr',

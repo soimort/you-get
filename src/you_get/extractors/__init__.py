@@ -67,6 +67,7 @@ from .sohu import *
 from .soundcloud import *
 from .suntv import *
 from .theplatform import *
+from .tiktok import *
 from .tucao import *
 from .tudou import *
 from .tumblr import *
