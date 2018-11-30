@@ -7,7 +7,9 @@ from ..common import *
 def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
     title = r1(r'<title>(.*?)</title>', html)
-    dataText = r1(r'var data = \[(.*)\] ', html)
+    video_id = r1(r'/video/(\d+)', url) or r1(r'musical\?id=(\d+)', html)
+    title = '%s [%s]' % (title, video_id)
+    dataText = r1(r'var data = \[(.*)\] ', html) or r1(r'var data = (\{.*\})', html)
     data = json.loads(dataText)
     source = 'http:' + data['video']['play_addr']['url_list'][0]
     mime, ext, size = url_info(source)
