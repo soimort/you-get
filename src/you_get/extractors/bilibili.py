@@ -284,12 +284,6 @@ class Bilibili(VideoExtractor):
         self.streams['vc']['size'] = int(item['video_size'])
 
     def bangumi_entry(self, **kwargs):
-        bangumi_id = re.search(r'(\d+)', self.url).group(1)
-        frag = urllib.parse.urlparse(self.url).fragment
-        if frag:
-            episode_id = frag
-        else:
-            episode_id = re.search(r'first_ep_id\s*=\s*"(\d+)"', self.page) or re.search(r'\/ep(\d+)', self.url).group(1)
         data = json.loads(re.search(r'__INITIAL_STATE__=(.+);\(function', self.page).group(1))
         cid = data['epInfo']['cid']
         # index_title = data['epInfo']['index_title']
