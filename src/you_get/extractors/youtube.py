@@ -62,7 +62,7 @@ class YouTube(VideoExtractor):
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
                 match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
         f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
-        f1def = 'function %s%s' % (f1, f1def)
+        f1def = 'function main_%s%s' % (f1, f1def)  # prefix to avoid potential namespace conflict
         code = tr_js(f1def)
         f2s = set(re.findall(r'([$\w]+)\(\w+,\d+\)', f1def))
         for f2 in f2s:
@@ -79,7 +79,7 @@ class YouTube(VideoExtractor):
 
         f1 = re.sub(r'(as|if|in|is|or)', r'_\1', f1)
         f1 = re.sub(r'\$', '_dollar', f1)
-        code = code + 'sig=%s(s)' % f1
+        code = code + 'sig=main_%s(s)' % f1  # prefix to avoid potential namespace conflict
         exec(code, globals(), locals())
         return locals()['sig']
 
