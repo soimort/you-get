@@ -48,6 +48,7 @@ SITES = {
     'flickr'           : 'flickr',
     'freesound'        : 'freesound',
     'fun'              : 'funshion',
+    'furaffinity'      : 'furaffinity',
     'google'           : 'google',
     'giphy'            : 'giphy',
     'heavy-music'      : 'heavymusic',
