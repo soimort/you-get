@@ -426,6 +426,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 抖音 | <https://www.douyin.com/>      |✓| | |
 | TikTok | <https://www.tiktok.com/>      |✓| | |
 | 中国体育(TV) | <http://v.zhibo.tv/> </br><http://video.zhibo.tv/>    |✓| | |
+| 知乎 | <https://www.zhihu.com/>      |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
