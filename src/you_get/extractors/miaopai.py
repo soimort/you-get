@@ -67,7 +67,10 @@ def miaopai_download_by_wbmp(wbmp_url, fid, info_only=False, **kwargs):
 
 def miaopai_download_direct(url, info_only, **kwargs):
     mobile_page = get_content(url, headers=fake_headers_mobile)
-    title = re.search(r'([\'"])title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
+    try:
+        title = re.search(r'([\'"])title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
+    except:
+        title = re.search(r'([\'"])status_title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
     title = title.replace('\n', '_')
     stream_url = re.search(r'([\'"])stream_url\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
     ext = 'mp4'
@@ -78,6 +81,9 @@ def miaopai_download_direct(url, info_only, **kwargs):
 
 # ----------------------------------------------------------------------
 def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
+    if match1(url, r'weibo\.com/tv/v/(\w+)'):
+        return miaopai_download_direct(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
+
     fid = match1(url, r'\?fid=(\d{4}:\w+)')
     if fid is not None:
         miaopai_download_by_fid(fid, output_dir, merge, info_only)
