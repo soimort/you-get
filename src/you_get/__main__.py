@@ -4,8 +4,12 @@ import getopt
 import os
 import platform
 import sys
+import ssl
 from .version import script_name, __version__
 from .util import git, log
+
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 _options = [
     'help',
