@@ -16,10 +16,15 @@ def naver_download_by_url(url, output_dir='.', merge=True, info_only=False, **kw
     ep = 'https://apis.naver.com/rmcnmv/rmcnmv/vod/play/v2.0/{}?key={}'
     page = get_content(url)
     try:
-        og_video_url = re.search(r"<meta\s+property=\"og:video:url\"\s+content='(.+?)'>", page).group(1)
-        params_dict = urllib.parse.parse_qs(urllib.parse.urlparse(og_video_url).query)
-        vid = params_dict['vid'][0]
-        key = params_dict['outKey'][0]
+        temp = re.search(r"<meta\s+property=\"og:video:url\"\s+content='(.+?)'>", page)
+        if temp is not None:
+            og_video_url = temp.group(1)
+            params_dict = urllib.parse.parse_qs(urllib.parse.urlparse(og_video_url).query)
+            vid = params_dict['vid'][0]
+            key = params_dict['outKey'][0]
+        else:
+            vid = re.search(r"\"videoId\"\s*:\s*\"(.+?)\"", page).group(1)
+            key = re.search(r"\"inKey\"\s*:\s*\"(.+?)\"", page).group(1)
         meta_str = get_content(ep.format(vid, key))
         meta_json = json.loads(meta_str)
         if 'errorCode' in meta_json:
