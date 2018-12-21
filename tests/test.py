@@ -6,7 +6,7 @@ from you_get.extractors import (
     imgur,
     magisto,
     youtube,
-    bilibili,
+    naver,
 )
 
 
@@ -30,6 +30,10 @@ class YouGetTests(unittest.TestCase):
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
         )
+    def test_naver(self):
+        naver.download(
+            'https://tv.naver.com/v/4800363', info_only=True)
+        naver.download('https://tv.naver.com/v/4781354/list/288908', info_only=True)
 
 if __name__ == '__main__':
     unittest.main()
