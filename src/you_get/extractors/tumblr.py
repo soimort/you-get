@@ -49,17 +49,18 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
         tuggles = {}
         for url in urls:
-            filename = parse.unquote(url.split('/')[-1])
+            hd_url = r1(r'(.+)_\d+\.jpg$', url) + '_1280.jpg'  # FIXME: decide actual quality
+            filename = parse.unquote(hd_url.split('/')[-1])
             title = '.'.join(filename.split('.')[:-1])
             tumblr_id = r1(r'^tumblr_(.+)_\d+$', title)
             quality = int(r1(r'^tumblr_.+_(\d+)$', title))
             ext = filename.split('.')[-1]
             try:
-                size = int(get_head(url)['Content-Length'])
+                size = int(get_head(hd_url)['Content-Length'])
                 if tumblr_id not in tuggles or tuggles[tumblr_id]['quality'] < quality:
                     tuggles[tumblr_id] = {
                         'title': title,
-                        'url': url,
+                        'url': hd_url,
                         'quality': quality,
                         'ext': ext,
                         'size': size,
