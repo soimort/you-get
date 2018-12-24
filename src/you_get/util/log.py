@@ -96,3 +96,9 @@ def wtf(message, exit_code=1):
     print_log(message, RED, BOLD)
     if exit_code is not None:
         sys.exit(exit_code)
+
+def yes_or_no(message):
+    ans = str(input('%s (y/N) ' % message)).lower().strip()
+    if ans == 'y':
+        return True
+    return False

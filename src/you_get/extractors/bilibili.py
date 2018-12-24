@@ -22,7 +22,7 @@ from .youku import youku_download_by_vid
 
 class Bilibili(VideoExtractor):
     name = 'Bilibili'
-    live_api = 'http://live.bilibili.com/api/playurl?cid={}&otype=json'
+    live_api = 'https://api.live.bilibili.com/room/v1/Room/playUrl?cid={}&quality=0&platform=web'
     api_url = 'http://interface.bilibili.com/v2/playurl?'
     bangumi_api_url = 'http://bangumi.bilibili.com/player/web_api/playurl?'
     live_room_init_api_url = 'https://api.live.bilibili.com/room/v1/Room/room_init?id={}'
@@ -115,7 +115,7 @@ class Bilibili(VideoExtractor):
             self.url = 'http://www.bilibili.com/video/av{}/'.format(aid)
 
         self.ua = fake_headers['User-Agent']
-        self.url = url_locations([self.url])[0]
+        self.url = url_locations([self.url], faker=True)[0]
         frag = urllib.parse.urlparse(self.url).fragment
         # http://www.bilibili.com/video/av3141144/index_2.html#page=3
         if frag:
@@ -125,30 +125,31 @@ class Bilibili(VideoExtractor):
                 aid = re.search(r'av(\d+)', self.url).group(1)
                 self.url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, page)
         self.referer = self.url
-        self.page = get_content(self.url)
+        self.page = get_content(self.url, headers=fake_headers)
 
         m = re.search(r'<h1.*?>(.*?)</h1>', self.page) or re.search(r'<h1 title="([^"]+)">', self.page)
         if m is not None:
             self.title = m.group(1)
-            s = re.search(r'<span>([^<]+)</span>', m.group(1))
+            s = re.search(r'<span.*?>([^<]+)</span>', m.group(1))
             if s:
                 self.title = unescape_html(s.group(1))
         if self.title is None:
             m = re.search(r'property="og:title" content="([^"]+)"', self.page)
             if m is not None:
                 self.title = m.group(1)
-
         if 'subtitle' in kwargs:
             subtitle = kwargs['subtitle']
             self.title = '{} {}'.format(self.title, subtitle)
         else:
             playinfo = re.search(r'__INITIAL_STATE__=(.*?);\(function\(\)', self.page)
             if playinfo is not None:
-                pages = json.loads(playinfo.group(1))['videoData']['pages']
-                if len(pages) > 1:
-                    qs = dict(parse.parse_qsl(urllib.parse.urlparse(self.url).query))
-                    page = pages[int(qs.get('p', 1)) - 1]
-                    self.title = '{} #{}. {}'.format(self.title, page['page'], page['part'])
+                jsonPlayinfo = json.loads(playinfo.group(1))
+                if 'videoData' in jsonPlayinfo:
+                    pages = jsonPlayinfo['videoData']['pages']
+                    if len(pages) > 1:
+                        qs = dict(parse.parse_qsl(urllib.parse.urlparse(self.url).query))
+                        page = pages[int(qs.get('p', 1)) - 1]
+                        self.title = '{} #{}. {}'.format(self.title, page['page'], page['part'])
 
         if 'bangumi.bilibili.com/movie' in self.url:
             self.movie_entry(**kwargs)
@@ -160,6 +161,8 @@ class Bilibili(VideoExtractor):
             self.live_entry(**kwargs)
         elif 'vc.bilibili.com' in self.url:
             self.vc_entry(**kwargs)
+        elif 'audio/au' in self.url:
+            self.audio_entry(**kwargs)
         else:
             self.entry(**kwargs)
 
@@ -170,6 +173,30 @@ class Bilibili(VideoExtractor):
         # better ideas for bangumi_movie titles?
         self.title = page_list[0]['pagename']
         self.download_by_vid(page_list[0]['cid'], True, bangumi_movie=True, **kwargs)
+
+    def audio_entry(self, **kwargs):
+        assert re.match(r'https?://www.bilibili.com/audio/au\d+', self.url)
+        patt = r"(\d+)"
+        audio_id = re.search(patt, self.url).group(1)
+        audio_info_url = \
+            'https://www.bilibili.com/audio/music-service-c/web/song/info?sid={}'.format(audio_id)
+        audio_info_response = json.loads(get_content(audio_info_url))
+        if audio_info_response['msg'] != 'success':
+            log.wtf('fetch audio information failed!')
+            sys.exit(2)
+        self.title = audio_info_response['data']['title']
+        # TODO:there is no quality option for now
+        audio_download_url = \
+            'https://www.bilibili.com/audio/music-service-c/web/url?sid={}&privilege=2&quality=2'.format(audio_id)
+        audio_download_response = json.loads(get_content(audio_download_url))
+        if audio_download_response['msg'] != 'success':
+            log.wtf('fetch audio resource failed!')
+            sys.exit(2)
+        self.streams['mp4'] = {}
+        self.streams['mp4']['src'] = [audio_download_response['data']['cdns'][0]]
+        self.streams['mp4']['container'] = 'm4a'
+        self.streams['mp4']['size'] = audio_download_response['data']['size']
+
 
     def entry(self, **kwargs):
         # tencent player
@@ -190,7 +217,12 @@ class Bilibili(VideoExtractor):
             index_id = int(re.search(r'index_(\d+)', self.url).group(1))
             cid = page_list[index_id-1]['cid'] # change cid match rule
         except:
-            cid = re.search(r'"cid":(\d+)', self.page).group(1)
+            page = re.search(r'p=(\d+)', self.url)
+            if page is None:
+                p = 1
+            else:
+                p = int(page.group(1))
+            cid = re.search(r'"cid":(\d+),"page":%s' % p, self.page).group(1)
         if cid is not None:
             self.download_by_vid(cid, re.search('bangumi', self.url) is not None, **kwargs)
         else:
@@ -226,7 +258,7 @@ class Bilibili(VideoExtractor):
 
         api_url = self.live_api.format(self.room_id)
         json_data = json.loads(get_content(api_url))
-        urls = [json_data['durl'][0]['url']]
+        urls = [json_data['data']['durl'][0]['url']]
 
         self.streams['live'] = {}
         self.streams['live']['src'] = urls
@@ -252,28 +284,9 @@ class Bilibili(VideoExtractor):
         self.streams['vc']['size'] = int(item['video_size'])
 
     def bangumi_entry(self, **kwargs):
-        bangumi_id = re.search(r'(\d+)', self.url).group(1)
-        frag = urllib.parse.urlparse(self.url).fragment
-        if frag:
-            episode_id = frag
-        else:
-            episode_id = re.search(r'first_ep_id\s*=\s*"(\d+)"', self.page) or re.search(r'\/ep(\d+)', self.url).group(1)
-        # cont = post_content('http://bangumi.bilibili.com/web_api/get_source', post_data=dict(episode_id=episode_id))
-        # cid = json.loads(cont)['result']['cid']
-        cont = get_content('http://bangumi.bilibili.com/web_api/episode/{}.json'.format(episode_id))
-        ep_info = json.loads(cont)['result']['currentEpisode']
-
-        bangumi_data = get_bangumi_info(str(ep_info['seasonId']))
-        bangumi_payment = bangumi_data.get('payment')
-        if bangumi_payment and bangumi_payment['price'] != '0':
-            log.w("It's a paid item")
-        # ep_ids = collect_bangumi_epids(bangumi_data)
-
-        index_title = ep_info['indexTitle']
-        long_title = ep_info['longTitle'].strip()
-        cid = ep_info['danmaku']
-
-        self.title = '{} [{} {}]'.format(self.title, index_title, long_title)
+        data = json.loads(re.search(r'__INITIAL_STATE__=(.+);\(function', self.page).group(1))
+        cid = data['epInfo']['cid']
+        # index_title = data['epInfo']['index_title']
         self.download_by_vid(cid, bangumi=True, **kwargs)
 
 
@@ -376,10 +389,82 @@ def download_video_from_favlist(url, **kwargs):
 
     else:
         log.wtf("Fail to parse the fav title" + url, "")
+def download_music_from_favlist(url, page, **kwargs):
+    m = re.search(r'https?://www.bilibili.com/audio/mycollection/(\d+)', url)
+    if m is not None:
+        sid = m.group(1)
+        json_result = json.loads(get_content("https://www.bilibili.com/audio/music-service-c/web/song/of-coll?"
+                                             "sid={}&pn={}&ps=100".format(sid, page)))
+        if json_result['msg'] == 'success':
+            music_list = json_result['data']['data']
+            music_count = len(music_list)
+            for i in range(music_count):
+                audio_id = music_list[i]['id']
+                audio_title = music_list[i]['title']
+                audio_url = "https://www.bilibili.com/audio/au{}".format(audio_id)
+                print("Start downloading music ", audio_title)
+                Bilibili().download_by_url(audio_url, **kwargs)
+            if page < json_result['data']['pageCount']:
+                page += 1
+                download_music_from_favlist(url, page, **kwargs)
+        else:
+            log.wtf("Fail to get music list of page " + json_result)
+            sys.exit(2)
+    else:
+        log.wtf("Fail to parse the sid from " + url, "")
 
+def download_video_from_totallist(url, page, **kwargs):
+    # the url has format: https://space.bilibili.com/64169458/#/video
+    m = re.search(r'space\.bilibili\.com/(\d+)/.*?video', url)
+    mid = ""
+    if m is not None:
+        mid = m.group(1)
+        jsonresult = json.loads(get_content("https://space.bilibili.com/ajax/member/getSubmitVideos?mid={}&pagesize=100&tid=0&page={}&keyword=&order=pubdate&jsonp=jsonp".format(mid, page)))
+        if jsonresult['status']:
+            videos = jsonresult['data']['vlist']
+            videocount = len(videos)
+            for i in range(videocount):
+                videoid = videos[i]["aid"]
+                videotitle = videos[i]["title"]
+                videourl = "https://www.bilibili.com/video/av{}".format(videoid)
+                print("Start downloading ", videotitle, " video ", videotitle)
+                Bilibili().download_by_url(videourl, subtitle=videotitle, **kwargs)
+            if page < jsonresult['data']['pages']:
+                page += 1
+                download_video_from_totallist(url, page, **kwargs)
+        else:
+            log.wtf("Fail to get the files of page " + jsonresult)
+            sys.exit(2)
+
+    else:
+        log.wtf("Fail to parse the video title" + url, "")
+
+def download_music_from_totallist(url, page, **kwargs):
+    m = re.search(r'https?://www.bilibili.com/audio/am(\d+)\?type=\d', url)
+    if m is not None:
+        sid = m.group(1)
+        json_result = json.loads(get_content("https://www.bilibili.com/audio/music-service-c/web/song/of-menu?"
+                                             "sid={}&pn={}&ps=100".format(sid, page)))
+        if json_result['msg'] == 'success':
+            music_list = json_result['data']['data']
+            music_count = len(music_list)
+            for i in range(music_count):
+                audio_id = music_list[i]['id']
+                audio_title = music_list[i]['title']
+                audio_url = "https://www.bilibili.com/audio/au{}".format(audio_id)
+                print("Start downloading music ",audio_title)
+                Bilibili().download_by_url(audio_url, **kwargs)
+            if page < json_result['data']['pageCount']:
+                page += 1
+                download_music_from_totallist(url, page, **kwargs)
+        else:
+            log.wtf("Fail to get music list of page " + json_result)
+            sys.exit(2)
+    else:
+        log.wtf("Fail to parse the sid from " + url, "")
 
 def bilibili_download_playlist_by_url(url, **kwargs):
-    url = url_locations([url])[0]
+    url = url_locations([url], faker=True)[0]
     kwargs['playlist'] = True
     # a bangumi here? possible?
     if 'live.bilibili' in url:
@@ -396,6 +481,12 @@ def bilibili_download_playlist_by_url(url, **kwargs):
     elif 'favlist' in url:
         # this a fav list folder
         download_video_from_favlist(url, **kwargs)
+    elif re.match(r'https?://space.bilibili.com/\d+/#/video', url):
+        download_video_from_totallist(url, 1, **kwargs)
+    elif re.match(r'https://www.bilibili.com/audio/mycollection/\d+', url):
+        download_music_from_favlist(url, 1, **kwargs)
+    elif re.match(r'https?://www.bilibili.com/audio/am\d+\?type=\d', url):
+        download_music_from_totallist(url, 1, **kwargs)
     else:
         aid = re.search(r'av(\d+)', url).group(1)
         page_list = json.loads(get_content('http://www.bilibili.com/widget/getPageList?aid={}'.format(aid)))

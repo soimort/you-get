@@ -30,9 +30,9 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         return
 
     html = get_html(url, faker=True)
-    screen_name = r1(r'data-screen-name="([^"]*)"', html) or \
+    screen_name = r1(r'twitter\.com/([^/]+)', url) or r1(r'data-screen-name="([^"]*)"', html) or \
         r1(r'<meta name="twitter:title" content="([^"]*)"', html)
-    item_id = r1(r'data-item-id="([^"]*)"', html) or \
+    item_id = r1(r'twitter\.com/[^/]+/status/(\d+)', url) or r1(r'data-item-id="([^"]*)"', html) or \
         r1(r'<meta name="twitter:site:id" content="([^"]*)"', html)
     page_title = "{} [{}]".format(screen_name, item_id)
 

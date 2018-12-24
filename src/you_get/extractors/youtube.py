@@ -37,6 +37,10 @@ class YouTube(VideoExtractor):
     ]
 
     def decipher(js, s):
+        # Examples:
+        # - https://www.youtube.com/yts/jsbin/player-da_DK-vflWlK-zq/base.js
+        # - https://www.youtube.com/yts/jsbin/player-vflvABTsY/da_DK/base.js
+        # - https://www.youtube.com/yts/jsbin/player-vfls4aurX/da_DK/base.js
         def tr_js(code):
             code = re.sub(r'function', r'def', code)
             code = re.sub(r'(\W)(as|if|in|is|or)\(', r'\1_\2(', code)
@@ -52,11 +56,13 @@ class YouTube(VideoExtractor):
             return code
 
         js = js.replace('\n', ' ')
-        f1 = match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)')
+        f1 = match1(js, r'\.set\(\w+\.sp,\(0,window\.encodeURIComponent\)\(([$\w]+)') or \
+            match1(js, r'\.set\(\w+\.sp,([$\w]+)\(\w+\.s\)\)') or \
+            match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)')
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
                 match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
         f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
-        f1def = 'function %s%s' % (f1, f1def)
+        f1def = 'function main_%s%s' % (f1, f1def)  # prefix to avoid potential namespace conflict
         code = tr_js(f1def)
         f2s = set(re.findall(r'([$\w]+)\(\w+,\d+\)', f1def))
         for f2 in f2s:
@@ -73,9 +79,19 @@ class YouTube(VideoExtractor):
 
         f1 = re.sub(r'(as|if|in|is|or)', r'_\1', f1)
         f1 = re.sub(r'\$', '_dollar', f1)
-        code = code + 'sig=%s(s)' % f1
+        code = code + 'sig=main_%s(s)' % f1  # prefix to avoid potential namespace conflict
         exec(code, globals(), locals())
         return locals()['sig']
+
+    def chunk_by_range(url, size):
+        urls = []
+        chunk_size = 10485760
+        start, end = 0, chunk_size - 1
+        urls.append('%s&range=%s-%s' % (url, start, end))
+        while end + 1 < size:  # processed size < expected size
+            start, end = end + 1, end + chunk_size
+            urls.append('%s&range=%s-%s' % (url, start, end))
+        return urls
 
     def get_url_from_vid(vid):
         return 'https://youtu.be/{}'.format(vid)
@@ -128,7 +144,10 @@ class YouTube(VideoExtractor):
         for video in videos:
             vid = parse_query_param(video, 'v')
             index = parse_query_param(video, 'index')
-            self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
+            try:
+                self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
+            except:
+                pass
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
@@ -144,7 +163,8 @@ class YouTube(VideoExtractor):
 
         ytplayer_config = None
         if 'status' not in video_info:
-            log.wtf('[Failed] Unknown status.')
+            log.wtf('[Failed] Unknown status.', exit_code=None)
+            raise
         elif video_info['status'] == ['ok']:
             if 'use_cipher_signature' not in video_info or video_info['use_cipher_signature'] == ['False']:
                 self.title = parse.unquote_plus(video_info['title'][0])
@@ -176,7 +196,8 @@ class YouTube(VideoExtractor):
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+});ytplayer', video_page).group(1))
                 except:
                     msg = re.search('class="message">([^<]+)<', video_page).group(1)
-                    log.wtf('[Failed] "%s"' % msg.strip())
+                    log.wtf('[Failed] "%s"' % msg.strip(), exit_code=None)
+                    raise
 
                 if 'title' in ytplayer_config['args']:
                     # 150 Restricted from playback on certain sites
@@ -185,18 +206,22 @@ class YouTube(VideoExtractor):
                     self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
                     stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                 else:
-                    log.wtf('[Error] The uploader has not made this video available in your country.')
+                    log.wtf('[Error] The uploader has not made this video available in your country.', exit_code=None)
+                    raise
                     #self.title = re.search('<meta name="title" content="([^"]+)"', video_page).group(1)
                     #stream_list = []
 
             elif video_info['errorcode'] == ['100']:
-                log.wtf('[Failed] This video does not exist.', exit_code=int(video_info['errorcode'][0]))
+                log.wtf('[Failed] This video does not exist.', exit_code=None) #int(video_info['errorcode'][0])
+                raise
 
             else:
-                log.wtf('[Failed] %s' % video_info['reason'][0], exit_code=int(video_info['errorcode'][0]))
+                log.wtf('[Failed] %s' % video_info['reason'][0], exit_code=None) #int(video_info['errorcode'][0])
+                raise
 
         else:
-            log.wtf('[Failed] Invalid status.')
+            log.wtf('[Failed] Invalid status.', exit_code=None)
+            raise
 
         # YouTube Live
         if ytplayer_config and (ytplayer_config['args'].get('livestream') == '1' or ytplayer_config['args'].get('live_playback') == '1'):
@@ -286,13 +311,15 @@ class YouTube(VideoExtractor):
                         if not dash_size:
                             try: dash_size = url_size(dash_url)
                             except: continue
+                        dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                        dash_mp4_a_urls = self.__class__.chunk_by_range(dash_mp4_a_url, int(dash_mp4_a_size))
                         self.dash_streams[itag] = {
                             'quality': '%sx%s' % (w, h),
                             'itag': itag,
                             'type': mimeType,
                             'mime': mimeType,
                             'container': 'mp4',
-                            'src': [dash_url, dash_mp4_a_url],
+                            'src': [dash_urls, dash_mp4_a_urls],
                             'size': int(dash_size) + int(dash_mp4_a_size)
                         }
                 elif mimeType == 'video/webm':
@@ -306,13 +333,15 @@ class YouTube(VideoExtractor):
                         if not dash_size:
                             try: dash_size = url_size(dash_url)
                             except: continue
+                        dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                        dash_webm_a_urls = self.__class__.chunk_by_range(dash_webm_a_url, int(dash_webm_a_size))
                         self.dash_streams[itag] = {
                             'quality': '%sx%s' % (w, h),
                             'itag': itag,
                             'type': mimeType,
                             'mime': mimeType,
                             'container': 'webm',
-                            'src': [dash_url, dash_webm_a_url],
+                            'src': [dash_urls, dash_webm_a_urls],
                             'size': int(dash_size) + int(dash_webm_a_size)
                         }
         except:
@@ -349,13 +378,15 @@ class YouTube(VideoExtractor):
                                 dash_url += '&signature={}'.format(sig)
                             dash_size = stream['clen']
                             itag = stream['itag']
+                            dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                            dash_mp4_a_urls = self.__class__.chunk_by_range(dash_mp4_a_url, int(dash_mp4_a_size))
                             self.dash_streams[itag] = {
                                 'quality': stream['size'],
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
                                 'container': 'mp4',
-                                'src': [dash_url, dash_mp4_a_url],
+                                'src': [dash_urls, dash_mp4_a_urls],
                                 'size': int(dash_size) + int(dash_mp4_a_size)
                             }
                         elif stream['type'].startswith('video/webm'):
@@ -374,13 +405,15 @@ class YouTube(VideoExtractor):
                             except UnboundLocalError as e:
                                 audio_url = dash_mp4_a_url
                                 audio_size = int(dash_mp4_a_size)
+                            dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                            audio_urls = self.__class__.chunk_by_range(audio_url, int(audio_size))
                             self.dash_streams[itag] = {
                                 'quality': stream['size'],
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
                                 'container': 'webm',
-                                'src': [dash_url, audio_url],
+                                'src': [dash_urls, audio_urls],
                                 'size': int(dash_size) + int(audio_size)
                             }
 

@@ -37,11 +37,14 @@ def zhibo_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     if is_live is not "1":
         raise ValueError("The live stream is not online! (Errno:%s)" % is_live)
 
-    ourStreamName = r1(r"window.ourStreamName=\'([s\S'\s\.]*)\'\;[\s\S]*window.rtmpDefaultSource", html)
-    rtmpPollUrl = r1(r"window.rtmpPollUrl=\'([s\S'\s\.]*)\'\;[\s\S]*window.hlsDefaultSource", html)
-
-    #real_url = 'rtmp://220.194.213.56/live.zhibo.tv/8live/' + ourStreamName
-    real_url = rtmpPollUrl + ourStreamName
+    match = re.search(r"""
+    ourStreamName .*?
+    '(.*?)' .*?
+    rtmpHighSource .*?
+    '(.*?)' .*?
+    '(.*?)'
+    """, html, re.S | re.X)
+    real_url = match.group(3) + match.group(1) + match.group(2)
 
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:

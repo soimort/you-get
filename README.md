@@ -113,6 +113,14 @@ You can install `you-get` easily via:
 $ brew install you-get
 ```
 
+### Option 8: pkg (FreeBSD only)
+
+You can install `you-get` easily via:
+
+```
+# pkg install you-get
+```
+
 ### Shell completion
 
 Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](https://github.com/soimort/you-get/tree/develop/contrib/completion). Please consult your shell's manual for how to take advantage of them.
@@ -416,7 +424,9 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 西瓜视频 | <https://www.ixigua.com/>      |✓| | |
 | 快手 | <https://www.kuaishou.com/>      |✓|✓| |
 | 抖音 | <https://www.douyin.com/>      |✓| | |
+| TikTok | <https://www.tiktok.com/>      |✓| | |
 | 中国体育(TV) | <http://v.zhibo.tv/> </br><http://video.zhibo.tv/>    |✓| | |
+| 知乎 | <https://www.zhihu.com/>      |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
