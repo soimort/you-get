@@ -225,7 +225,11 @@ class YouTube(VideoExtractor):
 
         # YouTube Live
         if ytplayer_config and (ytplayer_config['args'].get('livestream') == '1' or ytplayer_config['args'].get('live_playback') == '1'):
-            hlsvp = ytplayer_config['args']['hlsvp']
+            if 'hlsvp' in ytplayer_config['args']:
+                hlsvp = ytplayer_config['args']['hlsvp']
+            else:
+                player_response= json.loads(ytplayer_config['args']['player_response'])
+                log.e('[Failed] %s' % player_response['playabilityStatus']['reason'], exit_code=1)
 
             if 'info_only' in kwargs and kwargs['info_only']:
                 return
