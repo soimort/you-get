@@ -137,7 +137,8 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
     else:
         # direct download
-        filename = parse.unquote(url.split('/')[-1]) or parse.unquote(url.split('/')[-2])
+        url_trunk = url.split('?')[0]  # strip query string
+        filename = parse.unquote(url_trunk.split('/')[-1]) or parse.unquote(url_trunk.split('/')[-2])
         title = '.'.join(filename.split('.')[:-1]) or filename
         _, ext, size = url_info(url, faker=True)
         print_info(site_info, title, ext, size)
