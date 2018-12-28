@@ -53,7 +53,7 @@ def showroom_download_by_room_id(room_id, output_dir = '.', merge = False, info_
     type_, ext, size = url_info(stream_url)
     print_info(site_info, title, type_, size)
     if not info_only:
-        download_url_ffmpeg(url=stream_url, title=title, ext= 'mp4', output_dir=output_dir)
+        download_url_ffmpeg(url=stream_url, title=title, ext= 'mp4', output_dir=output_dir, **kwargs)
 
 
 #----------------------------------------------------------------------

@@ -28,7 +28,7 @@ def huomaotv_download(url, output_dir='.', merge=True, info_only=False, **kwargs
     print_info(site_info, title, 'm3u8', float('inf'))
 
     if not info_only:
-        download_url_ffmpeg(m3u8_url, title, 'm3u8', None, output_dir=output_dir, merge=merge)
+        download_url_ffmpeg(m3u8_url, title, 'm3u8', None, output_dir=output_dir, merge=merge, **kwargs)
 
 
 site_info = 'huomao.com'

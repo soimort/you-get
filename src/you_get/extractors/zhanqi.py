@@ -33,7 +33,7 @@ def zhanqi_live(room_id, merge=True, output_dir='.', info_only=False, **kwargs):
 
     print_info(site_info, title, 'm3u8', 0, m3u8_url=m3u8_url, m3u8_type='master')
     if not info_only:
-        download_url_ffmpeg(m3u8_url, title, 'mp4', output_dir=output_dir, merge=merge)
+        download_url_ffmpeg(m3u8_url, title, 'mp4', output_dir=output_dir, merge=merge, **kwargs)
 
 def zhanqi_video(video_id, output_dir='.', info_only=False, merge=True, **kwargs):
     api_url = 'https://www.zhanqi.tv/api/static/v2.1/video/{}.json'.format(video_id)
