@@ -273,7 +273,12 @@ def matchall(text, patterns):
 def launch_player(player, urls):
     import subprocess
     import shlex
-    subprocess.call(shlex.split(player) + list(urls))
+    import shutil
+    exefile=shlex.split(player)[0]
+    if shutil.which(exefile) is not None:
+        subprocess.call(shlex.split(player) + list(urls))
+    else:
+        log.wtf('[Failed] Cannot find player "%s"' % exefile)
 
 
 def parse_query_param(url, param):
