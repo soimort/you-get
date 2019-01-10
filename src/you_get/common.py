@@ -19,7 +19,9 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+
+if sys.stdout.__class__.__name__ != "xbmcout":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
 
 SITES = {
     '163'              : 'netease',
@@ -148,11 +150,10 @@ fake_headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0',  # noqa
 }
 
-if sys.stdout.isatty():
-    default_encoding = sys.stdout.encoding.lower()
-else:
-    default_encoding = locale.getpreferredencoding().lower()
-
+default_encoding = locale.getpreferredencoding().lower()
+if sys.stdout.__class__.__name__ != "xbmcout":
+    if sys.stdout.isatty():
+        default_encoding = sys.stdout.encoding.lower()
 
 def rc4(key, data):
     # all encryption algo should work on bytes
