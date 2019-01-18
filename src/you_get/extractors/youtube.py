@@ -41,6 +41,9 @@ class YouTube(VideoExtractor):
         # - https://www.youtube.com/yts/jsbin/player-da_DK-vflWlK-zq/base.js
         # - https://www.youtube.com/yts/jsbin/player-vflvABTsY/da_DK/base.js
         # - https://www.youtube.com/yts/jsbin/player-vfls4aurX/da_DK/base.js
+        # - https://www.youtube.com/yts/jsbin/player_ias-vfl_RGK2l/en_US/base.js
+        # - https://www.youtube.com/yts/jsbin/player-vflRjqq_w/da_DK/base.js
+        # - https://www.youtube.com/yts/jsbin/player_ias-vfl-jbnrr/da_DK/base.js
         def tr_js(code):
             code = re.sub(r'function', r'def', code)
             code = re.sub(r'(\W)(as|if|in|is|or)\(', r'\1_\2(', code)
@@ -56,7 +59,8 @@ class YouTube(VideoExtractor):
             return code
 
         js = js.replace('\n', ' ')
-        f1 = match1(js, r'\.set\(\w+\.sp,\(0,window\.encodeURIComponent\)\(([$\w]+)') or \
+        f1 = match1(js, r'\.set\(\w+\.sp,encodeURIComponent\(([$\w]+)') or \
+            match1(js, r'\.set\(\w+\.sp,\(0,window\.encodeURIComponent\)\(([$\w]+)') or \
             match1(js, r'\.set\(\w+\.sp,([$\w]+)\(\w+\.s\)\)') or \
             match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)')
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
