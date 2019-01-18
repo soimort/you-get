@@ -5,7 +5,7 @@ __all__ = ['tiktok_download']
 from ..common import *
 
 def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    html = get_html(url)
+    html = get_html(url, faker=True)
     title = r1(r'<title>(.*?)</title>', html)
     video_id = r1(r'/video/(\d+)', url) or r1(r'musical\?id=(\d+)', html)
     title = '%s [%s]' % (title, video_id)
