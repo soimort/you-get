@@ -59,12 +59,7 @@ def ffmpeg_concat_av(files, output, ext):
     params = [FFMPEG] + LOGLEVEL
     for file in files:
         if os.path.isfile(file): params.extend(['-i', file])
-    params.extend(['-c:v', 'copy'])
-    if ext == 'mp4':
-        params.extend(['-c:a', 'aac'])
-    elif ext == 'webm':
-        params.extend(['-c:a', 'vorbis'])
-    params.extend(['-strict', 'experimental'])
+    params.extend(['-c', 'copy'])
     params.append(output)
     return subprocess.call(params, stdin=STDIN)
 
