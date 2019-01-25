@@ -5,7 +5,8 @@ PACKAGE_NAME = 'you_get'
 
 PROJ_METADATA = '%s.json' % PROJ_NAME
 
-import os, json, imp
+import os, json
+import importlib.util
 here = os.path.abspath(os.path.dirname(__file__))
 proj_info = json.loads(open(os.path.join(here, PROJ_METADATA), encoding='utf-8').read())
 try:
@@ -13,7 +14,11 @@ try:
 except:
     README = ""
 CHANGELOG = open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf-8').read()
-VERSION = imp.load_source('version', os.path.join(here, 'src/%s/version.py' % PACKAGE_NAME)).__version__
+version_spec = importlib.util.spec_from_file_location(
+    'version', os.path.join(here, 'src/%s/version.py' % PACKAGE_NAME))
+version = importlib.util.module_from_spec(version_spec)
+version_spec.loader.exec_module(version)
+VERSION = version.__version__
 
 from setuptools import setup, find_packages
 setup(
