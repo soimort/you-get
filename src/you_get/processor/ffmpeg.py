@@ -267,6 +267,7 @@ def ffmpeg_concat_audio_and_video(files, output, ext):
     if has_ffmpeg_installed:
         params = [FFMPEG] + LOGLEVEL
         params.extend(['-f', 'concat'])
+        params.extend(['-safe', '0'])  # https://stackoverflow.com/questions/38996925/ffmpeg-concat-unsafe-file-name
         for file in files:
             if os.path.isfile(file):
                 params.extend(['-i', file])
