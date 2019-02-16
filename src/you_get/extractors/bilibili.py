@@ -224,7 +224,13 @@ class Bilibili(VideoExtractor):
                 p = int(page.group(1))
             cid = re.search(r'"cid":(\d+),"page":%s' % p, self.page).group(1)
         if cid is not None:
-            self.download_by_vid(cid, re.search('bangumi', self.url) is not None, **kwargs)
+            #self.download_by_vid(cid, re.search('bangumi', self.url) is not None, **kwargs)
+            # FIXME: video qualities
+            playinfo_text = match1(self.page, r'__playinfo__=(.*?)<')
+            playinfo = json.loads(playinfo_text)
+            url0 = playinfo['data']['durl'][0]['url']
+            _, ext, size = url_info(url0, headers={'referer': self.url, 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'})
+            self.streams['flv'] = {'url': url0, 'container': ext, 'size': size, 'src': [url0]}
         else:
             # flashvars?
             flashvars = re.search(r'flashvars="([^"]+)"', self.page).group(1)
@@ -492,7 +498,8 @@ def bilibili_download_playlist_by_url(url, **kwargs):
         page_list = json.loads(get_content('http://www.bilibili.com/widget/getPageList?aid={}'.format(aid)))
         page_cnt = len(page_list)
         for no in range(1, page_cnt+1):
-            page_url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, no)
+            #page_url = 'http://www.bilibili.com/video/av{}/index_{}.html'.format(aid, no)
+            page_url = 'http://www.bilibili.com/video/av{}/?p={}'.format(aid, no)
             subtitle = '#%s. %s'% (page_list[no-1]['page'], page_list[no-1]['pagename'])
             Bilibili().download_by_url(page_url, subtitle=subtitle, **kwargs)
 
