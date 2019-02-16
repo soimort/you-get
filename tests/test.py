@@ -31,5 +31,8 @@ class YouGetTests(unittest.TestCase):
             info_only=True
         )
 
+    def test_bilibili_nonetype_error(self):
+        bilibili.download('https://www.bilibili.com/video/av22195308/?p=3', playlist=True, output_dir='test_output', merge=True)
+
 if __name__ == '__main__':
     unittest.main()
