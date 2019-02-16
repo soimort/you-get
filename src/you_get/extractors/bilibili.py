@@ -17,9 +17,11 @@ class Bilibili(VideoExtractor):
         {'id': 'flv720', 'quality': 64, 'audio_quality': 30280,
          'container': 'MP4', 'video_resolution': '720p', 'desc': '高清 720P'},
         {'id': 'flv480', 'quality': 32, 'audio_quality': 30280,
-         'container': 'MP4', 'video_resolution': '480p', 'desc': '清晰 480P'},  # default
+         'container': 'MP4', 'video_resolution': '480p', 'desc': '清晰 480P'},
         {'id': 'flv360', 'quality': 16, 'audio_quality': 30216,
          'container': 'MP4', 'video_resolution': '360p', 'desc': '流畅 360P'},
+
+        {'id': 'default', 'quality': 0}
     ]
 
     @staticmethod
@@ -41,7 +43,6 @@ class Bilibili(VideoExtractor):
         #                    r'<h1 title="([^"]+)"')
 
         # regular av
-        # TODO: multi-P
         if re.match(r'https?://(www)?\.bilibili\.com/video/av(\d+)', self.url):
             playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
             playinfo = json.loads(playinfo_text)
@@ -50,12 +51,22 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             self.title = initial_state['videoData']['title']
 
+            # refine title for a specific part
+            p = match1(self.url, r'\?p=(\d+)')  # use URL to decide p-number, not initial_state['p']
+            if p is not None:
+                part = initial_state['videoData']['pages'][int(p) - 1]['part']
+                self.title = '%s (P%s. %s)' % (self.title, p, part)
+
+            # warn if it is a multi-part video
+            pn = initial_state['videoData']['videos']
+            if pn > 1 and not kwargs.get('playlist'):
+                log.w('This is a multipart video. (use --playlist to download all parts.)')
+
             # determine default quality / format
             quality = int(playinfo['data']['quality'])
             format_id = self.stream_qualities[quality]['id']
             container = self.stream_qualities[quality]['container'].lower()
             desc = self.stream_qualities[quality]['desc']
-            self.stream_types.append({'id': 'default'})
 
             # determine default source URL and size
             src, size = [], 0
@@ -113,9 +124,25 @@ class Bilibili(VideoExtractor):
             # extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
 
+    def download_playlist_by_url(self, url, **kwargs):
+        self.url = url
+        kwargs['playlist'] = True
+
+        html_content = get_content(self.url, headers=self.bilibili_headers())
+
+        # regular av
+        if re.match(r'https?://(www)?\.bilibili\.com/video/av(\d+)', self.url):
+            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+            initial_state = json.loads(initial_state_text)
+            aid = initial_state['videoData']['aid']
+            pn = initial_state['videoData']['videos']
+            for pi in range(1, pn + 1):
+                purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
+                self.__class__().download_by_url(purl, **kwargs)
+
 
 site = Bilibili()
 download = site.download_by_url
-# TODO: download_playlist
+download_playlist = site.download_playlist_by_url
 
 bilibili_download = download
