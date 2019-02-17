@@ -37,8 +37,8 @@ class Bilibili(VideoExtractor):
         return headers
 
     @staticmethod
-    def bilibili_bangumi_api(avid, cid, ep_id):
-        return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=0&type=&otype=json&ep_id=%s&fnver=0&fnval=16' % (avid, cid, ep_id)
+    def bilibili_bangumi_api(avid, cid, ep_id, qn=0):
+        return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=16' % (avid, cid, qn, ep_id)
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
@@ -108,26 +108,27 @@ class Bilibili(VideoExtractor):
             html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
             playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
             playinfo_ = json.loads(playinfo_text_)
-            for video in playinfo_['data']['dash']['video']:
-                # prefer the latter codecs!
-                s = self.stream_qualities[video['id']]
-                format_id = s['id']
-                container = s['container'].lower()
-                desc = s['desc']
-                audio_quality = s['audio_quality']
-                baseurl = video['baseUrl']
-                size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+            if 'dash' in playinfo_['data']:
+                for video in playinfo_['data']['dash']['video']:
+                    # prefer the latter codecs!
+                    s = self.stream_qualities[video['id']]
+                    format_id = s['id']
+                    container = s['container'].lower()
+                    desc = s['desc']
+                    audio_quality = s['audio_quality']
+                    baseurl = video['baseUrl']
+                    size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
 
-                # find matching audio track
-                audio_baseurl = playinfo_['data']['dash']['audio'][0]['baseUrl']
-                for audio in playinfo_['data']['dash']['audio']:
-                    if int(audio['id']) == audio_quality:
-                        audio_baseurl = audio['baseUrl']
-                        break
-                size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                    # find matching audio track
+                    audio_baseurl = playinfo_['data']['dash']['audio'][0]['baseUrl']
+                    for audio in playinfo_['data']['dash']['audio']:
+                        if int(audio['id']) == audio_quality:
+                            audio_baseurl = audio['baseUrl']
+                            break
+                    size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
 
-                self.dash_streams[format_id] = {'container': container, 'quality': desc,
-                                                'src': [[baseurl], [audio_baseurl]], 'size': size}
+                    self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                    'src': [[baseurl], [audio_baseurl]], 'size': size}
 
         # bangumi
         elif sort == 'bangumi':
