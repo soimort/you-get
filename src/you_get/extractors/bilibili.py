@@ -55,6 +55,7 @@ class Bilibili(VideoExtractor):
             self.url = 'https://www.bilibili.com/bangumi/play/ep%s' % ep_id
             html_content = get_content(self.url, headers=self.bilibili_headers())
 
+        # sort it out
         if re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ep(\d+)', self.url):
             sort = 'bangumi'
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
@@ -65,7 +66,7 @@ class Bilibili(VideoExtractor):
         # regular av video
         if sort == 'video':
             playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
-            playinfo = json.loads(playinfo_text)
+            playinfo = json.loads(playinfo_text) if playinfo_text else None
 
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
@@ -81,6 +82,14 @@ class Bilibili(VideoExtractor):
             pn = initial_state['videoData']['videos']
             if pn > 1 and not kwargs.get('playlist'):
                 log.w('This is a multipart video. (use --playlist to download all parts.)')
+
+            # no playinfo is found
+            if playinfo is None:
+                # use bilibili error video instead
+                url = 'https://static.hdslb.com/error.mp4'
+                _, container, size = url_info(url)
+                self.streams['default'] = {'container': container, 'size': size, 'src': [url]}
+                return
 
             # determine default quality / format
             quality = int(playinfo['data']['quality'])
@@ -126,12 +135,21 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             self.title = initial_state['h1Title']
 
+            # warn if this bangumi has more than 1 video
+            epn = len(initial_state['epList'])
+            if epn > 1 and not kwargs.get('playlist'):
+                log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
+
             ep_id = initial_state['epInfo']['id']
             avid = initial_state['epInfo']['aid']
             cid = initial_state['epInfo']['cid']
             api_url = self.bilibili_bangumi_api(avid, cid, ep_id)
             api_content = get_content(api_url, headers=self.bilibili_headers())
             data = json.loads(api_content)
+            if data['code'] < 0:  # error
+                log.e(data['message'])
+                return
+
             for video in data['result']['dash']['video']:
                 # convert height to quality code
                 if video['height'] == 360:
@@ -192,8 +210,16 @@ class Bilibili(VideoExtractor):
 
         html_content = get_content(self.url, headers=self.bilibili_headers())
 
-        # regular av
-        if re.match(r'https?://(www)?\.bilibili\.com/video/av(\d+)', self.url):
+        # sort it out
+        if re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ep(\d+)', self.url):
+            sort = 'bangumi'
+        elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
+            sort = 'bangumi'
+        elif re.match(r'https?://(www)?\.bilibili\.com/video/av(\d+)', self.url):
+            sort = 'video'
+
+        # regular av video
+        if sort == 'video':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
             aid = initial_state['videoData']['aid']
@@ -201,6 +227,14 @@ class Bilibili(VideoExtractor):
             for pi in range(1, pn + 1):
                 purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
                 self.__class__().download_by_url(purl, **kwargs)
+
+        elif sort == 'bangumi':
+            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+            initial_state = json.loads(initial_state_text)
+            for ep in initial_state['epList']:
+                ep_id = ep['id']
+                epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
+                self.__class__().download_by_url(epurl, **kwargs)
 
 
 site = Bilibili()
