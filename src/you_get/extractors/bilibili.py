@@ -37,6 +37,10 @@ class Bilibili(VideoExtractor):
         return headers
 
     @staticmethod
+    def bilibili_api(avid, cid, qn=0):
+        return 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&fnver=0&fnval=16' % (avid, cid, qn, ep_id)
+
+    @staticmethod
     def bilibili_bangumi_api(avid, cid, ep_id, qn=0):
         return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=16' % (avid, cid, qn, ep_id)
 
@@ -70,18 +74,19 @@ class Bilibili(VideoExtractor):
 
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
-            self.title = initial_state['videoData']['title']
-
-            # refine title for a specific part
-            p = match1(self.url, r'\?p=(\d+)')  # use URL to decide p-number, not initial_state['p']
-            if p is not None:
-                part = initial_state['videoData']['pages'][int(p) - 1]['part']
-                self.title = '%s (P%s. %s)' % (self.title, p, part)
 
             # warn if it is a multi-part video
             pn = initial_state['videoData']['videos']
             if pn > 1 and not kwargs.get('playlist'):
                 log.w('This is a multipart video. (use --playlist to download all parts.)')
+
+            # set video title
+            self.title = initial_state['videoData']['title']
+            # refine title for a specific part, if it is a multi-part video
+            p = int(match1(self.url, r'[\?&]p=(\d+)') or '1')  # use URL to decide p-number, not initial_state['p']
+            if pn > 1:
+                part = initial_state['videoData']['pages'][p - 1]['part']
+                self.title = '%s (P%s. %s)' % (self.title, p, part)
 
             # no playinfo is found
             if playinfo is None:
@@ -134,6 +139,8 @@ class Bilibili(VideoExtractor):
         elif sort == 'bangumi':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
+
+            # set video title
             self.title = initial_state['h1Title']
 
             # warn if this bangumi has more than 1 video
