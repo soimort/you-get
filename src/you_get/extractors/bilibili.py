@@ -10,6 +10,7 @@ class Bilibili(VideoExtractor):
     stream_types = [
         {'id': 'flv_p60', 'quality': 116, 'audio_quality': 30280,
          'container': 'MP4', 'video_resolution': '1080p', 'desc': '高清 1080P60'},
+        # 'id': 'hdflv2', 'quality': 112?
         {'id': 'flv', 'quality': 80, 'audio_quality': 30280,
          'container': 'MP4', 'video_resolution': '1080p', 'desc': '高清 1080P'},
         {'id': 'flv720_p60', 'quality': 74, 'audio_quality': 30280,
@@ -34,6 +35,10 @@ class Bilibili(VideoExtractor):
         if cookie is not None:
             headers.update({'Cookie': cookie})
         return headers
+
+    @staticmethod
+    def bilibili_bangumi_api(avid, cid, ep_id):
+        return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=0&type=&otype=json&ep_id=%s&fnver=0&fnval=16' % (avid, cid, ep_id)
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
@@ -99,6 +104,48 @@ class Bilibili(VideoExtractor):
 
                 self.dash_streams[format_id] = {'container': container, 'quality': desc,
                                                 'src': [[baseurl], [audio_baseurl]], 'size': size}
+
+        # bangumi
+        elif re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ep(\d+)', self.url):
+            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+            initial_state = json.loads(initial_state_text)
+            self.title = initial_state['h1Title']
+
+            ep_id = initial_state['epInfo']['id']
+            avid = initial_state['epInfo']['aid']
+            cid = initial_state['epInfo']['cid']
+            api_url = self.bilibili_bangumi_api(avid, cid, ep_id)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            data = json.loads(api_content)
+            for video in data['result']['dash']['video']:
+                # convert height to quality code
+                if video['height'] == 360:
+                    quality = 16
+                elif video['height'] == 480:
+                    quality = 32
+                elif video['height'] == 720:
+                    quality = 64
+                elif video['height'] == 1080:
+                    quality = 80
+                s = self.stream_qualities[quality]
+                format_id = s['id']
+                container = s['container'].lower()
+                desc = s['desc']
+                audio_quality = s['audio_quality']
+                baseurl = video['baseUrl']
+                size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+
+                # find matching audio track
+                audio_baseurl = data['result']['dash']['audio'][0]['baseUrl']
+                for audio in data['result']['dash']['audio']:
+                    if int(audio['id']) == audio_quality:
+                        audio_baseurl = audio['baseUrl']
+                        break
+                size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+
+                self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                'src': [[baseurl], [audio_baseurl]], 'size': size}
+
 
         else:
             # NOT IMPLEMENTED
