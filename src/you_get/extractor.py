@@ -154,9 +154,10 @@ class VideoExtractor():
                 for stream in itags:
                     self.p_stream(stream)
             # Print all other available streams
-            print("    [ DEFAULT ] %s" % ('_' * 33))
-            for stream in self.streams_sorted:
-                self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
+            if self.streams_sorted:
+                print("    [ DEFAULT ] %s" % ('_' * 33))
+                for stream in self.streams_sorted:
+                    self.p_stream(stream['id'] if 'id' in stream else stream['itag'])
 
         if self.audiolang:
             print("audio-languages:")
