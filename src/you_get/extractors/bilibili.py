@@ -47,8 +47,23 @@ class Bilibili(VideoExtractor):
         #self.title = match1(html_content,
         #                    r'<h1 title="([^"]+)"')
 
-        # regular av
-        if re.match(r'https?://(www)?\.bilibili\.com/video/av(\d+)', self.url):
+        # redirect: bangumi/play/ss -> bangumi/play/ep
+        if re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ss(\d+)', self.url):
+            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+            initial_state = json.loads(initial_state_text)
+            ep_id = initial_state['epList'][0]['id']
+            self.url = 'https://www.bilibili.com/bangumi/play/ep%s' % ep_id
+            html_content = get_content(self.url, headers=self.bilibili_headers())
+
+        if re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ep(\d+)', self.url):
+            sort = 'bangumi'
+        elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
+            sort = 'bangumi'
+        elif re.match(r'https?://(www)?\.bilibili\.com/video/av(\d+)', self.url):
+            sort = 'video'
+
+        # regular av video
+        if sort == 'video':
             playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
             playinfo = json.loads(playinfo_text)
 
@@ -106,7 +121,7 @@ class Bilibili(VideoExtractor):
                                                 'src': [[baseurl], [audio_baseurl]], 'size': size}
 
         # bangumi
-        elif re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ep(\d+)', self.url):
+        elif sort == 'bangumi':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
             self.title = initial_state['h1Title']
