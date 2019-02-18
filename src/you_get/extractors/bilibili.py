@@ -62,8 +62,15 @@ class Bilibili(VideoExtractor):
         #self.title = match1(html_content,
         #                    r'<h1 title="([^"]+)"')
 
+        # redirect: watchlater
+        if re.match(r'https?://(www\.)?bilibili\.com/watchlater/#/av(\d+)', self.url):
+            avid = match1(self.url, r'/av(\d+)')
+            p = int(match1(self.url, r'/p(\d+)') or '1')
+            self.url = 'https://www.bilibili.com/video/av%s?p=%s' % (avid, p)
+            html_content = get_content(self.url, headers=self.bilibili_headers())
+
         # redirect: bangumi/play/ss -> bangumi/play/ep
-        if re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ss(\d+)', self.url):
+        elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url):
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
             ep_id = initial_state['epList'][0]['id']
@@ -71,11 +78,11 @@ class Bilibili(VideoExtractor):
             html_content = get_content(self.url, headers=self.bilibili_headers())
 
         # sort it out
-        if re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ep(\d+)', self.url):
+        if re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ep(\d+)', self.url):
             sort = 'bangumi'
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
             sort = 'bangumi'
-        elif re.match(r'https?://(www)?\.bilibili\.com/video/av(\d+)', self.url):
+        elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
 
         # regular av video
@@ -264,11 +271,11 @@ class Bilibili(VideoExtractor):
         html_content = get_content(self.url, headers=self.bilibili_headers())
 
         # sort it out
-        if re.match(r'https?://(www)?\.bilibili\.com/bangumi/play/ep(\d+)', self.url):
+        if re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ep(\d+)', self.url):
             sort = 'bangumi'
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
             sort = 'bangumi'
-        elif re.match(r'https?://(www)?\.bilibili\.com/video/av(\d+)', self.url):
+        elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
 
         # regular av video
