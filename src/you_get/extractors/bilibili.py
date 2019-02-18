@@ -126,7 +126,7 @@ class Bilibili(VideoExtractor):
                         playinfos.append(api_playinfo)
                     else:
                         message = api_playinfo['data']['message']
-                elif best_quality is not None and current_quality < qn <= best_quality:
+                if best_quality is None or qn <= best_quality:
                     api_url = self.bilibili_interface_api(cid, qn=qn)
                     api_content = get_content(api_url, headers=self.bilibili_headers())
                     api_playinfo_data = json.loads(api_content)
