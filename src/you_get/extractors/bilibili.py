@@ -85,7 +85,9 @@ class Bilibili(VideoExtractor):
             html_content = get_content(self.url, headers=self.bilibili_headers())
 
         # redirect: bangumi/play/ss -> bangumi/play/ep
-        elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url):
+        # redirect: bangumi.bilibili.com/anime -> bangumi/play/ep
+        elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url) or \
+             re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)/play', self.url):
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
             ep_id = initial_state['epList'][0]['id']
@@ -101,6 +103,9 @@ class Bilibili(VideoExtractor):
             sort = 'vc'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
+        else:
+            log.e('[Error] Unsupported URL pattern.')
+            exit(1)
 
         # regular av video
         if sort == 'video':
