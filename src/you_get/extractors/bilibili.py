@@ -226,27 +226,40 @@ class Bilibili(VideoExtractor):
                 log.e(data['message'])
                 return
 
+            if 'durl' in data['result']:
+                quality = data['result']['quality']
+                format_id = self.stream_qualities[quality]['id']
+                container = self.stream_qualities[quality]['container'].lower()
+                desc = self.stream_qualities[quality]['desc']
+
+                src, size = [], 0
+                for durl in data['result']['durl']:
+                    src.append(durl['url'])
+                    size += durl['size']
+                self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': src}
+
             # DASH formats
-            for video in data['result']['dash']['video']:
-                quality = self.height_to_quality(video['height'])  # convert height to quality code
-                s = self.stream_qualities[quality]
-                format_id = 'dash-' + s['id']  # prefix
-                container = 'mp4'  # enforce MP4 container
-                desc = s['desc']
-                audio_quality = s['audio_quality']
-                baseurl = video['baseUrl']
-                size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+            if 'dash' in data['result']:
+                for video in data['result']['dash']['video']:
+                    quality = self.height_to_quality(video['height'])  # convert height to quality code
+                    s = self.stream_qualities[quality]
+                    format_id = 'dash-' + s['id']  # prefix
+                    container = 'mp4'  # enforce MP4 container
+                    desc = s['desc']
+                    audio_quality = s['audio_quality']
+                    baseurl = video['baseUrl']
+                    size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
 
-                # find matching audio track
-                audio_baseurl = data['result']['dash']['audio'][0]['baseUrl']
-                for audio in data['result']['dash']['audio']:
-                    if int(audio['id']) == audio_quality:
-                        audio_baseurl = audio['baseUrl']
-                        break
-                size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                    # find matching audio track
+                    audio_baseurl = data['result']['dash']['audio'][0]['baseUrl']
+                    for audio in data['result']['dash']['audio']:
+                        if int(audio['id']) == audio_quality:
+                            audio_baseurl = audio['baseUrl']
+                            break
+                    size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
 
-                self.dash_streams[format_id] = {'container': container, 'quality': desc,
-                                                'src': [[baseurl], [audio_baseurl]], 'size': size}
+                    self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                    'src': [[baseurl], [audio_baseurl]], 'size': size}
 
         # vc video
         elif sort == 'vc':
