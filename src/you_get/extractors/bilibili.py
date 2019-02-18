@@ -208,58 +208,75 @@ class Bilibili(VideoExtractor):
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
 
-            # set video title
-            self.title = initial_state['h1Title']
-
             # warn if this bangumi has more than 1 video
             epn = len(initial_state['epList'])
             if epn > 1 and not kwargs.get('playlist'):
                 log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
 
+            # set video title
+            self.title = initial_state['h1Title']
+
+            # construct playinfos
             ep_id = initial_state['epInfo']['id']
             avid = initial_state['epInfo']['aid']
             cid = initial_state['epInfo']['cid']
+            playinfos = []
             api_url = self.bilibili_bangumi_api(avid, cid, ep_id)
             api_content = get_content(api_url, headers=self.bilibili_headers())
-            data = json.loads(api_content)
-            if data['code'] < 0:  # error
-                log.e(data['message'])
+            api_playinfo = json.loads(api_content)
+            if api_playinfo['code'] == 0:  # success
+                playinfos.append(api_playinfo)
+            else:
+                log.e(api_playinfo['message'])
                 return
+            current_quality = api_playinfo['result']['quality']
+            # get alternative formats from API
+            for qn in [80, 64, 32, 16]:
+                # automatic format for durl: qn=0
+                # for dash, qn does not matter
+                if qn != current_quality:
+                    api_url = self.bilibili_bangumi_api(avid, cid, ep_id, qn=qn)
+                    api_content = get_content(api_url, headers=self.bilibili_headers())
+                    api_playinfo = json.loads(api_content)
+                    if api_playinfo['code'] == 0:  # success
+                        playinfos.append(api_playinfo)
 
-            if 'durl' in data['result']:
-                quality = data['result']['quality']
-                format_id = self.stream_qualities[quality]['id']
-                container = self.stream_qualities[quality]['container'].lower()
-                desc = self.stream_qualities[quality]['desc']
+            for playinfo in playinfos:
+                if 'durl' in playinfo['result']:
+                    quality = playinfo['result']['quality']
+                    format_id = self.stream_qualities[quality]['id']
+                    container = self.stream_qualities[quality]['container'].lower()
+                    desc = self.stream_qualities[quality]['desc']
 
-                src, size = [], 0
-                for durl in data['result']['durl']:
-                    src.append(durl['url'])
-                    size += durl['size']
-                self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': src}
+                    src, size = [], 0
+                    for durl in playinfo['result']['durl']:
+                        src.append(durl['url'])
+                        size += durl['size']
+                    self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': src}
 
-            # DASH formats
-            if 'dash' in data['result']:
-                for video in data['result']['dash']['video']:
-                    quality = self.height_to_quality(video['height'])  # convert height to quality code
-                    s = self.stream_qualities[quality]
-                    format_id = 'dash-' + s['id']  # prefix
-                    container = 'mp4'  # enforce MP4 container
-                    desc = s['desc']
-                    audio_quality = s['audio_quality']
-                    baseurl = video['baseUrl']
-                    size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+                # DASH formats
+                if 'dash' in playinfo['result']:
+                    for video in playinfo['result']['dash']['video']:
+                        # playinfo['result']['quality'] does not reflect the correct quality of DASH stream
+                        quality = self.height_to_quality(video['height'])  # convert height to quality code
+                        s = self.stream_qualities[quality]
+                        format_id = 'dash-' + s['id']  # prefix
+                        container = 'mp4'  # enforce MP4 container
+                        desc = s['desc']
+                        audio_quality = s['audio_quality']
+                        baseurl = video['baseUrl']
+                        size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
 
-                    # find matching audio track
-                    audio_baseurl = data['result']['dash']['audio'][0]['baseUrl']
-                    for audio in data['result']['dash']['audio']:
-                        if int(audio['id']) == audio_quality:
-                            audio_baseurl = audio['baseUrl']
-                            break
-                    size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                        # find matching audio track
+                        audio_baseurl = playinfo['result']['dash']['audio'][0]['baseUrl']
+                        for audio in playinfo['result']['dash']['audio']:
+                            if int(audio['id']) == audio_quality:
+                                audio_baseurl = audio['baseUrl']
+                                break
+                        size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
 
-                    self.dash_streams[format_id] = {'container': container, 'quality': desc,
-                                                    'src': [[baseurl], [audio_baseurl]], 'size': size}
+                        self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                        'src': [[baseurl], [audio_baseurl]], 'size': size}
 
         # vc video
         elif sort == 'vc':
