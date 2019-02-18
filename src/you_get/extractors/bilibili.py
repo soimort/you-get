@@ -95,7 +95,8 @@ class Bilibili(VideoExtractor):
             # set video title
             self.title = initial_state['videoData']['title']
             # refine title for a specific part, if it is a multi-part video
-            p = int(match1(self.url, r'[\?&]p=(\d+)') or '1')  # use URL to decide p-number, not initial_state['p']
+            p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or
+                    '1')  # use URL to decide p-number, not initial_state['p']
             if pn > 1:
                 part = initial_state['videoData']['pages'][p - 1]['part']
                 self.title = '%s (P%s. %s)' % (self.title, p, part)
