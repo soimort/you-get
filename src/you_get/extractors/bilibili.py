@@ -3,6 +3,8 @@
 from ..common import *
 from ..extractor import VideoExtractor
 
+import hashlib
+
 class Bilibili(VideoExtractor):
     name = "Bilibili"
 
@@ -41,6 +43,14 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_bangumi_api(avid, cid, ep_id, qn=0):
         return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=16' % (avid, cid, qn, ep_id)
+
+    @staticmethod
+    def bilibili_interface_api(cid, qn=0):
+        entropy = 'rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg'
+        appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
+        params = 'appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type=' % (appkey, cid, qn, qn)
+        chksum = hashlib.md5(bytes(params + sec, 'utf8')).hexdigest()
+        return 'http://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
@@ -93,20 +103,21 @@ class Bilibili(VideoExtractor):
             # construct playinfos
             avid = initial_state['aid']
             cid = initial_state['videoData']['pages'][p - 1]['cid']  # use p-number, not initial_state['videoData']['cid']
-
-            quality = 80  # best expectable quality
+            current_quality, best_quality = None, None
             if playinfo is not None:
-                quality = playinfo['data']['quality'] or quality  # 0 indicates an error, fallback to best
+                current_quality = playinfo['data']['quality'] or None  # 0 indicates an error, fallback to None
+                if 'accept_quality' in playinfo['data'] and playinfo['data']['accept_quality'] != []:
+                    best_quality = playinfo['data']['accept_quality'][0]
             playinfos = []
             if playinfo is not None:
                 playinfos.append(playinfo)
             if playinfo_ is not None:
                 playinfos.append(playinfo_)
-            # get lower formats from API
+            # get alternative formats from API
             for qn in [80, 64, 32, 16]:
                 # automatic format for durl: qn=0
-                # For dash, qn does not matter
-                if qn < quality:
+                # for dash, qn does not matter
+                if current_quality is None or qn < current_quality:
                     api_url = self.bilibili_api(avid, cid, qn=qn)
                     api_content = get_content(api_url, headers=self.bilibili_headers())
                     api_playinfo = json.loads(api_content)
@@ -114,6 +125,12 @@ class Bilibili(VideoExtractor):
                         playinfos.append(api_playinfo)
                     else:
                         message = api_playinfo['data']['message']
+                elif best_quality is not None and current_quality < qn <= best_quality:
+                    api_url = self.bilibili_interface_api(cid, qn=qn)
+                    api_content = get_content(api_url, headers=self.bilibili_headers())
+                    api_playinfo_data = json.loads(api_content)
+                    if api_playinfo_data.get('quality'):
+                        playinfos.append({'code': 0, 'message': '0', 'ttl': 1, 'data': api_playinfo_data})
             if not playinfos:
                 log.w(message)
                 # use bilibili error video instead
