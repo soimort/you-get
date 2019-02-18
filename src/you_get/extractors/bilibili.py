@@ -29,6 +29,17 @@ class Bilibili(VideoExtractor):
     ]
 
     @staticmethod
+    def height_to_quality(height):
+        if height <= 360:
+            return 16
+        elif height <= 480:
+            return 32
+        elif height <= 720:
+            return 64
+        else:
+            return 80
+
+    @staticmethod
     def bilibili_headers(referer=None, cookie=None):
         # a reasonable UA
         ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
@@ -53,7 +64,11 @@ class Bilibili(VideoExtractor):
         appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
         params = 'appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type=' % (appkey, cid, qn, qn)
         chksum = hashlib.md5(bytes(params + sec, 'utf8')).hexdigest()
-        return 'http://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
+        return 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
+
+    @staticmethod
+    def bilibili_vc_api(video_id):
+        return 'https://api.vc.bilibili.com/clip/v1/video/detail?video_id=%s' % video_id
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
@@ -82,6 +97,8 @@ class Bilibili(VideoExtractor):
             sort = 'bangumi'
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
             sort = 'bangumi'
+        elif re.match(r'https?://vc\.?bilibili\.com/video/(\d+)', self.url):
+            sort = 'vc'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
 
@@ -211,15 +228,7 @@ class Bilibili(VideoExtractor):
 
             # DASH formats
             for video in data['result']['dash']['video']:
-                # convert height to quality code
-                if video['height'] == 360:
-                    quality = 16
-                elif video['height'] == 480:
-                    quality = 32
-                elif video['height'] == 720:
-                    quality = 64
-                elif video['height'] == 1080:
-                    quality = 80
+                quality = self.height_to_quality(video['height'])  # convert height to quality code
                 s = self.stream_qualities[quality]
                 format_id = 'dash-' + s['id']  # prefix
                 container = 'mp4'  # enforce MP4 container
@@ -238,6 +247,28 @@ class Bilibili(VideoExtractor):
 
                 self.dash_streams[format_id] = {'container': container, 'quality': desc,
                                                 'src': [[baseurl], [audio_baseurl]], 'size': size}
+
+        # vc video
+        elif sort == 'vc':
+            video_id = match1(self.url, r'https?://vc\.?bilibili\.com/video/(\d+)')
+            api_url = self.bilibili_vc_api(video_id)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            api_playinfo = json.loads(api_content)
+
+            # set video title
+            self.title = '%s (%s)' % (api_playinfo['data']['user']['name'], api_playinfo['data']['item']['id'])
+
+            height = api_playinfo['data']['item']['height']
+            quality = self.height_to_quality(height)  # convert height to quality code
+            s = self.stream_qualities[quality]
+            format_id = s['id']
+            container = 'mp4'  # enforce MP4 container
+            desc = s['desc']
+
+            playurl = api_playinfo['data']['item']['video_playurl']
+            size = int(api_playinfo['data']['item']['video_size'])
+
+            self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': [playurl]}
 
 
         else:
