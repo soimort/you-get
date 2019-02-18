@@ -181,6 +181,7 @@ class Bilibili(VideoExtractor):
                 log.e(data['message'])
                 return
 
+            # DASH formats
             for video in data['result']['dash']['video']:
                 # convert height to quality code
                 if video['height'] == 360:
@@ -192,8 +193,8 @@ class Bilibili(VideoExtractor):
                 elif video['height'] == 1080:
                     quality = 80
                 s = self.stream_qualities[quality]
-                format_id = s['id']
-                container = s['container'].lower()
+                format_id = 'dash-' + s['id']  # prefix
+                container = 'mp4'  # enforce MP4 container
                 desc = s['desc']
                 audio_quality = s['audio_quality']
                 baseurl = video['baseUrl']
