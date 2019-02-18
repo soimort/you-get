@@ -104,8 +104,8 @@ class Bilibili(VideoExtractor):
         elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
         else:
-            log.e('[Error] Unsupported URL pattern.')
-            exit(1)
+            self.download_playlist_by_url(self.url, **kwargs)
+            return
 
         # regular av video
         if sort == 'video':
@@ -341,8 +341,14 @@ class Bilibili(VideoExtractor):
             sort = 'bangumi'
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
             sort = 'bangumi'
+        elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/media/md(\d+)', self.url) or \
+            re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)', self.url):
+            sort = 'bangumi_md'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
+        else:
+            log.e('[Error] Unsupported URL pattern.')
+            exit(1)
 
         # regular av video
         if sort == 'video':
@@ -357,10 +363,24 @@ class Bilibili(VideoExtractor):
         elif sort == 'bangumi':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
+            epn, i = len(initial_state['epList']), 0
             for ep in initial_state['epList']:
+                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
+                sys.stdout.flush()
+
+        elif sort == 'bangumi_md':
+            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+            initial_state = json.loads(initial_state_text)
+            epn, i = len(initial_state['mediaInfo']['episodes']), 0
+            for ep in initial_state['mediaInfo']['episodes']:
+                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                ep_id = ep['ep_id']
+                epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
+                self.__class__().download_by_url(epurl, **kwargs)
+                sys.stdout.flush()
 
 
 site = Bilibili()
