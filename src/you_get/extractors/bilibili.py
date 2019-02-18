@@ -19,10 +19,13 @@ class Bilibili(VideoExtractor):
          'container': 'FLV', 'video_resolution': '720p', 'desc': '高清 720P60'},
         {'id': 'flv720', 'quality': 64, 'audio_quality': 30280,
          'container': 'FLV', 'video_resolution': '720p', 'desc': '高清 720P'},
+        {'id': 'hdmp4', 'quality': 48, 'audio_quality': 30280,
+         'container': 'MP4', 'video_resolution': '720p', 'desc': '高清 720P (MP4)'},
         {'id': 'flv480', 'quality': 32, 'audio_quality': 30280,
          'container': 'FLV', 'video_resolution': '480p', 'desc': '清晰 480P'},
         {'id': 'flv360', 'quality': 16, 'audio_quality': 30216,
          'container': 'FLV', 'video_resolution': '360p', 'desc': '流畅 360P'},
+        # 'quality': 15?
     ]
 
     @staticmethod
