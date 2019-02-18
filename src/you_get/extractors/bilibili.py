@@ -70,6 +70,10 @@ class Bilibili(VideoExtractor):
     def bilibili_vc_api(video_id):
         return 'https://api.vc.bilibili.com/clip/v1/video/detail?video_id=%s' % video_id
 
+    @staticmethod
+    def bilibili_space_channel_api(mid, cid, ps=128):
+        return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=1&ps=%s&order=0&jsonp=jsonp' % (mid, cid, ps)
+
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
 
@@ -346,6 +350,8 @@ class Bilibili(VideoExtractor):
             sort = 'bangumi_md'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
+        elif re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/detail\?.*cid=(\d+)', self.url):
+            sort = 'space_channel'
         else:
             log.e('[Error] Unsupported URL pattern.')
             exit(1)
@@ -380,6 +386,19 @@ class Bilibili(VideoExtractor):
                 ep_id = ep['ep_id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
+                sys.stdout.flush()
+
+        elif sort == 'space_channel':
+            m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/detail\?.*cid=(\d+)', self.url)
+            mid, cid = m.group(1), m.group(2)
+            api_url = self.bilibili_space_channel_api(mid, cid)
+            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+            channel_info = json.loads(api_content)
+            epn, i = len(channel_info['data']['list']['archives']), 0
+            for video in channel_info['data']['list']['archives']:
+                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                url = 'https://www.bilibili.com/video/av%s' % video['aid']
+                self.__class__().download_playlist_by_url(url, **kwargs)
                 sys.stdout.flush()
 
 
