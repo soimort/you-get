@@ -67,6 +67,18 @@ class Bilibili(VideoExtractor):
         return 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
 
     @staticmethod
+    def bilibili_live_api(cid):
+        return 'https://api.live.bilibili.com/room/v1/Room/playUrl?cid=%s&quality=0&platform=web' % cid
+
+    @staticmethod
+    def bilibili_live_room_info_api(room_id):
+        return 'https://api.live.bilibili.com/room/v1/Room/get_info?room_id=%s' % room_id
+
+    @staticmethod
+    def bilibili_live_room_init_api(room_id):
+        return 'https://api.live.bilibili.com/room/v1/Room/room_init?id=%s' % room_id
+
+    @staticmethod
     def bilibili_space_channel_api(mid, cid, ps=100):
         return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=1&ps=%s&order=0&jsonp=jsonp' % (mid, cid, ps)
 
@@ -85,7 +97,10 @@ class Bilibili(VideoExtractor):
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
 
-        html_content = get_content(self.url, headers=self.bilibili_headers())
+        try:
+            html_content = get_content(self.url, headers=self.bilibili_headers())
+        except:
+            html_content = ''  # live always returns 400 (why?)
         #self.title = match1(html_content,
         #                    r'<h1 title="([^"]+)"')
 
@@ -111,7 +126,9 @@ class Bilibili(VideoExtractor):
             sort = 'bangumi'
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
             sort = 'bangumi'
-        elif re.match(r'https?://vc\.?bilibili\.com/video/(\d+)', self.url):
+        elif re.match(r'https?://live\.bilibili\.com/', self.url):
+            sort = 'live'
+        elif re.match(r'https?://vc\.bilibili\.com/video/(\d+)', self.url):
             sort = 'vc'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
@@ -316,6 +333,32 @@ class Bilibili(VideoExtractor):
             size = int(api_playinfo['data']['item']['video_size'])
 
             self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': [playurl]}
+
+        # live
+        elif sort == 'live':
+            m = re.match(r'https?://live\.bilibili\.com/(\w+)', self.url)
+            short_id = m.group(1)
+            api_url = self.bilibili_live_room_init_api(short_id)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            room_init_info = json.loads(api_content)
+
+            room_id = room_init_info['data']['room_id']
+            api_url = self.bilibili_live_room_info_api(room_id)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            room_info = json.loads(api_content)
+
+            # set video title
+            self.title = room_info['data']['title'] + '.' + str(int(time.time()))
+
+            api_url = self.bilibili_live_api(room_id)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            video_info = json.loads(api_content)
+
+            durls = video_info['data']['durl']
+            playurl = durls[0]['url']
+            container = 'flv'  # enforce FLV container
+            self.streams['flv'] = {'container': container, 'quality': 'unknown',
+                                   'size': 0, 'src': [playurl]}
 
 
         else:
