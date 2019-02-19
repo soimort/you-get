@@ -67,20 +67,20 @@ class Bilibili(VideoExtractor):
         return 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
 
     @staticmethod
-    def bilibili_vc_api(video_id):
-        return 'https://api.vc.bilibili.com/clip/v1/video/detail?video_id=%s' % video_id
-
-    @staticmethod
-    def bilibili_space_video_api(mid, ps=100):
-        return 'https://space.bilibili.com/ajax/member/getSubmitVideos?mid=%s&page=1&pagesize=%s&order=0&jsonp=jsonp' % (mid, ps)
+    def bilibili_space_channel_api(mid, cid, ps=100):
+        return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=1&ps=%s&order=0&jsonp=jsonp' % (mid, cid, ps)
 
     @staticmethod
     def bilibili_space_favlist_api(vmid, fid, ps=100):
         return 'https://api.bilibili.com/x/space/fav/arc?vmid=%s&fid=%s&pn=1&ps=%s&order=0&jsonp=jsonp' % (vmid, fid, ps)
 
     @staticmethod
-    def bilibili_space_channel_api(mid, cid, ps=100):
-        return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=1&ps=%s&order=0&jsonp=jsonp' % (mid, cid, ps)
+    def bilibili_space_video_api(mid, ps=100):
+        return 'https://space.bilibili.com/ajax/member/getSubmitVideos?mid=%s&page=1&pagesize=%s&order=0&jsonp=jsonp' % (mid, ps)
+
+    @staticmethod
+    def bilibili_vc_api(video_id):
+        return 'https://api.vc.bilibili.com/clip/v1/video/detail?video_id=%s' % video_id
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
@@ -358,12 +358,12 @@ class Bilibili(VideoExtractor):
             sort = 'bangumi_md'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
-        elif re.match(r'https?://space\.?bilibili\.com/(\d+)/video', self.url):
-            sort = 'space_video'
-        elif re.match(r'https?://space\.?bilibili\.com/(\d+)/favlist\?.*fid=(\d+)', self.url):
-            sort = 'space_favlist'
         elif re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/detail\?.*cid=(\d+)', self.url):
             sort = 'space_channel'
+        elif re.match(r'https?://space\.?bilibili\.com/(\d+)/favlist\?.*fid=(\d+)', self.url):
+            sort = 'space_favlist'
+        elif re.match(r'https?://space\.?bilibili\.com/(\d+)/video', self.url):
+            sort = 'space_video'
         else:
             log.e('[Error] Unsupported URL pattern.')
             exit(1)
@@ -400,14 +400,14 @@ class Bilibili(VideoExtractor):
                 self.__class__().download_by_url(epurl, **kwargs)
                 sys.stdout.flush()
 
-        elif sort == 'space_video':
-            m = re.match(r'https?://space\.?bilibili\.com/(\d+)/video', self.url)
-            mid = m.group(1)
-            api_url = self.bilibili_space_video_api(mid)
-            api_content = get_content(api_url, headers=self.bilibili_headers())
-            videos_info = json.loads(api_content)
-            epn, i = len(videos_info['data']['vlist']), 0
-            for video in videos_info['data']['vlist']:
+        elif sort == 'space_channel':
+            m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/detail\?.*cid=(\d+)', self.url)
+            mid, cid = m.group(1), m.group(2)
+            api_url = self.bilibili_space_channel_api(mid, cid)
+            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+            channel_info = json.loads(api_content)
+            epn, i = len(channel_info['data']['list']['archives']), 0
+            for video in channel_info['data']['list']['archives']:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
@@ -426,14 +426,14 @@ class Bilibili(VideoExtractor):
                 self.__class__().download_playlist_by_url(url, **kwargs)
                 sys.stdout.flush()
 
-        elif sort == 'space_channel':
-            m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/detail\?.*cid=(\d+)', self.url)
-            mid, cid = m.group(1), m.group(2)
-            api_url = self.bilibili_space_channel_api(mid, cid)
-            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
-            channel_info = json.loads(api_content)
-            epn, i = len(channel_info['data']['list']['archives']), 0
-            for video in channel_info['data']['list']['archives']:
+        elif sort == 'space_video':
+            m = re.match(r'https?://space\.?bilibili\.com/(\d+)/video', self.url)
+            mid = m.group(1)
+            api_url = self.bilibili_space_video_api(mid)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            videos_info = json.loads(api_content)
+            epn, i = len(videos_info['data']['vlist']), 0
+            for video in videos_info['data']['vlist']:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
