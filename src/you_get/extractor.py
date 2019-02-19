@@ -32,7 +32,7 @@ class VideoExtractor():
         self.out = False
         self.ua = None
         self.referer = None
-        self.danmuku = None
+        self.danmaku = None
 
         if args:
             self.url = args[0]
@@ -231,7 +231,7 @@ class VideoExtractor():
                           merge=kwargs['merge'],
                           av=stream_id in self.dash_streams)
             if 'caption' not in kwargs or not kwargs['caption']:
-                print('Skipping captions or danmuku.')
+                print('Skipping captions or danmaku.')
                 return
             for lang in self.caption_tracks:
                 filename = '%s.%s.srt' % (get_filename(self.title), lang)
@@ -241,11 +241,11 @@ class VideoExtractor():
                           'w', encoding='utf-8') as x:
                     x.write(srt)
                 print('Done.')
-            if self.danmuku is not None and not dry_run:
+            if self.danmaku is not None and not dry_run:
                 filename = '{}.cmt.xml'.format(get_filename(self.title))
                 print('Downloading {} ...\n'.format(filename))
                 with open(os.path.join(kwargs['output_dir'], filename), 'w', encoding='utf8') as fp:
-                    fp.write(self.danmuku)
+                    fp.write(self.danmaku)
 
             # For main_dev()
             #download_urls(urls, self.title, self.streams[stream_id]['container'], self.streams[stream_id]['size'])
