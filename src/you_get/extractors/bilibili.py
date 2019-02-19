@@ -26,6 +26,7 @@ class Bilibili(VideoExtractor):
         {'id': 'flv360', 'quality': 16, 'audio_quality': 30216,
          'container': 'FLV', 'video_resolution': '360p', 'desc': '流畅 360P'},
         # 'quality': 15?
+        {'id': 'mp4', 'quality': 0},
     ]
 
     @staticmethod
@@ -53,6 +54,14 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_api(avid, cid, qn=0):
         return 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&fnver=0&fnval=16' % (avid, cid, qn)
+
+    @staticmethod
+    def bilibili_audio_api(sid):
+        return 'https://www.bilibili.com/audio/music-service-c/web/url?sid=%s' % sid
+
+    @staticmethod
+    def bilibili_audio_info_api(sid):
+        return 'https://www.bilibili.com/audio/music-service-c/web/song/info?sid=%s' % sid
 
     @staticmethod
     def bilibili_bangumi_api(avid, cid, ep_id, qn=0):
@@ -122,7 +131,9 @@ class Bilibili(VideoExtractor):
             html_content = get_content(self.url, headers=self.bilibili_headers())
 
         # sort it out
-        if re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ep(\d+)', self.url):
+        if re.match(r'https?://(www\.)?bilibili\.com/audio/au(\d+)', self.url):
+            sort = 'audio'
+        elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ep(\d+)', self.url):
             sort = 'bangumi'
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
             sort = 'bangumi'
@@ -359,6 +370,28 @@ class Bilibili(VideoExtractor):
             container = 'flv'  # enforce FLV container
             self.streams['flv'] = {'container': container, 'quality': 'unknown',
                                    'size': 0, 'src': [playurl]}
+
+        # audio
+        elif sort == 'audio':
+            m = re.match(r'https?://(?:www\.)?bilibili\.com/audio/au(\d+)', self.url)
+            sid = m.group(1)
+            api_url = self.bilibili_audio_info_api(sid)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            song_info = json.loads(api_content)
+
+            # set audio title
+            self.title = song_info['data']['title']
+            self.lyric = song_info['data']['lyric']
+
+            api_url = self.bilibili_audio_api(sid)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            audio_info = json.loads(api_content)
+
+            playurl = audio_info['data']['cdns'][0]
+            size = audio_info['data']['size']
+            container = 'mp4'  # enforce MP4 container
+            self.streams['mp4'] = {'container': container,
+                                   'size': size, 'src': [playurl]}
 
 
         else:
