@@ -256,6 +256,9 @@ class Bilibili(VideoExtractor):
                         self.dash_streams[format_id] = {'container': container, 'quality': desc,
                                                         'src': [[baseurl], [audio_baseurl]], 'size': size}
 
+            # get danmaku
+            self.danmaku = get_content('http://comment.bilibili.com/%s.xml' % cid)
+
         # bangumi
         elif sort == 'bangumi':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
@@ -389,7 +392,9 @@ class Bilibili(VideoExtractor):
 
             # set audio title
             self.title = song_info['data']['title']
-            self.lyric = song_info['data']['lyric']
+
+            lyric = song_info['data']['lyric']
+            # TODO: download lyrics
 
             api_url = self.bilibili_audio_api(sid)
             api_content = get_content(api_url, headers=self.bilibili_headers())
