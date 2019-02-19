@@ -64,6 +64,14 @@ class Bilibili(VideoExtractor):
         return 'https://www.bilibili.com/audio/music-service-c/web/song/info?sid=%s' % sid
 
     @staticmethod
+    def bilibili_audio_menu_info_api(sid):
+        return 'https://www.bilibili.com/audio/music-service-c/web/menu/info?sid=%s' % sid
+
+    @staticmethod
+    def bilibili_audio_menu_song_api(sid, ps=100):
+        return 'https://www.bilibili.com/audio/music-service-c/web/song/of-menu?sid=%s&pn=1&ps=%s' % (sid, ps)
+
+    @staticmethod
     def bilibili_bangumi_api(avid, cid, ep_id, qn=0):
         return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=16' % (avid, cid, qn, ep_id)
 
@@ -393,11 +401,6 @@ class Bilibili(VideoExtractor):
             self.streams['mp4'] = {'container': container,
                                    'size': size, 'src': [playurl]}
 
-
-        else:
-            # NOT IMPLEMENTED
-            pass
-
     def extract(self, **kwargs):
         # set UA and referer for downloading
         headers = self.bilibili_headers(referer=self.url)
@@ -440,6 +443,8 @@ class Bilibili(VideoExtractor):
             sort = 'space_favlist'
         elif re.match(r'https?://space\.?bilibili\.com/(\d+)/video', self.url):
             sort = 'space_video'
+        elif re.match(r'https?://(www\.)?bilibili\.com/audio/am(\d+)', self.url):
+            sort = 'audio_menu'
         else:
             log.e('[Error] Unsupported URL pattern.')
             exit(1)
@@ -513,6 +518,22 @@ class Bilibili(VideoExtractor):
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
+                sys.stdout.flush()
+
+        elif sort == 'audio_menu':
+            m = re.match(r'https?://(?:www\.)?bilibili\.com/audio/am(\d+)', self.url)
+            sid = m.group(1)
+            #api_url = self.bilibili_audio_menu_info_api(sid)
+            #api_content = get_content(api_url, headers=self.bilibili_headers())
+            #menu_info = json.loads(api_content)
+            api_url = self.bilibili_audio_menu_song_api(sid)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            menusong_info = json.loads(api_content)
+            epn, i = len(menusong_info['data']['data']), 0
+            for song in menusong_info['data']['data']:
+                i += 1; log.w('Extracting %s of %s songs ...' % (i, epn))
+                url = 'https://www.bilibili.com/audio/au%s' % song['id']
+                self.__class__().download_by_url(url, **kwargs)
                 sys.stdout.flush()
 
 
