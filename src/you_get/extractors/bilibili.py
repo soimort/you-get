@@ -234,7 +234,8 @@ class Bilibili(VideoExtractor):
                     self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': src}
 
                 # DASH formats
-                if 'dash' in playinfo['data']:
+                if 'dash' in playinfo['data']:                 
+                    audio_size_cache = {}
                     for video in playinfo['data']['dash']['video']:
                         # prefer the latter codecs!
                         s = self.stream_qualities[video['id']]
@@ -251,7 +252,9 @@ class Bilibili(VideoExtractor):
                             if int(audio['id']) == audio_quality:
                                 audio_baseurl = audio['baseUrl']
                                 break
-                        size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                        if not audio_size_cache.get(audio_quality,False):
+                            audio_size_cache[audio_quality] = url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                        size += audio_size_cache[audio_quality]
 
                         self.dash_streams[format_id] = {'container': container, 'quality': desc,
                                                         'src': [[baseurl], [audio_baseurl]], 'size': size}
