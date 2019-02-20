@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from .common import match1, maybe_print, download_urls, get_filename, parse_host, set_proxy, unset_proxy, get_content, dry_run
+from .common import match1, maybe_print, download_urls, get_filename, parse_host, set_proxy, unset_proxy, get_content, dry_run, player
 from .common import print_more_compatible as print
 from .util import log
 from . import json_output
@@ -196,10 +196,13 @@ class VideoExtractor():
             else:
                 # Download stream with the best quality
                 from .processor.ffmpeg import has_ffmpeg_installed
-                if self.streams_sorted:
-                    stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
+                if has_ffmpeg_installed() and player is None and self.dash_streams or not self.streams_sorted:
+                    #stream_id = list(self.dash_streams)[-1]
+                    itags = sorted(self.dash_streams,
+                                   key=lambda i: -self.dash_streams[i]['size'])
+                    stream_id = itags[0]
                 else:
-                    stream_id = list(self.dash_streams)[-1]
+                    stream_id = self.streams_sorted[0]['id'] if 'id' in self.streams_sorted[0] else self.streams_sorted[0]['itag']
 
             if 'index' not in kwargs:
                 self.p(stream_id)
