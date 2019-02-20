@@ -337,6 +337,9 @@ class Bilibili(VideoExtractor):
                         self.dash_streams[format_id] = {'container': container, 'quality': desc,
                                                         'src': [[baseurl], [audio_baseurl]], 'size': size}
 
+            # get danmaku
+            self.danmaku = get_content('http://comment.bilibili.com/%s.xml' % cid)
+
         # vc video
         elif sort == 'vc':
             video_id = match1(self.url, r'https?://vc\.?bilibili\.com/video/(\d+)')
