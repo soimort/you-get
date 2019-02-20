@@ -916,7 +916,10 @@ def download_urls(
         return
     if dry_run:
         print_user_agent(faker=faker)
-        print('Real URLs:\n%s' % '\n'.join(urls))
+        try:
+            print('Real URLs:\n%s' % '\n'.join(urls))
+        except:
+            print('Real URLs:\n%s' % '\n'.join([j for i in urls for j in i]))
         return
 
     if player:
