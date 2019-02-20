@@ -442,7 +442,7 @@ def get_content(url, headers={}, decoded=True):
             response.getheader('Content-Type', ''), r'charset=([\w-]+)'
         )
         if charset is not None:
-            data = data.decode(charset)
+            data = data.decode(charset, 'ignore')
         else:
             data = data.decode('utf-8', 'ignore')
 
