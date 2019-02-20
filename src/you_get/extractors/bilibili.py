@@ -473,7 +473,6 @@ class Bilibili(VideoExtractor):
                 ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
-                sys.stdout.flush()
 
         elif sort == 'bangumi_md':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
@@ -484,7 +483,6 @@ class Bilibili(VideoExtractor):
                 ep_id = ep['ep_id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
-                sys.stdout.flush()
 
         elif sort == 'space_channel':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/detail\?.*cid=(\d+)', self.url)
@@ -497,7 +495,6 @@ class Bilibili(VideoExtractor):
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
-                sys.stdout.flush()
 
         elif sort == 'space_favlist':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/favlist\?.*fid=(\d+)', self.url)
@@ -510,7 +507,6 @@ class Bilibili(VideoExtractor):
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
-                sys.stdout.flush()
 
         elif sort == 'space_video':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/video', self.url)
@@ -523,7 +519,6 @@ class Bilibili(VideoExtractor):
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
-                sys.stdout.flush()
 
         elif sort == 'audio_menu':
             m = re.match(r'https?://(?:www\.)?bilibili\.com/audio/am(\d+)', self.url)
@@ -539,7 +534,6 @@ class Bilibili(VideoExtractor):
                 i += 1; log.w('Extracting %s of %s songs ...' % (i, epn))
                 url = 'https://www.bilibili.com/audio/au%s' % song['id']
                 self.__class__().download_by_url(url, **kwargs)
-                sys.stdout.flush()
 
 
 site = Bilibili()

@@ -5,6 +5,7 @@ from .common import print_more_compatible as print
 from .util import log
 from . import json_output
 import os
+import sys
 
 class Extractor():
     def __init__(self, *args):
@@ -130,6 +131,8 @@ class VideoExtractor():
         print("        url:         %s" % self.url)
         print()
 
+        sys.stdout.flush()
+
     def p(self, stream_id=None):
         maybe_print("site:                %s" % self.__class__.name)
         maybe_print("title:               %s" % self.title)
@@ -164,6 +167,8 @@ class VideoExtractor():
             for i in self.audiolang:
                 print("    - lang:          {}".format(i['lang']))
                 print("      download-url:  {}\n".format(i['url']))
+
+        sys.stdout.flush()
 
     def p_playlist(self, stream_id=None):
         maybe_print("site:                %s" % self.__class__.name)
