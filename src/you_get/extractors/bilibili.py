@@ -229,8 +229,8 @@ class Bilibili(VideoExtractor):
             playinfo_text = match1(self.page, r'__playinfo__=(.*?)<')
             playinfo = json.loads(playinfo_text)
             url0 = playinfo['data']['durl'][0]['url']
-            _, _, size = url_info(url0, headers={'referer': self.url, 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'})
-            self.streams['flv'] = {'url': url0, 'container': 'mp4', 'size': size, 'src': [url0]}
+            _, ext, size = url_info(url0, headers={'referer': self.url, 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'})
+            self.streams['flv'] = {'url': url0, 'container': ext, 'size': size, 'src': [url0]}
         else:
             # flashvars?
             flashvars = re.search(r'flashvars="([^"]+)"', self.page).group(1)
