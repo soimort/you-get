@@ -67,6 +67,7 @@ from .sohu import *
 from .soundcloud import *
 from .suntv import *
 from .theplatform import *
+from .tiktok import *
 from .tucao import *
 from .tudou import *
 from .tumblr import *
@@ -88,3 +89,5 @@ from .ted import *
 from .khan import *
 from .zhanqi import *
 from .kuaishou import *
+from .zhibo import *
+from .zhihu import *

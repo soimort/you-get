@@ -17,20 +17,20 @@ headers = {
 
 def iwara_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     global headers
-    video_hash=match1(url, r'http://\w+.iwara.tv/videos/(\w+)')
-    video_url=match1(url, r'(http://\w+.iwara.tv)/videos/\w+')
-    html = get_content(url,headers=headers)
+    video_hash = match1(url, r'https?://\w+.iwara.tv/videos/(\w+)')
+    video_url = match1(url, r'(https?://\w+.iwara.tv)/videos/\w+')
+    html = get_content(url, headers=headers)
     title = r1(r'<title>(.*)</title>', html)
-    api_url=video_url+'/api/video/'+video_hash
-    content=get_content(api_url,headers=headers)
-    data=json.loads(content)
-    type,ext,size=url_info(data[0]['uri'], headers=headers)
-    down_urls=data[0]['uri']
-    print_info(down_urls,title+data[0]['resolution'],type,size)
+    api_url = video_url + '/api/video/' + video_hash
+    content = get_content(api_url, headers=headers)
+    data = json.loads(content)
+    down_urls = 'https:' + data[0]['uri']
+    type, ext, size = url_info(down_urls, headers=headers)
+    print_info(site_info, title+data[0]['resolution'], type, size)
 
     if not info_only:
-        download_urls([down_urls], title, ext, size, output_dir, merge = merge,headers=headers)
+        download_urls([down_urls], title, ext, size, output_dir, merge=merge, headers=headers)
 
-site_info = "iwara"
+site_info = "Iwara"
 download = iwara_download
 download_playlist = playlist_not_supported('iwara')

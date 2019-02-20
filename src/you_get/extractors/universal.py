@@ -67,12 +67,12 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
         urls = []
         for i in media_exts:
-            urls += re.findall(r'(https?://[^;"\'\\]+' + i + r'[^;"\'\\]*)', page)
+            urls += re.findall(r'(https?://[^ ;&"\'\\]+' + i + r'[^ ;&"\'\\]*)', page)
 
-            p_urls = re.findall(r'(https?%3A%2F%2F[^;&]+' + i + r'[^;&]*)', page)
+            p_urls = re.findall(r'(https?%3A%2F%2F[^;&"]+' + i + r'[^;&"]*)', page)
             urls += [parse.unquote(url) for url in p_urls]
 
-            q_urls = re.findall(r'(https?:\\\\/\\\\/[^;"\']+' + i + r'[^;"\']*)', page)
+            q_urls = re.findall(r'(https?:\\\\/\\\\/[^ ;"\']+' + i + r'[^ ;"\']*)', page)
             urls += [url.replace('\\\\/', '/') for url in q_urls]
 
         # a link href to an image is often an interesting one
@@ -106,26 +106,39 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                 title = '%s' % i
                 i += 1
 
+            if r1(r'(https://pinterest.com/pin/)', url):
+                continue
+
             candies.append({'url': url,
                             'title': title})
 
         for candy in candies:
             try:
-                mime, ext, size = url_info(candy['url'], faker=True)
-                if not size: size = float('Int')
+                try:
+                    mime, ext, size = url_info(candy['url'], faker=False)
+                    assert size
+                except:
+                    mime, ext, size = url_info(candy['url'], faker=True)
+                    if not size: size = float('Inf')
             except:
                 continue
             else:
                 print_info(site_info, candy['title'], ext, size)
                 if not info_only:
-                    download_urls([candy['url']], candy['title'], ext, size,
-                                  output_dir=output_dir, merge=merge,
-                                  faker=True)
+                    try:
+                        download_urls([candy['url']], candy['title'], ext, size,
+                                      output_dir=output_dir, merge=merge,
+                                      faker=False)
+                    except:
+                        download_urls([candy['url']], candy['title'], ext, size,
+                                      output_dir=output_dir, merge=merge,
+                                      faker=True)
         return
 
     else:
         # direct download
-        filename = parse.unquote(url.split('/')[-1]) or parse.unquote(url.split('/')[-2])
+        url_trunk = url.split('?')[0]  # strip query string
+        filename = parse.unquote(url_trunk.split('/')[-1]) or parse.unquote(url_trunk.split('/')[-2])
         title = '.'.join(filename.split('.')[:-1]) or filename
         _, ext, size = url_info(url, faker=True)
         print_info(site_info, title, ext, size)
