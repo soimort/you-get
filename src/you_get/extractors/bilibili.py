@@ -96,16 +96,16 @@ class Bilibili(VideoExtractor):
         return 'https://api.live.bilibili.com/room/v1/Room/room_init?id=%s' % room_id
 
     @staticmethod
-    def bilibili_space_channel_api(mid, cid, ps=100):
-        return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=1&ps=%s&order=0&jsonp=jsonp' % (mid, cid, ps)
+    def bilibili_space_channel_api(mid, cid, pn=1, ps=100):
+        return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (mid, cid, pn, ps)
 
     @staticmethod
-    def bilibili_space_favlist_api(vmid, fid, ps=100):
-        return 'https://api.bilibili.com/x/space/fav/arc?vmid=%s&fid=%s&pn=1&ps=%s&order=0&jsonp=jsonp' % (vmid, fid, ps)
+    def bilibili_space_favlist_api(vmid, fid, pn=1, ps=100):
+        return 'https://api.bilibili.com/x/space/fav/arc?vmid=%s&fid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (vmid, fid, pn, ps)
 
     @staticmethod
-    def bilibili_space_video_api(mid, ps=100):
-        return 'https://space.bilibili.com/ajax/member/getSubmitVideos?mid=%s&page=1&pagesize=%s&order=0&jsonp=jsonp' % (mid, ps)
+    def bilibili_space_video_api(mid, pn=1, ps=100):
+        return 'https://space.bilibili.com/ajax/member/getSubmitVideos?mid=%s&page=%s&pagesize=%s&order=0&jsonp=jsonp' % (mid, pn, ps)
 
     @staticmethod
     def bilibili_vc_api(video_id):
@@ -496,6 +496,8 @@ class Bilibili(VideoExtractor):
             api_url = self.bilibili_space_channel_api(mid, cid)
             api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
             channel_info = json.loads(api_content)
+            # TBD: channel of more than 100 videos
+
             epn, i = len(channel_info['data']['list']['archives']), 0
             for video in channel_info['data']['list']['archives']:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
@@ -508,11 +510,18 @@ class Bilibili(VideoExtractor):
             api_url = self.bilibili_space_favlist_api(vmid, fid)
             api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
             favlist_info = json.loads(api_content)
-            epn, i = len(favlist_info['data']['archives']), 0
-            for video in favlist_info['data']['archives']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
-                url = 'https://www.bilibili.com/video/av%s' % video['aid']
-                self.__class__().download_playlist_by_url(url, **kwargs)
+            pc = favlist_info['data']['pagecount']
+
+            for pn in range(1, pc + 1):
+                api_url = self.bilibili_space_favlist_api(vmid, fid, pn=pn)
+                api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+                favlist_info = json.loads(api_content)
+
+                epn, i = len(favlist_info['data']['archives']), 0
+                for video in favlist_info['data']['archives']:
+                    i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                    url = 'https://www.bilibili.com/video/av%s' % video['aid']
+                    self.__class__().download_playlist_by_url(url, **kwargs)
 
         elif sort == 'space_video':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/video', self.url)
@@ -520,11 +529,18 @@ class Bilibili(VideoExtractor):
             api_url = self.bilibili_space_video_api(mid)
             api_content = get_content(api_url, headers=self.bilibili_headers())
             videos_info = json.loads(api_content)
-            epn, i = len(videos_info['data']['vlist']), 0
-            for video in videos_info['data']['vlist']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
-                url = 'https://www.bilibili.com/video/av%s' % video['aid']
-                self.__class__().download_playlist_by_url(url, **kwargs)
+            pc = videos_info['data']['pages']
+
+            for pn in range(1, pc + 1):
+                api_url = self.bilibili_space_video_api(mid, pn=pn)
+                api_content = get_content(api_url, headers=self.bilibili_headers())
+                videos_info = json.loads(api_content)
+
+                epn, i = len(videos_info['data']['vlist']), 0
+                for video in videos_info['data']['vlist']:
+                    i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                    url = 'https://www.bilibili.com/video/av%s' % video['aid']
+                    self.__class__().download_playlist_by_url(url, **kwargs)
 
         elif sort == 'audio_menu':
             m = re.match(r'https?://(?:www\.)?bilibili\.com/audio/am(\d+)', self.url)
