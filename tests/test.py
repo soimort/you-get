@@ -7,11 +7,9 @@ from you_get.extractors import (
 )
 
 
-class YouGetTests(unittest.TestCase):	
-    def test_bilibili(self):
-
-        bilibili.download('https://space.bilibili.com/19111402/video', info_only=True)
-        youtube.download('https://space.bilibili.com/19111402/video', info_only=True)
+class YouGetTests(unittest.TestCase):
+        def test_bilibili(self):
+            bilibili.download('https://space.bilibili.com/19111402/video', info_only=True)
 
 if __name__ == '__main__':
     unittest.main()
