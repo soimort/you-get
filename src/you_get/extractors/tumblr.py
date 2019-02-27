@@ -49,7 +49,9 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
         tuggles = {}
         for url in urls:
-            hd_url = r1(r'(.+)_\d+\.jpg$', url) + '_1280.jpg'  # FIXME: decide actual quality
+            hd_url = r1(r'(.+)_\d+\.jpg$', url)  # FIXME: .png and .gif
+            if hd_url is None: continue
+            hd_url = hd_url + '_1280.jpg'  # FIXME: decide actual quality
             filename = parse.unquote(hd_url.split('/')[-1])
             title = '.'.join(filename.split('.')[:-1])
             tumblr_id = r1(r'^tumblr_(.+)_\d+$', title)
