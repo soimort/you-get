@@ -217,8 +217,7 @@ class YouTube(VideoExtractor):
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+});ytplayer', video_page).group(1))
                 except:
                     msg = re.search('class="message">([^<]+)<', video_page).group(1)
-                    log.wtf('[Failed] "%s"' % msg.strip(), exit_code=None)
-                    raise
+                    log.wtf('[Failed] Got message "%s". Try to login with --cookies.' % msg.strip())
 
                 if 'title' in ytplayer_config['args']:
                     # 150 Restricted from playback on certain sites
