@@ -1276,9 +1276,8 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
 
 
 def load_cookies(cookiefile):
-    from http.cookiejar import Cookie
     global cookies
-    try:
+    if cookiefile.endswith('.txt'):
         # MozillaCookieJar treats prefix '#HttpOnly_' as comments incorrectly!
         # do not use its load()
         # see also:
@@ -1287,6 +1286,7 @@ def load_cookies(cookiefile):
         #   - https://curl.haxx.se/libcurl/c/CURLOPT_COOKIELIST.html#EXAMPLE
         #cookies = cookiejar.MozillaCookieJar(cookiefile)
         #cookies.load()
+        from http.cookiejar import Cookie
         cookies = cookiejar.MozillaCookieJar()
         now = time.time()
         ignore_discard, ignore_expires = False, False
@@ -1338,24 +1338,28 @@ def load_cookies(cookiefile):
                     continue
                 cookies.set_cookie(c)
 
-    except Exception:
-        import sqlite3
+    elif cookiefile.endswith(('.sqlite', '.sqlite3')):
+        import sqlite3, shutil, tempfile
+        temp_dir = tempfile.gettempdir()
+        temp_cookiefile = os.path.join(temp_dir, 'temp_cookiefile.sqlite')
+        shutil.copy2(cookiefile, temp_cookiefile)
+
         cookies = cookiejar.MozillaCookieJar()
-        con = sqlite3.connect(cookiefile)
+        con = sqlite3.connect(temp_cookiefile)
         cur = con.cursor()
-        try:
-            cur.execute("""SELECT host, path, isSecure, expiry, name, value
-                        FROM moz_cookies""")
-            for item in cur.fetchall():
-                c = cookiejar.Cookie(
-                    0, item[4], item[5], None, False, item[0],
-                    item[0].startswith('.'), item[0].startswith('.'),
-                    item[1], False, item[2], item[3], item[3] == '', None,
-                    None, {},
-                )
-                cookies.set_cookie(c)
-        except Exception:
-            pass
+        cur.execute("""SELECT host, path, isSecure, expiry, name, value
+        FROM moz_cookies""")
+        for item in cur.fetchall():
+            c = cookiejar.Cookie(
+                0, item[4], item[5], None, False, item[0],
+                item[0].startswith('.'), item[0].startswith('.'),
+                item[1], False, item[2], item[3], item[3] == '', None,
+                None, {},
+            )
+            cookies.set_cookie(c)
+
+    else:
+        log.e('[error] unsupported cookies format')
         # TODO: Chromium Cookies
         # SELECT host_key, path, secure, expires_utc, name, encrypted_value
         # FROM cookies
