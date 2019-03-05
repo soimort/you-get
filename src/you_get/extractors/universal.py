@@ -80,6 +80,9 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         urls += re.findall(r'href="(https?://[^"]+\.png)"', page, re.I)
         urls += re.findall(r'href="(https?://[^"]+\.gif)"', page, re.I)
 
+        # <img> with high widths
+        urls += re.findall(r'<img src="([^"]*)"[^>]*width="\d\d\d+"', page, re.I)
+
         # relative path
         rel_urls = []
         rel_urls += re.findall(r'href="(\.[^"]+\.jpe?g)"', page, re.I)
@@ -101,7 +104,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         for url in set(urls):
             filename = parse.unquote(url.split('/')[-1])
             if 5 <= len(filename) <= 80:
-                title = '.'.join(filename.split('.')[:-1])
+                title = '.'.join(filename.split('.')[:-1]) or filename
             else:
                 title = '%s' % i
                 i += 1
