@@ -190,7 +190,7 @@ class PPTV(VideoExtractor):
 
     def prepare(self, **kwargs):
         if self.url and not self.vid:
-            if not re.match(r'http://v.pptv.com/show/(\w+)\.html', self.url):
+            if not re.match(r'https?://v.pptv.com/show/(\w+)\.html', self.url):
                 raise('Unknown url pattern')
             page_content = get_content(self.url,{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"})
             self.vid = match1(page_content, r'webcfg\s*=\s*{"id":\s*(\d+)')
