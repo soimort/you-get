@@ -437,7 +437,7 @@ class YouTube(VideoExtractor):
                             dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
                             dash_mp4_a_urls = self.__class__.chunk_by_range(dash_mp4_a_url, int(dash_mp4_a_size))
                             self.dash_streams[itag] = {
-                                'quality': stream['size'],
+                                'quality': '%s (%s)' % (stream['size'], stream['quality_label']),
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
@@ -464,7 +464,7 @@ class YouTube(VideoExtractor):
                             dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
                             audio_urls = self.__class__.chunk_by_range(audio_url, int(audio_size))
                             self.dash_streams[itag] = {
-                                'quality': stream['size'],
+                                'quality': '%s (%s)' % (stream['size'], stream['quality_label']),
                                 'itag': itag,
                                 'type': mimeType,
                                 'mime': mimeType,
