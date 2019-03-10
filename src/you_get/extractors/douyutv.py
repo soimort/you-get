@@ -30,7 +30,7 @@ def douyutv_video_download(url, output_dir='.', merge=True, info_only=False, **k
     else:
         title = hit.group(1)
 
-    meta = json.loads(get_content(ep + vid))
+    meta = json.loads(get_content(ep + vid, headers=headers))
     if meta['error'] != 0:
         log.wtf('Error from API server')
     m3u8_url = meta['data']['video_url']
