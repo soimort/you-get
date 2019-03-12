@@ -10,6 +10,7 @@ import socket
 import locale
 import logging
 import argparse
+import ssl
 from http import cookiejar
 from importlib import import_module
 from urllib import request, parse, error
@@ -137,6 +138,7 @@ extractor_proxy = None
 cookies = None
 output_filename = None
 auto_rename = False
+in_secure = False
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -385,7 +387,13 @@ def urlopen_with_retry(*args, **kwargs):
     retry_time = 3
     for i in range(retry_time):
         try:
-            return request.urlopen(*args, **kwargs)
+            if in_secure:
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+                return request.urlopen(*args, **kwargs, context=ctx)
+            else:
+                return request.urlopen(*args, **kwargs)
         except socket.timeout as e:
             logging.debug('request attempt %s timeout' % str(i + 1))
             if i + 1 == retry_time:
@@ -1397,6 +1405,11 @@ def script_main(download, download_playlist, **kwargs):
         help='Auto rename same name different files'
     )
 
+    download_grp.add_argument(
+        '-k', '--in-secure', action='store_true', default=False,
+        help='ignore ssl errors'
+    )
+
     proxy_grp = parser.add_argument_group('Proxy options')
     proxy_grp = proxy_grp.add_mutually_exclusive_group()
     proxy_grp.add_argument(
@@ -1441,7 +1454,7 @@ def script_main(download, download_playlist, **kwargs):
     global extractor_proxy
     global output_filename
     global auto_rename
-
+    global in_secure
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
@@ -1468,6 +1481,11 @@ def script_main(download, download_playlist, **kwargs):
     if args.player:
         player = args.player
         caption = False
+
+    if args.in_secure:
+        # ignore ssl
+        in_secure = True
+
 
     if args.no_proxy:
         set_http_proxy('')
