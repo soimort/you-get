@@ -391,7 +391,7 @@ def urlopen_with_retry(*args, **kwargs):
                 ctx = ssl.create_default_context()
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
-                return request.urlopen(*args, **kwargs, context=ctx)
+                return request.urlopen(*args, context=ctx, **kwargs)
             else:
                 return request.urlopen(*args, **kwargs)
         except socket.timeout as e:
