@@ -123,7 +123,8 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
     elif re.match('http://tieba.baidu.com/', url):
         try:
             # embedded videos
-            embed_download(url, output_dir, merge=merge, info_only=info_only)
+            print(kwargs)
+            embed_download(url, output_dir, merge=merge, info_only=info_only, **kwargs)
         except:
             # images
             html = get_html(url)
