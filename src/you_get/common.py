@@ -138,7 +138,7 @@ extractor_proxy = None
 cookies = None
 output_filename = None
 auto_rename = False
-in_secure = False
+insecure = False
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -387,7 +387,8 @@ def urlopen_with_retry(*args, **kwargs):
     retry_time = 3
     for i in range(retry_time):
         try:
-            if in_secure:
+            if insecure:
+                # ignore ssl errors
                 ctx = ssl.create_default_context()
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
@@ -1406,7 +1407,7 @@ def script_main(download, download_playlist, **kwargs):
     )
 
     download_grp.add_argument(
-        '-k', '--in-secure', action='store_true', default=False,
+        '-k', '--insecure', action='store_true', default=False,
         help='ignore ssl errors'
     )
 
@@ -1454,7 +1455,7 @@ def script_main(download, download_playlist, **kwargs):
     global extractor_proxy
     global output_filename
     global auto_rename
-    global in_secure
+    global insecure
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
@@ -1482,9 +1483,9 @@ def script_main(download, download_playlist, **kwargs):
         player = args.player
         caption = False
 
-    if args.in_secure:
+    if args.insecure:
         # ignore ssl
-        in_secure = True
+        insecure = True
 
 
     if args.no_proxy:
