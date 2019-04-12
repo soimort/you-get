@@ -17,29 +17,29 @@ VERSION = imp.load_source('version', os.path.join(here, 'src/%s/version.py' % PA
 
 from setuptools import setup, find_packages
 setup(
-    name = proj_info['name'],
-    version = VERSION,
+    name=proj_info['name'],
+    version=VERSION,
 
-    author = proj_info['author'],
-    author_email = proj_info['author_email'],
-    url = proj_info['url'],
-    license = proj_info['license'],
+    author=proj_info['author'],
+    author_email=proj_info['author_email'],
+    url=proj_info['url'],
+    license=proj_info['license'],
 
-    description = proj_info['description'],
-    keywords = proj_info['keywords'],
+    description=proj_info['description'],
+    keywords=proj_info['keywords'],
 
-    long_description = README,
+    long_description=README,
 
-    packages = find_packages('src'),
-    package_dir = {'' : 'src'},
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
 
-    test_suite = 'tests',
+    test_suite='tests',
 
-    platforms = 'any',
-    zip_safe = True,
-    include_package_data = True,
+    platforms='any',
+    zip_safe=True,
+    include_package_data=True,
 
-    classifiers = proj_info['classifiers'],
+    classifiers=proj_info['classifiers'],
 
-    entry_points = {'console_scripts': proj_info['console_scripts']}
+    entry_points={'console_scripts': proj_info['console_scripts']}
 )

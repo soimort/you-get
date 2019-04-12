@@ -1,12 +1,22 @@
 #!/usr/bin/env python
 
+import re
+
 from ..common import *
 from ..extractor import VideoExtractor
 
 from xml.dom.minidom import parseString
 
+
 class YouTube(VideoExtractor):
     name = "YouTube"
+
+    USER_PLAYLIST_PATTERN = re.compile(r'http.*?/user/.*?/playlists')
+    SUB_PLAYLIST_PATTERN = re.compile(r'<li class="channels-content-item yt-shelf-grid-item">'
+                                      r'[\s\S]+?'
+                                      r'<b>(\d+)</b>'
+                                      r'[\s\S]+?'
+                                      r'href="(/playlist\?list=[a-zA-Z0-9\-_]+)"')
 
     # Non-DASH YouTube media encoding options, in descending quality order.
     # http://en.wikipedia.org/wiki/YouTube#Quality_and_codecs. Retrieved July 17, 2014.
@@ -68,6 +78,11 @@ class YouTube(VideoExtractor):
          'audio_encoding': 'AAC', 'audio_bitrate': '24'},
     ]
 
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.playlist_id_num = {}
+
+    @staticmethod
     def decipher(js, s):
         # Examples:
         # - https://www.youtube.com/yts/jsbin/player-da_DK-vflWlK-zq/base.js
@@ -119,6 +134,7 @@ class YouTube(VideoExtractor):
         exec(code, globals(), locals())
         return locals()['sig']
 
+    @staticmethod
     def chunk_by_range(url, size):
         urls = []
         chunk_size = 10485760
@@ -129,9 +145,11 @@ class YouTube(VideoExtractor):
             urls.append('%s&range=%s-%s' % (url, start, end))
         return urls
 
+    @staticmethod
     def get_url_from_vid(vid):
         return 'https://youtu.be/{}'.format(vid)
 
+    @staticmethod
     def get_vid_from_url(url):
         """Extracts video ID from URL.
         """
@@ -142,48 +160,69 @@ class YouTube(VideoExtractor):
           parse_query_param(url, 'v') or \
           parse_query_param(parse_query_param(url, 'u'), 'v')
 
-    def get_playlist_id_from_url(url):
-        """Extracts playlist ID from URL.
-        """
-        return parse_query_param(url, 'list') or \
-          parse_query_param(url, 'p')
+    def get_sub_playlist_info_from_user_playlist_page(self):
+        user_playlist_page_content = get_content(self.url)
+        return re.findall(self.__class__.SUB_PLAYLIST_PATTERN, user_playlist_page_content)
 
+    def parse_playlist_id(self):
+        """Extracts playlist ID list
+        SIDE EFFECT: update self.playlist_id_num
+        """
+        playlist_id_list = []
+        if re.match(self.__class__.USER_PLAYLIST_PATTERN, self.url):
+            sub_playlist_info = self.get_sub_playlist_info_from_user_playlist_page()
+        else:
+            sub_playlist_info = (('Unknown', self.url),)
+
+        for num, sub_playlist_url in sub_playlist_info:
+            sub_playlist_id = parse_query_param(sub_playlist_url, 'list') or parse_query_param(sub_playlist_url, 'p')  # noqa
+            self.playlist_id_num[sub_playlist_id] = num
+            playlist_id_list.append(sub_playlist_id)
+        return playlist_id_list
+
+    # noinspection PyBroadException
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
 
-        playlist_id = self.__class__.get_playlist_id_from_url(self.url)
-        if playlist_id is None:
+        playlist_id_list = self.parse_playlist_id()
+        if not playlist_id_list:
             log.wtf('[Failed] Unsupported URL pattern.')
 
-        video_page = get_content('https://www.youtube.com/playlist?list=%s' % playlist_id)
-        from html.parser import HTMLParser
-        videos = sorted([HTMLParser().unescape(video)
-                         for video in re.findall(r'<a href="(/watch\?[^"]+)"', video_page)
-                         if parse_query_param(video, 'index')],
-                        key=lambda video: parse_query_param(video, 'index'))
-
-        # Parse browse_ajax page for more videos to load
-        load_more_href = match1(video_page, r'data-uix-load-more-href="([^"]+)"')
-        while load_more_href:
-            browse_ajax = get_content('https://www.youtube.com/%s' % load_more_href)
-            browse_data = json.loads(browse_ajax)
-            load_more_widget_html = browse_data['load_more_widget_html']
-            content_html = browse_data['content_html']
-            vs = set(re.findall(r'href="(/watch\?[^"]+)"', content_html))
-            videos += sorted([HTMLParser().unescape(video)
-                              for video in list(vs)
-                              if parse_query_param(video, 'index')])
-            load_more_href = match1(load_more_widget_html, r'data-uix-load-more-href="([^"]+)"')
-
-        self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
-        self.p_playlist()
-        for video in videos:
-            vid = parse_query_param(video, 'v')
-            index = parse_query_param(video, 'index')
+        for idx, playlist_id in enumerate(playlist_id_list):
+            print(f'Sub-play list: {idx}/{len(playlist_id_list)}, number: {self.playlist_id_num[playlist_id]}')
             try:
-                self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
-            except:
-                pass
+                video_page = get_content('https://www.youtube.com/playlist?list=%s' % playlist_id)
+                from html.parser import HTMLParser
+                videos = sorted([HTMLParser().unescape(video)
+                                 for video in re.findall(r'<a href="(/watch\?[^"]+)"', video_page)
+                                 if parse_query_param(video, 'index')],
+                                key=lambda video: parse_query_param(video, 'index'))
+
+                # Parse browse_ajax page for more videos to load
+                load_more_href = match1(video_page, r'data-uix-load-more-href="([^"]+)"')
+                while load_more_href:
+                    browse_ajax = get_content('https://www.youtube.com/%s' % load_more_href)
+                    browse_data = json.loads(browse_ajax)
+                    load_more_widget_html = browse_data['load_more_widget_html']
+                    content_html = browse_data['content_html']
+                    vs = set(re.findall(r'href="(/watch\?[^"]+)"', content_html))
+                    videos += sorted([HTMLParser().unescape(video)
+                                      for video in list(vs)
+                                      if parse_query_param(video, 'index')])
+                    load_more_href = match1(load_more_widget_html, r'data-uix-load-more-href="([^"]+)"')
+
+                self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
+                self.p_playlist()
+            except Exception:
+                continue
+
+            for video in videos:
+                vid = parse_query_param(video, 'v')
+                index = parse_query_param(video, 'index')
+                try:
+                    self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
+                except Exception:
+                    pass
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
@@ -249,7 +288,8 @@ class YouTube(VideoExtractor):
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+});ytplayer', video_page).group(1))
                 except:
                     msg = re.search('class="message">([^<]+)<', video_page).group(1)
-                    log.wtf('[Failed] Got message "%s". Try to login with --cookies.' % msg.strip())
+                    log.print_err('[Failed] Got message "%s". Try to login with --cookies.' % msg.strip())
+                    raise Exception()
 
                 if 'title' in ytplayer_config['args']:
                     # 150 Restricted from playback on certain sites
@@ -503,6 +543,7 @@ class YouTube(VideoExtractor):
 
             self.streams[stream_id]['src'] = [src]
             self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'])
+
 
 site = YouTube()
 download = site.download_by_url
