@@ -121,7 +121,7 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     # bangumi
     elif re.match("http://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
         html = get_content(url)
-        title = match1(html, r'"newTitle"\s*:\s*"([^"]+)"')
+        title = match1(html, r'"title"\s*:\s*"([^"]+)"')
         if match1(url, r'_(\d+)$'):  # current P
             title = title + " " + r1(r'active">([^<]*)', html)
         vid = match1(html, r'videoId="(\d+)"')
