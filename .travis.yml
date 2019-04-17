@@ -6,15 +6,20 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7-dev"
-  - "nightly"
   - "pypy3"
+matrix:
+  include:
+    - python: "3.7"
+      dist: xenial
+    - python: "3.8-dev"
+      dist: xenial    
+    - python: "nightly"
+      dist: xenial    
 before_install:
   - if [[ $TRAVIS_PYTHON_VERSION != '3.2'* && $TRAVIS_PYTHON_VERSION != '3.3'* ]]; then pip install flake8; fi
 before_script:
-  - if [[ $TRAVIS_PYTHON_VERSION != '3.2'* && $TRAVIS_PYTHON_VERSION != '3.3'* ]]; then flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2'* && $TRAVIS_PYTHON_VERSION != '3.3'* ]]; then flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics; fi
 script: make test
-sudo: false
 notifications:
   webhooks:
     urls:
