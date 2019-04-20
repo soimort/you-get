@@ -195,7 +195,11 @@ class YouTube(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
-        video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}'.format(self.vid)))
+        # Get video info
+        # 'eurl' is a magic parameter that can bypass age restriction
+        # full form: 'eurl=https%3A%2F%2Fyoutube.googleapis.com%2Fv%2F{VIDEO_ID}'
+        video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}&eurl=https%3A%2F%2Fy'.format(self.vid)))
+        logging.debug('STATUS: %s' % video_info['status'][0])
 
         ytplayer_config = None
         if 'status' not in video_info:
@@ -214,7 +218,10 @@ class YouTube(VideoExtractor):
                     stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                 except:
                     stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
-                    self.html5player = None
+                    if re.search('([^"]*/base\.js)"', video_page):
+                        self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
+                    else:
+                        self.html5player = None
 
             else:
                 # Parse video page instead
@@ -226,7 +233,9 @@ class YouTube(VideoExtractor):
                 stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
 
         elif video_info['status'] == ['fail']:
+            logging.debug('ERRORCODE: %s' % video_info['errorcode'][0])
             if video_info['errorcode'] == ['150']:
+                # FIXME: still relevant?
                 if cookies:
                     # Load necessary cookies into headers (for age-restricted videos)
                     consent, ssid, hsid, sid = 'YES', '', '', ''
@@ -404,74 +413,82 @@ class YouTube(VideoExtractor):
             # VEVO
             if not self.html5player: return
             self.js = get_content(self.html5player)
-            if 'adaptive_fmts' in ytplayer_config['args']:
+
+            try:
+                # Video info from video page (not always available)
                 streams = [dict([(i.split('=')[0],
                                   parse.unquote(i.split('=')[1]))
                                  for i in afmt.split('&')])
-                           for afmt in ytplayer_config['args']['adaptive_fmts'].split(',')]
-                for stream in streams: # get over speed limiting
-                    stream['url'] += '&ratebypass=yes'
-                for stream in streams: # audio
-                    if stream['type'].startswith('audio/mp4'):
-                        dash_mp4_a_url = stream['url']
+                           for afmt in ytplayer_config['args']['adaptive_fmts'][0].split(',')]
+            except:
+                streams = [dict([(i.split('=')[0],
+                                  parse.unquote(i.split('=')[1]))
+                                 for i in afmt.split('&')])
+                           for afmt in video_info['adaptive_fmts'][0].split(',')]
+
+            for stream in streams: # get over speed limiting
+                stream['url'] += '&ratebypass=yes'
+            for stream in streams: # audio
+                if stream['type'].startswith('audio/mp4'):
+                    dash_mp4_a_url = stream['url']
+                    if 's' in stream:
+                        sig = self.__class__.decipher(self.js, stream['s'])
+                        dash_mp4_a_url += '&signature={}'.format(sig)
+                    dash_mp4_a_size = stream['clen']
+                elif stream['type'].startswith('audio/webm'):
+                    dash_webm_a_url = stream['url']
+                    if 's' in stream:
+                        sig = self.__class__.decipher(self.js, stream['s'])
+                        dash_webm_a_url += '&signature={}'.format(sig)
+                    dash_webm_a_size = stream['clen']
+            for stream in streams: # video
+                if 'size' in stream:
+                    if stream['type'].startswith('video/mp4'):
+                        mimeType = 'video/mp4'
+                        dash_url = stream['url']
                         if 's' in stream:
                             sig = self.__class__.decipher(self.js, stream['s'])
-                            dash_mp4_a_url += '&signature={}'.format(sig)
-                        dash_mp4_a_size = stream['clen']
-                    elif stream['type'].startswith('audio/webm'):
-                        dash_webm_a_url = stream['url']
+                            dash_url += '&signature={}'.format(sig)
+                        dash_size = stream['clen']
+                        itag = stream['itag']
+                        dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                        dash_mp4_a_urls = self.__class__.chunk_by_range(dash_mp4_a_url, int(dash_mp4_a_size))
+                        self.dash_streams[itag] = {
+                            'quality': '%s (%s)' % (stream['size'], stream['quality_label']),
+                            'itag': itag,
+                            'type': mimeType,
+                            'mime': mimeType,
+                            'container': 'mp4',
+                            'src': [dash_urls, dash_mp4_a_urls],
+                            'size': int(dash_size) + int(dash_mp4_a_size)
+                        }
+                    elif stream['type'].startswith('video/webm'):
+                        mimeType = 'video/webm'
+                        dash_url = stream['url']
                         if 's' in stream:
                             sig = self.__class__.decipher(self.js, stream['s'])
-                            dash_webm_a_url += '&signature={}'.format(sig)
-                        dash_webm_a_size = stream['clen']
-                for stream in streams: # video
-                    if 'size' in stream:
-                        if stream['type'].startswith('video/mp4'):
-                            mimeType = 'video/mp4'
-                            dash_url = stream['url']
-                            if 's' in stream:
-                                sig = self.__class__.decipher(self.js, stream['s'])
-                                dash_url += '&signature={}'.format(sig)
-                            dash_size = stream['clen']
-                            itag = stream['itag']
-                            dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
-                            dash_mp4_a_urls = self.__class__.chunk_by_range(dash_mp4_a_url, int(dash_mp4_a_size))
-                            self.dash_streams[itag] = {
-                                'quality': '%s (%s)' % (stream['size'], stream['quality_label']),
-                                'itag': itag,
-                                'type': mimeType,
-                                'mime': mimeType,
-                                'container': 'mp4',
-                                'src': [dash_urls, dash_mp4_a_urls],
-                                'size': int(dash_size) + int(dash_mp4_a_size)
-                            }
-                        elif stream['type'].startswith('video/webm'):
-                            mimeType = 'video/webm'
-                            dash_url = stream['url']
-                            if 's' in stream:
-                                sig = self.__class__.decipher(self.js, stream['s'])
-                                dash_url += '&signature={}'.format(sig)
-                            dash_size = stream['clen']
-                            itag = stream['itag']
-                            audio_url = None
-                            audio_size = None
-                            try:
-                                audio_url = dash_webm_a_url
-                                audio_size = int(dash_webm_a_size)
-                            except UnboundLocalError as e:
-                                audio_url = dash_mp4_a_url
-                                audio_size = int(dash_mp4_a_size)
-                            dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
-                            audio_urls = self.__class__.chunk_by_range(audio_url, int(audio_size))
-                            self.dash_streams[itag] = {
-                                'quality': '%s (%s)' % (stream['size'], stream['quality_label']),
-                                'itag': itag,
-                                'type': mimeType,
-                                'mime': mimeType,
-                                'container': 'webm',
-                                'src': [dash_urls, audio_urls],
-                                'size': int(dash_size) + int(audio_size)
-                            }
+                            dash_url += '&signature={}'.format(sig)
+                        dash_size = stream['clen']
+                        itag = stream['itag']
+                        audio_url = None
+                        audio_size = None
+                        try:
+                            audio_url = dash_webm_a_url
+                            audio_size = int(dash_webm_a_size)
+                        except UnboundLocalError as e:
+                            audio_url = dash_mp4_a_url
+                            audio_size = int(dash_mp4_a_size)
+                        dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
+                        audio_urls = self.__class__.chunk_by_range(audio_url, int(audio_size))
+                        self.dash_streams[itag] = {
+                            'quality': '%s (%s)' % (stream['size'], stream['quality_label']),
+                            'itag': itag,
+                            'type': mimeType,
+                            'mime': mimeType,
+                            'container': 'webm',
+                            'src': [dash_urls, audio_urls],
+                            'size': int(dash_size) + int(audio_size)
+                        }
 
     def extract(self, **kwargs):
         if not self.streams_sorted:
