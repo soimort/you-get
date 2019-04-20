@@ -3,6 +3,7 @@
 __all__ = ['twitter_download']
 
 from ..common import *
+from .universal import *
 from .vine import vine_download
 
 def extract_m3u(source):
@@ -15,6 +16,10 @@ def extract_m3u(source):
     return ['https://video.twimg.com%s' % i for i in s2]
 
 def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    if re.match(r'https?://pbs\.twimg\.com', url):
+        universal_download(url, output_dir, merge=merge, info_only=info_only, **kwargs)
+        return
+
     if re.match(r'https?://mobile', url): # normalize mobile URL
         url = 'https://' + match1(url, r'//mobile\.(.+)')
 
