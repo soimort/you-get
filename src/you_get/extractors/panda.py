@@ -15,7 +15,7 @@ def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     json_request_url ="http://www.panda.tv/api_room_v2?roomid={}&__plat=pc_web&_={}".format(roomid, int(time.time()))
     content = get_html(json_request_url)
     api_json = json.loads(content)
-    
+
     errno = api_json["errno"]
     errmsg = api_json["errmsg"]
     if errno:
@@ -25,7 +25,7 @@ def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     room_key = data["videoinfo"]["room_key"]
     plflag = data["videoinfo"]["plflag"].split("_")
     status = data["videoinfo"]["status"]
-    if status is not "2":
+    if status != "2":
         raise ValueError("The live stream is not online! (status:%s)" % status)
 
     data2 = json.loads(data["videoinfo"]["plflag_list"])
@@ -33,7 +33,7 @@ def panda_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     sign = data2["auth"]["sign"]
     ts = data2["auth"]["time"]
     real_url = "http://pl{}.live.panda.tv/live_panda/{}.flv?sign={}&ts={}&rid={}".format(plflag[1], room_key, sign, ts, rid)
-    
+
     print_info(site_info, title, 'flv', float('inf'))
     if not info_only:
         download_urls([real_url], title, 'flv', None, output_dir, merge = merge)

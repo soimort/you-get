@@ -38,7 +38,7 @@ def baidu_get_song_title(data):
 
 def baidu_get_song_lyric(data):
     lrc = data['lrcLink']
-    return None if lrc is '' else "http://music.baidu.com%s" % lrc
+    return "http://music.baidu.com%s" % lrc if lrc else None
 
 
 def baidu_download_song(sid, output_dir='.', merge=True, info_only=False):
