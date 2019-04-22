@@ -6,7 +6,7 @@ from you_get.extractors import (
     imgur,
     magisto,
     youtube,
-    bilibili,
+    qq
 )
 
 
@@ -30,6 +30,11 @@ class YouGetTests(unittest.TestCase):
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
         )
+
+    def test_qq(self):
+        qq.download('https://v.qq.com/x/page/t0029cb305i.html', info_only=True)
+        qq.download('https://v.qq.com/x/cover/dj48ffubzpsp1xb/g0029lucby7.html', info_only=True)
+        qq.download('https://v.qq.com/x/page/p0029weyslj.html', info_only=True)
 
 if __name__ == '__main__':
     unittest.main()
