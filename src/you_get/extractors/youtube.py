@@ -419,7 +419,7 @@ class YouTube(VideoExtractor):
                 streams = [dict([(i.split('=')[0],
                                   parse.unquote(i.split('=')[1]))
                                  for i in afmt.split('&')])
-                           for afmt in ytplayer_config['args']['adaptive_fmts'][0].split(',')]
+                           for afmt in ytplayer_config['args']['adaptive_fmts'].split(',')]
             except:
                 streams = [dict([(i.split('=')[0],
                                   parse.unquote(i.split('=')[1]))
