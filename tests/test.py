@@ -7,6 +7,7 @@ from you_get.extractors import (
     magisto,
     youtube,
     bilibili,
+    douyutv,
 )
 
 
@@ -28,6 +29,12 @@ class YouGetTests(unittest.TestCase):
         youtube.download('http://youtu.be/pzKerr0JIPA', info_only=True)
         youtube.download(
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
+            info_only=True
+        )
+
+    def test_douyutv(self):
+        douyutv.download(
+            'https://v.douyu.com/show/GnzXvb4lXzVM462l',
             info_only=True
         )
 
