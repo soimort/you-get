@@ -12,7 +12,8 @@ class Bilibili(VideoExtractor):
     stream_types = [
         {'id': 'flv_p60', 'quality': 116, 'audio_quality': 30280,
          'container': 'FLV', 'video_resolution': '1080p', 'desc': '高清 1080P60'},
-        # 'id': 'hdflv2', 'quality': 112?
+        {'id': 'hdflv2', 'quality': 112, 'audio_quality': 30280,
+         'container': 'FLV', 'video_resolution': '1080p', 'desc': '高清 1080P+'},
         {'id': 'flv', 'quality': 80, 'audio_quality': 30280,
          'container': 'FLV', 'video_resolution': '1080p', 'desc': '高清 1080P'},
         {'id': 'flv720_p60', 'quality': 74, 'audio_quality': 30280,
@@ -110,6 +111,13 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_vc_api(video_id):
         return 'https://api.vc.bilibili.com/clip/v1/video/detail?video_id=%s' % video_id
+
+    @staticmethod
+    def url_size(url, faker=False, headers={},err_value=0):
+        try:
+            return url_size(url,faker,headers)
+        except:
+            return err_value
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
@@ -244,7 +252,7 @@ class Bilibili(VideoExtractor):
                         desc = s['desc']
                         audio_quality = s['audio_quality']
                         baseurl = video['baseUrl']
-                        size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+                        size = self.url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
 
                         # find matching audio track
                         audio_baseurl = playinfo['data']['dash']['audio'][0]['baseUrl']
@@ -253,7 +261,7 @@ class Bilibili(VideoExtractor):
                                 audio_baseurl = audio['baseUrl']
                                 break
                         if not audio_size_cache.get(audio_quality, False):
-                            audio_size_cache[audio_quality] = url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                            audio_size_cache[audio_quality] = self.url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
                         size += audio_size_cache[audio_quality]
 
                         self.dash_streams[format_id] = {'container': container, 'quality': desc,
