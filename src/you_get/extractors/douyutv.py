@@ -62,12 +62,12 @@ def douyutv_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
     json_content = json.loads(content)
     data = json_content['data']
     server_status = json_content.get('error', 0)
-    if server_status is not 0:
+    if server_status != 0:
         raise ValueError("Server returned error:%s" % server_status)
 
     title = data.get('room_name')
     show_status = data.get('show_status')
-    if show_status is not "1":
+    if show_status != "1":
         raise ValueError("The live stream is not online! (Errno:%s)" % server_status)
 
     real_url = data.get('rtmp_url') + '/' + data.get('rtmp_live')

@@ -14,7 +14,7 @@ def zhibo_vedio_download(url, output_dir = '.', merge = True, info_only = False,
 
     video_html = r1(r'<script type="text/javascript">([\s\S]*)</script></head>', html)
 
-    # video_guessulike = r1(r"window.xgData =([s\S'\s\.]*)\'\;[\s\S]*window.vouchData", video_html) 
+    # video_guessulike = r1(r"window.xgData =([s\S'\s\.]*)\'\;[\s\S]*window.vouchData", video_html)
     video_url = r1(r"window.vurl = \'([s\S'\s\.]*)\'\;[\s\S]*window.imgurl", video_html)
     part_urls.append(video_url)
     ext = video_url.split('.')[-1]
@@ -34,7 +34,7 @@ def zhibo_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     html = get_html(url)
     title = r1(r'<title>([\s\S]*)</title>', html)
     is_live = r1(r"window.videoIsLive=\'([s\S'\s\.]*)\'\;[\s\S]*window.resDomain", html)
-    if is_live is not "1":
+    if is_live != "1":
         raise ValueError("The live stream is not online! (Errno:%s)" % is_live)
 
     match = re.search(r"""
