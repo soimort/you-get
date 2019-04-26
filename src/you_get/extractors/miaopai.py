@@ -65,26 +65,47 @@ def miaopai_download_by_wbmp(wbmp_url, fid, info_only=False, **kwargs):
         download_urls([video_url], fs.legitimize(title), ext, headers=headers, **kwargs)
 
 
-def miaopai_download_direct(url, info_only, **kwargs):
-    mobile_page = get_content(url, headers=fake_headers_mobile)
-    try:
-        title = re.search(r'([\'"])title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
-    except:
-        title = re.search(r'([\'"])status_title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
-    title = title.replace('\n', '_')
-    stream_url = re.search(r'([\'"])stream_url\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
+def miaopai_download_story(url, output_dir='.', merge=False, info_only=False, **kwargs):
+    data_url = 'https://m.weibo.cn/s/video/object?%s' % url.split('?')[1]
+    data_content = get_content(data_url, headers=fake_headers_mobile)
+    data = json.loads(data_content)
+    title = data['data']['object']['summary']
+    stream_url = data['data']['object']['stream']['url']
+
     ext = 'mp4'
     print_info(site_info, title, ext, url_info(stream_url, headers=fake_headers_mobile)[2])
     if not info_only:
         download_urls([stream_url], fs.legitimize(title), ext, total_size=None, headers=fake_headers_mobile, **kwargs)
 
 
-# ----------------------------------------------------------------------
-def miaopai_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
-    if match1(url, r'weibo\.com/tv/v/(\w+)'):
+def miaopai_download_direct(url, output_dir='.', merge=False, info_only=False, **kwargs):
+    mobile_page = get_content(url, headers=fake_headers_mobile)
+    try:
+        title = re.search(r'([\'"])title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
+    except:
+        title = re.search(r'([\'"])status_title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
+    title = title.replace('\n', '_')
+    try:
+        stream_url = re.search(r'([\'"])stream_url\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
+    except:
+        page_url = re.search(r'([\'"])page_url\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
+        return miaopai_download_story(page_url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
+
+    ext = 'mp4'
+    print_info(site_info, title, ext, url_info(stream_url, headers=fake_headers_mobile)[2])
+    if not info_only:
+        download_urls([stream_url], fs.legitimize(title), ext, total_size=None, headers=fake_headers_mobile, **kwargs)
+
+
+def miaopai_download(url, output_dir='.', merge=False, info_only=False, **kwargs):
+    if re.match(r'^http[s]://.*\.weibo\.com/\d+/.+', url):
         return miaopai_download_direct(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
 
-    if re.match(r'^http[s]://.*\.weibo\.com/\d+/.+', url):
+    if re.match(r'^http[s]://.*\.weibo\.(com|cn)/s/video/.+', url):
+        return miaopai_download_story(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
+
+    # FIXME!
+    if re.match(r'^http[s]://.*\.weibo\.com/tv/v/(\w+)', url):
         return miaopai_download_direct(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
 
     fid = match1(url, r'\?fid=(\d{4}:\w+)')
