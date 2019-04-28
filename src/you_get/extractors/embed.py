@@ -133,7 +133,7 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False, **kwa
             r = 1
         else:
             r += 1
-        iframes = matchall(content, [r'<iframe.+?src=(?:\"|\')(.+?)(?:\"|\')'])
+        iframes = matchall(content, [r'<iframe.+?src=(?:\"|\')(.*?)(?:\"|\')'])
         for iframe in iframes:
             if not iframe.startswith('http'):
                 src = urllib.parse.urljoin(url, iframe)
