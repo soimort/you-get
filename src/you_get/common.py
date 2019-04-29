@@ -131,7 +131,7 @@ SITES = {
 dry_run = False
 json_output = False
 force = False
-skip_ignore_size = False
+skip_existing_file_size_check = False
 player = None
 extractor_proxy = None
 cookies = None
@@ -634,11 +634,11 @@ def url_save(
     while continue_renameing:
         continue_renameing = False
         if os.path.exists(filepath):
-            if not force and (file_size == os.path.getsize(filepath) or skip_ignore_size):
+            if not force and (file_size == os.path.getsize(filepath) or skip_existing_file_size_check):
                 if not is_part:
                     if bar:
                         bar.done()
-                    if skip_ignore_size:
+                    if skip_existing_file_size_check:
                         log.w(
                             'Skipping {} without checking size: file already exists'.format(
                                 tr(os.path.basename(filepath))
@@ -954,8 +954,8 @@ def download_urls(
     if total_size:
         if not force and os.path.exists(output_filepath) and not auto_rename\
                 and (os.path.getsize(output_filepath) >= total_size * 0.9\
-                or skip_ignore_size):
-            if skip_ignore_size:
+                or skip_existing_file_size_check):
+            if skip_existing_file_size_check:
                 log.w('Skipping %s without checking size: file already exists' % output_filepath)
             else:
                 log.w('Skipping %s: file already exists' % output_filepath)
@@ -1468,7 +1468,7 @@ def script_main(download, download_playlist, **kwargs):
         help='Force overwriting existing files'
     )
     download_grp.add_argument(
-        '--skip-ignore-size', action='store_true', default=False,
+        '--skip-existing-file-size-check', action='store_true', default=False,
         help='Skip existing file without checking file size'
     )
     download_grp.add_argument(
@@ -1557,7 +1557,7 @@ def script_main(download, download_playlist, **kwargs):
         logging.getLogger().setLevel(logging.DEBUG)
 
     global force
-    global skip_ignore_size
+    global skip_existing_file_size_check
     global dry_run
     global json_output
     global player
@@ -1571,8 +1571,8 @@ def script_main(download, download_playlist, **kwargs):
     info_only = args.info
     if args.force:
         force = True
-    if args.skip_ignore_size:
-        skip_ignore_size = True
+    if args.skip_existing_file_size_check:
+        skip_existing_file_size_check = True
     if args.auto_rename:
         auto_rename = True
     if args.url:
