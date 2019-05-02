@@ -35,6 +35,8 @@ class YouGetTests(unittest.TestCase):
     def test_toutiao(self):
         toutiao.download('https://www.365yg.com/i6640053613567675662/#mid=1611922564114440', info_only=True)
 
+    def test_bilibili(self):
+        bilibili.download_playlist_by_url('https://www.bilibili.com/bangumi/play/ss26875')
 
 if __name__ == '__main__':
     unittest.main()
