@@ -32,9 +32,6 @@ class YouGetTests(unittest.TestCase):
             info_only=True
         )
 
-    def test_toutiao(self):
-        toutiao.download('https://www.365yg.com/i6640053613567675662/#mid=1611922564114440', info_only=True)
-
 
 if __name__ == '__main__':
     unittest.main()
