@@ -1,8 +1,6 @@
 # https://travis-ci.org/soimort/you-get
 language: python
 python:
-  - "3.2"
-  - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
@@ -12,13 +10,13 @@ matrix:
     - python: "3.7"
       dist: xenial
     - python: "3.8-dev"
-      dist: xenial    
+      dist: xenial
     - python: "nightly"
-      dist: xenial    
+      dist: xenial
 before_install:
-  - if [[ $TRAVIS_PYTHON_VERSION != '3.2'* && $TRAVIS_PYTHON_VERSION != '3.3'* ]]; then pip install flake8; fi
+  - pip install flake8
 before_script:
-  - if [[ $TRAVIS_PYTHON_VERSION != '3.2'* && $TRAVIS_PYTHON_VERSION != '3.3'* ]]; then flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics; fi
+  - flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics
 script: make test
 notifications:
   webhooks:
