@@ -109,9 +109,9 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
             pass
 
 def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    assert re.match(r'http://[^\.]*\.*acfun\.[^\.]+/(\D|bangumi)/\D\D(\d+)', url)
+    assert re.match(r'https?://[^\.]*\.*acfun\.[^\.]+/(\D|bangumi)/\D\D(\d+)', url)
 
-    if re.match(r'http://[^\.]*\.*acfun\.[^\.]+/\D/\D\D(\d+)', url):
+    if re.match(r'https?://[^\.]*\.*acfun\.[^\.]+/\D/\D\D(\d+)', url):
         html = get_content(url)
         title = r1(r'data-title="([^"]+)"', html)
         if match1(url, r'_(\d+)$'):  # current P
@@ -119,7 +119,7 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         vid = r1('data-vid="(\d+)"', html)
         up = r1('data-name="([^"]+)"', html)
     # bangumi
-    elif re.match("http://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
+    elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
         html = get_content(url)
         title = match1(html, r'"title"\s*:\s*"([^"]+)"')
         if match1(url, r'_(\d+)$'):  # current P
