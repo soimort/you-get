@@ -31,6 +31,8 @@ class YouGetTests(unittest.TestCase):
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
         )
+    def test_bilibili(self):
+	    bilibili.download('https://www.bilibili.com/video/av52500651\?spm_id_from\=333.6.b_686967685f656e65726779.3', info_only=True)
 
 
 if __name__ == '__main__':
