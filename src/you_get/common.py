@@ -878,13 +878,16 @@ class DummyProgressBar:
         pass
 
 
-def get_output_filename(urls, title, ext, output_dir, merge):
+def get_output_filename(urls, title, ext, output_dir, merge, **kwargs):
     # lame hack for the --output-filename option
     global output_filename
     if output_filename:
+        result = output_filename
+        if kwargs.get('part', -1) >= 0:
+            result = '%s[%02d]' % (result, kwargs.get('part'))
         if ext:
-            return output_filename + '.' + ext
-        return output_filename
+            result = result + '.' + ext
+        return result
 
     merged_ext = ext
     if (len(urls) > 1) and merge:
@@ -964,16 +967,16 @@ def download_urls(
         bar.done()
     else:
         parts = []
-        print('Downloading %s.%s ...' % (tr(title), ext))
+        print('Downloading %s ...' % tr(output_filename))
         bar.update()
         for i, url in enumerate(urls):
-            filename = '%s[%02d].%s' % (title, i, ext)
-            filepath = os.path.join(output_dir, filename)
-            parts.append(filepath)
+            output_filename_i = get_output_filename(urls, title, ext, output_dir, merge, part=i)
+            output_filepath_i = os.path.join(output_dir, output_filename_i)
+            parts.append(output_filepath_i)
             # print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
             url_save(
-                url, filepath, bar, refer=refer, is_part=True, faker=faker,
+                url, output_filepath_i, bar, refer=refer, is_part=True, faker=faker,
                 headers=headers, **kwargs
             )
         bar.done()
