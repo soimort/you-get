@@ -894,7 +894,7 @@ def get_output_filename(urls, title, ext, output_dir, merge, **kwargs):
         if kwargs.get('part', -1) >= 0:
             result = '%s[%02d]' % (result, kwargs.get('part'))
         if ext:
-            result = result + '.' + ext
+            result = '%s.%s' % (result, ext)
         return result
 
     merged_ext = ext
@@ -912,7 +912,11 @@ def get_output_filename(urls, title, ext, output_dir, merge, **kwargs):
                 merged_ext = 'mkv'
             else:
                 merged_ext = 'ts'
-    return '%s.%s' % (title, merged_ext)
+    result = title
+    if kwargs.get('part', -1) >= 0:
+        result = '%s[%02d]' % (result, kwargs.get('part'))
+    result = '%s.%s' % (result, merged_ext)
+    return result
 
 def print_user_agent(faker=False):
     urllib_default_user_agent = 'Python-urllib/%d.%d' % sys.version_info[:2]
