@@ -131,6 +131,7 @@ SITES = {
 dry_run = False
 json_output = False
 force = False
+skip_existing_file_size_check = False
 player = None
 extractor_proxy = None
 cookies = None
@@ -633,15 +634,22 @@ def url_save(
     while continue_renameing:
         continue_renameing = False
         if os.path.exists(filepath):
-            if not force and file_size == os.path.getsize(filepath):
+            if not force and (file_size == os.path.getsize(filepath) or skip_existing_file_size_check):
                 if not is_part:
                     if bar:
                         bar.done()
-                    log.w(
-                        'Skipping {}: file already exists'.format(
-                            tr(os.path.basename(filepath))
+                    if skip_existing_file_size_check:
+                        log.w(
+                            'Skipping {} without checking size: file already exists'.format(
+                                tr(os.path.basename(filepath))
+                            )
                         )
-                    )
+                    else:
+                        log.w(
+                            'Skipping {}: file already exists'.format(
+                                tr(os.path.basename(filepath))
+                            )
+                        )
                 else:
                     if bar:
                         bar.update_received(file_size)
@@ -948,8 +956,12 @@ def download_urls(
 
     if total_size:
         if not force and os.path.exists(output_filepath) and not auto_rename\
-                and os.path.getsize(output_filepath) >= total_size * 0.9:
-            log.w('Skipping %s: file already exists' % output_filepath)
+                and (os.path.getsize(output_filepath) >= total_size * 0.9\
+                or skip_existing_file_size_check):
+            if skip_existing_file_size_check:
+                log.w('Skipping %s without checking size: file already exists' % output_filepath)
+            else:
+                log.w('Skipping %s: file already exists' % output_filepath)
             print()
             return
         bar = SimpleProgressBar(total_size, len(urls))
@@ -1459,6 +1471,10 @@ def script_main(download, download_playlist, **kwargs):
         help='Force overwriting existing files'
     )
     download_grp.add_argument(
+        '--skip-existing-file-size-check', action='store_true', default=False,
+        help='Skip existing file without checking file size'
+    )
+    download_grp.add_argument(
         '-F', '--format', metavar='STREAM_ID',
         help='Set video format to STREAM_ID'
     )
@@ -1544,6 +1560,7 @@ def script_main(download, download_playlist, **kwargs):
         logging.getLogger().setLevel(logging.DEBUG)
 
     global force
+    global skip_existing_file_size_check
     global dry_run
     global json_output
     global player
@@ -1557,6 +1574,8 @@ def script_main(download, download_playlist, **kwargs):
     info_only = args.info
     if args.force:
         force = True
+    if args.skip_existing_file_size_check:
+        skip_existing_file_size_check = True
     if args.auto_rename:
         auto_rename = True
     if args.url:
