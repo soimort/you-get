@@ -144,6 +144,7 @@ fake_headers = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
+    'Cookie': 'kg_mid=6b51749a6a9be5b85f19623d46ea8c0b;',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0',  # noqa
 }
 
