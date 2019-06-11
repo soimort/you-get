@@ -216,6 +216,7 @@ class YouTube(VideoExtractor):
                     self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
                     # Workaround: get_video_info returns bad s. Why?
                     stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
+                    #stream_list = ytplayer_config['args']['adaptive_fmts'].split(',')
                 except:
                     stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
                     if re.search('([^"]*/base\.js)"', video_page):
@@ -306,7 +307,8 @@ class YouTube(VideoExtractor):
                 'url': metadata['url'][0],
                 'sig': metadata['sig'][0] if 'sig' in metadata else None,
                 's': metadata['s'][0] if 's' in metadata else None,
-                'quality': metadata['quality'][0],
+                'quality': metadata['quality'][0] if 'quality' in metadata else None,
+                #'quality': metadata['quality_label'][0] if 'quality_label' in metadata else None,
                 'type': metadata['type'][0],
                 'mime': metadata['type'][0].split(';')[0],
                 'container': mime_to_container(metadata['type'][0].split(';')[0]),
@@ -433,13 +435,13 @@ class YouTube(VideoExtractor):
                     dash_mp4_a_url = stream['url']
                     if 's' in stream:
                         sig = self.__class__.decipher(self.js, stream['s'])
-                        dash_mp4_a_url += '&signature={}'.format(sig)
+                        dash_mp4_a_url += '&sig={}'.format(sig)
                     dash_mp4_a_size = stream['clen']
                 elif stream['type'].startswith('audio/webm'):
                     dash_webm_a_url = stream['url']
                     if 's' in stream:
                         sig = self.__class__.decipher(self.js, stream['s'])
-                        dash_webm_a_url += '&signature={}'.format(sig)
+                        dash_webm_a_url += '&sig={}'.format(sig)
                     dash_webm_a_size = stream['clen']
             for stream in streams: # video
                 if 'size' in stream:
@@ -448,7 +450,7 @@ class YouTube(VideoExtractor):
                         dash_url = stream['url']
                         if 's' in stream:
                             sig = self.__class__.decipher(self.js, stream['s'])
-                            dash_url += '&signature={}'.format(sig)
+                            dash_url += '&sig={}'.format(sig)
                         dash_size = stream['clen']
                         itag = stream['itag']
                         dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
@@ -467,7 +469,7 @@ class YouTube(VideoExtractor):
                         dash_url = stream['url']
                         if 's' in stream:
                             sig = self.__class__.decipher(self.js, stream['s'])
-                            dash_url += '&signature={}'.format(sig)
+                            dash_url += '&sig={}'.format(sig)
                         dash_size = stream['clen']
                         itag = stream['itag']
                         audio_url = None
@@ -510,13 +512,13 @@ class YouTube(VideoExtractor):
             src = self.streams[stream_id]['url']
             if self.streams[stream_id]['sig'] is not None:
                 sig = self.streams[stream_id]['sig']
-                src += '&signature={}'.format(sig)
+                src += '&sig={}'.format(sig)
             elif self.streams[stream_id]['s'] is not None:
                 if not hasattr(self, 'js'):
                     self.js = get_content(self.html5player)
                 s = self.streams[stream_id]['s']
                 sig = self.__class__.decipher(self.js, s)
-                src += '&signature={}'.format(sig)
+                src += '&sig={}'.format(sig)
 
             self.streams[stream_id]['src'] = [src]
             self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'])
