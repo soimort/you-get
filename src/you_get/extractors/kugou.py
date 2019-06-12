@@ -33,7 +33,7 @@ def kugou_download_by_hash(url,output_dir = '.', merge = True, info_only = False
     #url_sample:http://www.kugou.com/song/#hash=93F7D2FC6E95424739448218B591AEAF&album_id=9019462
     hash_val = match1(url,'hash=(\w+)')
     album_id = match1(url,'album_id=(\d+)')
-    html = get_html("http://www.kugou.com/yy/index.php?r=play/getdata&hash={}&album_id={}".format(hash_val,album_id))
+    html = get_html("http://www.kugou.com/yy/index.php?r=play/getdata&hash={}&album_id={}".format(hash_val,album_id), None, True)
     j =loads(html)
     url = j['data']['play_url']
     title = j['data']['audio_name']
