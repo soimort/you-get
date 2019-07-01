@@ -2,10 +2,10 @@
 
 __all__ = ['letv_download', 'letvcloud_download', 'letvcloud_download_by_vu']
 
-import json
+import base64
+import hashlib
 import random
-import xml.etree.ElementTree as ET
-import base64, hashlib, urllib, time, re
+import urllib
 
 from ..common import *
 
