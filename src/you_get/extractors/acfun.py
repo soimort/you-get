@@ -113,11 +113,14 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
     if re.match(r'https?://[^\.]*\.*acfun\.[^\.]+/\D/\D\D(\d+)', url):
         html = get_content(url)
-        title = r1(r'data-title="([^"]+)"', html)
-        if match1(url, r'_(\d+)$'):  # current P
-            title = title + " " + r1(r'active">([^<]*)', html)
-        vid = r1('data-vid="(\d+)"', html)
-        up = r1('data-name="([^"]+)"', html)
+        json_text = match1(html, r"(?s)videoInfo\s*=\s*(\{.*?\});")
+        json_data = json.loads(json_text)
+        vid = json_data.get('currentVideoInfo').get('id')
+        up = json_data.get('user').get('name')
+        title = json_data.get('title')
+        video_list = json_data.get('videoList')
+        if len(video_list) > 1:
+            title += " - " + [p.get('title') for p in video_list if p.get('id') == vid][0]
     # bangumi
     elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
         html = get_content(url)
