@@ -8,6 +8,7 @@ from you_get.extractors import (
     youtube,
     bilibili,
     toutiao,
+    wanmen,
 )
 
 
@@ -30,6 +31,10 @@ class YouGetTests(unittest.TestCase):
         youtube.download(
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
+        )
+
+    def test_wanmen(self):
+        wanmen.download('https://www.wanmen.org/courses/594a394da576087ecbe5ccd6/lectures/596f0b58c4e8e41da1410f47', info_only=True)
         )
 
 
