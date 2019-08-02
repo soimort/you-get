@@ -81,8 +81,8 @@ def get_video_url_from_video_id(video_id):
 def ixigua_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     # example url: https://www.ixigua.com/i6631065141750268420/#mid=63024814422
     html = get_html(url, faker=True)
-    video_id = match1(html, r"videoId\s*:\s*'([^']+)'")
-    title = match1(html, r"title: '(\S+)',")
+    video_id = match1(html, r"\"vid\":\"([^\"]+)")
+    title = match1(html, r"\"title\":\"(\S+?)\",")
     if not video_id:
         log.e("video_id not found, url:{}".format(url))
         return
