@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import logging
-import os.path
+import os
 import subprocess
+import sys
 from ..util.strings import parameterize
 from ..common import print_more_compatible as print
 
@@ -21,12 +22,10 @@ def get_usable_ffmpeg(cmd):
         out, err = p.communicate()
         vers = str(out, 'utf-8').split('\n')[0].split()
         assert (vers[0] == 'ffmpeg' and vers[2][0] > '0') or (vers[0] == 'avconv')
-        #set version to 1.0 for nightly build and print warning
         try:
-            version = [int(i) for i in vers[2].split('.')]
+            v = vers[2][1:] if vers[2][0] == 'n' else vers[2]
+            version = [int(i) for i in v.split('.')]
         except:
-            print('It seems that your ffmpeg is a nightly build.')
-            print('Please switch to the latest stable if merging failed.')
             version = [1, 0]
         return cmd, 'ffprobe', version
     except:
@@ -60,14 +59,25 @@ def ffmpeg_concat_av(files, output, ext):
     params = [FFMPEG] + LOGLEVEL
     for file in files:
         if os.path.isfile(file): params.extend(['-i', file])
-    params.extend(['-c:v', 'copy'])
-    if ext == 'mp4':
-        params.extend(['-c:a', 'aac'])
-    elif ext == 'webm':
-        params.extend(['-c:a', 'vorbis'])
-    params.extend(['-strict', 'experimental'])
+    params.extend(['-c', 'copy'])
     params.append(output)
-    return subprocess.call(params, stdin=STDIN)
+    if subprocess.call(params, stdin=STDIN):
+        print('Merging without re-encode failed.\nTry again re-encoding audio... ', end="", flush=True)
+        try: os.remove(output)
+        except FileNotFoundError: pass
+        params = [FFMPEG] + LOGLEVEL
+        for file in files:
+            if os.path.isfile(file): params.extend(['-i', file])
+        params.extend(['-c:v', 'copy'])
+        if ext == 'mp4':
+            params.extend(['-c:a', 'aac'])
+            params.extend(['-strict', 'experimental'])
+        elif ext == 'webm':
+            params.extend(['-c:a', 'opus'])
+        params.append(output)
+        return subprocess.call(params, stdin=STDIN)
+    else:
+        return 0
 
 def ffmpeg_convert_ts_to_mkv(files, output='output.mkv'):
     for file in files:
@@ -210,7 +220,7 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
 def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.', stream=True):
     """str, str->True
     WARNING: NOT THE SAME PARMS AS OTHER FUNCTIONS!!!!!!
-    You can basicly download anything with this function
+    You can basically download anything with this function
     but better leave it alone with
     """
     output = title + '.' + ext
@@ -257,6 +267,7 @@ def ffmpeg_concat_audio_and_video(files, output, ext):
     if has_ffmpeg_installed:
         params = [FFMPEG] + LOGLEVEL
         params.extend(['-f', 'concat'])
+        params.extend(['-safe', '0'])  # https://stackoverflow.com/questions/38996925/ffmpeg-concat-unsafe-file-name
         for file in files:
             if os.path.isfile(file):
                 params.extend(['-i', file])

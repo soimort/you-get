@@ -1,27 +1,27 @@
-# How to Contribute
+# How to Report an Issue
 
-`you-get` is currently experimenting with an aggressive approach to handling issues. Namely, a bug report must be addressed with some code via a pull request.
+If you would like to report a problem you find when using `you-get`, please open a [Pull Request](https://github.com/soimort/you-get/pulls), which should include:
 
-## Report a broken extractor
+1. A detailed description of the encountered problem;
+2. At least one commit, addressing the problem through some unit test(s).
+   * Examples of good commits: [#2675](https://github.com/soimort/you-get/pull/2675/files), [#2680](https://github.com/soimort/you-get/pull/2680/files), [#2685](https://github.com/soimort/you-get/pull/2685/files)
 
-**How-To:** Please open a new pull request with the following changes:
+PRs that fail to meet the above criteria may be closed summarily with no further action.
 
-* Add a new test case in [tests/test.py](https://github.com/soimort/you-get/blob/develop/tests/test.py), with the failing URL(s).
+A valid PR will remain open until its addressed problem is fixed.
 
-The Travis CI build will (ideally) fail showing a :x:, which means you have successfully reported a broken extractor.
 
-Such a valid PR will be either *closed* if it's fixed by another PR, or *merged* if it's fixed by follow-up commits from the reporter himself/herself.
 
-## Report other issues / Suggest a new feature
+# 如何汇报问题
 
-**How-To:** Please open a pull request with the proposed changes directly.
+为了防止对 GitHub Issues 的滥用，本项目不接受一般的 Issue。
 
-A valid PR need not be complete (i.e., can be WIP), but it should contain at least one sensible, nontrivial commit.
+如您在使用 `you-get` 的过程中发现任何问题，请开启一个 [Pull Request](https://github.com/soimort/you-get/pulls)。该 PR 应当包含：
 
-## Hints
+1. 详细的问题描述；
+2. 至少一个 commit，其内容是**与问题相关的**单元测试。**不要通过随意修改无关文件的方式来提交 PR！**
+   * 有效的 commit 示例：[#2675](https://github.com/soimort/you-get/pull/2675/files), [#2680](https://github.com/soimort/you-get/pull/2680/files), [#2685](https://github.com/soimort/you-get/pull/2685/files)
 
-* The [`develop`](https://github.com/soimort/you-get/tree/develop) branch is where your pull request goes.
-* Remember to rebase.
-* Document your PR clearly, and if applicable, provide some sample links for reviewers to test with.
-* Write well-formatted, easy-to-understand commit messages. If you don't know how, look at existing ones.
-* We will not ask you to sign a CLA, but you must assure that your code can be legally redistributed (under the terms of the MIT license).
+不符合以上条件的 PR 可能被直接关闭。
+
+有效的 PR 将会被一直保留，直至相应的问题得以修复。

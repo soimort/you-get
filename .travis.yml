@@ -1,15 +1,23 @@
 # https://travis-ci.org/soimort/you-get
 language: python
 python:
-  - "3.2"
-  - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
-  - "nightly"
   - "pypy3"
+matrix:
+  include:
+    - python: "3.7"
+      dist: xenial
+    - python: "3.8-dev"
+      dist: xenial
+    - python: "nightly"
+      dist: xenial
+before_install:
+  - pip install flake8
+before_script:
+  - flake8 . --count --select=E9,F63,F72,F82 --show-source --statistics
 script: make test
-sudo: false
 notifications:
   webhooks:
     urls:

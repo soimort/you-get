@@ -58,7 +58,7 @@ class QiE(VideoExtractor):
         content = loads(content)
         self.title = content['data']['room_name']
         rtmp_url =  content['data']['rtmp_url']
-        #stream_avalable = [i['name'] for i in content['data']['stream']]
+        #stream_available = [i['name'] for i in content['data']['stream']]
         stream_available = {}
         stream_available['normal'] = rtmp_url + '/' + content['data']['rtmp_live']
         if len(content['data']['rtmp_multi_bitrate']) > 0:

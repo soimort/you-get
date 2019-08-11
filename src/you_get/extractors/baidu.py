@@ -38,7 +38,7 @@ def baidu_get_song_title(data):
 
 def baidu_get_song_lyric(data):
     lrc = data['lrcLink']
-    return None if lrc is '' else "http://music.baidu.com%s" % lrc
+    return "http://music.baidu.com%s" % lrc if lrc else None
 
 
 def baidu_download_song(sid, output_dir='.', merge=True, info_only=False):
@@ -123,11 +123,21 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
     elif re.match('http://tieba.baidu.com/', url):
         try:
             # embedded videos
-            embed_download(url, output_dir, merge=merge, info_only=info_only)
+            embed_download(url, output_dir, merge=merge, info_only=info_only, **kwargs)
         except:
             # images
             html = get_html(url)
             title = r1(r'title:"([^"]+)"', html)
+
+            vhsrc = re.findall(r'"BDE_Image"[^>]+src="([^"]+\.mp4)"', html) or \
+                re.findall(r'vhsrc="([^"]+)"', html)
+            if len(vhsrc) > 0:
+                ext = 'mp4'
+                size = url_size(vhsrc[0])
+                print_info(site_info, title, ext, size)
+                if not info_only:
+                    download_urls(vhsrc, title, ext, size,
+                                  output_dir=output_dir, merge=False)
 
             items = re.findall(
                 r'//imgsrc.baidu.com/forum/w[^"]+/([^/"]+)', html)

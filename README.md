@@ -4,6 +4,10 @@
 [![Build Status](https://travis-ci.org/soimort/you-get.svg)](https://travis-ci.org/soimort/you-get)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+**NOTICE: Read [this](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) if you are looking for the conventional "Issues" tab.**
+
+---
+
 [You-Get](https://you-get.org/) is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.
 
 Here's how you use `you-get` to download a video from [YouTube](https://www.youtube.com/watch?v=jNQXAC9IVRw):
@@ -49,10 +53,10 @@ Are you a Python programmer? Then check out [the source](https://github.com/soim
 
 ### Prerequisites
 
-The following dependencies are required and must be installed separately, unless you are using a pre-built package or chocolatey on Windows:
+The following dependencies are necessary:
 
-* **[Python 3](https://www.python.org/downloads/)**
-* **[FFmpeg](https://www.ffmpeg.org/)** (strongly recommended) or [Libav](https://libav.org/)
+* **[Python](https://www.python.org/downloads/)**  3.2 or above
+* **[FFmpeg](https://www.ffmpeg.org/)** 1.0 or above
 * (Optional) [RTMPDump](https://rtmpdump.mplayerhq.hu/)
 
 ### Option 1: Install via pip
@@ -61,17 +65,13 @@ The official release of `you-get` is distributed on [PyPI](https://pypi.python.o
 
     $ pip3 install you-get
 
-### Option 2: Install via [Antigen](https://github.com/zsh-users/antigen)
+### Option 2: Install via [Antigen](https://github.com/zsh-users/antigen) (for Zsh users)
 
 Add the following line to your `.zshrc`:
 
     antigen bundle soimort/you-get
 
-### Option 3: Use a pre-built package (Windows only)
-
-Download the `exe` (standalone) or `7z` (all dependencies included) from: <https://github.com/soimort/you-get/releases/latest>.
-
-### Option 4: Download from GitHub
+### Option 3: Download from GitHub
 
 You may either download the [stable](https://github.com/soimort/you-get/archive/master.zip) (identical with the latest release on PyPI) or the [develop](https://github.com/soimort/you-get/archive/develop.zip) (more hotfixes, unstable features) branch of `you-get`. Unzip it, and put the directory containing the `you-get` script into your `PATH`.
 
@@ -89,7 +89,7 @@ $ python3 setup.py install --user
 
 to install `you-get` to a permanent path.
 
-### Option 5: Git clone
+### Option 4: Git clone
 
 This is the recommended way for all developers, even if you don't often code in Python.
 
@@ -99,18 +99,20 @@ $ git clone git://github.com/soimort/you-get.git
 
 Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
 
-### Option 6: Using [Chocolatey](https://chocolatey.org/) (Windows only)
-
-```
-> choco install you-get
-```
-
-### Option 7: Homebrew (Mac only)
+### Option 5: Homebrew (Mac only)
 
 You can install `you-get` easily via:
 
 ```
 $ brew install you-get
+```
+
+### Option 6: pkg (FreeBSD only)
+
+You can install `you-get` easily via:
+
+```
+# pkg install you-get
 ```
 
 ### Shell completion
@@ -131,12 +133,6 @@ or download the latest release via:
 $ you-get https://github.com/soimort/you-get/archive/master.zip
 ```
 
-or use [chocolatey package manager](https://chocolatey.org):
-
-```
-> choco upgrade you-get
-```
-
 In order to get the latest ```develop``` branch without messing up the PIP, you can try:
 
 ```
@@ -154,22 +150,54 @@ $ you-get -i 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
 site:                YouTube
 title:               Me at the zoo
 streams:             # Available quality and codecs
+    [ DASH ] ____________________________________
+    - itag:          242
+      container:     webm
+      quality:       320x240
+      size:          0.6 MiB (618358 bytes)
+    # download-with: you-get --itag=242 [URL]
+
+    - itag:          395
+      container:     mp4
+      quality:       320x240
+      size:          0.5 MiB (550743 bytes)
+    # download-with: you-get --itag=395 [URL]
+
+    - itag:          133
+      container:     mp4
+      quality:       320x240
+      size:          0.5 MiB (498558 bytes)
+    # download-with: you-get --itag=133 [URL]
+
+    - itag:          278
+      container:     webm
+      quality:       192x144
+      size:          0.4 MiB (392857 bytes)
+    # download-with: you-get --itag=278 [URL]
+
+    - itag:          160
+      container:     mp4
+      quality:       192x144
+      size:          0.4 MiB (370882 bytes)
+    # download-with: you-get --itag=160 [URL]
+
+    - itag:          394
+      container:     mp4
+      quality:       192x144
+      size:          0.4 MiB (367261 bytes)
+    # download-with: you-get --itag=394 [URL]
+
     [ DEFAULT ] _________________________________
     - itag:          43
       container:     webm
       quality:       medium
-      size:          0.5 MiB (564215 bytes)
+      size:          0.5 MiB (568748 bytes)
     # download-with: you-get --itag=43 [URL]
 
     - itag:          18
       container:     mp4
-      quality:       medium
-    # download-with: you-get --itag=18 [URL]
-
-    - itag:          5
-      container:     flv
       quality:       small
-    # download-with: you-get --itag=5 [URL]
+    # download-with: you-get --itag=18 [URL]
 
     - itag:          36
       container:     3gp
@@ -182,23 +210,24 @@ streams:             # Available quality and codecs
     # download-with: you-get --itag=17 [URL]
 ```
 
-The format marked with `DEFAULT` is the one you will get by default. If that looks cool to you, download it:
+By default, the one on the top is the one you will get. If that looks cool to you, download it:
 
 ```
 $ you-get 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
 site:                YouTube
 title:               Me at the zoo
 stream:
-    - itag:          43
+    - itag:          242
       container:     webm
-      quality:       medium
-      size:          0.5 MiB (564215 bytes)
-    # download-with: you-get --itag=43 [URL]
+      quality:       320x240
+      size:          0.6 MiB (618358 bytes)
+    # download-with: you-get --itag=242 [URL]
 
-Downloading zoo.webm ...
-100.0% (  0.5/0.5  MB) ├████████████████████████████████████████┤[1/1]    7 MB/s
+Downloading Me at the zoo.webm ...
+ 100% (  0.6/  0.6MB) ├██████████████████████████████████████████████████████████████████████████████┤[2/2]    2 MB/s
+Merging video parts... Merged into Me at the zoo.webm
 
-Saving Me at the zoo.en.srt ...Done.
+Saving Me at the zoo.en.srt ... Done.
 ```
 
 (If a YouTube video has any closed captions, they will be downloaded together with the video file, in SubRip subtitle format.)
@@ -298,7 +327,7 @@ However, the system proxy setting (i.e. the environment variable `http_proxy`) i
 
 ### Watch a video
 
-Use the `--player`/`-p` option to feed the video into your media player of choice, e.g. `mplayer` or `vlc`, instead of downloading it:
+Use the `--player`/`-p` option to feed the video into your media player of choice, e.g. `mpv` or `vlc`, instead of downloading it:
 
 ```
 $ you-get -p vlc 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
@@ -374,11 +403,10 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **niconico<br/>ニコニコ動画** | <http://www.nicovideo.jp/> |✓| | |
 | **163<br/>网易视频<br/>网易云音乐** | <http://v.163.com/><br/><http://music.163.com/> |✓| |✓|
 | 56网     | <http://www.56.com/>           |✓| | |
-| **AcFun** | <http://www.acfun.tv/>        |✓| | |
+| **AcFun** | <http://www.acfun.cn/>        |✓| | |
 | **Baidu<br/>百度贴吧** | <http://tieba.baidu.com/> |✓|✓| |
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
 | **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
-| Dilidili | <http://www.dilidili.com/>     |✓| | |
 | 豆瓣     | <http://www.douban.com/>       |✓| |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
 | Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
@@ -407,15 +435,16 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Youku<br/>优酷** | <http://www.youku.com/> |✓| | |
 | 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
 | 央视网   | <http://www.cntv.cn/>          |✓| | |
-| 花瓣     | <http://huaban.com/>           | |✓| |
 | Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
 | 芒果TV   | <http://www.mgtv.com/>         |✓| | |
 | 火猫TV   | <http://www.huomao.com/>       |✓| | |
-| 全民直播 | <http://www.quanmin.tv/>       |✓| | |
 | 阳光宽频网 | <http://www.365yg.com/>      |✓| | |
 | 西瓜视频 | <https://www.ixigua.com/>      |✓| | |
 | 快手 | <https://www.kuaishou.com/>      |✓|✓| |
 | 抖音 | <https://www.douyin.com/>      |✓| | |
+| TikTok | <https://www.tiktok.com/>      |✓| | |
+| 中国体育(TV) | <http://v.zhibo.tv/> </br><http://video.zhibo.tv/>    |✓| | |
+| 知乎 | <https://www.zhihu.com/>      |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
 
@@ -423,7 +452,7 @@ For all other sites not on the list, the universal extractor will take care of f
 
 If something is broken and `you-get` can't get you things you want, don't panic. (Yes, this happens all the time!)
 
-Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>. If not, follow the guidelines on [how to report a broken extractor](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md#report-a-broken-extractor).
+Check if it's already a known problem on <https://github.com/soimort/you-get/wiki/Known-Bugs>. If not, follow the guidelines on [how to report an issue](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md).
 
 ## Getting Involved
 

@@ -65,7 +65,7 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
     elif sourceType == 'tudou':
         tudou_download_by_iid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'qq':
-        qq_download_by_vid(sourceId, title, output_dir=output_dir, merge=merge, info_only=info_only)
+        qq_download_by_vid(sourceId, title, True, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'letv':
         letvcloud_download_by_vu(sourceId, '2d8c027396', title, output_dir=output_dir, merge=merge, info_only=info_only)
     elif sourceType == 'zhuzhan':
@@ -85,9 +85,13 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
             _, _, seg_size = url_info(url)
             size += seg_size
 #fallback to flvhd is not quite possible
-        print_info(site_info, title, 'mp4', size)
+        if re.search(r'fid=[0-9A-Z\-]*.flv', preferred[0][0]):
+            ext = 'flv'
+        else:
+            ext = 'mp4'
+        print_info(site_info, title, ext, size)
         if not info_only:
-            download_urls(preferred[0], title, 'mp4', size, output_dir=output_dir, merge=merge)
+            download_urls(preferred[0], title, ext, size, output_dir=output_dir, merge=merge)
     else:
         raise NotImplementedError(sourceType)
 
@@ -105,27 +109,46 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
             pass
 
 def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    assert re.match(r'http://[^\.]*\.*acfun\.[^\.]+/\D/\D\D(\d+)', url)
-    html = get_content(url)
+    assert re.match(r'https?://[^\.]*\.*acfun\.[^\.]+/(\D|bangumi)/\D\D(\d+)', url)
 
-    title = r1(r'data-title="([^"]+)"', html)
+    if re.match(r'https?://[^\.]*\.*acfun\.[^\.]+/\D/\D\D(\d+)', url):
+        html = get_content(url)
+        json_text = match1(html, r"(?s)videoInfo\s*=\s*(\{.*?\});")
+        json_data = json.loads(json_text)
+        vid = json_data.get('currentVideoInfo').get('id')
+        up = json_data.get('user').get('name')
+        title = json_data.get('title')
+        video_list = json_data.get('videoList')
+        if len(video_list) > 1:
+            title += " - " + [p.get('title') for p in video_list if p.get('id') == vid][0]
+    # bangumi
+    elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
+        html = get_content(url)
+        tag_script = match1(html, r'<script>window\.pageInfo([^<]+)</script>')
+        json_text = tag_script[tag_script.find('{') : tag_script.find('};') + 1]
+        json_data = json.loads(json_text)
+        title = json_data['bangumiTitle'] + " " + json_data['episodeName'] + " " + json_data['title']
+        vid = str(json_data['videoId'])
+        up = "acfun"
+    else:
+        raise NotImplemented
+
+    assert title and vid
     title = unescape_html(title)
     title = escape_file_path(title)
-    assert title
-    if match1(url, r'_(\d+)$'): # current P
-        title = title + " " + r1(r'active">([^<]*)', html)
-
-    vid = r1('data-vid="(\d+)"', html)
-    up = r1('data-name="([^"]+)"', html)
     p_title = r1('active">([^<]+)', html)
     title = '%s (%s)' % (title, up)
-    if p_title: title = '%s - %s' % (title, p_title)
+    if p_title:
+        title = '%s - %s' % (title, p_title)
+
+
     acfun_download_by_vid(vid, title,
                           output_dir=output_dir,
                           merge=merge,
                           info_only=info_only,
                           **kwargs)
 
-site_info = "AcFun.tv"
+
+site_info = "AcFun.cn"
 download = acfun_download
 download_playlist = playlist_not_supported('acfun')
