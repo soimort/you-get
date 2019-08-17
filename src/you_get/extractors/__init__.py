@@ -51,7 +51,6 @@ from .nanagogo import *
 from .naver import *
 from .netease import *
 from .nicovideo import *
-from .panda import *
 from .pinterest import *
 from .pixnet import *
 from .pptv import *

@@ -195,6 +195,9 @@ class YouTube(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
+        if re.search('\Wlist=', self.url) and not kwargs.get('playlist'):
+            log.w('This video is from a playlist. (use --playlist to download all videos in the playlist.)')
+
         # Get video info
         # 'eurl' is a magic parameter that can bypass age restriction
         # full form: 'eurl=https%3A%2F%2Fyoutube.googleapis.com%2Fv%2F{VIDEO_ID}'

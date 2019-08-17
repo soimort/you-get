@@ -68,7 +68,7 @@ class MGTV(VideoExtractor):
         self.title = content['data']['info']['title']
         domain = content['data']['stream_domain'][0]
         
-        #stream_avalable = [i['name'] for i in content['data']['stream']]
+        #stream_available = [i['name'] for i in content['data']['stream']]
         stream_available = {}
         for i in content['data']['stream']:
             stream_available[i['name']] = i['url']
