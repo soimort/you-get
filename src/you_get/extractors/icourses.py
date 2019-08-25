@@ -110,7 +110,7 @@ def icourses_playlist_download(url, output_dir='.', **kwargs):
         video_list = re.findall(resid_courseid_patt, page)
 
     if not video_list:
-        raise Exception('Unkown url pattern')
+        raise Exception('Unknown url pattern')
 
     for video in video_list:
         video_url = change_for_video_ip.format(video[0], video[1])
