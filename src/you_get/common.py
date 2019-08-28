@@ -1317,7 +1317,7 @@ def load_cookies(cookiefile):
         cookies = cookiejar.MozillaCookieJar()
         now = time.time()
         ignore_discard, ignore_expires = False, False
-        with open(cookiefile, 'r') as f:
+        with open(cookiefile, 'r', encoding='utf-8') as f:
             for line in f:
                 # last field may be absent, so keep any trailing tab
                 if line.endswith("\n"): line = line[:-1]
