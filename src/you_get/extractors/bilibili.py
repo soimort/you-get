@@ -44,7 +44,7 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_headers(referer=None, cookie=None):
         # a reasonable UA
-        ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
+        ua = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
         headers = {'User-Agent': ua}
         if referer is not None:
             headers.update({'Referer': referer})
