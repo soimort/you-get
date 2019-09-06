@@ -4,6 +4,7 @@ from ..common import *
 from ..extractor import VideoExtractor
 
 import hashlib
+import random
 
 class Bilibili(VideoExtractor):
     name = "Bilibili"
@@ -44,7 +45,15 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_headers(referer=None, cookie=None):
         # a reasonable UA
-        ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
+        #bilibili has banned constant UA,so use random
+        
+        browser_version=str(random.randint(60, 63))+'.0.'+str(random.randint(1239, 4239))+'.'+str(random.randint(10, 80))
+        OSversion=str(random.randint(8, 10))+'_'+str(random.randint(5, 10))+'_'+str(random.randint(5, 10))
+        webkitversion=str(random.randint(500, 537))+'.'+str(random.randint(30, 60))
+        ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X '+OSversion+') AppleWebKit/'+webkitversion+' (KHTML, like Gecko) Chrome/'+browser_version+' Safari/'+webkitversion
+        
+        
+        
         headers = {'User-Agent': ua}
         if referer is not None:
             headers.update({'Referer': referer})
