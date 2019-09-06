@@ -86,7 +86,6 @@ SITES = {
     'naver'            : 'naver',
     '7gogo'            : 'nanagogo',
     'nicovideo'        : 'nicovideo',
-    'panda'            : 'panda',
     'pinterest'        : 'pinterest',
     'pixnet'           : 'pixnet',
     'pptv'             : 'pptv',
@@ -144,7 +143,7 @@ fake_headers = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0',  # noqa
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0',  # noqa
 }
 
 if sys.stdout.isatty():
@@ -1318,7 +1317,7 @@ def load_cookies(cookiefile):
         cookies = cookiejar.MozillaCookieJar()
         now = time.time()
         ignore_discard, ignore_expires = False, False
-        with open(cookiefile, 'r') as f:
+        with open(cookiefile, 'r', encoding='utf-8') as f:
             for line in f:
                 # last field may be absent, so keep any trailing tab
                 if line.endswith("\n"): line = line[:-1]

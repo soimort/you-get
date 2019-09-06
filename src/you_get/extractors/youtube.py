@@ -195,6 +195,9 @@ class YouTube(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
+        if re.search('\Wlist=', self.url) and not kwargs.get('playlist'):
+            log.w('This video is from a playlist. (use --playlist to download all videos in the playlist.)')
+
         # Get video info
         # 'eurl' is a magic parameter that can bypass age restriction
         # full form: 'eurl=https%3A%2F%2Fyoutube.googleapis.com%2Fv%2F{VIDEO_ID}'
@@ -207,8 +210,7 @@ class YouTube(VideoExtractor):
             raise
         elif video_info['status'] == ['ok']:
             if 'use_cipher_signature' not in video_info or video_info['use_cipher_signature'] == ['False']:
-                self.title = parse.unquote_plus(video_info['title'][0])
-
+                self.title = parse.unquote_plus(json.loads(video_info["player_response"][0])["videoDetails"]["title"])
                 # Parse video page (for DASH)
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 try:
@@ -229,7 +231,7 @@ class YouTube(VideoExtractor):
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
 
-                self.title = ytplayer_config['args']['title']
+                self.title = json.loads(ytplayer_config["args"]["player_response"])["videoDetails"]["title"]
                 self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
                 stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
 

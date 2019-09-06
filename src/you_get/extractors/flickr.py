@@ -74,7 +74,7 @@ def get_api_key(page):
     # this happens only when the url points to a gallery page
     # that contains no inline api_key(and never makes xhr api calls)
     # in fact this might be a better approch for getting a temporary api key
-    # since there's no place for a user to add custom infomation that may
+    # since there's no place for a user to add custom information that may
     # misguide the regex in the homepage
     if not match:
         return match1(get_html('https://flickr.com'), pattern_inline_api_key)

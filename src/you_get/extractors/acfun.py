@@ -113,18 +113,22 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
     if re.match(r'https?://[^\.]*\.*acfun\.[^\.]+/\D/\D\D(\d+)', url):
         html = get_content(url)
-        title = r1(r'data-title="([^"]+)"', html)
-        if match1(url, r'_(\d+)$'):  # current P
-            title = title + " " + r1(r'active">([^<]*)', html)
-        vid = r1('data-vid="(\d+)"', html)
-        up = r1('data-name="([^"]+)"', html)
+        json_text = match1(html, r"(?s)videoInfo\s*=\s*(\{.*?\});")
+        json_data = json.loads(json_text)
+        vid = json_data.get('currentVideoInfo').get('id')
+        up = json_data.get('user').get('name')
+        title = json_data.get('title')
+        video_list = json_data.get('videoList')
+        if len(video_list) > 1:
+            title += " - " + [p.get('title') for p in video_list if p.get('id') == vid][0]
     # bangumi
     elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
         html = get_content(url)
-        title = match1(html, r'"title"\s*:\s*"([^"]+)"')
-        if match1(url, r'_(\d+)$'):  # current P
-            title = title + " " + r1(r'active">([^<]*)', html)
-        vid = match1(html, r'videoId="(\d+)"')
+        tag_script = match1(html, r'<script>window\.pageInfo([^<]+)</script>')
+        json_text = tag_script[tag_script.find('{') : tag_script.find('};') + 1]
+        json_data = json.loads(json_text)
+        title = json_data['bangumiTitle'] + " " + json_data['episodeName'] + " " + json_data['title']
+        vid = str(json_data['videoId'])
         up = "acfun"
     else:
         raise NotImplemented
@@ -145,6 +149,6 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
                           **kwargs)
 
 
-site_info = "AcFun.tv"
+site_info = "AcFun.cn"
 download = acfun_download
 download_playlist = playlist_not_supported('acfun')

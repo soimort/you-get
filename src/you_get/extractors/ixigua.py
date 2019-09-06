@@ -81,8 +81,8 @@ def get_video_url_from_video_id(video_id):
 def ixigua_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     # example url: https://www.ixigua.com/i6631065141750268420/#mid=63024814422
     html = get_html(url, faker=True)
-    video_id = match1(html, r"videoId\s*:\s*'([^']+)'")
-    title = match1(html, r"title: '(\S+)',")
+    video_id = match1(html, r"\"vid\":\"([^\"]+)")
+    title = match1(html, r"\"player__videoTitle\"><h1>(.*)<\/h1><\/div>")
     if not video_id:
         log.e("video_id not found, url:{}".format(url))
         return
@@ -103,10 +103,11 @@ def ixigua_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         log.e("Get video info from {} error: The server returns JSON value"
               " without data.video_list.video_1 or data.video_list.video_1 is empty".format(video_info_url))
         return
-    size = int(video_info["data"]["video_list"]["video_1"]["size"])
+    bestQualityVideo = list(video_info["data"]["video_list"].keys())[-1] #There is not only video_1, there might be video_2
+    size = int(video_info["data"]["video_list"][bestQualityVideo]["size"])
     print_info(site_info=site_info, title=title, type="mp4", size=size)  # 该网站只有mp4类型文件
     if not info_only:
-        video_url = base64.b64decode(video_info["data"]["video_list"]["video_1"]["main_url"].encode("utf-8"))
+        video_url = base64.b64decode(video_info["data"]["video_list"][bestQualityVideo]["main_url"].encode("utf-8"))
         download_urls([video_url.decode("utf-8")], title, "mp4", size, output_dir, merge=merge, headers=headers, **kwargs)
 
 
