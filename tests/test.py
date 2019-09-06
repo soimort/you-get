@@ -8,6 +8,7 @@ from you_get.extractors import (
     youtube,
     bilibili,
     toutiao,
+	acfun
 )
 
 
@@ -31,6 +32,10 @@ class YouGetTests(unittest.TestCase):
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
         )
+
+    def test_acfun(self):
+        acfun.download("https://www.acfun.cn/v/ac10873885",info_only=True)
+        acfun.download("https://www.acfun.cn/bangumi/ab5024886",info_only=True)
 
 
 if __name__ == '__main__':
