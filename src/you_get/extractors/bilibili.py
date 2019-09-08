@@ -281,27 +281,15 @@ class Bilibili(VideoExtractor):
                 log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
 
             # set video title
-            # need a better way to judge whether it is a vip
-            if 'epPayMent' in initial_state:
-                is_vip = False
-            elif 'epStat' in initial_state:                
-                is_vip = True
-            else:
-                is_vip = False
-
-            if is_vip :
-                self.title = '%s：第%s话 %s' % (initial_state['mediaInfo']['title'],initial_state['epInfo']['index'],initial_state['epInfo']['index_title'])
-                ep_id = initial_state['epInfo']['ep_id']
-            else:
-                self.title = initial_state['h1Title']
-                ep_id = initial_state['epInfo']['id']
+            self.title = initial_state['h1Title']
 
             # construct playinfos
+            ep_id = initial_state['epInfo']['id']
             avid = initial_state['epInfo']['aid']
             cid = initial_state['epInfo']['cid']
             playinfos = []
             api_url = self.bilibili_bangumi_api(avid, cid, ep_id)
-            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+            api_content = get_content(api_url, headers=self.bilibili_headers())
             api_playinfo = json.loads(api_content)
             if api_playinfo['code'] == 0:  # success
                 playinfos.append(api_playinfo)
@@ -310,13 +298,12 @@ class Bilibili(VideoExtractor):
                 return
             current_quality = api_playinfo['result']['quality']
             # get alternative formats from API
-            for qn in [112, 80, 64, 32, 16]:
+            for qn in [80, 64, 32, 16]:
                 # automatic format for durl: qn=0
                 # for dash, qn does not matter
                 if qn != current_quality:
                     api_url = self.bilibili_bangumi_api(avid, cid, ep_id, qn=qn)
-                    # to get higher qualities,referer is required
-                    api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+                    api_content = get_content(api_url, headers=self.bilibili_headers())
                     api_playinfo = json.loads(api_content)
                     if api_playinfo['code'] == 0:  # success
                         playinfos.append(api_playinfo)
@@ -338,9 +325,7 @@ class Bilibili(VideoExtractor):
                 if 'dash' in playinfo['result']:
                     for video in playinfo['result']['dash']['video']:
                         # playinfo['result']['quality'] does not reflect the correct quality of DASH stream
-                        # quality = self.height_to_quality(video['height'])  # convert height to quality code
-                        # but now playinfo['result']['dash']['video']['id'] seems working well
-                        quality = video['id']
+                        quality = self.height_to_quality(video['height'])  # convert height to quality code
                         s = self.stream_qualities[quality]
                         format_id = 'dash-' + s['id']  # prefix
                         container = 'mp4'  # enforce MP4 container
@@ -499,11 +484,7 @@ class Bilibili(VideoExtractor):
             epn, i = len(initial_state['epList']), 0
             for ep in initial_state['epList']:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
-                #The difference between vip and non-vip
-                if ep.__contains__('id'):
-                    ep_id = ep['id']
-                elif ep.__contains__('ep_id'):
-                    ep_id = ep['ep_id']
+                ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
 
