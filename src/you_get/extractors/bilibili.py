@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 
 from ..common import *
 from ..extractor import VideoExtractor
@@ -45,7 +45,7 @@ class Bilibili(VideoExtractor):
     def bilibili_headers(referer=None, cookie=None):
         # a reasonable UA
         ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
-        headers = {'User-Agent': ua}
+        headers = {'Accept': '*/*', 'User-Agent': ua}
         if referer is not None:
             headers.update({'Referer': referer})
         if cookie is not None:
