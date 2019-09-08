@@ -16,11 +16,14 @@ def kuaishou_download_by_url(url, info_only=False, **kwargs):
     # size = video_list[-1]['size']
     # result wrong size
     try:
-        og_video_url = re.search(r"<meta\s+property=\"og:video:url\"\s+content=\"(.+?)\"/>", page).group(1)
-        video_url = og_video_url
-        title = url.split('/')[-1]
+        search_result=re.search(r"\"playUrls\":\[(\{\"quality\"\:\"\w+\",\"url\":\".*?\"\})+\]", page)
+        all_video_info_str = search_result.group(1)
+        all_video_infos=re.findall(r"\{\"quality\"\:\"(\w+)\",\"url\":\"(.*?)\"\}", all_video_info_str)
+        # get the one of the best quality
+        video_url = all_video_infos[0][1].encode("utf-8").decode('unicode-escape')
+        title = re.search(r"<meta charset=UTF-8><title>(.*?)</title>", page).group(1)
         size = url_size(video_url)
-        video_format = video_url.split('.')[-1]
+        video_format = "flv"#video_url.split('.')[-1]
         print_info(site_info, title, video_format, size)
         if not info_only:
             download_urls([video_url], title, video_format, size, **kwargs)

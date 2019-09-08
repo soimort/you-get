@@ -33,27 +33,35 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
         meta_videos = re.findall(r'<meta property="og:video:url" content="([^"]*)"', page)
         if meta_videos:
-            for meta_video in meta_videos:
-                meta_video_url = unescape_html(meta_video)
-                type_, ext, size = url_info(meta_video_url)
-                print_info(site_info, page_title, type_, size)
-                if not info_only:
-                    download_urls([meta_video_url], page_title,
-                                  ext, size,
-                                  output_dir=output_dir, merge=merge,
-                                  faker=True)
-            return
+            try:
+                for meta_video in meta_videos:
+                    meta_video_url = unescape_html(meta_video)
+                    type_, ext, size = url_info(meta_video_url)
+                    print_info(site_info, page_title, type_, size)
+                    if not info_only:
+                        download_urls([meta_video_url], page_title,
+                                      ext, size,
+                                      output_dir=output_dir, merge=merge,
+                                      faker=True)
+            except:
+                pass
+            else:
+                return
 
         hls_urls = re.findall(r'(https?://[^;"\'\\]+' + '\.m3u8?' +
                               r'[^;"\'\\]*)', page)
         if hls_urls:
-            for hls_url in hls_urls:
-                type_, ext, size = url_info(hls_url)
-                print_info(site_info, page_title, type_, size)
-                if not info_only:
-                    download_url_ffmpeg(url=hls_url, title=page_title,
-                                        ext='mp4', output_dir=output_dir)
-            return
+            try:
+                for hls_url in hls_urls:
+                    type_, ext, size = url_info(hls_url)
+                    print_info(site_info, page_title, type_, size)
+                    if not info_only:
+                        download_url_ffmpeg(url=hls_url, title=page_title,
+                                            ext='mp4', output_dir=output_dir)
+            except:
+                pass
+            else:
+                return
 
         # most common media file extensions on the Internet
         media_exts = ['\.flv', '\.mp3', '\.mp4', '\.webm',
@@ -67,12 +75,12 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
         urls = []
         for i in media_exts:
-            urls += re.findall(r'(https?://[^ ;&"\'\\]+' + i + r'[^ ;&"\'\\]*)', page)
+            urls += re.findall(r'(https?://[^ ;&"\'\\<>]+' + i + r'[^ ;&"\'\\<>]*)', page)
 
             p_urls = re.findall(r'(https?%3A%2F%2F[^;&"]+' + i + r'[^;&"]*)', page)
             urls += [parse.unquote(url) for url in p_urls]
 
-            q_urls = re.findall(r'(https?:\\\\/\\\\/[^ ;"\']+' + i + r'[^ ;"\']*)', page)
+            q_urls = re.findall(r'(https?:\\\\/\\\\/[^ ;"\'<>]+' + i + r'[^ ;"\'<>]*)', page)
             urls += [url.replace('\\\\/', '/') for url in q_urls]
 
         # a link href to an image is often an interesting one
