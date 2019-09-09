@@ -49,7 +49,7 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
     """
 
     #first call the main parasing API
-    info = json.loads(get_content('http://www.acfun.cn/video/getVideo.aspx?id=' + vid))
+    info = json.loads(get_content('http://www.acfun.cn/video/getVideo.aspx?id=' + vid, headers=fake_headers))
 
     sourceType = info['sourceType']
 
@@ -112,7 +112,7 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     assert re.match(r'https?://[^\.]*\.*acfun\.[^\.]+/(\D|bangumi)/\D\D(\d+)', url)
 
     if re.match(r'https?://[^\.]*\.*acfun\.[^\.]+/\D/\D\D(\d+)', url):
-        html = get_content(url)
+        html = get_content(url, headers=fake_headers)
         json_text = match1(html, r"(?s)videoInfo\s*=\s*(\{.*?\});")
         json_data = json.loads(json_text)
         vid = json_data.get('currentVideoInfo').get('id')
@@ -121,7 +121,10 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         video_list = json_data.get('videoList')
         if len(video_list) > 1:
             title += " - " + [p.get('title') for p in video_list if p.get('id') == vid][0]
-    # bangumi
+
+        m3u8_url = json_data.get('currentVideoInfo')['playInfos'][0]['playUrls'][0]
+
+    # FIXME: bangumi
     elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
         html = get_content(url)
         tag_script = match1(html, r'<script>window\.pageInfo([^<]+)</script>')
@@ -130,10 +133,11 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         title = json_data['bangumiTitle'] + " " + json_data['episodeName'] + " " + json_data['title']
         vid = str(json_data['videoId'])
         up = "acfun"
+
     else:
         raise NotImplemented
 
-    assert title and vid
+    assert title and m3u8_url
     title = unescape_html(title)
     title = escape_file_path(title)
     p_title = r1('active">([^<]+)', html)
@@ -141,12 +145,9 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if p_title:
         title = '%s - %s' % (title, p_title)
 
-
-    acfun_download_by_vid(vid, title,
-                          output_dir=output_dir,
-                          merge=merge,
-                          info_only=info_only,
-                          **kwargs)
+    print_info(site_info, title, 'm3u8', float('inf'))
+    if not info_only:
+        download_url_ffmpeg(m3u8_url, title, 'mp4', output_dir=output_dir, merge=merge)
 
 
 site_info = "AcFun.cn"
