@@ -8,6 +8,7 @@ from you_get.extractors import (
     youtube,
     bilibili,
     toutiao,
+    qq
 )
 
 
@@ -31,6 +32,9 @@ class YouGetTests(unittest.TestCase):
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
         )
+
+    def test_qq_watermark(self):
+        qq.download('https://v.qq.com/x/cover/er0k7wjhbw8f4vj/u0032d5jt2i.html',info_only=False)
 
 
 if __name__ == '__main__':
