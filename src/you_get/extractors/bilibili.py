@@ -159,6 +159,8 @@ class Bilibili(VideoExtractor):
             sort = 'vc'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/av(\d+)', self.url):
             sort = 'video'
+        elif re.match(r'https?://b23\.tv/av(\%d+)', self.url):
+            sort = 'video'
         else:
             self.download_playlist_by_url(self.url, **kwargs)
             return
