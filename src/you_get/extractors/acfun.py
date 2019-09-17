@@ -124,15 +124,27 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
         m3u8_url = json_data.get('currentVideoInfo')['playInfos'][0]['playUrls'][0]
 
-    # FIXME: bangumi
     elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
-        html = get_content(url)
+        html = get_content(url, headers=fake_headers)
         tag_script = match1(html, r'<script>window\.pageInfo([^<]+)</script>')
         json_text = tag_script[tag_script.find('{') : tag_script.find('};') + 1]
         json_data = json.loads(json_text)
         title = json_data['bangumiTitle'] + " " + json_data['episodeName'] + " " + json_data['title']
         vid = str(json_data['videoId'])
         up = "acfun"
+
+        play_info = get_content("https://www.acfun.cn/rest/pc-direct/play/playInfo/m3u8Auto?videoId=" + vid, headers=fake_headers)
+        play_url = json.loads(play_info)['playInfo']['streams'][0]['playUrls'][0]
+        m3u8_all_qualities_file = get_content(play_url)
+        m3u8_all_qualities_lines = m3u8_all_qualities_file.split('#EXT-X-STREAM-INF:')[1:]
+        highest_quality_line = m3u8_all_qualities_lines[0]
+        for line in m3u8_all_qualities_lines:
+            bandwith = int(match1(line, r'BANDWIDTH=(\d+)'))
+            if bandwith > int(match1(highest_quality_line, r'BANDWIDTH=(\d+)')):
+                highest_quality_line = line
+        #TODO: 应由用户指定清晰度
+        m3u8_url = match1(highest_quality_line, r'\n([^#\n]+)$')
+        m3u8_url = play_url[:play_url.rfind("/")+1] + m3u8_url
 
     else:
         raise NotImplemented
