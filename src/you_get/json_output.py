@@ -11,6 +11,7 @@ def output(video_extractor, pretty_print=True):
     out['title'] = ve.title
     out['site'] = ve.name
     out['streams'] = ve.streams
+    out['streams'].update(ve.dash_streams)
     try:
         if ve.audiolang:
             out['audiolang'] = ve.audiolang
