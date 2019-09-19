@@ -8,6 +8,7 @@ from you_get.extractors import (
     youtube,
     bilibili,
     toutiao,
+    youku,
 )
 
 
@@ -32,6 +33,11 @@ class YouGetTests(unittest.TestCase):
             info_only=True
         )
 
+    def test_youku(self):
+        youku.download(
+            'https://v.youku.com/v_show/id_XNDAwNDM4NzQ0NA==.html?spm=a2h1n.8251843.playList.5!27~5~A&f=52028142&o=1',
+            info_only=True
+        )
 
 if __name__ == '__main__':
     unittest.main()
