@@ -11,7 +11,11 @@ def output(video_extractor, pretty_print=True):
     out['title'] = ve.title
     out['site'] = ve.name
     out['streams'] = ve.streams
-    out['streams'].update(ve.dash_streams)
+    try:
+        if ve.dash_streams:
+            out['streams'].update(ve.dash_streams)
+    except AttributeError:
+        pass
     try:
         if ve.audiolang:
             out['audiolang'] = ve.audiolang
@@ -60,4 +64,3 @@ def download_urls(urls=None, title=None, ext=None, total_size=None, refer=None):
     ve.streams = {}
     ve.streams['__default__'] = stream
     output(ve)
-
