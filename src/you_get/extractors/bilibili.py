@@ -423,25 +423,12 @@ class Bilibili(VideoExtractor):
 
     def prepare_by_cid(self,avid,cid,title,html_content,playinfo,playinfo_,url):
         #response for interaction video
-        #主要针对互动视频，使用cid而不是url来相互区分
+        #主要针对互动视频，使用cid而不是url来相互区分
+
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
         self.title = title
         self.url = url
 
-        #try:
-        #    html_content = get_content(self.url, headers=self.bilibili_headers())
-        #except:
-        #    html_content = ''
-
-        #initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
-        #initial_state = json.loads(initial_state_text)
-
-        # playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
-        # playinfo = json.loads(playinfo_text) if playinfo_text else None
-
-        # html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
-        # playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
-        # playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
         current_quality, best_quality = None, None
         if playinfo is not None:
             current_quality = playinfo['data']['quality'] or None  # 0 indicates an error, fallback to None
@@ -578,7 +565,6 @@ class Bilibili(VideoExtractor):
             if pn!= len(initial_state['videoData']['pages']):#interaction video 互动视频
                 search_node_list = []
                 download_cid_set = set([initial_state['videoData']['cid']])
-                node_infos = {}
                 params = {
                         'id': 'cid:{}'.format(initial_state['videoData']['cid']),
                         'aid': str(aid)
@@ -593,7 +579,6 @@ class Bilibili(VideoExtractor):
                     'screen': 0,
                 }
                 node_info = json.loads(get_content('https://api.bilibili.com/x/stein/nodeinfo?'+parse.urlencode(params)))
-                node_infos.update({1: (initial_state['videoData']['cid'], node_info['data']['title'])})
 
                 playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
                 playinfo = json.loads(playinfo_text) if playinfo_text else None
@@ -609,7 +594,6 @@ class Bilibili(VideoExtractor):
                     search_node_list.append(choice['node_id'])
                     if not choice['cid'] in download_cid_set:
                         download_cid_set.add(choice['cid'])
-                        node_infos.update({len(download_cid_set): (choice['cid'], choice['option'])})
                         self.prepare_by_cid(aid,choice['cid'],initial_state['videoData']['title']+('P{}. {}'.format(len(download_cid_set),choice['option'])),html_content,playinfo,playinfo_,url)
                         self.extract(**kwargs)
                         self.download(**kwargs)
@@ -622,7 +606,6 @@ class Bilibili(VideoExtractor):
                             search_node_list.append(choice['node_id'])
                             if not choice['cid'] in download_cid_set:
                                 download_cid_set.add(choice['cid'] )
-                                node_infos.update({len(download_cid_set):(choice['cid'],choice['option'])})
                                 self.prepare_by_cid(aid,choice['cid'],initial_state['videoData']['title']+('P{}. {}'.format(len(download_cid_set),choice['option'])),html_content,playinfo,playinfo_,url)
                                 self.extract(**kwargs)
                                 self.download(**kwargs)
