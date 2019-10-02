@@ -420,6 +420,107 @@ class Bilibili(VideoExtractor):
             self.streams['mp4'] = {'container': container,
                                    'size': size, 'src': [playurl]}
 
+
+    def prepare_by_cid(self,avid,cid,title,html_content,playinfo,playinfo_,url):
+        #response for interaction video
+        #主要针对互动视频，使用cid而不是url来相互区分
+        self.stream_qualities = {s['quality']: s for s in self.stream_types}
+        self.title = title
+        self.url = url
+
+        #try:
+        #    html_content = get_content(self.url, headers=self.bilibili_headers())
+        #except:
+        #    html_content = ''
+
+        #initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+        #initial_state = json.loads(initial_state_text)
+
+        # playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
+        # playinfo = json.loads(playinfo_text) if playinfo_text else None
+
+        # html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
+        # playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
+        # playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
+        current_quality, best_quality = None, None
+        if playinfo is not None:
+            current_quality = playinfo['data']['quality'] or None  # 0 indicates an error, fallback to None
+            if 'accept_quality' in playinfo['data'] and playinfo['data']['accept_quality'] != []:
+                best_quality = playinfo['data']['accept_quality'][0]
+        playinfos = []
+        if playinfo is not None:
+            playinfos.append(playinfo)
+        if playinfo_ is not None:
+            playinfos.append(playinfo_)
+        # get alternative formats from API
+        for qn in [80, 64, 32, 16]:
+            # automatic format for durl: qn=0
+            # for dash, qn does not matter
+            if current_quality is None or qn < current_quality:
+                api_url = self.bilibili_api(avid, cid, qn=qn)
+                api_content = get_content(api_url, headers=self.bilibili_headers())
+                api_playinfo = json.loads(api_content)
+                if api_playinfo['code'] == 0:  # success
+                    playinfos.append(api_playinfo)
+                else:
+                    message = api_playinfo['data']['message']
+            if best_quality is None or qn <= best_quality:
+                api_url = self.bilibili_interface_api(cid, qn=qn)
+                api_content = get_content(api_url, headers=self.bilibili_headers())
+                api_playinfo_data = json.loads(api_content)
+                if api_playinfo_data.get('quality'):
+                    playinfos.append({'code': 0, 'message': '0', 'ttl': 1, 'data': api_playinfo_data})
+        if not playinfos:
+            log.w(message)
+            # use bilibili error video instead
+            url = 'https://static.hdslb.com/error.mp4'
+            _, container, size = url_info(url)
+            self.streams['flv480'] = {'container': container, 'size': size, 'src': [url]}
+            return
+
+        for playinfo in playinfos:
+            quality = playinfo['data']['quality']
+            format_id = self.stream_qualities[quality]['id']
+            container = self.stream_qualities[quality]['container'].lower()
+            desc = self.stream_qualities[quality]['desc']
+
+            if 'durl' in playinfo['data']:
+                src, size = [], 0
+                for durl in playinfo['data']['durl']:
+                    src.append(durl['url'])
+                    size += durl['size']
+                self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': src}
+
+            # DASH formats
+            if 'dash' in playinfo['data']:
+                audio_size_cache = {}
+                for video in playinfo['data']['dash']['video']:
+                    # prefer the latter codecs!
+                    s = self.stream_qualities[video['id']]
+                    format_id = 'dash-' + s['id']  # prefix
+                    container = 'mp4'  # enforce MP4 container
+                    desc = s['desc']
+                    audio_quality = s['audio_quality']
+                    baseurl = video['baseUrl']
+                    size = self.url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+
+                    # find matching audio track
+                    audio_baseurl = playinfo['data']['dash']['audio'][0]['baseUrl']
+                    for audio in playinfo['data']['dash']['audio']:
+                        if int(audio['id']) == audio_quality:
+                            audio_baseurl = audio['baseUrl']
+                            break
+                    if not audio_size_cache.get(audio_quality, False):
+                        audio_size_cache[audio_quality] = self.url_size(audio_baseurl,
+                                                                        headers=self.bilibili_headers(referer=self.url))
+                    size += audio_size_cache[audio_quality]
+
+                    self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                    'src': [[baseurl], [audio_baseurl]], 'size': size}
+
+        # get danmaku
+        self.danmaku = get_content('http://comment.bilibili.com/%s.xml' % cid)
+
     def extract(self, **kwargs):
         # set UA and referer for downloading
         headers = self.bilibili_headers(referer=self.url)
@@ -474,9 +575,61 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             aid = initial_state['videoData']['aid']
             pn = initial_state['videoData']['videos']
-            for pi in range(1, pn + 1):
-                purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
-                self.__class__().download_by_url(purl, **kwargs)
+            if pn!= len(initial_state['videoData']['pages']):#interaction video 互动视频
+                search_node_list = []
+                download_cid_set = set([initial_state['videoData']['cid']])
+                node_infos = {}
+                params = {
+                        'id': 'cid:{}'.format(initial_state['videoData']['cid']),
+                        'aid': str(aid)
+                }
+                urlcontent = get_content('https://api.bilibili.com/x/player.so?'+parse.urlencode(params), headers=self.bilibili_headers(referer='https://www.bilibili.com/video/av{}'.format(aid)))
+                graph_version = json.loads(urlcontent[urlcontent.find('<interaction>')+13:urlcontent.find('</interaction>')])['graph_version']
+                params = {
+                    'aid': str(aid),
+                    'graph_version': graph_version,
+                    'platform': 'pc',
+                    'portal': 0,
+                    'screen': 0,
+                }
+                node_info = json.loads(get_content('https://api.bilibili.com/x/stein/nodeinfo?'+parse.urlencode(params)))
+                node_infos.update({1: (initial_state['videoData']['cid'], node_info['data']['title'])})
+
+                playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
+                playinfo = json.loads(playinfo_text) if playinfo_text else None
+
+                html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
+                playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
+                playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
+
+                self.prepare_by_cid(aid, initial_state['videoData']['cid'], initial_state['videoData']['title'] + ('P{}. {}'.format(1, node_info['data']['title'])),html_content,playinfo,playinfo_,url)
+                self.extract(**kwargs)
+                self.download(**kwargs)
+                for choice in node_info['data']['edges']['choices']:
+                    search_node_list.append(choice['node_id'])
+                    if not choice['cid'] in download_cid_set:
+                        download_cid_set.add(choice['cid'])
+                        node_infos.update({len(download_cid_set): (choice['cid'], choice['option'])})
+                        self.prepare_by_cid(aid,choice['cid'],initial_state['videoData']['title']+('P{}. {}'.format(len(download_cid_set),choice['option'])),html_content,playinfo,playinfo_,url)
+                        self.extract(**kwargs)
+                        self.download(**kwargs)
+                while len(search_node_list)>0:
+                    node_id = search_node_list.pop(0)
+                    params.update({'node_id':node_id})
+                    node_info = json.loads(get_content('https://api.bilibili.com/x/stein/nodeinfo?'+parse.urlencode(params)))
+                    if node_info['data'].__contains__('edges'):
+                        for choice in node_info['data']['edges']['choices']:
+                            search_node_list.append(choice['node_id'])
+                            if not choice['cid'] in download_cid_set:
+                                download_cid_set.add(choice['cid'] )
+                                node_infos.update({len(download_cid_set):(choice['cid'],choice['option'])})
+                                self.prepare_by_cid(aid,choice['cid'],initial_state['videoData']['title']+('P{}. {}'.format(len(download_cid_set),choice['option'])),html_content,playinfo,playinfo_,url)
+                                self.extract(**kwargs)
+                                self.download(**kwargs)
+            else:
+                for pi in range(1, pn + 1):
+                    purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
+                    self.__class__().download_by_url(purl, **kwargs)
 
         elif sort == 'bangumi':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
