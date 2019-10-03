@@ -79,6 +79,7 @@ SITES = {
     'metacafe'         : 'metacafe',
     'mgtv'             : 'mgtv',
     'miomio'           : 'miomio',
+    'missevan'         : 'missevan',
     'mixcloud'         : 'mixcloud',
     'mtv81'            : 'mtv81',
     'musicplayon'      : 'musicplayon',
