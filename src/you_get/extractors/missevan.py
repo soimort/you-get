@@ -71,13 +71,14 @@ class _Dispatcher(object):
 
         raise _NoMatchException()
 
-
 missevan_stream_types = [
     {'id': '128bit', 'url_json_key': 'soundurl_128', 'desc': '128 Kbps'},
     {'id': '64bit', 'url_json_key': 'soundurl_64', 'desc': '64 Kbps'},
     {'id': '32bit', 'url_json_key': 'soundurl_32', 'desc': '32 Kbps'},
-    {'id': 'covers', 'url_json_key': 'cover_image', 'desc': '封面图'},
-    {'id': 'coversmini', 'url_json_key': 'cover_image', 'desc': '封面缩略图'}
+    {'id': 'covers', 'url_json_key': 'cover_image', 'desc': '封面图',
+     'default_src': 'http://static.missevan.com/covers/nocover.png'},
+    {'id': 'coversmini', 'url_json_key': 'cover_image', 'desc': '封面缩略图',
+     'default_src': 'http://static.missevan.com/coversmini/nocover.png'}
 ]
 
 def is_covers_stream(stream):
@@ -90,6 +91,13 @@ def get_file_extension(file_path, default=''):
         # remove dot
         suffix = suffix[1:]
     return suffix or default
+
+def best_quality_stream_id(streams, stream_types):
+    for stream_type in stream_types:
+        if streams.get(stream_type['id']):
+            return stream_type['id']
+
+    raise AssertionError('no stream selected')
 
 
 class MissEvanWithStream(VideoExtractor):
@@ -165,12 +173,16 @@ class MissEvan(VideoExtractor):
             stream_id = stream_type['id']
             uri = sound[stream_type['url_json_key']]
             if is_covers_stream(stream_id):
-                resource_url = cls.url_resource(stream_id + '/' + uri)
+                if uri:
+                    resource_url = cls.url_resource(stream_id + '/' + uri)
+                else:
+                    resource_url = stream_type['default_src']
             else:
-                resource_url = cls.url_resource(uri)
+                resource_url = cls.url_resource(uri) if uri else None
 
-            container = get_file_extension(uri)
-            streams[stream_id] = {'src': [resource_url], 'container': container}
+            if resource_url:
+                container = get_file_extension(resource_url)
+                streams[stream_id] = {'src': [resource_url], 'container': container}
         return streams
 
     def prepare(self, **kwargs):
@@ -238,7 +250,9 @@ class MissEvan(VideoExtractor):
 
     def download_playlist_by_url(self, url, **kwargs):
         # use the best quality by default
-        kwargs.setdefault('stream_id', self.stream_types[0]['id'])
+        if not kwargs.get('stream_id'):
+            stream_id = best_quality_stream_id(self.streams, self.stream_types)
+            kwargs['stream_id'] = stream_id
 
         self.url = url
         try:
@@ -254,12 +268,15 @@ class MissEvan(VideoExtractor):
             super().download_by_url(url, **kwargs)
 
     def download(self, **kwargs):
-        kwargs['keep_obj'] = True   # keep the self.streams to download covers
+        kwargs['keep_obj'] = True   # keep the self.streams to download cover
         super().download(**kwargs)
         self.download_covers(self.title, self.streams, **kwargs)
 
     def extract(self, **kwargs):
-        stream_id = kwargs.get('stream_id') or self.stream_types[0]['id']
+        stream_id = kwargs.get('stream_id')
+        if not stream_id:
+            stream_id = best_quality_stream_id(self.streams, self.stream_types)
+
         stream = self.streams[stream_id]
         if 'size' not in stream:
             stream['size'] = urls_size(stream['src'])
