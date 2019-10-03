@@ -120,8 +120,6 @@ class MissEvan(VideoExtractor):
     name = 'MissEvan'
     stream_types = missevan_stream_types
 
-    _SOUND_URL_PREFIX = 'https://static.missevan.com/'
-
     _P_ALBUM_URL = re.compile(r'missevan\.com/album(?:info)?/(?P<aid>\d+)', re.I)
 
     @classmethod
@@ -146,29 +144,14 @@ class MissEvan(VideoExtractor):
     @__prepare_dispatcher.endpoint(
         re.compile(r'missevan\.com/sound/(?:player\?.*?id=)?(?P<sid>\d+)', re.I))
     def prepare_sound(self, sid, **kwargs):
-        content = get_content('https://www.missevan.com/sound/getsound?soundid=' + sid)
+        content = get_content(self.url_sound_api(sid))
         json_data = json.loads(content)
         sound = json_data['info']['sound']
 
-        q32_url = self._SOUND_URL_PREFIX + sound['soundurl_32']
-        q64_url = self._SOUND_URL_PREFIX + sound['soundurl_64']
-        q128_url = self._SOUND_URL_PREFIX + sound['soundurl_128']
-
-        self.streams = {
-            '32bit': {
-                'src': [q32_url],
-                'container': 'mp3'
-            },
-            '64bit': {
-                'src': [q64_url],
-                'container': 'mp3'
-            },
-            '128bit': {
-                'src': [q128_url],
-                'container': 'mp3'
-            }
-        }
         self.title = sound['soundstr']
+        for stream_type in self.stream_types:
+            sound_url = self.url_resource(sound[stream_type['url_json_key']])
+            self.streams[stream_type['id']] = {'src': [sound_url], 'container': 'mp3'}
 
     def prepare(self, **kwargs):
         if self.vid:
@@ -191,9 +174,9 @@ class MissEvan(VideoExtractor):
             exit(1)
 
         # use the best quality by default
-        kwargs.setdefault('stream_id', missevan_stream_types[0]['id'])
+        kwargs.setdefault('stream_id', self.stream_types[0]['id'])
 
-        content = get_content('https://www.missevan.com/sound/soundalllist?albumid=' + aid)
+        content = get_content(self.url_album_api(aid))
         json_data = json.loads(content)
         album = json_data['info']['album']
         self.title = album['title']
@@ -202,8 +185,8 @@ class MissEvan(VideoExtractor):
         for sound in sounds:
             streams = {}
 
-            for stream_type in missevan_stream_types:
-                sound_url = self._SOUND_URL_PREFIX + sound[stream_type['url_json_key']]
+            for stream_type in self.stream_types:
+                sound_url = self.url_resource(sound[stream_type['url_json_key']])
                 streams[stream_type['id']] = {'src': [sound_url], 'container': 'mp3'}
 
             sound_title = sound['soundstr']
@@ -212,10 +195,22 @@ class MissEvan(VideoExtractor):
                 .download(**kwargs)
 
     def extract(self, **kwargs):
-        stream_id = kwargs.get('stream_id') or missevan_stream_types[0]['id']
+        stream_id = kwargs.get('stream_id') or self.stream_types[0]['id']
         stream = self.streams[stream_id]
         if 'size' not in stream:
             stream['size'] = urls_size(stream['src'])
+
+    @staticmethod
+    def url_album_api(album_id):
+        return 'https://www.missevan.com/sound/soundalllist?albumid=' + str(album_id)
+
+    @staticmethod
+    def url_sound_api(sound_id):
+        return 'https://www.missevan.com/sound/getsound?soundid=' + str(sound_id)
+
+    @staticmethod
+    def url_resource(uri):
+        return 'https://static.missevan.com/' + uri
 
 site = MissEvan()
 site_info = 'MissEvan.com'
