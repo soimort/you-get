@@ -30,7 +30,7 @@ from ..common import get_content, urls_size, log
 from ..extractor import VideoExtractor
 
 
-class NoMatchException(Exception):
+class _NoMatchException(Exception):
     pass
 
 
@@ -69,14 +69,27 @@ class _Dispatcher(object):
                 kwargs.update(match.groupdict())
                 return fun(*args, **kwargs)
 
-        raise NoMatchException()
+        raise _NoMatchException()
 
 
 missevan_stream_types = [
-    {'id': '128bit', 'url_json_key': 'soundurl_32'},
-    {'id': '64bit', 'url_json_key': 'soundurl_64'},
-    {'id': '32bit', 'url_json_key': 'soundurl_128'}
+    {'id': '128bit', 'url_json_key': 'soundurl_128', 'desc': '128 Kbps'},
+    {'id': '64bit', 'url_json_key': 'soundurl_64', 'desc': '64 Kbps'},
+    {'id': '32bit', 'url_json_key': 'soundurl_32', 'desc': '32 Kbps'},
+    {'id': 'covers', 'url_json_key': 'cover_image', 'desc': '封面图'},
+    {'id': 'coversmini', 'url_json_key': 'cover_image', 'desc': '封面缩略图'}
 ]
+
+def is_covers_stream(stream):
+    stream = stream or ''
+    return stream.lower() in ('covers', 'coversmini')
+
+def get_file_extension(file_path, default=''):
+    _, suffix = os.path.splitext(file_path)
+    if suffix:
+        # remove dot
+        suffix = suffix[1:]
+    return suffix or default
 
 
 class MissEvanWithStream(VideoExtractor):
@@ -85,13 +98,17 @@ class MissEvanWithStream(VideoExtractor):
     stream_types = missevan_stream_types
 
     @classmethod
-    def create(cls, title, streams, streams_sorted=None):
+    def create(cls, title, streams, *, streams_sorted=None):
         obj = cls()
         obj.title = title
         obj.streams.update(streams)
         streams_sorted = streams_sorted or cls._setup_streams_sorted(streams)
         obj.streams_sorted.extend(streams_sorted)
         return obj
+
+    def fetch_danmaku(self, url, headers=None):
+        self.danmaku = get_content(url, headers or {})
+        return self
 
     @staticmethod
     def _setup_streams_sorted(streams):
@@ -125,12 +142,6 @@ class MissEvan(VideoExtractor):
     name = 'MissEvan'
     stream_types = missevan_stream_types
 
-    def download_by_url(self, url, **kwargs):
-        if not kwargs.get('playlist') and self._download_playlist_dispatcher.test(url):
-            log.w('This is an album or drama. (use --playlist option to download all).')
-        else:
-            super().download_by_url(url, **kwargs)
-
     __prepare_dispatcher = _Dispatcher()
 
     @__prepare_dispatcher.endpoint(
@@ -141,9 +152,26 @@ class MissEvan(VideoExtractor):
         sound = json_data['info']['sound']
 
         self.title = sound['soundstr']
-        for stream_type in self.stream_types:
-            sound_url = self.url_resource(sound[stream_type['url_json_key']])
-            self.streams[stream_type['id']] = {'src': [sound_url], 'container': 'mp3'}
+        if not is_covers_stream(kwargs.get('stream_id')):
+            self.danmaku = get_content(self.url_danmaku_api(sid))
+
+        self.streams = self.setup_streams(sound)
+
+    @classmethod
+    def setup_streams(cls, sound):
+        streams = {}
+
+        for stream_type in cls.stream_types:
+            stream_id = stream_type['id']
+            uri = sound[stream_type['url_json_key']]
+            if is_covers_stream(stream_id):
+                resource_url = cls.url_resource(stream_id + '/' + uri)
+            else:
+                resource_url = cls.url_resource(uri)
+
+            container = get_file_extension(uri)
+            streams[stream_id] = {'src': [resource_url], 'container': container}
+        return streams
 
     def prepare(self, **kwargs):
         if self.vid:
@@ -152,9 +180,17 @@ class MissEvan(VideoExtractor):
 
         try:
             self.__prepare_dispatcher.dispatch(self.url, self, **kwargs)
-        except NoMatchException:
+        except _NoMatchException:
             log.e('[Error] Unsupported URL pattern.')
             exit(1)
+
+    @staticmethod
+    def download_covers(title, streams, **kwargs):
+        if not is_covers_stream(kwargs.get('stream_id')):
+            kwargs['stream_id'] = 'covers'
+            MissEvanWithStream \
+                .create(title, streams) \
+                .download(**kwargs)
 
     _download_playlist_dispatcher = _Dispatcher()
 
@@ -167,17 +203,20 @@ class MissEvan(VideoExtractor):
         self.title = album['title']
         sounds = json_data['info']['sounds']
 
+        output_dir = os.path.abspath(kwargs.pop('output_dir', '.'))
+        output_dir = os.path.join(output_dir, self.title)
+        kwargs['output_dir'] = output_dir
+
         for sound in sounds:
-            streams = {}
-
-            for stream_type in self.stream_types:
-                sound_url = self.url_resource(sound[stream_type['url_json_key']])
-                streams[stream_type['id']] = {'src': [sound_url], 'container': 'mp3'}
-
+            streams = self.setup_streams(sound)
+            sound_id = sound['id']
             sound_title = sound['soundstr']
             MissEvanWithStream \
                 .create(sound_title, streams) \
+                .fetch_danmaku(self.url_danmaku_api(sound_id)) \
                 .download(**kwargs)
+
+            self.download_covers(sound_title, streams, **kwargs)
 
     @_download_playlist_dispatcher.endpoint(
         re.compile(r'missevan\.com(?:/mdrama)?/drama/(?P<did>\d+)', re.I))
@@ -204,9 +243,20 @@ class MissEvan(VideoExtractor):
         self.url = url
         try:
             self._download_playlist_dispatcher.dispatch(url, self, **kwargs)
-        except NoMatchException:
+        except _NoMatchException:
             log.e('[Error] Unsupported URL pattern with --playlist option.')
             exit(1)
+
+    def download_by_url(self, url, **kwargs):
+        if not kwargs.get('playlist') and self._download_playlist_dispatcher.test(url):
+            log.w('This is an album or drama. (use --playlist option to download all).')
+        else:
+            super().download_by_url(url, **kwargs)
+
+    def download(self, **kwargs):
+        kwargs['keep_obj'] = True   # keep the self.streams to download covers
+        super().download(**kwargs)
+        self.download_covers(self.title, self.streams, **kwargs)
 
     def extract(self, **kwargs):
         stream_id = kwargs.get('stream_id') or self.stream_types[0]['id']
@@ -225,6 +275,10 @@ class MissEvan(VideoExtractor):
     @staticmethod
     def url_drama_api(drama_id):
         return 'https://www.missevan.com/dramaapi/getdrama?drama_id=' + str(drama_id)
+
+    @staticmethod
+    def url_danmaku_api(sound_id):
+        return 'https://www.missevan.com/sound/getdm?soundid=' + str(sound_id)
 
     @staticmethod
     def url_resource(uri):
