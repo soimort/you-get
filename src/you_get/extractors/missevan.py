@@ -23,6 +23,7 @@ SOFTWARE.
 """
 
 import json
+import os
 import re
 
 from ..common import get_content, urls_size, log
@@ -46,10 +47,14 @@ class _Dispatcher(object):
         self.entry.append((patterns, fun))
 
     def endpoint(self, *patterns):
+        assert patterns, 'patterns must not be empty'
         def _wrap(fun):
             self.register(patterns, fun)
             return fun
         return _wrap
+
+    def test(self, url):
+        return any(pa.search(url) for pas, _ in self.entry for pa in pas)
 
     def dispatch(self, url, *args, **kwargs):
 
@@ -120,22 +125,9 @@ class MissEvan(VideoExtractor):
     name = 'MissEvan'
     stream_types = missevan_stream_types
 
-    _P_ALBUM_URL = re.compile(r'missevan\.com/album(?:info)?/(?P<aid>\d+)', re.I)
-
-    @classmethod
-    def is_album_url(cls, url):
-        return bool(cls._P_ALBUM_URL.search(url))
-
-    @classmethod
-    def parse_album_id(cls, url):
-        match = cls._P_ALBUM_URL.search(url)
-        if not match:
-            raise ValueError()
-        return match.group('aid')
-
     def download_by_url(self, url, **kwargs):
-        if not kwargs.get('playlist') and self.is_album_url(url):
-            log.w('This is an album. (use --playlist to download all audios).')
+        if not kwargs.get('playlist') and self._download_playlist_dispatcher.test(url):
+            log.w('This is an album or drama. (use --playlist option to download all).')
         else:
             super().download_by_url(url, **kwargs)
 
@@ -164,18 +156,11 @@ class MissEvan(VideoExtractor):
             log.e('[Error] Unsupported URL pattern.')
             exit(1)
 
-    def download_playlist_by_url(self, url, **kwargs):
-        self.url = url
-        aid = None
-        try:
-            aid = self.parse_album_id(url)
-        except ValueError:
-            log.e('[Error] Unsupported URL pattern with --playlist option.')
-            exit(1)
+    _download_playlist_dispatcher = _Dispatcher()
 
-        # use the best quality by default
-        kwargs.setdefault('stream_id', self.stream_types[0]['id'])
-
+    @_download_playlist_dispatcher.endpoint(
+        re.compile(r'missevan\.com/album(?:info)?/(?P<aid>\d+)', re.I))
+    def download_album(self, aid, **kwargs):
         content = get_content(self.url_album_api(aid))
         json_data = json.loads(content)
         album = json_data['info']['album']
@@ -194,6 +179,35 @@ class MissEvan(VideoExtractor):
                 .create(sound_title, streams) \
                 .download(**kwargs)
 
+    @_download_playlist_dispatcher.endpoint(
+        re.compile(r'missevan\.com(?:/mdrama)?/drama/(?P<did>\d+)', re.I))
+    def download_drama(self, did, **kwargs):
+        content = get_content(self.url_drama_api(did))
+        json_data = json.loads(content)
+
+        drama = json_data['info']['drama']
+
+        self.title = drama['name']
+        output_dir = os.path.abspath(kwargs.pop('output_dir', '.'))
+        output_dir = os.path.join(output_dir, self.title)
+        kwargs['output_dir'] = output_dir
+
+        episodes = json_data['info']['episodes']
+        for each in episodes['episode']:
+            sound_id = each['sound_id']
+            MissEvan().download_by_vid(sound_id, **kwargs)
+
+    def download_playlist_by_url(self, url, **kwargs):
+        # use the best quality by default
+        kwargs.setdefault('stream_id', self.stream_types[0]['id'])
+
+        self.url = url
+        try:
+            self._download_playlist_dispatcher.dispatch(url, self, **kwargs)
+        except NoMatchException:
+            log.e('[Error] Unsupported URL pattern with --playlist option.')
+            exit(1)
+
     def extract(self, **kwargs):
         stream_id = kwargs.get('stream_id') or self.stream_types[0]['id']
         stream = self.streams[stream_id]
@@ -207,6 +221,10 @@ class MissEvan(VideoExtractor):
     @staticmethod
     def url_sound_api(sound_id):
         return 'https://www.missevan.com/sound/getsound?soundid=' + str(sound_id)
+
+    @staticmethod
+    def url_drama_api(drama_id):
+        return 'https://www.missevan.com/dramaapi/getdrama?drama_id=' + str(drama_id)
 
     @staticmethod
     def url_resource(uri):
