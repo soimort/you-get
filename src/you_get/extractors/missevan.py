@@ -321,25 +321,26 @@ class MissEvan(VideoExtractor):
 
     @staticmethod
     def url_album_api(album_id):
-        return f'https://www.missevan.com/sound' \
-               f'/soundalllist?albumid={album_id}'
+        return 'https://www.missevan.com/sound' \
+               '/soundalllist?albumid=' + str(album_id)
 
     @staticmethod
     def url_sound_api(sound_id):
-        return f'https://www.missevan.com/sound/getsound?soundid={sound_id}'
+        return 'https://www.missevan.com/sound' \
+               '/getsound?soundid=' + str(sound_id)
 
     @staticmethod
     def url_drama_api(drama_id):
-        return f'https://www.missevan.com/dramaapi' \
-               f'/getdrama?drama_id={drama_id}'
+        return 'https://www.missevan.com/dramaapi' \
+               '/getdrama?drama_id=' + str(drama_id)
 
     @staticmethod
     def url_danmaku_api(sound_id):
-        return f'https://www.missevan.com/sound/getdm?soundid={sound_id}'
+        return 'https://www.missevan.com/sound/getdm?soundid=' + str(sound_id)
 
     @staticmethod
     def url_resource(uri):
-        return f'https://static.missevan.com/{uri}'
+        return 'https://static.missevan.com/' + uri
 
 site = MissEvan()
 site_info = 'MissEvan.com'
