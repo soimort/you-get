@@ -24,7 +24,7 @@ class YouGetTests(unittest.TestCase):
     def test_missevan(self):
         missevan.download('https://m.missevan.com/sound/1285995', info_only=True)
         missevan.download_playlist(
-            'https://www.missevan.com/mdrama/drama/17579', info_only=True)
+            'https://www.missevan.com/albuminfo/287800', info_only=True)
 
     def test_youtube(self):
         youtube.download(
