@@ -6,8 +6,7 @@ from you_get.extractors import (
     imgur,
     magisto,
     youtube,
-    bilibili,
-    toutiao,
+    missevan
 )
 
 
@@ -21,6 +20,11 @@ class YouGetTests(unittest.TestCase):
             'http://www.magisto.com/album/video/f3x9AAQORAkfDnIFDA',
             info_only=True
         )
+
+    def test_missevan(self):
+        missevan.download('https://m.missevan.com/sound/1285995', info_only=True)
+        missevan.download_playlist(
+            'https://www.missevan.com/mdrama/drama/17579', info_only=True)
 
     def test_youtube(self):
         youtube.download(
