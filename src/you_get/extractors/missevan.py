@@ -29,6 +29,9 @@ import re
 from ..common import get_content, urls_size, log, player
 from ..extractor import VideoExtractor
 
+_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 ' \
+       '(KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
+
 
 class _NoMatchException(Exception):
     pass
@@ -119,6 +122,11 @@ class MissEvanWithStream(VideoExtractor):
     name = 'MissEvan'
     stream_types = missevan_stream_types
 
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.referer = 'https://www.missevan.com/'
+        self.ua = _UA
+
     @classmethod
     def create(cls, title, streams, *, streams_sorted=None):
         obj = cls()
@@ -128,8 +136,8 @@ class MissEvanWithStream(VideoExtractor):
         obj.streams_sorted.extend(streams_sorted)
         return obj
 
-    def fetch_danmaku(self, url, headers=None):
-        self.danmaku = get_content(url, headers or {})
+    def set_danmaku(self, danmaku):
+        self.danmaku = danmaku
         return self
 
     @staticmethod
@@ -164,18 +172,23 @@ class MissEvan(VideoExtractor):
     name = 'MissEvan'
     stream_types = missevan_stream_types
 
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.referer = 'https://www.missevan.com/'
+        self.ua = _UA
+        self.__headers = {'User-Agent': self.ua, 'Referer': self.referer}
+
     __prepare_dispatcher = _Dispatcher()
 
     @__prepare_dispatcher.endpoint(
         re.compile(r'missevan\.com/sound/(?:player\?.*?id=)?(?P<sid>\d+)', re.I))
     def prepare_sound(self, sid, **kwargs):
-        content = get_content(self.url_sound_api(sid))
-        json_data = json.loads(content)
+        json_data = self._get_json(self.url_sound_api(sid))
         sound = json_data['info']['sound']
 
         self.title = sound['soundstr']
         if not is_covers_stream(kwargs.get('stream_id')):
-            self.danmaku = get_content(self.url_danmaku_api(sid))
+            self.danmaku = self._get_content(self.url_danmaku_api(sid))
 
         self.streams = self.setup_streams(sound)
 
@@ -223,8 +236,7 @@ class MissEvan(VideoExtractor):
     @_download_playlist_dispatcher.endpoint(
         re.compile(r'missevan\.com/album(?:info)?/(?P<aid>\d+)', re.I))
     def download_album(self, aid, **kwargs):
-        content = get_content(self.url_album_api(aid))
-        json_data = json.loads(content)
+        json_data = self._get_json(self.url_album_api(aid))
         album = json_data['info']['album']
         self.title = album['title']
         sounds = json_data['info']['sounds']
@@ -237,9 +249,10 @@ class MissEvan(VideoExtractor):
             streams = self.setup_streams(sound)
             sound_id = sound['id']
             sound_title = sound['soundstr']
+            danmaku = self._get_content(self.url_danmaku_api(sound_id))
             MissEvanWithStream \
                 .create(sound_title, streams) \
-                .fetch_danmaku(self.url_danmaku_api(sound_id)) \
+                .set_danmaku(danmaku) \
                 .download(**kwargs)
 
             self.download_covers(sound_title, streams, **kwargs)
@@ -247,8 +260,7 @@ class MissEvan(VideoExtractor):
     @_download_playlist_dispatcher.endpoint(
         re.compile(r'missevan\.com(?:/mdrama)?/drama/(?P<did>\d+)', re.I))
     def download_drama(self, did, **kwargs):
-        content = get_content(self.url_drama_api(did))
-        json_data = json.loads(content)
+        json_data = self._get_json(self.url_drama_api(did))
 
         drama = json_data['info']['drama']
 
@@ -282,20 +294,30 @@ class MissEvan(VideoExtractor):
         self.download_covers(self.title, self.streams, **kwargs)
 
     def extract(self, **kwargs):
+        stream_id = kwargs.get('stream_id')
+
         # fetch all streams size when output info or json
-        if kwargs.get('info_only') or kwargs.get('json_output'):
+        if kwargs.get('info_only') and not stream_id \
+                or kwargs.get('json_output'):
+
             for _, stream in self.streams.items():
                 stream['size'] = urls_size(stream['src'])
             return
 
         # fetch size of the selected stream only
-        stream_id = kwargs.get('stream_id')
         if not stream_id:
             stream_id = best_quality_stream_id(self.streams, self.stream_types)
 
         stream = self.streams[stream_id]
         if 'size' not in stream:
             stream['size'] = urls_size(stream['src'])
+
+    def _get_content(self, url):
+        return get_content(url, headers=self.__headers)
+
+    def _get_json(self, url):
+        content = self._get_content(url)
+        return json.loads(content)
 
     @staticmethod
     def url_album_api(album_id):
