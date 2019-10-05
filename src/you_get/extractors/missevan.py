@@ -187,6 +187,10 @@ class MissEvan(VideoExtractor):
         sound = json_data['info']['sound']
 
         self.title = sound['soundstr']
+        if sound.get('need_pay'):
+            log.e('付费资源无法下载')
+            return
+
         if not is_covers_stream(kwargs.get('stream_id')):
             self.danmaku = self._get_content(self.url_danmaku_api(sid))
 
@@ -246,9 +250,13 @@ class MissEvan(VideoExtractor):
         kwargs['output_dir'] = output_dir
 
         for sound in sounds:
+            sound_title = sound['soundstr']
+            if sound.get('need_pay'):
+                log.w('跳过付费资源: ' + sound_title)
+                continue
+
             streams = self.setup_streams(sound)
             sound_id = sound['id']
-            sound_title = sound['soundstr']
             danmaku = self._get_content(self.url_danmaku_api(sound_id))
             MissEvanWithStream \
                 .create(sound_title, streams) \
@@ -263,6 +271,8 @@ class MissEvan(VideoExtractor):
         json_data = self._get_json(self.url_drama_api(did))
 
         drama = json_data['info']['drama']
+        if drama.get('need_pay'):
+            log.w('该剧集包含付费资源, 付费资源将被跳过')
 
         self.title = drama['name']
         output_dir = os.path.abspath(kwargs.pop('output_dir', '.'))
@@ -271,6 +281,9 @@ class MissEvan(VideoExtractor):
 
         episodes = json_data['info']['episodes']
         for each in episodes['episode']:
+            if each.get('need_pay'):
+                log.w('跳过付费资源: ' + each['soundstr'])
+                continue
             sound_id = each['sound_id']
             MissEvan().download_by_vid(sound_id, **kwargs)
 
