@@ -26,7 +26,7 @@ import json
 import os
 import re
 
-from ..common import get_content, urls_size, log, player
+from ..common import get_content, urls_size, log, player, dry_run
 from ..extractor import VideoExtractor
 
 _UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 ' \
@@ -191,7 +191,7 @@ class MissEvan(VideoExtractor):
             log.e('付费资源无法下载')
             return
 
-        if not is_covers_stream(kwargs.get('stream_id')):
+        if not is_covers_stream(kwargs.get('stream_id')) and not dry_run:
             self.danmaku = self._get_content(self.url_danmaku_api(sid))
 
         self.streams = self.setup_streams(sound)
@@ -256,12 +256,12 @@ class MissEvan(VideoExtractor):
                 continue
 
             streams = self.setup_streams(sound)
-            sound_id = sound['id']
-            danmaku = self._get_content(self.url_danmaku_api(sound_id))
-            MissEvanWithStream \
-                .create(sound_title, streams) \
-                .set_danmaku(danmaku) \
-                .download(**kwargs)
+            extractor = MissEvanWithStream.create(sound_title, streams)
+            if not dry_run:
+                sound_id = sound['id']
+                danmaku = self._get_content(self.url_danmaku_api(sound_id))
+                extractor.set_danmaku(danmaku)
+            extractor.download(**kwargs)
 
             self.download_covers(sound_title, streams, **kwargs)
 
