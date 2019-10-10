@@ -128,7 +128,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
     if 'mp.weixin.qq.com/s' in url:
         content = get_content(url)
-        vids = matchall(content, [r'\?vid=(\w+)'])
+        vids = matchall(content, [r'[?;]vid=(\w+)'])
         for vid in vids:
             qq_download_by_vid(vid, vid, output_dir, merge, info_only)
         return
