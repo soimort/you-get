@@ -123,7 +123,7 @@ class Bilibili(VideoExtractor):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
 
         try:
-            html_content = get_content(self.url, headers=self.bilibili_headers())
+            html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
         except:
             html_content = ''  # live always returns 400 (why?)
         #self.title = match1(html_content,
@@ -255,17 +255,21 @@ class Bilibili(VideoExtractor):
                         size = self.url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
 
                         # find matching audio track
-                        audio_baseurl = playinfo['data']['dash']['audio'][0]['baseUrl']
-                        for audio in playinfo['data']['dash']['audio']:
-                            if int(audio['id']) == audio_quality:
-                                audio_baseurl = audio['baseUrl']
-                                break
-                        if not audio_size_cache.get(audio_quality, False):
-                            audio_size_cache[audio_quality] = self.url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
-                        size += audio_size_cache[audio_quality]
+                        if playinfo['data']['dash']['audio']:
+                            audio_baseurl = playinfo['data']['dash']['audio'][0]['baseUrl']
+                            for audio in playinfo['data']['dash']['audio']:
+                                if int(audio['id']) == audio_quality:
+                                    audio_baseurl = audio['baseUrl']
+                                    break
+                            if not audio_size_cache.get(audio_quality, False):
+                                audio_size_cache[audio_quality] = self.url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                            size += audio_size_cache[audio_quality]
 
-                        self.dash_streams[format_id] = {'container': container, 'quality': desc,
-                                                        'src': [[baseurl], [audio_baseurl]], 'size': size}
+                            self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                            'src': [[baseurl], [audio_baseurl]], 'size': size}
+                        else:
+                            self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                            'src': [[baseurl]], 'size': size}
 
             # get danmaku
             self.danmaku = get_content('http://comment.bilibili.com/%s.xml' % cid)
@@ -492,18 +496,22 @@ class Bilibili(VideoExtractor):
                     size = self.url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
 
                     # find matching audio track
-                    audio_baseurl = playinfo['data']['dash']['audio'][0]['baseUrl']
-                    for audio in playinfo['data']['dash']['audio']:
-                        if int(audio['id']) == audio_quality:
-                            audio_baseurl = audio['baseUrl']
-                            break
-                    if not audio_size_cache.get(audio_quality, False):
-                        audio_size_cache[audio_quality] = self.url_size(audio_baseurl,
-                                                                        headers=self.bilibili_headers(referer=self.url))
-                    size += audio_size_cache[audio_quality]
+                    if playinfo['data']['dash']['audio']:
+                        audio_baseurl = playinfo['data']['dash']['audio'][0]['baseUrl']
+                        for audio in playinfo['data']['dash']['audio']:
+                            if int(audio['id']) == audio_quality:
+                                audio_baseurl = audio['baseUrl']
+                                break
+                        if not audio_size_cache.get(audio_quality, False):
+                            audio_size_cache[audio_quality] = self.url_size(audio_baseurl,
+                                                                            headers=self.bilibili_headers(referer=self.url))
+                        size += audio_size_cache[audio_quality]
 
-                    self.dash_streams[format_id] = {'container': container, 'quality': desc,
-                                                    'src': [[baseurl], [audio_baseurl]], 'size': size}
+                        self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                        'src': [[baseurl], [audio_baseurl]], 'size': size}
+                    else:
+                        self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                        'src': [[baseurl]], 'size': size}
 
         # get danmaku
         self.danmaku = get_content('http://comment.bilibili.com/%s.xml' % cid)
@@ -610,9 +618,18 @@ class Bilibili(VideoExtractor):
                                 self.extract(**kwargs)
                                 self.download(**kwargs)
             else:
-                for pi in range(1, pn + 1):
-                    purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
-                    self.__class__().download_by_url(purl, **kwargs)
+                playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
+                playinfo = json.loads(playinfo_text) if playinfo_text else None
+
+                html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
+                playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
+                playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
+                for pi in range(pn):
+                    self.prepare_by_cid(aid,initial_state['videoData']['pages'][pi]['cid'],'%s (P%s. %s)' % (initial_state['videoData']['title'], pi+1, initial_state['videoData']['pages'][pi]['part']),html_content,playinfo,playinfo_,url)
+                    self.extract(**kwargs)
+                    self.download(**kwargs)
+                    # purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi+1)
+                    # self.__class__().download_by_url(purl, **kwargs)
 
         elif sort == 'bangumi':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
