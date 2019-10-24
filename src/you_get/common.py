@@ -916,7 +916,7 @@ def get_output_filename(urls, title, ext, output_dir, merge, **kwargs):
     if kwargs.get('part', -1) >= 0:
         result = '%s[%02d]' % (result, kwargs.get('part'))
     result = '%s.%s' % (result, merged_ext)
-    return result
+    return result.replace("'", "_")
 
 def print_user_agent(faker=False):
     urllib_default_user_agent = 'Python-urllib/%d.%d' % sys.version_info[:2]
