@@ -22,6 +22,8 @@ from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
 
+ssl._create_default_https_context = ssl._create_unverified_context
+
 SITES = {
     '163'              : 'netease',
     '56'               : 'w56',
