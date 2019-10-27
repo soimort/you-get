@@ -624,7 +624,8 @@ class Bilibili(VideoExtractor):
                 html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
                 playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
                 playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
-                for pi in range(pn):
+                p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or '1')-1
+                for pi in range(p,pn):
                     self.prepare_by_cid(aid,initial_state['videoData']['pages'][pi]['cid'],'%s (P%s. %s)' % (initial_state['videoData']['title'], pi+1, initial_state['videoData']['pages'][pi]['part']),html_content,playinfo,playinfo_,url)
                     self.extract(**kwargs)
                     self.download(**kwargs)
