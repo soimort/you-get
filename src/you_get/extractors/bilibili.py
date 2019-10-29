@@ -540,7 +540,7 @@ class Bilibili(VideoExtractor):
         self.url = url
         kwargs['playlist'] = True
 
-        html_content = get_content(self.url, headers=self.bilibili_headers())
+        html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
 
         # sort it out
         if re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ep(\d+)', self.url):
