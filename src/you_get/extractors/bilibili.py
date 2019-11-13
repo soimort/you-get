@@ -613,8 +613,12 @@ class Bilibili(VideoExtractor):
                         for choice in node_info['data']['edges']['choices']:
                             search_node_list.append(choice['node_id'])
                             if not choice['cid'] in download_cid_set:
-                                download_cid_set.add(choice['cid'] )
+                                download_cid_set.add(choice['cid'])
                                 self.prepare_by_cid(aid,choice['cid'],initial_state['videoData']['title']+('P{}. {}'.format(len(download_cid_set),choice['option'])),html_content,playinfo,playinfo_,url)
+                                try:
+                                    self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
+                                except:
+                                    self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
                                 self.extract(**kwargs)
                                 self.download(**kwargs)
             else:
@@ -627,6 +631,10 @@ class Bilibili(VideoExtractor):
                 p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or '1')-1
                 for pi in range(p,pn):
                     self.prepare_by_cid(aid,initial_state['videoData']['pages'][pi]['cid'],'%s (P%s. %s)' % (initial_state['videoData']['title'], pi+1, initial_state['videoData']['pages'][pi]['part']),html_content,playinfo,playinfo_,url)
+                    try:
+                        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
+                    except:
+                        self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
                     self.extract(**kwargs)
                     self.download(**kwargs)
                     # purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi+1)
