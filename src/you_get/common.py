@@ -66,6 +66,7 @@ SITES = {
     'iwara'            : 'iwara',
     'joy'              : 'joy',
     'kankanews'        : 'bilibili',
+    'kakao'            : 'kakao',
     'khanacademy'      : 'khan',
     'ku6'              : 'ku6',
     'kuaishou'         : 'kuaishou',
