@@ -66,6 +66,7 @@ SITES = {
     'iwara'            : 'iwara',
     'joy'              : 'joy',
     'kankanews'        : 'bilibili',
+    'kakao'            : 'kakao',
     'khanacademy'      : 'khan',
     'ku6'              : 'ku6',
     'kuaishou'         : 'kuaishou',
@@ -1520,7 +1521,6 @@ def script_main(download, download_playlist, **kwargs):
         '-a', '--auto-rename', action='store_true', default=False,
         help='Auto rename same name different files'
     )
-
     download_grp.add_argument(
         '-k', '--insecure', action='store_true', default=False,
         help='ignore ssl errors'
@@ -1604,7 +1604,6 @@ def script_main(download, download_playlist, **kwargs):
     if args.insecure:
         # ignore ssl
         insecure = True
-
 
     if args.no_proxy:
         set_http_proxy('')
@@ -1757,3 +1756,4 @@ def any_download_playlist(url, **kwargs):
 
 def main(**kwargs):
     script_main(any_download, any_download_playlist, **kwargs)
+
