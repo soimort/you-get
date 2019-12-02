@@ -37,6 +37,7 @@ class YouGetTests(unittest.TestCase):
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
         )
+        youtube.download('https://www.youtube.com/watch?v=A2mJKg2g5TY', info_only=True)
 
 
 if __name__ == '__main__':
