@@ -216,16 +216,24 @@ class YouTube(VideoExtractor):
                 try:
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
                     self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
-                    # Workaround: get_video_info returns bad s. Why?
-                    stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
-                    #stream_list = ytplayer_config['args']['adaptive_fmts'].split(',')
+                    ytargs = ytplayer_config['args']
+                    if 'url_encoded_fmt_stream_map' in ytargs:
+                        # Workaround: get_video_info returns bad s. Why?
+                        stream_list = ytargs['url_encoded_fmt_stream_map'].split(',')
+                        #stream_list = ytplayer_config['args']['adaptive_fmts'].split(',')
+                    else:
+                        ytresp = json.loads(ytargs['player_response'])['streamingData']
+                        raw_sl = ytresp['adaptiveFormats']
+                        stream_list = ['itag={}&quality={}&url={}&type={}'.format(
+                            stream['itag'], stream['quality'], stream['url'], raw_sl[0]['mimeType'])
+                            for stream in raw_sl
+                        ]
                 except:
                     stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
                     if re.search('([^"]*/base\.js)"', video_page):
                         self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
                     else:
                         self.html5player = None
-
             else:
                 # Parse video page instead
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
@@ -420,10 +428,36 @@ class YouTube(VideoExtractor):
 
             try:
                 # Video info from video page (not always available)
-                streams = [dict([(i.split('=')[0],
-                                  parse.unquote(i.split('=')[1]))
-                                 for i in afmt.split('&')])
-                           for afmt in ytplayer_config['args']['adaptive_fmts'].split(',')]
+                ytargs = ytplayer_config['args']
+                if 'adaptive_fmts' in ytargs:
+                    streams = [dict([(i.split('=')[0],
+                                      parse.unquote(i.split('=')[1]))
+                                     for i in afmt.split('&')])
+                               for afmt in ytargs['adaptive_fmts'].split(',')]
+                else:
+                    # TODO More that aren't translated?
+                    ytresp = json.loads(ytargs['player_response'])['streamingData']
+                    streams = ytresp['adaptiveFormats']
+                    for stream in streams:
+                        if 'qualityLabel' in stream:
+                            stream['quality_label'] = stream['qualityLabel']
+                            del stream['qualityLabel']
+                        if 'width' in stream:
+                            stream['size'] = '{}x{}'.format(stream['width'], stream['height'])
+                            del stream['width']
+                            del stream['height']
+                        stream['type'] = stream['mimeType']
+                        stream['clen'] = stream['contentLength']
+                        stream['init'] = '{}-{}'.format(
+                            stream['initRange']['start'],
+                            stream['initRange']['end'])
+                        stream['index'] = '{}-{}'.format(
+                            stream['indexRange']['start'],
+                            stream['indexRange']['end'])
+                        del stream['mimeType']
+                        del stream['contentLength']
+                        del stream['initRange']
+                        del stream['indexRange']
             except:
                 streams = [dict([(i.split('=')[0],
                                   parse.unquote(i.split('=')[1]))
