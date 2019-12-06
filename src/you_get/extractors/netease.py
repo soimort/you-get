@@ -11,6 +11,9 @@ import hashlib
 import base64
 import os
 
+local_header = fake_headers.copy()
+local_header["Referer"] = "http://music.163.com/"
+
 def netease_hymn():
     return """
     player's Game Over,
@@ -26,7 +29,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
     if rid is None:
         rid = match1(url, r'/(\d+)/?')
     if "album" in url:
-        j = loads(get_content("http://music.163.com/api/album/%s?id=%s&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("http://music.163.com/api/album/%s?id=%s&csrf_token=" % (rid, rid), headers=local_header))
 
         artist_name = j['album']['artists'][0]['name']
         album_name = j['album']['name'].strip()
@@ -41,12 +44,12 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             netease_song_download(i, output_dir=new_dir, info_only=info_only)
             try: # download lyrics
                 assert kwargs['caption']
-                l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
+                l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers=local_header))
                 netease_lyric_download(i, l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only)
             except: pass
 
     elif "playlist" in url:
-        j = loads(get_content("http://music.163.com/api/playlist/detail?id=%s&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("http://music.163.com/api/playlist/detail?id=%s&csrf_token=" % rid, headers=local_header))
 
         new_dir = output_dir + '/' + fs.legitimize(j['result']['name'])
         if not info_only:
@@ -61,30 +64,30 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             netease_song_download(i, output_dir=new_dir, info_only=info_only, playlist_prefix=playlist_prefix)
             try: # download lyrics
                 assert kwargs['caption']
-                l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
+                l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers=local_header))
                 netease_lyric_download(i, l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only, playlist_prefix=playlist_prefix)
             except: pass
 
     elif "song" in url:
-        j = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers=local_header))
         netease_song_download(j["songs"][0], output_dir=output_dir, info_only=info_only)
         try: # download lyrics
             assert kwargs['caption']
-            l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
+            l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers=local_header))
             netease_lyric_download(j["songs"][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
         except: pass
 
     elif "program" in url:
-        j = loads(get_content("http://music.163.com/api/dj/program/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("http://music.163.com/api/dj/program/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers=local_header))
         netease_song_download(j["program"]["mainSong"], output_dir=output_dir, info_only=info_only)
 
     elif "radio" in url:
-        j = loads(get_content("http://music.163.com/api/dj/program/byradio/?radioId=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("http://music.163.com/api/dj/program/byradio/?radioId=%s&ids=[%s]&csrf_token=" % (rid, rid), headers=local_header))
         for i in j['programs']:
             netease_song_download(i["mainSong"],output_dir=output_dir, info_only=info_only)
 
     elif "mv" in url:
-        j = loads(get_content("http://music.163.com/api/mv/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("http://music.163.com/api/mv/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers=local_header))
         netease_video_download(j['data'], output_dir=output_dir, info_only=info_only)
 
 def netease_lyric_download(song, lyric, output_dir='.', info_only=False, playlist_prefix=""):

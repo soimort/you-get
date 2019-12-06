@@ -147,6 +147,14 @@ fake_headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0',  # noqa
 }
 
+fake_headers_mobile = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Charset': 'UTF-8,*;q=0.5',
+    'Accept-Encoding': 'gzip,deflate,sdch',
+    'Accept-Language': 'en-US,en;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36'
+}
+
 if sys.stdout.isatty():
     default_encoding = sys.stdout.encoding.lower()
 else:
@@ -413,7 +421,7 @@ def urlopen_with_retry(*args, **kwargs):
                 raise http_error
 
 
-def get_content(url, headers={}, decoded=True):
+def get_content(url, headers=fake_headers, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
 
     Args:
