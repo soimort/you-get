@@ -1533,6 +1533,10 @@ def script_main(download, download_playlist, **kwargs):
         '-k', '--insecure', action='store_true', default=False,
         help='ignore ssl errors'
     )
+    download_grp.add_argument(
+        '-U', '--ua', metavar='USERAGENT', default="default",
+        help='Select user agent'
+    )
 
     proxy_grp = parser.add_argument_group('Proxy options')
     proxy_grp = proxy_grp.add_mutually_exclusive_group()
@@ -1639,6 +1643,15 @@ def script_main(download, download_playlist, **kwargs):
         sys.exit()
 
     socket.setdefaulttimeout(args.timeout)
+
+    if args.ua != "default":
+        if args.ua == "random":
+            from .ua_list import ua_list
+            import random
+            fake_headers["User-Agent"] = random.choice(ua_list)
+        else:
+            fake_headers["User-Agent"] = args.ua
+        print("using UA: " + fake_headers["User-Agent"])
 
     try:
         extra = {}
