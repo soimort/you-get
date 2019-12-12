@@ -3,73 +3,50 @@
 __all__ = ['zhanqi_download']
 
 from ..common import *
-import re
-import base64
 import json
-import time
-import hashlib
+import base64
+from urllib.parse import urlparse
 
 def zhanqi_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
-    html = get_content(url)
-    video_type_patt = r'VideoType":"([^"]+)"'
-    video_type = match1(html, video_type_patt)
+    path = urlparse(url).path[1:]
 
-    #rtmp_base_patt = r'VideoUrl":"([^"]+)"'
-    rtmp_id_patt = r'videoId":"([^"]+)"'
-    vod_m3u8_id_patt = r'VideoID":"([^"]+)"'
-    title_patt = r'<p class="title-name" title="[^"]+">([^<]+)</p>'
-    title_patt_backup = r'<title>([^<]{1,9999})</title>'
-    title = match1(html, title_patt) or match1(html, title_patt_backup)
-    title = unescape_html(title)
-    rtmp_base = "http://wshdl.load.cdn.zhanqi.tv/zqlive"
-    vod_base = "http://dlvod.cdn.zhanqi.tv"
-    rtmp_real_base = "rtmp://dlrtmp.cdn.zhanqi.tv/zqlive/"
-    room_info = "http://www.zhanqi.tv/api/static/live.roomid/"
-    KEY_MASK = "#{&..?!("
-    ak2_pattern = r'ak2":"\d-([^|]+)'
-    
-    if video_type == "LIVE":
-        rtmp_id = match1(html, rtmp_id_patt).replace('\\/','/')
-        #request_url = rtmp_base+'/'+rtmp_id+'.flv?get_url=1'
-        #real_url = get_html(request_url)
-        html2 = get_content(room_info + rtmp_id.split("_")[0] + ".json")
-        json_data = json.loads(html2)
-        cdns = json_data["data"]["flashvars"]["cdns"]
-        cdns = base64.b64decode(cdns).decode("utf-8")
-        cdn = match1(cdns, ak2_pattern)
-        cdn = base64.b64decode(cdn).decode("utf-8")
-        key = ''
-        i = 0
-        while(i < len(cdn)):
-            key = key + chr(ord(cdn[i]) ^ ord(KEY_MASK[i % 8]))
-            i = i + 1
-        time_hex = hex(int(time.time()))[2:]
-        key = hashlib.md5(bytes(key + "/zqlive/" + rtmp_id + time_hex, "utf-8")).hexdigest()
-        real_url = rtmp_real_base + '/' + rtmp_id + "?k=" + key + "&t=" + time_hex
-        print_info(site_info, title, 'flv', float('inf'))
-        if not info_only:
-            download_rtmp_url(real_url, title, 'flv', {}, output_dir, merge = merge)
-            #download_urls([real_url], title, 'flv', None, output_dir, merge = merge)
-    elif video_type == "VOD":
-        vod_m3u8_request = vod_base + match1(html, vod_m3u8_id_patt).replace('\\/','/')
-        vod_m3u8 = get_html(vod_m3u8_request)
-        part_url = re.findall(r'(/[^#]+)\.ts',vod_m3u8)
-        real_url = []
-        for i in part_url:
-            i = vod_base + i + ".ts"
-            real_url.append(i)
-        type_ = ''
-        size = 0
-        for url in real_url:
-            _, type_, temp = url_info(url)
-            size += temp or 0
+    if not (path.startswith('videos') or path.startswith('v2/videos')): #url = "https://www.zhanqi.tv/huashan?param_s=1_0.2.0"
+        path_list = path.split('/')
+        room_id = path_list[1] if path_list[0] == 'topic' else path_list[0]
+        zhanqi_live(room_id, merge=merge, output_dir=output_dir, info_only=info_only, **kwargs)
+    else: #url = 'https://www.zhanqi.tv/videos/Lyingman/2017/01/182308.html'
+        # https://www.zhanqi.tv/v2/videos/215593.html
+        video_id = path.split('.')[0].split('/')[-1]
+        zhanqi_video(video_id, merge=merge, output_dir=output_dir, info_only=info_only, **kwargs)
 
-        print_info(site_info, title, type_ or 'ts', size)
-        if not info_only:
-            download_urls(real_url, title, type_ or 'ts', size, output_dir, merge = merge)
-    else:
-        NotImplementedError('Unknown_video_type')
+def zhanqi_live(room_id, merge=True, output_dir='.', info_only=False, **kwargs):
+    api_url = "https://www.zhanqi.tv/api/static/v2.1/room/domain/{}.json".format(room_id)
+    json_data = json.loads(get_content(api_url))['data']
+    status = json_data['status']
+    if status != '4':
+        raise Exception("The live stream is not online!")
 
-site_info = "zhanqi.tv"
+    nickname = json_data['nickname']
+    title = nickname + ": " + json_data['title']
+    video_levels = base64.b64decode(json_data['flashvars']['VideoLevels']).decode('utf8')
+    m3u8_url = json.loads(video_levels)['streamUrl']
+
+    print_info(site_info, title, 'm3u8', 0, m3u8_url=m3u8_url, m3u8_type='master')
+    if not info_only:
+        download_url_ffmpeg(m3u8_url, title, 'mp4', output_dir=output_dir, merge=merge)
+
+def zhanqi_video(video_id, output_dir='.', info_only=False, merge=True, **kwargs):
+    api_url = 'https://www.zhanqi.tv/api/static/v2.1/video/{}.json'.format(video_id)
+    json_data = json.loads(get_content(api_url))['data']
+
+    title = json_data['title']
+    vid = json_data['flashvars']['VideoID']
+    m3u8_url = 'http://dlvod.cdn.zhanqi.tv/' + vid
+    urls = general_m3u8_extractor(m3u8_url)
+    print_info(site_info, title, 'm3u8', 0)
+    if not info_only:
+        download_urls(urls, title, 'ts', 0, output_dir=output_dir, merge=merge, **kwargs)
+
+site_info = "www.zhanqi.tv"
 download = zhanqi_download
 download_playlist = playlist_not_supported('zhanqi')

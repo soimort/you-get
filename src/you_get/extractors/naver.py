@@ -1,48 +1,47 @@
 #!/usr/bin/env python
 
-__all__ = ['naver_download']
-import urllib.request, urllib.parse
-from ..common import *
+import urllib.request
+import urllib.parse
+import json
+import re
 
-def naver_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+from ..util import log
+from ..common import get_content, download_urls, print_info, playlist_not_supported, url_size
+from .universal import *
 
-	assert re.search(r'http://tvcast.naver.com/v/', url), "URL is not supported"
+__all__ = ['naver_download_by_url']
 
-	html = get_html(url)
-	contentid = re.search(r'var rmcPlayer = new nhn.rmcnmv.RMCVideoPlayer\("(.+?)", "(.+?)"',html)
-	videoid = contentid.group(1)
-	inkey = contentid.group(2)
-	assert videoid
-	assert inkey
-	info_key = urllib.parse.urlencode({'vid': videoid, 'inKey': inkey, })
-	down_key = urllib.parse.urlencode({'masterVid': videoid,'protocol': 'p2p','inKey': inkey, })
-	inf_xml = get_html('http://serviceapi.rmcnmv.naver.com/flash/videoInfo.nhn?%s' % info_key )
 
-	from xml.dom.minidom import parseString
-	doc_info = parseString(inf_xml)
-	Subject = doc_info.getElementsByTagName('Subject')[0].firstChild
-	title = Subject.data
-	assert title
+def naver_download_by_url(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    ep = 'https://apis.naver.com/rmcnmv/rmcnmv/vod/play/v2.0/{}?key={}'
+    page = get_content(url)
+    try:
+        temp = re.search(r"<meta\s+property=\"og:video:url\"\s+content='(.+?)'>", page)
+        if temp is not None:
+            og_video_url = temp.group(1)
+            params_dict = urllib.parse.parse_qs(urllib.parse.urlparse(og_video_url).query)
+            vid = params_dict['vid'][0]
+            key = params_dict['outKey'][0]
+        else:
+            vid = re.search(r"\"videoId\"\s*:\s*\"(.+?)\"", page).group(1)
+            key = re.search(r"\"inKey\"\s*:\s*\"(.+?)\"", page).group(1)
+        meta_str = get_content(ep.format(vid, key))
+        meta_json = json.loads(meta_str)
+        if 'errorCode' in meta_json:
+            log.wtf(meta_json['errorCode'])
+        title = meta_json['meta']['subject']
+        videos = meta_json['videos']['list']
+        video_list = sorted(videos, key=lambda video: video['encodingOption']['width'])
+        video_url = video_list[-1]['source']
+        # size = video_list[-1]['size']
+        # result wrong size
+        size = url_size(video_url)
+        print_info(site_info, title, 'mp4', size)
+        if not info_only:
+            download_urls([video_url], title, 'mp4', size, **kwargs)
+    except:
+        universal_download(url, output_dir, merge=merge, info_only=info_only, **kwargs)
 
-	xml = get_html('http://serviceapi.rmcnmv.naver.com/flash/playableEncodingOption.nhn?%s' % down_key )
-	doc = parseString(xml)
-
-	encodingoptions = doc.getElementsByTagName('EncodingOption')
-	old_height = doc.getElementsByTagName('height')[0]
-	real_url= ''
-	#to download the highest resolution one,
-	for node in encodingoptions:
-		new_height = node.getElementsByTagName('height')[0]
-		domain_node = node.getElementsByTagName('Domain')[0]
-		uri_node = node.getElementsByTagName('uri')[0]
-		if int(new_height.firstChild.data) > int (old_height.firstChild.data):
-			real_url= domain_node.firstChild.data+ '/' +uri_node.firstChild.data
-
-	type, ext, size = url_info(real_url)
-	print_info(site_info, title, type, size)
-	if not info_only:
-		download_urls([real_url], title, ext, size, output_dir, merge = merge)
-
-site_info = "tvcast.naver.com"
-download = naver_download
+site_info = "naver.com"
+download = naver_download_by_url
 download_playlist = playlist_not_supported('naver')

@@ -3,6 +3,7 @@
 
 from ..common import *
 from ..extractor import VideoExtractor
+from ..util.log import *
 
 from json import loads
 
@@ -19,13 +20,32 @@ class QiE(VideoExtractor):
     id_dic = {i['video_profile']:(i['id']) for i in stream_types}
     
     api_endpoint = 'http://www.qie.tv/api/v1/room/{room_id}'
+    game_ep = 'http://live.qq.com/game/game_details/get_game_details_info/'
 
-    @staticmethod
-    def get_vid_from_url(url):
+    def get_room_id_from_url(self, match_id):
+        meta = json.loads(get_content(self.game_ep + str(match_id)))
+        if meta['error'] != 0:
+            log.wtf('Error happens when accessing game_details api')
+        rooms = meta['data']['anchor_data']
+        for room in rooms:
+            if room['is_use_room']:
+                return room['room_id']
+        log.wtf('No room available for match {}'.format(match_id))
+
+    def get_vid_from_url(self, url):
         """Extracts video ID from live.qq.com.
         """
+        hit = re.search(r'live.qq.com/(\d+)', url)
+        if hit is not None:
+            return hit.group(1)
+        hit = re.search(r'live.qq.com/directory/match/(\d+)', url)
+        if hit is not None:
+            return self.get_room_id_from_url(hit.group(1))
         html = get_content(url)
-        return match1(html, r'room_id\":(\d+)')
+        room_id = match1(html, r'room_id\":(\d+)')
+        if room_id is None:
+            log.wtf('Unknown page {}'.format(url))
+        return room_id
 
     def download_playlist_by_url(self, url, **kwargs):
         pass
@@ -38,7 +58,7 @@ class QiE(VideoExtractor):
         content = loads(content)
         self.title = content['data']['room_name']
         rtmp_url =  content['data']['rtmp_url']
-        #stream_avalable = [i['name'] for i in content['data']['stream']]
+        #stream_available = [i['name'] for i in content['data']['stream']]
         stream_available = {}
         stream_available['normal'] = rtmp_url + '/' + content['data']['rtmp_live']
         if len(content['data']['rtmp_multi_bitrate']) > 0:

@@ -65,7 +65,7 @@ class Imgur(VideoExtractor):
                     'container': 'jpg'
                 }
             }
-            self.title = image['title']
+            self.title = image['title'] or image['hash']
 
     def extract(self, **kwargs):
         if 'stream_id' in kwargs and kwargs['stream_id']:

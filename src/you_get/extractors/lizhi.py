@@ -2,7 +2,16 @@
 
 __all__ = ['lizhi_download']
 import json
+import datetime
 from ..common import *
+
+#
+# Worked well but not perfect.
+# TODO: add option --format={sd|hd}
+#
+def get_url(ep):
+    readable = datetime.datetime.fromtimestamp(int(ep['create_time']) / 1000).strftime('%Y/%m/%d')
+    return 'http://cdn5.lizhi.fm/audio/{}/{}_hd.mp3'.format(readable, ep['id'])
 
 # radio_id: e.g. 549759 from http://www.lizhi.fm/549759/
 #
@@ -23,7 +32,7 @@ def lizhi_extract_playlist_info(radio_id):
     # (au_cnt), then handle pagination properly.
     api_url = 'http://www.lizhi.fm/api/radio_audios?s=0&l=65535&band=%s' % radio_id
     api_response = json.loads(get_content(api_url))
-    return [(ep['id'], ep['name'], ep['url']) for ep in api_response]
+    return [(ep['id'], ep['name'], get_url(ep)) for ep in api_response]
 
 def lizhi_download_audio(audio_id, title, url, output_dir='.', info_only=False):
     filetype, ext, size = url_info(url)
