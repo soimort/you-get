@@ -138,6 +138,8 @@ cookies = None
 output_filename = None
 auto_rename = False
 insecure = False
+extract_audio = False
+extract_format = 'mp3'
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -981,6 +983,9 @@ def download_urls(
             headers=headers, **kwargs
         )
         bar.done()
+        if extract_audio:
+            from .processor.ffmpeg import ffmpeg_extract_audio_from_video
+            ffmpeg_extract_audio_from_video(output_filepath, ext=extract_format)
     else:
         parts = []
         print('Downloading %s ...' % tr(output_filename))
@@ -1007,6 +1012,9 @@ def download_urls(
                 from .processor.ffmpeg import ffmpeg_concat_av
                 ret = ffmpeg_concat_av(parts, output_filepath, ext)
                 print('Merged into %s' % output_filename)
+                if extract_audio:
+                    from .processor.ffmpeg import ffmpeg_extract_audio_from_video
+                    ffmpeg_extract_audio_from_video(output_filepath, ext=extract_format)
                 if ret == 0:
                     for part in parts:
                         os.remove(part)
@@ -1021,6 +1029,9 @@ def download_urls(
                     from .processor.join_flv import concat_flv
                     concat_flv(parts, output_filepath)
                 print('Merged into %s' % output_filename)
+                if extract_audio:
+                    from .processor.ffmpeg import ffmpeg_extract_audio_from_video
+                    ffmpeg_extract_audio_from_video(output_filepath, ext=extract_format)
             except:
                 raise
             else:
@@ -1032,11 +1043,13 @@ def download_urls(
                 from .processor.ffmpeg import has_ffmpeg_installed
                 if has_ffmpeg_installed():
                     from .processor.ffmpeg import ffmpeg_concat_mp4_to_mp4
-                    ffmpeg_concat_mp4_to_mp4(parts, output_filepath)
                 else:
                     from .processor.join_mp4 import concat_mp4
                     concat_mp4(parts, output_filepath)
                 print('Merged into %s' % output_filename)
+                if extract_audio:
+                    from .processor.ffmpeg import ffmpeg_extract_audio_from_video
+                    ffmpeg_extract_audio_from_video(output_filepath, ext=extract_format)
             except:
                 raise
             else:
@@ -1053,6 +1066,9 @@ def download_urls(
                     from .processor.join_ts import concat_ts
                     concat_ts(parts, output_filepath)
                 print('Merged into %s' % output_filename)
+                if extract_audio:
+                    from .processor.ffmpeg import ffmpeg_extract_audio_from_video
+                    ffmpeg_extract_audio_from_video(output_filepath, ext=extract_format)
             except:
                 raise
             else:
@@ -1520,10 +1536,17 @@ def script_main(download, download_playlist, **kwargs):
         '-a', '--auto-rename', action='store_true', default=False,
         help='Auto rename same name different files'
     )
-
     download_grp.add_argument(
         '-k', '--insecure', action='store_true', default=False,
         help='ignore ssl errors'
+    )
+    download_grp.add_argument(
+        '-e', '--extract-audio', action='store_true', default=False,
+        help='extract audio from video'
+    )
+    download_grp.add_argument(
+        '-E', '--extract-audio-format', metavar='FORMAT', default='mp3',
+        help='set extracted audio format'
     )
 
     proxy_grp = parser.add_argument_group('Proxy options')
@@ -1572,6 +1595,9 @@ def script_main(download, download_playlist, **kwargs):
     global output_filename
     global auto_rename
     global insecure
+    global extract_audio
+    global extract_format
+
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
@@ -1600,6 +1626,9 @@ def script_main(download, download_playlist, **kwargs):
     if args.player:
         player = args.player
         caption = False
+    if args.extract_audio:
+        extract_audio = True
+    extract_format = args.extract_audio_format
 
     if args.insecure:
         # ignore ssl
