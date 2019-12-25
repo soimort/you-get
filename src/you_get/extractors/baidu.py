@@ -140,8 +140,8 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
                                   output_dir=output_dir, merge=False)
 
             items = re.findall(
-                r'//imgsrc.baidu.com/forum/w[^"]+/([^/"]+)', html)
-            urls = ['http://imgsrc.baidu.com/forum/pic/item/' + i
+                r'//tiebapic.baidu.com/forum/w[^"]+/([^/"]+)', html)
+            urls = ['http://tiebapic.baidu.com/forum/pic/item/' + i
                     for i in set(items)]
 
             # handle albums
@@ -151,7 +151,7 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
             album_info = json.loads(get_content(album_url))
             for i in album_info['data']['pic_list']:
                 urls.append(
-                    'http://imgsrc.baidu.com/forum/pic/item/' + i['pic_id'] + '.jpg')
+                    'http://tiebapic.baidu.com/forum/pic/item/' + i['pic_id'] + '.jpg')
 
             ext = 'jpg'
             size = float('Inf')
