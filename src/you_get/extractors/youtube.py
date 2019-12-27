@@ -220,7 +220,10 @@ class YouTube(VideoExtractor):
                     stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                     #stream_list = ytplayer_config['args']['adaptive_fmts'].split(',')
                 except:
-                    stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
+                    if 'url_encoded_fmt_stream_map' not in video_info:
+                        stream_list = json.loads(video_info['player_response'][0])['streamingData']['formats']
+                    else: 
+                        stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
                     if re.search('([^"]*/base\.js)"', video_page):
                         self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
                     else:
@@ -302,19 +305,35 @@ class YouTube(VideoExtractor):
                 exit(0)
 
         for stream in stream_list:
-            metadata = parse.parse_qs(stream)
-            stream_itag = metadata['itag'][0]
-            self.streams[stream_itag] = {
-                'itag': metadata['itag'][0],
-                'url': metadata['url'][0],
-                'sig': metadata['sig'][0] if 'sig' in metadata else None,
-                's': metadata['s'][0] if 's' in metadata else None,
-                'quality': metadata['quality'][0] if 'quality' in metadata else None,
-                #'quality': metadata['quality_label'][0] if 'quality_label' in metadata else None,
-                'type': metadata['type'][0],
-                'mime': metadata['type'][0].split(';')[0],
-                'container': mime_to_container(metadata['type'][0].split(';')[0]),
-            }
+            if isinstance(stream, str):
+                metadata = parse.parse_qs(stream)
+                stream_itag = metadata['itag'][0]
+                self.streams[stream_itag] = {
+                    'itag': metadata['itag'][0],
+                    'url': metadata['url'][0],
+                    'sig': metadata['sig'][0] if 'sig' in metadata else None,
+                    's': metadata['s'][0] if 's' in metadata else None,
+                    'quality': metadata['quality'][0] if 'quality' in metadata else None,
+                    #'quality': metadata['quality_label'][0] if 'quality_label' in metadata else None,
+                    'type': metadata['type'][0],
+                    'mime': metadata['type'][0].split(';')[0],
+                    'container': mime_to_container(metadata['type'][0].split(';')[0]),
+                }
+            else:
+                stream_itag = stream['itag']
+                self.streams[stream_itag] = {
+                    'itag': stream['itag'],
+                    'url': stream['url'] if 'url' in stream else None,
+                    'sig': None,
+                    's': None,
+                    'quality': stream['quality'],
+                    'type': stream['mimeType'],
+                    'mime': stream['mimeType'].split(';')[0],
+                    'container': mime_to_container(stream['mimeType'].split(';')[0]),
+                }
+                if 'cipher' in stream:
+                    self.streams[stream_itag].update(dict([(_.split('=')[0], parse.unquote(_.split('=')[1]))
+                                                           for _ in stream['cipher'].split('&')]))
 
         # Prepare caption tracks
         try:
@@ -425,10 +444,37 @@ class YouTube(VideoExtractor):
                                  for i in afmt.split('&')])
                            for afmt in ytplayer_config['args']['adaptive_fmts'].split(',')]
             except:
-                streams = [dict([(i.split('=')[0],
-                                  parse.unquote(i.split('=')[1]))
-                                 for i in afmt.split('&')])
-                           for afmt in video_info['adaptive_fmts'][0].split(',')]
+                if 'adaptive_fmts' in video_info:
+                    streams = [dict([(i.split('=')[0],
+                                      parse.unquote(i.split('=')[1]))
+                                     for i in afmt.split('&')])
+                               for afmt in video_info['adaptive_fmts'][0].split(',')]
+                else:
+                    streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
+                    for stream in streams:
+                        if 'qualityLabel' in stream:
+                            stream['quality_label'] = stream['qualityLabel']
+                            del stream['qualityLabel']
+                        if 'width' in stream:
+                            stream['size'] = '{}x{}'.format(stream['width'], stream['height'])
+                            del stream['width']
+                            del stream['height']
+                        stream['type'] = stream['mimeType']
+                        stream['clen'] = stream['contentLength']
+                        stream['init'] = '{}-{}'.format(
+                            stream['initRange']['start'],
+                            stream['initRange']['end'])
+                        stream['index'] = '{}-{}'.format(
+                            stream['indexRange']['start'],
+                            stream['indexRange']['end'])
+                        del stream['mimeType']
+                        del stream['contentLength']
+                        del stream['initRange']
+                        del stream['indexRange']
+                        if 'cipher' in stream:
+                            stream.update(dict([(_.split('=')[0], parse.unquote(_.split('=')[1]))
+                                                for _ in stream['cipher'].split('&')]))
+                            del stream['cipher']
 
             for stream in streams: # get over speed limiting
                 stream['url'] += '&ratebypass=yes'
