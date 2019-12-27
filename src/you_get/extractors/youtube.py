@@ -322,7 +322,7 @@ class YouTube(VideoExtractor):
             else:
                 stream_itag = stream['itag']
                 self.streams[stream_itag] = {
-                    'itag': stream['itag'],
+                    'itag': str(stream['itag']),
                     'url': stream['url'] if 'url' in stream else None,
                     'sig': None,
                     's': None,
@@ -452,6 +452,7 @@ class YouTube(VideoExtractor):
                 else:
                     streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
                     for stream in streams:
+                        stream['itag'] = str(stream['itag'])
                         if 'qualityLabel' in stream:
                             stream['quality_label'] = stream['qualityLabel']
                             del stream['qualityLabel']
