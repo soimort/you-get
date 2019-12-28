@@ -6,7 +6,8 @@ from you_get.extractors import (
     imgur,
     magisto,
     youtube,
-    missevan
+    missevan,
+    acfun
 )
 
 
@@ -38,6 +39,8 @@ class YouGetTests(unittest.TestCase):
             info_only=True
         )
 
+    def test_acfun(self):
+        acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)  
 
 if __name__ == '__main__':
     unittest.main()
