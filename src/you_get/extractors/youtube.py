@@ -222,7 +222,7 @@ class YouTube(VideoExtractor):
                 except:
                     if 'url_encoded_fmt_stream_map' not in video_info:
                         stream_list = json.loads(video_info['player_response'][0])['streamingData']['formats']
-                    else: 
+                    else:
                         stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
                     if re.search('([^"]*/base\.js)"', video_page):
                         self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
@@ -451,6 +451,8 @@ class YouTube(VideoExtractor):
                                for afmt in video_info['adaptive_fmts'][0].split(',')]
                 else:
                     streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
+                    # streams without contentLength got broken urls, just remove them (#2767)
+                    streams = [stream for stream in streams if 'contentLength' in stream]
                     for stream in streams:
                         stream['itag'] = str(stream['itag'])
                         if 'qualityLabel' in stream:
