@@ -94,7 +94,8 @@ class YouTube(VideoExtractor):
         f1 = match1(js, r'\.set\(\w+\.sp,encodeURIComponent\(([$\w]+)') or \
             match1(js, r'\.set\(\w+\.sp,\(0,window\.encodeURIComponent\)\(([$\w]+)') or \
             match1(js, r'\.set\(\w+\.sp,([$\w]+)\(\w+\.s\)\)') or \
-            match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)')
+            match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)') or \
+            match1(js, r'=([$\w]+)\(decodeURIComponent\(')
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
                 match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
         f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
