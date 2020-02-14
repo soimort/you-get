@@ -37,9 +37,12 @@ class YouGetTests(unittest.TestCase):
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
         )
-
+        
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
-
+        
+    def test_funshion(self):
+        funshion.download('http://www.fun.tv/vplay/g-329243/', info_only=True)
+        
 if __name__ == '__main__':
     unittest.main()
