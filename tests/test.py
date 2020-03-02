@@ -37,6 +37,9 @@ class YouGetTests(unittest.TestCase):
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
         )
+        youtube.download(
+            'https://www.youtube.com/watch?v=Fpr4fQSh1cc', info_only=True
+        )
 
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)

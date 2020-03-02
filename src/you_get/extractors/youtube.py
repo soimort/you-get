@@ -218,7 +218,10 @@ class YouTube(VideoExtractor):
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
                     self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
                     # Workaround: get_video_info returns bad s. Why?
-                    stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
+                    if 'url_encoded_fmt_stream_map' not in ytplayer_config['args']:
+                        stream_list = json.loads(ytplayer_config['args']['player_response'])['streamingData']['formats']
+                    else:
+                        stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                     #stream_list = ytplayer_config['args']['adaptive_fmts'].split(',')
                 except:
                     if 'url_encoded_fmt_stream_map' not in video_info:
@@ -321,7 +324,7 @@ class YouTube(VideoExtractor):
                     'container': mime_to_container(metadata['type'][0].split(';')[0]),
                 }
             else:
-                stream_itag = stream['itag']
+                stream_itag = str(stream['itag'])
                 self.streams[stream_itag] = {
                     'itag': str(stream['itag']),
                     'url': stream['url'] if 'url' in stream else None,
@@ -367,7 +370,7 @@ class YouTube(VideoExtractor):
                 self.caption_tracks[lang] = srt
         except: pass
 
-        # Prepare DASH streams
+        # Prepare DASH streams (NOTE: not every video has DASH streams!)
         try:
             dashmpd = ytplayer_config['args']['dashmpd']
             dash_xml = parseString(get_content(dashmpd))
@@ -451,7 +454,10 @@ class YouTube(VideoExtractor):
                                      for i in afmt.split('&')])
                                for afmt in video_info['adaptive_fmts'][0].split(',')]
                 else:
-                    streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
+                    try:
+                        streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
+                    except:  # no DASH stream at all
+                        return
                     # streams without contentLength got broken urls, just remove them (#2767)
                     streams = [stream for stream in streams if 'contentLength' in stream]
                     for stream in streams:
