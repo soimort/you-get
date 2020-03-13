@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from urllib.error import HTTPError
 
 __all__ = ['netease_download']
 
@@ -115,9 +115,15 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
         url_best = song['mp3Url']
     elif 'bMusic' in song:
         url_best = make_url(songNet, song['bMusic']['dfsId'])
-
-    netease_download_common(title, url_best,
+        url_backup = get_content(
+            url="https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % song['bMusic']['dfsId'])
+    try:
+        netease_download_common(title, url_best,
                             output_dir=output_dir, info_only=info_only)
+    except HTTPError:
+        url_backup = loads(get_content(url="https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % song['id']))
+        netease_download_common(title, url_backup['data'][0]['url'],
+                                output_dir=output_dir, info_only=info_only)
 
 def netease_download_common(title, url_best, output_dir, info_only):
     songtype, ext, size = url_info(url_best)
