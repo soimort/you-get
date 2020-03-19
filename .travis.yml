@@ -6,7 +6,7 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-  - "nightly"
+  #- "nightly"  (flake8 not working in python 3.9 yet, module 'ast' has no attribute 'AugLoad')
   - "pypy3"
 before_install:
   - pip install flake8
