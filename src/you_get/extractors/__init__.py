@@ -49,7 +49,6 @@ from .miaopai import *
 from .miomio import *
 from .mixcloud import *
 from .mtv81 import *
-from .musicplayon import *
 from .nanagogo import *
 from .naver import *
 from .netease import *
@@ -74,7 +73,6 @@ from .tumblr import *
 from .twitter import *
 from .ucas import *
 from .veoh import *
-from .videomega import *
 from .vimeo import *
 from .vine import *
 from .vk import *
