@@ -7,7 +7,8 @@ from you_get.extractors import (
     magisto,
     youtube,
     missevan,
-    acfun
+    acfun,
+    bilibili
 )
 
 
@@ -36,6 +37,9 @@ class YouGetTests(unittest.TestCase):
 
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
+    
+    def test_bilibili(self):
+        bilibili.download('https://www.bilibili.com/video/BV1L741127bu', info_only=True)
 
 if __name__ == '__main__':
     unittest.main()
