@@ -132,10 +132,10 @@ class Bilibili(VideoExtractor):
         #                    r'<h1 title="([^"]+)"')
 
         # redirect: watchlater
-        if re.match(r'https?://(www\.)?bilibili\.com/watchlater/#/av(\d+)', self.url):
-            avid = match1(self.url, r'/av(\d+)')
+        if re.match(r'https?://(www\.)?bilibili\.com/watchlater/#/(av(\d+)|BV(\S+)/?)', self.url):
+            avid = match1(self.url, r'/(av\d+)') or match1(self.url, r'/(BV\w+)')
             p = int(match1(self.url, r'/p(\d+)') or '1')
-            self.url = 'https://www.bilibili.com/video/av%s?p=%s' % (avid, p)
+            self.url = 'https://www.bilibili.com/video/%s?p=%s' % (avid, p)
             html_content = get_content(self.url, headers=self.bilibili_headers())
 
         # redirect: bangumi/play/ss -> bangumi/play/ep
