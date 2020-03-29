@@ -685,7 +685,7 @@ class Bilibili(VideoExtractor):
             pc = favlist_info['data']['info']['media_count'] // len(favlist_info['data']['medias'])
             if favlist_info['data']['info']['media_count'] % len(favlist_info['data']['medias']) != 0:
                 pc += 1
-            for pn in range(1, pc):
+            for pn in range(1, pc + 1):
                 log.w('Extracting %s of %s pages ...' % (pn, pc))
                 api_url = self.bilibili_space_favlist_api(fid, pn=pn)
                 api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
