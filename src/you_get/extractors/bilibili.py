@@ -103,8 +103,8 @@ class Bilibili(VideoExtractor):
         return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (mid, cid, pn, ps)
 
     @staticmethod
-    def bilibili_space_favlist_api(vmid, fid, pn=1, ps=100):
-        return 'https://api.bilibili.com/x/space/fav/arc?vmid=%s&fid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (vmid, fid, pn, ps)
+    def bilibili_space_favlist_api(fid, pn=1, ps=20):
+        return 'https://api.bilibili.com/x/v3/fav/resource/list?media_id=%s&pn=%s&ps=%s&order=mtime&type=0&tid=0&jsonp=jsonp' % (fid, pn, ps)
 
     @staticmethod
     def bilibili_space_video_api(mid, pn=1, ps=100):
@@ -679,20 +679,22 @@ class Bilibili(VideoExtractor):
         elif sort == 'space_favlist':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/favlist\?.*fid=(\d+)', self.url)
             vmid, fid = m.group(1), m.group(2)
-            api_url = self.bilibili_space_favlist_api(vmid, fid)
+            api_url = self.bilibili_space_favlist_api(fid)
             api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
             favlist_info = json.loads(api_content)
-            pc = favlist_info['data']['pagecount']
-
-            for pn in range(1, pc + 1):
-                api_url = self.bilibili_space_favlist_api(vmid, fid, pn=pn)
+            pc = favlist_info['data']['info']['media_count'] // len(favlist_info['data']['medias'])
+            if favlist_info['data']['info']['media_count'] % len(favlist_info['data']['medias']) != 0:
+                pc += 1
+            for pn in range(1, pc):
+                log.w('Extracting %s of %s pages ...' % (pn, pc))
+                api_url = self.bilibili_space_favlist_api(fid, pn=pn)
                 api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
                 favlist_info = json.loads(api_content)
 
-                epn, i = len(favlist_info['data']['archives']), 0
-                for video in favlist_info['data']['archives']:
+                epn, i = len(favlist_info['data']['medias']), 0
+                for video in favlist_info['data']['medias']:
                     i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
-                    url = 'https://www.bilibili.com/video/av%s' % video['aid']
+                    url = 'https://www.bilibili.com/video/av%s' % video['id']
                     self.__class__().download_playlist_by_url(url, **kwargs)
 
         elif sort == 'space_video':
