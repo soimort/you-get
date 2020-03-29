@@ -112,15 +112,15 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
             time.sleep(5)
             download_urls([real_url], title, ext, size,
                           output_dir, url, merge=merge, faker=True)
-    elif re.match(r'http://music.baidu.com/album/\d+', url):
-        id = r1(r'http://music.baidu.com/album/(\d+)', url)
+    elif re.match(r'https?://music.baidu.com/album/\d+', url):
+        id = r1(r'https?://music.baidu.com/album/(\d+)', url)
         baidu_download_album(id, output_dir, merge, info_only)
 
-    elif re.match('http://music.baidu.com/song/\d+', url):
-        id = r1(r'http://music.baidu.com/song/(\d+)', url)
+    elif re.match('https?://music.baidu.com/song/\d+', url):
+        id = r1(r'https?://music.baidu.com/song/(\d+)', url)
         baidu_download_song(id, output_dir, merge, info_only)
 
-    elif re.match('http://tieba.baidu.com/', url):
+    elif re.match('https?://tieba.baidu.com/', url):
         try:
             # embedded videos
             embed_download(url, output_dir, merge=merge, info_only=info_only, **kwargs)
