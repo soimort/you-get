@@ -28,6 +28,8 @@ class Bilibili(VideoExtractor):
          'container': 'FLV', 'video_resolution': '360p', 'desc': '流畅 360P'},
         # 'quality': 15?
         {'id': 'mp4', 'quality': 0},
+
+        {'id': 'jpg', 'quality': 0},
     ]
 
     @staticmethod
@@ -115,6 +117,10 @@ class Bilibili(VideoExtractor):
         return 'https://api.vc.bilibili.com/clip/v1/video/detail?video_id=%s' % video_id
 
     @staticmethod
+    def bilibili_h_api(doc_id):
+        return 'https://api.vc.bilibili.com/link_draw/v1/doc/detail?doc_id=%s' % doc_id
+
+    @staticmethod
     def url_size(url, faker=False, headers={},err_value=0):
         try:
             return url_size(url,faker,headers)
@@ -161,6 +167,8 @@ class Bilibili(VideoExtractor):
             sort = 'vc'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/(av(\d+)|(BV(\S+)))', self.url):
             sort = 'video'
+        elif re.match(r'https?://h\.?bilibili\.com/(\d+)', self.url):
+            sort = 'h'
         else:
             self.download_playlist_by_url(self.url, **kwargs)
             return
@@ -426,6 +434,24 @@ class Bilibili(VideoExtractor):
             self.streams['mp4'] = {'container': container,
                                    'size': size, 'src': [playurl]}
 
+        # h images
+        elif sort == 'h':
+            m = re.match(r'https?://h\.?bilibili\.com/(\d+)', self.url)
+            doc_id = m.group(1)
+            api_url = self.bilibili_h_api(doc_id)
+            api_content = get_content(api_url, headers=self.bilibili_headers())
+            h_info = json.loads(api_content)
+
+            urls = []
+            for pic in h_info['data']['item']['pictures']:
+                img_src = pic['img_src']
+                urls.append(img_src)
+            size = urls_size(urls)
+
+            self.title = doc_id
+            container = 'jpg'  # enforce JPG container
+            self.streams[container] = {'container': container,
+                                       'size': size, 'src': urls}
 
     def prepare_by_cid(self,avid,cid,title,html_content,playinfo,playinfo_,url):
         #response for interaction video
