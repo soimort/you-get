@@ -402,7 +402,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **AcFun** | <http://www.acfun.cn/>        |✓| | |
 | **Baidu<br/>百度贴吧** | <http://tieba.baidu.com/> |✓|✓| |
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
-| **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
+| **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓|✓|✓|
 | 豆瓣     | <http://www.douban.com/>       |✓| |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
