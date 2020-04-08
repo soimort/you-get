@@ -8,7 +8,8 @@ from you_get.extractors import (
     youtube,
     missevan,
     acfun,
-    bilibili
+    bilibili,
+    xinpianchang
 )
 
 
@@ -45,5 +46,9 @@ class YouGetTests(unittest.TestCase):
         bilibili.download(
             "https://www.bilibili.com/watchlater/#/av74906671/p6", info_only=True
         )
+
+    def test_xinpianchang(self):
+        imgur.download('https://www.xinpianchang.com/a10673220', info_only=True)
+
 if __name__ == '__main__':
     unittest.main()
