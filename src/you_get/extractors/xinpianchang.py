@@ -38,7 +38,6 @@ class Xinpianchang(VideoExtractor):
             stype = [st for st in self.__class__.stream_types if st['video_profile'] == profile][0]
 
             stream_data = dict(src=[url], size=size, container='mp4', quality=stype['quality'])
-            print(stream_data)
             self.streams[stype['id']] = stream_data
 
 

@@ -48,7 +48,7 @@ class YouGetTests(unittest.TestCase):
         )
 
     def test_xinpianchang(self):
-        imgur.download('https://www.xinpianchang.com/a10673220', info_only=True)
+        xinpianchang.download('https://www.xinpianchang.com/a10673220', info_only=True)
 
 if __name__ == '__main__':
     unittest.main()
