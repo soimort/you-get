@@ -7,6 +7,7 @@ from ..common import get_content, playlist_not_supported
 
 
 class Xinpianchang(VideoExtractor):
+    name = 'xinpianchang'
     stream_types = [
         {'id': '4K', 'quality': '超清 4K', 'video_profile': 'mp4-4K'},
         {'id': '2K', 'quality': '超清 2K', 'video_profile': 'mp4-2K'},
@@ -15,8 +16,6 @@ class Xinpianchang(VideoExtractor):
         {'id': '540', 'quality': '清晰 540P', 'video_profile': 'mp4-SD'},
         {'id': '360', 'quality': '流畅 360P', 'video_profile': 'mp4-LD'}
     ]
-
-    name = 'xinpianchang'
 
     def prepare(self, **kwargs):
         # find key
