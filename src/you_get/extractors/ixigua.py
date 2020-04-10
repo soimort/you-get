@@ -106,7 +106,7 @@ def ixigua_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_content(url, headers=headers)
 
     video_id = match1(html, r"\"vid\":\"([^\"]+)")
-    title = match1(html, r"\"player__videoTitle\">.*?<h1.*?>(.*)<\/h1><\/div>")
+    title = match1(html, r"\"player__titleLine\">.*?<h1.*?>(.*)<\/h1><\/div>")
     if not video_id:
         log.e("video_id not found, url:{}".format(url))
         return
