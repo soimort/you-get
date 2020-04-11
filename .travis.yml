@@ -4,15 +4,10 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
+  - "3.8"
+  #- "nightly"  (flake8 not working in python 3.9 yet, module 'ast' has no attribute 'AugLoad')
   - "pypy3"
-matrix:
-  include:
-    - python: "3.7"
-      dist: xenial
-    - python: "3.8-dev"
-      dist: xenial
-    - python: "nightly"
-      dist: xenial
 before_install:
   - pip install flake8
 before_script:

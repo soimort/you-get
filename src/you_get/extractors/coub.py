@@ -79,7 +79,7 @@ def get_title_and_urls(json_data):
 
 
 def get_coub_data(html):
-    coub_data = r1(r'<script id=\'coubPageCoubJson\' type=\'text/json\'>([^<]+)</script>', html)
+    coub_data = r1(r'<script id=\'coubPageCoubJson\' type=\'text/json\'>([\w\W]+?(?=</script>))</script>', html)
     json_data = json.loads(coub_data)
     return json_data
 

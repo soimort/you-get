@@ -6,6 +6,10 @@ from .qie import download as qieDownload
 from .qie_video import download_by_url as qie_video_download
 from ..common import *
 
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)  QQLive/10275340/50192209 Chrome/43.0.2357.134 Safari/537.36 QBCore/3.43.561.202 QQBrowser/9.0.2524.400'
+}
+
 
 def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
 
@@ -14,7 +18,7 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     platforms = [4100201, 11]
     for platform in platforms:
         info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3.2.19.333&platform={}&defnpayver=1&defn=shd&vid={}'.format(platform, vid)
-        info = get_content(info_api)
+        info = get_content(info_api, headers)
         video_json = json.loads(match1(info, r'QZOutputJson=(.*)')[:-1])
         if not video_json.get('msg')=='cannot play outside':
             break
@@ -41,7 +45,7 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
             filename = '.'.join([fn_pre, magic_str, str(part), video_type])
 
         key_api = "http://vv.video.qq.com/getkey?otype=json&platform=11&format={}&vid={}&filename={}&appver=3.2.19.333".format(part_format_id, vid, filename)
-        part_info = get_content(key_api)
+        part_info = get_content(key_api, headers)
         key_json = json.loads(match1(part_info, r'QZOutputJson=(.*)')[:-1])
         if key_json.get('key') is None:
             vkey = video_json['vl']['vi'][0]['fvkey']
@@ -71,7 +75,7 @@ def kg_qq_download_by_shareid(shareid, output_dir='.', info_only=False, caption=
     BASE_URL = 'http://cgi.kg.qq.com/fcgi-bin/kg_ugc_getdetail'
     params_str = '?dataType=jsonp&jsonp=callback&jsonpCallback=jsopgetsonginfo&v=4&outCharset=utf-8&shareid=' + shareid
     url = BASE_URL + params_str
-    content = get_content(url)
+    content = get_content(url, headers)
     json_str = content[len('jsonpcallback('):-1]
     json_data = json.loads(json_str)
 
@@ -127,7 +131,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         return
 
     if 'mp.weixin.qq.com/s' in url:
-        content = get_content(url)
+        content = get_content(url, headers)
         vids = matchall(content, [r'[?;]vid=(\w+)'])
         for vid in vids:
             qq_download_by_vid(vid, vid, output_dir, merge, info_only)
@@ -142,7 +146,7 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         title=info_json['videoinfo']['title']
     elif 'kuaibao.qq.com' in url or re.match(r'http://daxue.qq.com/content/content/id/\d+', url):
         # http://daxue.qq.com/content/content/id/2321
-        content = get_content(url)
+        content = get_content(url, headers)
         vid = match1(content, r'vid\s*=\s*"\s*([^"]+)"')
         title = match1(content, r'title">([^"]+)</p>')
         title = title.strip() if title else vid
@@ -152,11 +156,11 @@ def qq_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         title = vid
     elif 'view.inews.qq.com' in url:
         # view.inews.qq.com/a/20180521V0Z9MH00
-        content = get_content(url)
+        content = get_content(url, headers)
         vid = match1(content, r'"vid":"(\w+)"')
         title = match1(content, r'"title":"(\w+)"')
     else:
-        content = get_content(url)
+        content = get_content(url, headers)
         #vid = parse_qs(urlparse(url).query).get('vid') #for links specified vid  like http://v.qq.com/cover/p/ps6mnfqyrfo7es3.html?vid=q0181hpdvo5
         rurl = match1(content, r'<link.*?rel\s*=\s*"canonical".*?href\s*="(.+?)".*?>') #https://v.qq.com/x/cover/9hpjiv5fhiyn86u/t0522x58xma.html
         vid = ""
