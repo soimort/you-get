@@ -121,9 +121,17 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         video_list = json_data.get('videoList')
         if len(video_list) > 1:
             title += " - " + [p.get('title') for p in video_list if p.get('id') == vid][0]
-
-        m3u8_url = json_data.get('currentVideoInfo')['playInfos'][0]['playUrls'][0]
-
+        currentVideoInfo = json_data.get('currentVideoInfo')
+        if 'playInfos' in currentVideoInfo:
+            m3u8_url = currentVideoInfo['playInfos'][0]['playUrls'][0]
+        elif 'ksPlayJson' in currentVideoInfo:
+            ksPlayJson = json.loads( currentVideoInfo['ksPlayJson'] ) 
+            representation = ksPlayJson.get('adaptationSet').get('representation')
+            reps = []
+            for one in representation:
+                reps.append( (one['width']* one['height'], one['url'], one['backupUrl']) )
+            m3u8_url = max(reps)[1]
+            
     elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
         html = get_content(url, headers=fake_headers)
         tag_script = match1(html, r'<script>window\.pageInfo([^<]+)</script>')

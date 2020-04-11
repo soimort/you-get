@@ -368,15 +368,12 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | VK          | <http://vk.com/>              |✓|✓| |
 | Vine        | <https://vine.co/>            |✓| | |
 | Vimeo       | <https://vimeo.com/>          |✓| | |
-| Vidto       | <http://vidto.me/>            |✓| | |
-| Videomega   | <http://videomega.tv/>        |✓| | |
 | Veoh        | <http://www.veoh.com/>        |✓| | |
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
 | TED         | <http://www.ted.com/>         |✓| | |
 | SoundCloud  | <https://soundcloud.com/>     | | |✓|
 | SHOWROOM    | <https://www.showroom-live.com/> |✓| | |
 | Pinterest   | <https://www.pinterest.com/>  | |✓| |
-| MusicPlayOn | <http://en.musicplayon.com/>  |✓| | |
 | MTV81       | <http://www.mtv81.com/>       |✓| | |
 | Mixcloud    | <https://www.mixcloud.com/>   | | |✓|
 | Metacafe    | <http://www.metacafe.com/>    |✓| | |
@@ -387,7 +384,6 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | InfoQ       | <http://www.infoq.com/presentations/> |✓| | |
 | Imgur       | <http://imgur.com/>           | |✓| |
 | Heavy Music Archive | <http://www.heavy-music.ru/> | | |✓|
-| **Google+** | <https://plus.google.com/>    |✓|✓| |
 | Freesound   | <http://www.freesound.org/>   | | |✓|
 | Flickr      | <https://www.flickr.com/>     |✓|✓| |
 | FC2 Video   | <http://video.fc2.com/>       |✓| | |
@@ -406,10 +402,9 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **AcFun** | <http://www.acfun.cn/>        |✓| | |
 | **Baidu<br/>百度贴吧** | <http://tieba.baidu.com/> |✓|✓| |
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
-| **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
+| **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓|✓|✓|
 | 豆瓣     | <http://www.douban.com/>       |✓| |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
-| Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
 | 风行网   | <http://www.fun.tv/>           |✓| | |
 | iQIYI<br/>爱奇艺 | <http://www.iqiyi.com/> |✓| | |
@@ -441,6 +436,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 火猫TV   | <http://www.huomao.com/>       |✓| | |
 | 阳光宽频网 | <http://www.365yg.com/>      |✓| | |
 | 西瓜视频 | <https://www.ixigua.com/>      |✓| | |
+| 新片场 | <https://www.xinpianchang.com//>      |✓| | |
 | 快手 | <https://www.kuaishou.com/>      |✓|✓| |
 | 抖音 | <https://www.douyin.com/>      |✓| | |
 | TikTok | <https://www.tiktok.com/>      |✓| | |

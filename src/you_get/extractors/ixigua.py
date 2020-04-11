@@ -5,8 +5,10 @@ import binascii
 
 from ..common import *
 import random
+import string
 import ctypes
 from json import loads
+from urllib import request
 
 __all__ = ['ixigua_download', 'ixigua_download_playlist_by_url']
 
@@ -80,7 +82,29 @@ def get_video_url_from_video_id(video_id):
 
 def ixigua_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     # example url: https://www.ixigua.com/i6631065141750268420/#mid=63024814422
-    html = get_html(url, faker=True)
+    resp = urlopen_with_retry(request.Request(url))
+    html = resp.read().decode('utf-8')
+
+    _cookies = []
+    for c in resp.getheader('Set-Cookie').split("httponly,"):
+        _cookies.append(c.strip().split(' ')[0])
+    headers['cookie'] = ' '.join(_cookies)
+
+    conf = loads(match1(html, r"window\.config = (.+);"))
+    if not conf:
+        log.e("Get window.config from url failed, url: {}".format(url))
+        return
+    verify_url = conf['prefix'] + conf['url'] + '?key=' + conf['key'] + '&psm=' + conf['psm'] \
+        + '&_signature=' + ''.join(random.sample(string.ascii_letters + string.digits, 31))
+    try:
+        ok = get_content(verify_url)
+    except Exception as e:
+        ok = e.msg
+    if ok != 'OK':
+        log.e("Verify failed, verify_url: {}, result: {}".format(verify_url, ok))
+        return
+    html = get_content(url, headers=headers)
+
     video_id = match1(html, r"\"vid\":\"([^\"]+)")
     title = match1(html, r"\"player__videoTitle\">.*?<h1.*?>(.*)<\/h1><\/div>")
     if not video_id:

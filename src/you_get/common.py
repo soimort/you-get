@@ -66,6 +66,7 @@ SITES = {
     'iwara'            : 'iwara',
     'joy'              : 'joy',
     'kankanews'        : 'bilibili',
+    'kakao'            : 'kakao',
     'khanacademy'      : 'khan',
     'ku6'              : 'ku6',
     'kuaishou'         : 'kuaishou',
@@ -82,7 +83,6 @@ SITES = {
     'missevan'         : 'missevan',
     'mixcloud'         : 'mixcloud',
     'mtv81'            : 'mtv81',
-    'musicplayon'      : 'musicplayon',
     'miaopai'          : 'yixia',
     'naver'            : 'naver',
     '7gogo'            : 'nanagogo',
@@ -106,8 +106,6 @@ SITES = {
     'twimg'            : 'twitter',
     'twitter'          : 'twitter',
     'ucas'             : 'ucas',
-    'videomega'        : 'videomega',
-    'vidto'            : 'vidto',
     'vimeo'            : 'vimeo',
     'wanmen'           : 'wanmen',
     'weibo'            : 'miaopai',
@@ -118,6 +116,7 @@ SITES = {
     'xiaokaxiu'        : 'yixia',
     'xiaojiadianvideo' : 'fc2video',
     'ximalaya'         : 'ximalaya',
+    'xinpianchang'     : 'xinpianchang',
     'yinyuetai'        : 'yinyuetai',
     'yizhibo'          : 'yizhibo',
     'youku'            : 'youku',
@@ -272,15 +271,21 @@ def matchall(text, patterns):
 def launch_player(player, urls):
     import subprocess
     import shlex
+    urls = list(urls)
+    for url in urls.copy():
+        if type(url) is list:
+            urls.extend(url)
+    urls = [url for url in urls if type(url) is str]
+    assert urls
     if (sys.version_info >= (3, 3)):
         import shutil
         exefile=shlex.split(player)[0]
         if shutil.which(exefile) is not None:
-            subprocess.call(shlex.split(player) + list(urls))
+            subprocess.call(shlex.split(player) + urls)
         else:
             log.wtf('[Failed] Cannot find player "%s"' % exefile)
     else:
-        subprocess.call(shlex.split(player) + list(urls))
+        subprocess.call(shlex.split(player) + urls)
 
 
 def parse_query_param(url, param):
