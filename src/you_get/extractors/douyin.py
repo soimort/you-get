@@ -19,15 +19,23 @@ __all__ = ['douyin_download_by_url']
 def douyin_download_by_url(url, **kwargs):
     page_content = get_content(url, headers=fake_headers)
     match_rule = re.compile(r'var data = \[(.*?)\];')
-    video_info = json.loads(match_rule.findall(page_content)[0])
-    video_url = video_info['video']['play_addr']['url_list'][0]
-    # fix: https://www.douyin.com/share/video/6553248251821165832
-    # if there is no title, use desc
-    cha_list = video_info['cha_list']
-    if cha_list:
-        title = cha_list[0]['cha_name']
+    data = match_rule.findall(page_content)
+    if len(data) > 0:
+        video_info = json.loads([0])
+        video_url = video_info['video']['play_addr']['url_list'][0]
+        # fix: https://www.douyin.com/share/video/6553248251821165832
+        # if there is no title, use desc
+        cha_list = video_info['cha_list']
+        if cha_list:
+            title = cha_list[0]['cha_name']
+        else:
+            title = video_info['desc']
     else:
-        title = video_info['desc']
+        match_rule = re.compile(r'playAddr: "(.*?)"', re.S)
+        video_url = match_rule.findall(page_content)[0]
+        match_rule = re.compile(r'<p class="desc">(.*?)</p>', re.S)
+        title = match_rule.findall(page_content)[0].split('#')[0]
+
     video_format = 'mp4'
     size = url_size(video_url, faker=True)
     print_info(
