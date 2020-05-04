@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import os
 import unittest
+from tempfile import TemporaryDirectory
 
+import you_get.common
 from you_get.extractors import (
     imgur,
     magisto,
@@ -45,5 +48,21 @@ class YouGetTests(unittest.TestCase):
         bilibili.download(
             "https://www.bilibili.com/watchlater/#/av74906671/p6", info_only=True
         )
+        with TemporaryDirectory() as temp_dir:
+            output_filename_bak = you_get.common.output_filename
+            try:
+                you_get.common.output_filename = 'cat'  # Simulate argument "--output-filename cat"
+                bilibili.download(
+                    'https://www.bilibili.com/video/BV1jJ411x724',  # A very short video
+                    output_dir=temp_dir,
+                    merge=True,
+                    caption=True,  # We want danmaku file
+                )
+                self.assertTrue(os.path.isfile(os.path.join(temp_dir, 'cat.mp4')))
+                self.assertTrue(os.path.isfile(os.path.join(temp_dir, 'cat.cmt.xml')))
+            finally:
+                you_get.common.output_filename = output_filename_bak  # Restore side-effect
+
+
 if __name__ == '__main__':
     unittest.main()
