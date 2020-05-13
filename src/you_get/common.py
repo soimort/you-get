@@ -137,6 +137,7 @@ cookies = None
 output_filename = None
 auto_rename = False
 insecure = False
+retry_time = 3
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -396,7 +397,6 @@ def get_location(url, headers=None, get_method='HEAD'):
 
 
 def urlopen_with_retry(*args, **kwargs):
-    retry_time = 3
     for i in range(retry_time):
         try:
             if insecure:
@@ -1531,6 +1531,11 @@ def script_main(download, download_playlist, **kwargs):
         help='ignore ssl errors'
     )
 
+    download_grp.add_argument(
+        '-r', '--retry', metavar="RETRY_TIME", type=int, default=3,
+        help='Set the limit of retrying download'
+    )
+
     proxy_grp = parser.add_argument_group('Proxy options')
     proxy_grp = proxy_grp.add_mutually_exclusive_group()
     proxy_grp.add_argument(
@@ -1577,6 +1582,8 @@ def script_main(download, download_playlist, **kwargs):
     global output_filename
     global auto_rename
     global insecure
+    global retry_time
+
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
@@ -1610,6 +1617,8 @@ def script_main(download, download_playlist, **kwargs):
         # ignore ssl
         insecure = True
 
+    if args.retry:
+        retry_time = args.retry
 
     if args.no_proxy:
         set_http_proxy('')
