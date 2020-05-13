@@ -421,6 +421,8 @@ def urlopen_with_retry(*args, **kwargs):
             if i + 1 == retry_time:
                 raise url_error
 
+        time.sleep(5)
+
 
 def get_content(url, headers={}, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
