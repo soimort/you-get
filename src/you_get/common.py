@@ -116,6 +116,7 @@ SITES = {
     'xiaokaxiu'        : 'yixia',
     'xiaojiadianvideo' : 'fc2video',
     'ximalaya'         : 'ximalaya',
+    'xinpianchang'     : 'xinpianchang',
     'yinyuetai'        : 'yinyuetai',
     'yizhibo'          : 'yizhibo',
     'youku'            : 'youku',
