@@ -125,6 +125,7 @@ SITES = {
     'zhanqi'           : 'zhanqi',
     'zhibo'            : 'zhibo',
     'zhihu'            : 'zhihu',
+    'pornhub'          : 'pornhub',
 }
 
 dry_run = False
