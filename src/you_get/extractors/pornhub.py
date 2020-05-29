@@ -19,11 +19,6 @@ def pornhub_download(url, output_dir='.', merge=False, info_only=False, **kwargs
     comment = re.compile(r'/\*(.*?)\*/', re.DOTALL)
     cdata = re.sub(comment, "", jsf)
     cs = cdata.replace(r'var ', '').split(";")
-    usi = cs[0].find("utmSource")
-
-    flashvars = cs[0][12:usi - 5]
-
-    jfv = json.loads(flashvars)
 
     param_dict = {}
     for c in cs:
