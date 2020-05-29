@@ -10,6 +10,8 @@ class Bilibili(VideoExtractor):
 
     # Bilibili media encoding options, in descending quality order.
     stream_types = [
+        {'id': 'hdflv2_4k', 'quality': 120, 'audio_quality': 30280,
+         'container': 'FLV', 'video_resolution': '2160p', 'desc': '超清 4K'},
         {'id': 'flv_p60', 'quality': 116, 'audio_quality': 30280,
          'container': 'FLV', 'video_resolution': '1080p', 'desc': '高清 1080P60'},
         {'id': 'hdflv2', 'quality': 112, 'audio_quality': 30280,
@@ -42,8 +44,10 @@ class Bilibili(VideoExtractor):
             return 64
         elif height <= 1080 and qn <= 80:
             return 80
-        else:
+        elif height <= 1080 and qn <= 112:
             return 112
+        else:
+            return 120
 
     @staticmethod
     def bilibili_headers(referer=None, cookie=None):
@@ -213,7 +217,7 @@ class Bilibili(VideoExtractor):
             if playinfo_ is not None:
                 playinfos.append(playinfo_)
             # get alternative formats from API
-            for qn in [112, 80, 64, 32, 16]:
+            for qn in [120, 112, 80, 64, 32, 16]:
                 # automatic format for durl: qn=0
                 # for dash, qn does not matter
                 if current_quality is None or qn < current_quality:
@@ -312,7 +316,7 @@ class Bilibili(VideoExtractor):
                 return
             current_quality = api_playinfo['result']['quality']
             # get alternative formats from API
-            for qn in [112, 80, 64, 32, 16]:
+            for qn in [120, 112, 80, 64, 32, 16]:
                 # automatic format for durl: qn=0
                 # for dash, qn does not matter
                 if qn != current_quality:
