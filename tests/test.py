@@ -34,6 +34,9 @@ class YouGetTests(unittest.TestCase):
         youtube.download(
             'https://www.youtube.com/watch?v=Fpr4fQSh1cc', info_only=True
         )
+        youtube.download(
+            'https://youtu.be/CwmX5Hzkd9Q', info_only=True
+        )
 
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
