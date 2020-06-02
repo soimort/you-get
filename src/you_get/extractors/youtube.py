@@ -335,9 +335,9 @@ class YouTube(VideoExtractor):
                     'mime': stream['mimeType'].split(';')[0],
                     'container': mime_to_container(stream['mimeType'].split(';')[0]),
                 }
-                if 'cipher' in stream:
+                if 'signatureCipher' in stream:
                     self.streams[stream_itag].update(dict([(_.split('=')[0], parse.unquote(_.split('=')[1]))
-                                                           for _ in stream['cipher'].split('&')]))
+                                                           for _ in stream['signatureCipher'].split('&')]))
 
         # Prepare caption tracks
         try:
@@ -481,10 +481,10 @@ class YouTube(VideoExtractor):
                         del stream['contentLength']
                         del stream['initRange']
                         del stream['indexRange']
-                        if 'cipher' in stream:
+                        if 'signatureCipher' in stream:
                             stream.update(dict([(_.split('=')[0], parse.unquote(_.split('=')[1]))
-                                                for _ in stream['cipher'].split('&')]))
-                            del stream['cipher']
+                                                for _ in stream['signatureCipher'].split('&')]))
+                            del stream['signatureCipher']
 
             for stream in streams: # get over speed limiting
                 stream['url'] += '&ratebypass=yes'
