@@ -8,7 +8,8 @@ from you_get.extractors import (
     youtube,
     missevan,
     acfun,
-    bilibili
+    bilibili,
+    cntv
 )
 
 
@@ -45,5 +46,7 @@ class YouGetTests(unittest.TestCase):
         bilibili.download(
             "https://www.bilibili.com/watchlater/#/av74906671/p6", info_only=True
         )
+    def test_cctv(self):
+        cntv.download('https://tv.cctv.com/2020/06/04/VIDEGV62bzpUYSXx0BYLt0q4200604.shtml?spm=C28340.PyIqxsAznyDH.EfszUHfZxfRb.5', output_dir=r'D:\temp', merge=True)
 if __name__ == '__main__':
     unittest.main()
