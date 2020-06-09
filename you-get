@@ -1,48 +1,15 @@
 #!/usr/bin/env python3
-from you_get.extractors import cntv
 import os, sys
 
 _srcdir = '%s/src/' % os.path.dirname(os.path.realpath(__file__))
 _filepath = os.path.dirname(sys.argv[0])
 sys.path.insert(1, os.path.join(_filepath, _srcdir))
 
-# if sys.version_info[0] == 3:
-#     import you_get
-#     if __name__ == '__main__':
-#         you_get.main(repo_path=_filepath)
-# else: # Python 2
-#     from you_get.util import log
-#     log.e("[fatal] Python 3 is required!")
-#     log.wtf("try to run this script using 'python3 you-get'.")
-import you_get
-# you_get.main(repo_path="https://tv.cctv.com/2020/06/04/VIDEGV62bzpUYSXx0BYLt0q4200604.shtml?spm=C28340.PyIqxsAznyDH.EfszUHfZxfRb.5")
-cntv.download('https://tv.cctv.com/2020/06/04/VIDEGV62bzpUYSXx0BYLt0q4200604.shtml?spm=C28340.PyIqxsAznyDH.EfszUHfZxfRb.5', output_dir=r'D:\temp', merge=True)
-
-
-# 主要是需要moviepy这个库
-from moviepy.editor import *
-import os
-
-# 定义一个数组
-L = []
-
-# 访问 video 文件夹 (假设视频都放在这里面)
-for root, dirs, files in os.walk("./video"):
-    # 按文件名排序
-    files.sort()
-    # 遍历所有文件
-    for file in files:
-        # 如果后缀名为 .mp4
-        if os.path.splitext(file)[1] == '.mp4':
-            # 拼接成完整路径
-            filePath = os.path.join(root, file)
-            # 载入视频
-            video = VideoFileClip(filePath)
-            # 添加到数组
-            L.append(video)
-
-# 拼接视频
-final_clip = concatenate_videoclips(L)
-
-# 生成目标视频文件
-final_clip.to_videofile("./target.mp4", fps=24, remove_temp=False)
+if sys.version_info[0] == 3:
+    import you_get
+    if __name__ == '__main__':
+        you_get.main(repo_path=_filepath)
+else: # Python 2
+    from you_get.util import log
+    log.e("[fatal] Python 3 is required!")
+    log.wtf("try to run this script using 'python3 you-get'.")
