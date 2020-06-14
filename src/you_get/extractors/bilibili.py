@@ -217,10 +217,28 @@ class Bilibili(VideoExtractor):
             if playinfo_ is not None:
                 playinfos.append(playinfo_)
             # get alternative formats from API
+            #<new block begin>
+            # direct call the "/x/player/playurl" api with qn=best_quality in advance
+            # for some of bilibili videos, the best quality is missed in the following `for` loop
+            # even with cookies provided, but without this extra code block
+            # I have been suffering this issue for a long time, util now have fixed it myself
+            # example URLs: https://www.bilibili.com/video/BV1Wv411678n, and a lot lot more...
+            # the cause is explained in the following `for` loop code
+            api_url = self.bilibili_api(avid, cid, qn=best_quality)
+            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+            api_playinfo = json.loads(api_content)
+            if api_playinfo['code'] == 0:  # success
+                playinfos.append(api_playinfo)
+            else:
+                message = api_playinfo['data']['message']
+            #<new block end>
             for qn in [120, 112, 80, 64, 32, 16]:
                 # automatic format for durl: qn=0
                 # for dash, qn does not matter
                 if current_quality is None or qn < current_quality:
+                    # for some videos, current_quality < best_quality
+                    # in this case, this `if` block simply skip the best quality qn
+                    # then we can only count on another `if` block using "interface" api
                     api_url = self.bilibili_api(avid, cid, qn=qn)
                     api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
                     api_playinfo = json.loads(api_content)
@@ -229,6 +247,12 @@ class Bilibili(VideoExtractor):
                     else:
                         message = api_playinfo['data']['message']
                 if best_quality is None or qn <= best_quality:
+                    # unfortunately, for the same video as in the above `if` block
+                    # the "interface" api simply doesn't return the best quality at all
+                    # yes you heard me, the api just doesn't return the best quality
+                    # even with qn=best_quality and valid cookies provided
+                    # have no idea why, but it happened, for a lot of videos 
+                    # which leads to one result: the best quality is lost in the `playinfos` list
                     api_url = self.bilibili_interface_api(cid, qn=qn)
                     api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
                     api_playinfo_data = json.loads(api_content)
