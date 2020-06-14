@@ -160,6 +160,8 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
             if not info_only:
                 download_urls(urls, title, ext, size,
                               output_dir=output_dir, merge=False)
+    else:
+        raise NotImplementedError("Unknown baidu URL " + url)
 
 
 def baidu_pan_download(url):
