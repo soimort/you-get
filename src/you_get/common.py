@@ -1064,6 +1064,20 @@ def download_urls(
                 for part in parts:
                     os.remove(part)
 
+        elif ext == 'mp3':
+            try:
+                from .processor.ffmpeg import has_ffmpeg_installed
+
+                assert has_ffmpeg_installed()
+                from .processor.ffmpeg import ffmpeg_concat_mp3_to_mp3
+                ffmpeg_concat_mp3_to_mp3(parts, output_filepath)
+                print('Merged into %s' % output_filename)
+            except:
+                raise
+            else:
+                for part in parts:
+                    os.remove(part)
+
         else:
             print("Can't merge %s files" % ext)
 

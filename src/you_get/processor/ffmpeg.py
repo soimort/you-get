@@ -180,6 +180,18 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
     else:
         raise
 
+def ffmpeg_concat_mp3_to_mp3(files, output='output.mp3'):
+    print('Merging video parts... ', end="", flush=True)
+
+    files = 'concat:' + '|'.join(files)
+
+    params = [FFMPEG] + LOGLEVEL + ['-y']
+    params += ['-i', files, '-acodec', 'copy', output]
+
+    subprocess.call(params)
+
+    return True
+
 def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
     print('Merging video parts... ', end="", flush=True)
     # Use concat demuxer on FFmpeg >= 1.1

@@ -8,7 +8,8 @@ from you_get.extractors import (
     youtube,
     missevan,
     acfun,
-    bilibili
+    bilibili,
+    soundcloud
 )
 
 
@@ -45,5 +46,16 @@ class YouGetTests(unittest.TestCase):
         bilibili.download(
             "https://www.bilibili.com/watchlater/#/av74906671/p6", info_only=True
         )
+
+    def test_soundcloud(self):
+        ## single song
+        soundcloud.download(
+            'https://soundcloud.com/keiny-pham/impure-bird', info_only=True
+        )
+        ## playlist
+        soundcloud.download(
+            'https://soundcloud.com/anthony-flieger/sets/cytus', info_only=True
+        )
+
 if __name__ == '__main__':
     unittest.main()
