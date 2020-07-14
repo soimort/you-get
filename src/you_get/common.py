@@ -435,8 +435,15 @@ def get_content(url, headers={}, decoded=True):
         cookies.add_cookie_header(req)
         req.headers.update(req.unredirected_hdrs)
 
-    response = urlopen_with_retry(req)
-    data = response.read()
+    for i in range(retry_time):
+        response = urlopen_with_retry(req)
+        try:
+            data = response.read()
+            break
+        except socket.timeout as e:
+            logging.debug('get_content attempt {} failed: {}'.format(i + 1, e))
+            if i + 1 == retry_time:
+                raise e
 
     # Handle HTTP compression for gzip and deflate (zlib)
     content_encoding = response.getheader('Content-Encoding')
