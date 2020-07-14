@@ -12,6 +12,7 @@ import logging
 import argparse
 import ssl
 from http import cookiejar
+from http.client import HTTPException
 from importlib import import_module
 from urllib import request, parse, error
 
@@ -407,19 +408,10 @@ def urlopen_with_retry(*args, **kwargs):
                 return request.urlopen(*args, context=ctx, **kwargs)
             else:
                 return request.urlopen(*args, **kwargs)
-        except socket.timeout as e:
-            logging.debug('request attempt %s timeout' % str(i + 1))
+        except (socket.timeout, error.HTTPError, error.URLError, HTTPException) as e:
+            logging.debug('request attempt {} failed: {}'.format(i + 1, e))
             if i + 1 == retry_time:
                 raise e
-        # try to tackle youku CDN fails
-        except error.HTTPError as http_error:
-            logging.debug('HTTP Error with code{}'.format(http_error.code))
-            if i + 1 == retry_time:
-                raise http_error
-        except error.URLError as url_error:
-            logging.debug('URL Error: {}'.format(url_error))
-            if i + 1 == retry_time:
-                raise url_error
 
         time.sleep(5)
 
