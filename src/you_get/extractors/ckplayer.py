@@ -6,7 +6,7 @@
 
 __all__ = ['ckplayer_download']
 
-from xml.etree import cElementTree as ET
+from xml.etree import ElementTree as ET
 from copy import copy
 from ..common import *
 #----------------------------------------------------------------------
