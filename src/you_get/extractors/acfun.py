@@ -132,7 +132,7 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
                 reps.append( (one['width']* one['height'], one['url'], one['backupUrl']) )
             m3u8_url = max(reps)[1]
             
-    elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
+    elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/aa(\d+)", url):
         html = get_content(url, headers=fake_headers)
         tag_script = match1(html, r'<script>window\.pageInfo([^<]+)</script>')
         json_text = tag_script[tag_script.find('{') : tag_script.find('};') + 1]
