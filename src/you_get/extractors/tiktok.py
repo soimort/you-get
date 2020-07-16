@@ -9,7 +9,7 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     title = r1(r'<title.*?>(.*?)</title>', html)
     video_id = r1(r'/video/(\d+)', url) or r1(r'musical\?id=(\d+)', html)
     title = '%s [%s]' % (title, video_id)
-    source = r1(r'<video .*?src="([^"]+)"', html)
+    source = r1(r'<video .*?src="([^"]+)"', html) or r1(r'"contentUrl":"([^"]+)"', html)
     mime, ext, size = url_info(source)
 
     print_info(site_info, title, mime, size)
