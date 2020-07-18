@@ -125,14 +125,14 @@ def acfun_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         if 'playInfos' in currentVideoInfo:
             m3u8_url = currentVideoInfo['playInfos'][0]['playUrls'][0]
         elif 'ksPlayJson' in currentVideoInfo:
-            ksPlayJson = json.loads( currentVideoInfo['ksPlayJson'] ) 
+            ksPlayJson = json.loads( currentVideoInfo['ksPlayJson'] )
             representation = ksPlayJson.get('adaptationSet').get('representation')
             reps = []
             for one in representation:
                 reps.append( (one['width']* one['height'], one['url'], one['backupUrl']) )
             m3u8_url = max(reps)[1]
-            
-    elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/ab(\d+)", url):
+
+    elif re.match("https?://[^\.]*\.*acfun\.[^\.]+/bangumi/aa(\d+)", url):
         html = get_content(url, headers=fake_headers)
         tag_script = match1(html, r'<script>window\.pageInfo([^<]+)</script>')
         json_text = tag_script[tag_script.find('{') : tag_script.find('};') + 1]
