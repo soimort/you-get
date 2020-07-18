@@ -51,7 +51,30 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
     api_content = get_content(api_url, headers={'authorization': authorization, 'x-guest-token': guest_token})
 
     info = json.loads(api_content)
-    media = info['globalObjects']['tweets'][item_id]['extended_entities']['media']
+    if 'extended_entities' in info['globalObjects']['tweets'][item_id]:
+        # if the tweet contains media, download them
+        media = info['globalObjects']['tweets'][item_id]['extended_entities']['media']
+
+    elif info['globalObjects']['tweets'][item_id].get('is_quote_status') == True:
+        # if the tweet does not contain media, but it quotes a tweet
+        # and the quoted tweet contains media, download them
+        item_id = info['globalObjects']['tweets'][item_id]['quoted_status_id_str']
+
+        api_url = 'https://api.twitter.com/2/timeline/conversation/%s.json?tweet_mode=extended' % item_id
+        api_content = get_content(api_url, headers={'authorization': authorization, 'x-guest-token': guest_token})
+
+        info = json.loads(api_content)
+
+        if 'extended_entities' in info['globalObjects']['tweets'][item_id]:
+            media = info['globalObjects']['tweets'][item_id]['extended_entities']['media']
+        else:
+            # quoted tweet has no media
+            return
+
+    else:
+        # no media, no quoted tweet
+        return
+
     for medium in media:
         if 'video_info' in medium:
             # FIXME: we're assuming one tweet only contains one video here
