@@ -629,10 +629,12 @@ def url_save(
     if refer is not None:
         tmp_headers['Referer'] = refer
     if type(url) is list:
-        file_size = urls_size(url, faker=faker, headers=tmp_headers)
+        chunk_sizes = [url_size(url, faker=faker, headers=tmp_headers) for url in url]
+        file_size = sum(chunk_sizes)
         is_chunked, urls = True, url
     else:
         file_size = url_size(url, faker=faker, headers=tmp_headers)
+        chunk_sizes = [file_size]
         is_chunked, urls = False, [url]
 
     continue_renameing = True
@@ -696,9 +698,13 @@ def url_save(
     else:
         open_mode = 'wb'
 
-    for url in urls:
+    chunk_start = 0
+    chunk_end = 0
+    for i, url in enumerate(urls):
         received_chunk = 0
-        if received < file_size:
+        chunk_start += 0 if i == 0 else chunk_sizes[i - 1]
+        chunk_end += chunk_sizes[i]
+        if received < file_size and received < chunk_end:
             if faker:
                 tmp_headers = fake_headers
             '''
@@ -708,8 +714,9 @@ def url_save(
             else:
                 headers = {}
             '''
-            if received and not is_chunked:  # only request a range when not chunked
-                tmp_headers['Range'] = 'bytes=' + str(received) + '-'
+            if received:
+                # chunk_start will always be 0 if not chunked
+                tmp_headers['Range'] = 'bytes=' + str(received - chunk_start) + '-'
             if refer:
                 tmp_headers['Referer'] = refer
 
@@ -757,8 +764,7 @@ def url_save(
                         elif not is_chunked and received == file_size:  # Download finished
                             break
                         # Unexpected termination. Retry request
-                        if not is_chunked:  # when
-                            tmp_headers['Range'] = 'bytes=' + str(received) + '-'
+                        tmp_headers['Range'] = 'bytes=' + str(received - chunk_start) + '-'
                         response = urlopen_with_retry(
                             request.Request(url, headers=tmp_headers)
                         )
