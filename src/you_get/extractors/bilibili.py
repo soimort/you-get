@@ -81,8 +81,8 @@ class Bilibili(VideoExtractor):
         return 'https://www.bilibili.com/audio/music-service-c/web/song/of-menu?sid=%s&pn=1&ps=%s' % (sid, ps)
 
     @staticmethod
-    def bilibili_bangumi_api(avid, cid, ep_id, qn=0):
-        return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=16' % (avid, cid, qn, ep_id)
+    def bilibili_bangumi_api(avid, cid, ep_id, qn=0, fnval=16):
+        return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=%s' % (avid, cid, qn, ep_id, fnval)
 
     @staticmethod
     def bilibili_interface_api(cid, qn=0):
@@ -316,15 +316,16 @@ class Bilibili(VideoExtractor):
                 return
             current_quality = api_playinfo['result']['quality']
             # get alternative formats from API
-            for qn in [120, 112, 80, 64, 32, 16]:
-                # automatic format for durl: qn=0
-                # for dash, qn does not matter
-                if qn != current_quality:
-                    api_url = self.bilibili_bangumi_api(avid, cid, ep_id, qn=qn)
-                    api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
-                    api_playinfo = json.loads(api_content)
-                    if api_playinfo['code'] == 0:  # success
-                        playinfos.append(api_playinfo)
+            for fnval in [8, 16]:
+                for qn in [120, 112, 80, 64, 32, 16]:
+                    # automatic format for durl: qn=0
+                    # for dash, qn does not matter
+                    if qn != current_quality:
+                        api_url = self.bilibili_bangumi_api(avid, cid, ep_id, qn=qn, fnval=fnval)
+                        api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+                        api_playinfo = json.loads(api_content)
+                        if api_playinfo['code'] == 0:  # success
+                            playinfos.append(api_playinfo)
 
             for playinfo in playinfos:
                 if 'durl' in playinfo['result']:
