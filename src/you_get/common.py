@@ -552,14 +552,20 @@ def parallel_in_thread(target, params_list, sort, **kwargs):
 
     ret = [result.get() for i in range(len(params_list))]
 
+    if not ret:
+        return []
+
     if sort:
         ret = sorted(ret)
         return list(zip(*ret))[1]
-    else:
-        return ret
+
+    return ret
 
 
 def parallel_run(target, params_list, sort_result=False, use_thread=True, **kwargs):
+    if len(params_list) == 0:
+        return []
+
     if job and job <= 1:
         return [target(*i) for i in params_list]
 
