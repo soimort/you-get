@@ -39,7 +39,7 @@ def get_resource_info(resource_url, client_id):
         return json.loads(cont)
 
     res = parallel_run(action, ids_split, True)
-    res = iter(functools.reduce(operator.iconcat, res))
+    res = iter(functools.reduce(operator.iconcat, res) if res else [])
 
     return [next(res) if i.get('comment_count') is None else i for i in info]
 
