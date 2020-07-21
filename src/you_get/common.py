@@ -530,12 +530,20 @@ def parallel_in_thread(target, params_list, sort, **kwargs):
     def action_sort():
         while not tasks.empty():
             idx, params = tasks.get(block=False)
-            result.put((idx, target(*params)))
+            try:
+                result.put((idx, target(*params)))
+            except Exception as e:
+                logging.warn(str(e))
+                tasks.put((idx, params))
 
     def action_not_sort():
         while not tasks.empty():
-            params = tasks.get(block=False)
-            result.put(target(*params))
+            try:
+                params = tasks.get(block=False)
+                result.put(target(*params))
+            except Exception as e:
+                logging.warn(str(e))
+                tasks.put(params)
 
     def f():
         try:
