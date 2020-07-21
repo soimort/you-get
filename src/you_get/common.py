@@ -566,7 +566,7 @@ def parallel_run(target, params_list, sort_result=False, use_thread=True, **kwar
     if len(params_list) == 0:
         return []
 
-    if job and job <= 1:
+    if job <= 1:
         return [target(*i) for i in params_list]
 
     if use_thread:
@@ -917,8 +917,11 @@ class SimpleProgressBar:
         self.last_updated = time.time()
         self.update()
 
-    def update_piece(self, n):
-        self.current_piece = n
+    def update_piece(self, n=-1):
+        if n >= 0:
+            self.current_piece = n
+        else:
+            self.current_piece += 1
 
     def done(self):
         if self.displayed:
@@ -1065,19 +1068,24 @@ def download_urls(
         )
         bar.done()
     else:
-        parts = []
         print('Downloading %s ...' % tr(output_filename))
         bar.update()
-        for i, url in enumerate(urls):
+
+        params = [[i, url] for i, url in enumerate(urls)]
+
+        def action(i, url):
             output_filename_i = get_output_filename(urls, title, ext, output_dir, merge, part=i)
             output_filepath_i = os.path.join(output_dir, output_filename_i)
-            parts.append(output_filepath_i)
             # print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
-            bar.update_piece(i + 1)
+            bar.update_piece()
             url_save(
                 url, output_filepath_i, bar, refer=refer, is_part=True, faker=faker,
                 headers=headers, **kwargs
             )
+            return output_filepath_i
+
+        parts = parallel_run(action, params, True)
+
         bar.done()
 
         if not merge:
