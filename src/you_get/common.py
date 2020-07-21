@@ -508,7 +508,6 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
 
 
 def parallel_in_process(target, params_list, **kwargs):
-    import functools
     from multiprocessing import Pool
 
     global lambda_to_function
@@ -520,7 +519,6 @@ def parallel_in_process(target, params_list, **kwargs):
 
 def parallel_in_thread(target, params_list, sort, **kwargs):
     import queue
-    from queue import Queue
     from threading import Thread
 
     tasks = queue.Queue()
@@ -666,8 +664,9 @@ def url_info(url, faker=False, headers={}):
 
 
 def url_locations(urls, faker=False, headers={}):
-    locations = []
-    for url in urls:
+    params = [[url, faker, headers] for url in urls]
+
+    def action(url, faker, headers):
         logging.debug('url_locations: %s' % url)
 
         if faker:
@@ -681,8 +680,9 @@ def url_locations(urls, faker=False, headers={}):
         else:
             response = urlopen_with_retry(request.Request(url))
 
-        locations.append(response.url)
-    return locations
+        return response.url
+
+    return parallel_run(action, paras, True)
 
 
 def url_save(
