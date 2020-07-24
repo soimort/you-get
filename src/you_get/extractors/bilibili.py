@@ -2,6 +2,7 @@
 
 from ..common import *
 from ..extractor import VideoExtractor
+import ssl
 
 import hashlib
 
@@ -135,8 +136,9 @@ class Bilibili(VideoExtractor):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
 
         try:
+            ssl._create_default_https_context = ssl._create_unverified_context
             html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
-        except:
+        except Exception as e:
             html_content = ''  # live always returns 400 (why?)
         #self.title = match1(html_content,
         #                    r'<h1 title="([^"]+)"')
