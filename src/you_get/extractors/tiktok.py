@@ -6,15 +6,25 @@ from ..common import *
 
 def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url, faker=True)
-    title = r1(r'<title.*?>(.*?)</title>', html)
-    video_id = r1(r'/video/(\d+)', url) or r1(r'musical\?id=(\d+)', html)
-    title = '%s [%s]' % (title, video_id)
-    source = r1(r'<video .*?src="([^"]+)"', html) or r1(r'"contentUrl":"([^"]+)"', html)
-    mime, ext, size = url_info(source)
 
-    print_info(site_info, title, mime, size)
-    if not info_only:
-        download_urls([source], title, ext, size, output_dir, merge=merge)
+    data = r1(r'<script id="__NEXT_DATA__".*?>(.*?)</script>', html)
+    info = json.loads(data)
+    videoData = info['props']['pageProps']['videoData']
+    urls = videoData['itemInfos']['video']['urls']
+    videoId = videoData['itemInfos']['id']
+    uniqueId = videoData['authorInfos'].get('uniqueId')
+    nickName = videoData['authorInfos'].get('nickName')
+
+    for i, url in enumerate(urls):
+        title = '%s [%s]' % (nickName or uniqueId, videoId)
+        if len(urls) > 1:
+            title = '%s [%s]' % (title, i)
+
+        mime, ext, size = url_info(url)
+
+        print_info(site_info, title, mime, size)
+        if not info_only:
+            download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
 
 site_info = "TikTok.com"
 download = tiktok_download
