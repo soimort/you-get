@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import math
 from ..common import *
 from ..extractor import VideoExtractor
 
@@ -130,6 +131,8 @@ class Bilibili(VideoExtractor):
             return url_size(url,faker,headers)
         except:
             return err_value
+
+    # https://api.bilibili.com/x/player.so?id=cid%3A162260003&aid=95051759&bvid=BV1zE411T7nb&buvid=FB2BB46F-B1F3-4BDA-A589-33348940411A155830infoc
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
@@ -569,6 +572,21 @@ class Bilibili(VideoExtractor):
             # extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
 
+    def formattime(t):
+        if t/10 == 0:
+            return '0'+str(t)
+        else:
+            return str(t)
+
+    def ms2time(t):
+        m = t/60000
+        t = t%60000
+        s = t/1000
+        t = t%1000
+        minsec = formattime(m)+':'+formattime(s)+'.'+str(t)
+        return minsec
+
+
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
         kwargs['playlist'] = True
@@ -664,12 +682,51 @@ class Bilibili(VideoExtractor):
                 p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or '1')-1
                 for pi in range(p,pn):
                     self.prepare_by_cid(aid,initial_state['videoData']['pages'][pi]['cid'],'%s (P%s. %s)' % (initial_state['videoData']['title'], pi+1, initial_state['videoData']['pages'][pi]['part']),html_content,playinfo,playinfo_,url)
+                    tttt = self.title
                     try:
                         self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
                     except:
                         self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
                     self.extract(**kwargs)
                     self.download(**kwargs)
+                    lrcurl = "https://api.bilibili.com/x/player.so?id=cid%3A" + str(initial_state['videoData']['pages'][pi]['cid']) + "&aid=" + str(aid) + "&bvid=" +initial_state['videoData']["bvid"]+"&buvid=FB2BB46F-B1F3-4BDA-A589-33348940411A155830infoc"
+                    print("lrc url", lrcurl)
+                    # -H 'Referer: https://www.bilibili.com/video/BV1zE411T7nb'
+                    h = dict()
+                    jsonOfLrc = get_content(lrcurl, headers={"Referer": "https://www.bilibili.com/video/" + initial_state['videoData']["bvid"]})
+                    # Example line:
+                    # <subtitle>{"allow_submit":false,"lan":"","lan_doc":"","subtitles":[{"id":23916631605379079,"lan":"zh-CN","lan_doc":"中文（中国）","is_lock":false,"subtitle_url":"//i0.hdslb.com/bfs/subtitle/dfb81041cf92b5c2ebce2540cd14c9e49674f460.json"}]}</subtitle>
+                    subtitleMeta = match1(jsonOfLrc, r'<subtitle>(.*?)</subtitle>')
+                    subtitlejson = json.loads(subtitleMeta)
+                    print(subtitlejson)
+                    if len(subtitlejson["subtitles"])> 0:
+                        suburl = subtitlejson["subtitles"][0]["subtitle_url"]
+                        subjson = get_content("https:" + suburl)
+                        file = ''
+                        datas = json.loads(subjson)
+                        i = 1
+                        for data in datas['body']:
+                            start = data['from']  # 获取开始时间
+                            stop = data['to']  # 获取结束时间
+                            content = data['content']  # 获取字幕内容
+                            file += '{}\n'.format(i)  # 加入序号
+                            hour = math.floor(start) // 3600
+                            minute = (math.floor(start) - hour * 3600) // 60
+                            sec = math.floor(start) - hour * 3600 - minute * 60
+                            minisec = int(math.modf(start)[0] * 100)  # 处理开始时间
+                            file += str(hour).zfill(2) + ':' + str(minute).zfill(2) + ':' + str(sec).zfill(2) + ',' + str(minisec).zfill(2)  # 将数字填充0并按照格式写入
+                            file += ' --> '
+                            hour = math.floor(stop) // 3600
+                            minute = (math.floor(stop) - hour * 3600) // 60
+                            sec = math.floor(stop) - hour * 3600 - minute * 60
+                            minisec = abs(int(math.modf(stop)[0] * 100 - 1))  # 此处减1是为了防止两个字幕同时出现
+                            file += str(hour).zfill(2) + ':' + str(minute).zfill(2) + ':' + str(sec).zfill(2) + ',' + str(minisec).zfill(2)
+                            file += '\n' + content + '\n\n'  # 加入字幕文字
+                            i += 1
+                        srtfilename = '%s.srt' % get_filename(tttt)
+                        with open(os.path.join(".", srtfilename), 'w', encoding='utf-8') as f:
+                            f.write(file)  # 将数据写入文件
+
                     # purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi+1)
                     # self.__class__().download_by_url(purl, **kwargs)
 
