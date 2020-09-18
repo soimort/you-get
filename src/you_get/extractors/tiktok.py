@@ -15,16 +15,16 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     uniqueId = videoData['authorInfos'].get('uniqueId')
     nickName = videoData['authorInfos'].get('nickName')
 
-    for i, url in enumerate(urls):
+    for i, videoUrl in enumerate(urls):
         title = '%s [%s]' % (nickName or uniqueId, videoId)
         if len(urls) > 1:
             title = '%s [%s]' % (title, i)
 
-        mime, ext, size = url_info(url)
+        mime, ext, size = url_info(videoUrl, headers={'Referer': url})
 
         print_info(site_info, title, mime, size)
         if not info_only:
-            download_urls([url], title, ext, size, output_dir=output_dir, merge=merge)
+            download_urls([videoUrl], title, ext, size, output_dir=output_dir, merge=merge, headers={'Referer': url})
 
 site_info = "TikTok.com"
 download = tiktok_download
