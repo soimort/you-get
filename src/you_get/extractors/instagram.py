@@ -8,7 +8,7 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
     url = r1(r'([^?]*)', url)
     html = get_html(url)
 
-    vid = r1(r'instagram.com/p/([^/]+)', url)
+    vid = r1(r'instagram.com/\w+/([^/]+)', url)
     description = r1(r'<meta property="og:title" content="([^"]*)"', html)
     title = "{} [{}]".format(description.replace("\n", " "), vid)
     stream = r1(r'<meta property="og:video" content="([^"]*)"', html)
