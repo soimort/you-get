@@ -28,7 +28,7 @@ class YouGetTests(unittest.TestCase):
         youtube.download(
             'http://www.youtube.com/watch?v=pzKerr0JIPA', info_only=True
         )
-        youtube.download('http://youtu.be/pzKerr0JIPA', info_only=True)
+        youtube.download('https://youtu.be/dswA84bw8I4', info_only=False)
         youtube.download(
             'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
             info_only=True
