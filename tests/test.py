@@ -39,7 +39,6 @@ class YouGetTests(unittest.TestCase):
 
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
-        acfun.download('https://www.acfun.cn/bangumi/aa6002986', info_only=True)
 
     def test_bilibil(self):
         bilibili.download(
