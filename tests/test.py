@@ -10,7 +10,8 @@ from you_get.extractors import (
     acfun,
     bilibili,
     soundcloud,
-    tiktok
+    tiktok,
+    pptv
 )
 
 
@@ -63,6 +64,9 @@ class YouGetTests(unittest.TestCase):
         tiktok.download('https://t.tiktok.com/i18n/share/video/6850796940293164290/', info_only=True)
         tiktok.download('https://vt.tiktok.com/UGJR4R/', info_only=True)
 
+    def tests_pptv(self):
+        pptv.download('https://v.pptv.com/show/oYPEQicEtxgRn5U0.html', info_only=True)
+        pptv.download('https://v.pptv.com/show/1JibpJo70ZKIFgibs.html', info_only=True)
 
 if __name__ == '__main__':
     unittest.main()
