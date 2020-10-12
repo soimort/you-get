@@ -1422,12 +1422,27 @@ def load_cookies(cookiefile):
 def set_socks_proxy(proxy):
     try:
         import socks
-        socks_proxy_addrs = proxy.split(':')
-        socks.set_default_proxy(
-            socks.SOCKS5,
-            socks_proxy_addrs[0],
-            int(socks_proxy_addrs[1])
-        )
+        if '@' in proxy:
+            proxy_info = proxy.split("@")
+            socks_proxy_addrs = proxy_info[1].split(':')
+            socks_proxy_auth = proxy_info[0].split(":")
+            print(socks_proxy_auth[0]+" "+socks_proxy_auth[1]+" "+socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
+            socks.set_default_proxy(
+                socks.SOCKS5,
+                socks_proxy_addrs[0],
+                int(socks_proxy_addrs[1]),
+                True,
+                socks_proxy_auth[0],
+                socks_proxy_auth[1]
+            )
+        else:
+           socks_proxy_addrs = proxy.split(':')
+           print(socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
+           socks.set_default_proxy(
+               socks.SOCKS5,
+               socks_proxy_addrs[0],
+               int(socks_proxy_addrs[1]),
+           )
         socket.socket = socks.socksocket
 
         def getaddrinfo(*args):
@@ -1565,7 +1580,7 @@ def script_main(download, download_playlist, **kwargs):
         '--no-proxy', action='store_true', help='Never use a proxy'
     )
     proxy_grp.add_argument(
-        '-s', '--socks-proxy', metavar='HOST:PORT',
+        '-s', '--socks-proxy', metavar='HOST:PORT or USERNAME:PASSWORD@HOST:PORT',
         help='Use an SOCKS5 proxy for downloading'
     )
 
