@@ -20,7 +20,7 @@ Changelog:
    use @fffonion 's method in #617.
    Add trace AVM(asasm) code in Iqiyi's encode function where the salt is put into the encode array and reassemble by RABCDasm(or WinRABCDasm),then use Fiddler to response modified file to replace the src file with its AutoResponder function ,set browser Fiddler proxy and play with !debug version! Flash Player ,finially get result in flashlog.txt(its location can be easily found in search engine).
    Code Like (without letters after #comment:),it just do the job : trace("{IQIYI_SALT}:"+salt_array.join(""))
-   ```(Postion After getTimer)
+   ```(Position After getTimer)
      findpropstrict      QName(PackageNamespace(""), "trace")
      pushstring          "{IQIYI_SALT}:" #comment for you to locate the salt
      getscopeobject      1
