@@ -3,14 +3,7 @@
 import unittest
 
 from you_get.extractors import (
-    imgur,
-    magisto,
-    youtube,
-    missevan,
-    acfun,
-    bilibili,
-    soundcloud,
-    tiktok
+    bilibili
 )
 
 
