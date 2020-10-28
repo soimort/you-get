@@ -26,7 +26,7 @@ import json
 import os
 import re
 
-from ..common import get_content, urls_size, log, player, dry_run
+from ..common import get_content, urls_size, log, player, dry_run, fake_headers
 from ..extractor import VideoExtractor
 
 _UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 ' \
@@ -125,7 +125,6 @@ class MissEvanWithStream(VideoExtractor):
     def __init__(self, *args):
         super().__init__(*args)
         self.referer = 'https://www.missevan.com/'
-        self.ua = _UA
 
     @classmethod
     def create(cls, title, streams, *, streams_sorted=None):
@@ -175,8 +174,7 @@ class MissEvan(VideoExtractor):
     def __init__(self, *args):
         super().__init__(*args)
         self.referer = 'https://www.missevan.com/'
-        self.ua = _UA
-        self.__headers = {'User-Agent': self.ua, 'Referer': self.referer}
+        self.__headers = {'User-Agent': fake_headers['User-Agent'], 'Referer': self.referer}
 
     __prepare_dispatcher = _Dispatcher()
 
@@ -326,7 +324,7 @@ class MissEvan(VideoExtractor):
             stream['size'] = urls_size(stream['src'])
 
     def _get_content(self, url):
-        return get_content(url, headers=self.__headers)
+        return get_content(url)
 
     def _get_json(self, url):
         content = self._get_content(url)

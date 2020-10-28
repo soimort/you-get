@@ -54,9 +54,10 @@ tmpl_api_call_photo_info = (
 
 # looks that flickr won't return urls for all sizes
 # we required in 'extras field without a acceptable header
-dummy_header = {
-    'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
-}
+#dummy_header = {
+#    'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0'
+#}
+dummy_header = fake_headers
 def get_content_headered(url):
     return get_content(url, dummy_header)
 
