@@ -3,6 +3,7 @@
 import unittest
 
 from you_get.extractors import (
+    youku,
     imgur,
     magisto,
     youtube,
@@ -62,6 +63,14 @@ class YouGetTests(unittest.TestCase):
         tiktok.download('https://www.tiktok.com/@nmb48_official/video/6850796940293164290', info_only=True)
         tiktok.download('https://t.tiktok.com/i18n/share/video/6850796940293164290/', info_only=True)
         tiktok.download('https://vt.tiktok.com/UGJR4R/', info_only=True)
+        
+    def tests_youku(self):
+        # success
+        youku.download('https://v.youku.com/v_show/id_XNDc5MzY0MTY3Mg==.html?spm=a2hbt.13141534.app.5~5!2~5!2~5~5~5!2~5~5!2~5!2~5!2~5~A!28&s=dfee54c74cc240e7ba04', info_only=True)
+        # Liuli ep 17: VIP
+        youku.download('https://v.youku.com/v_show/id_XNDY4NjIxODYyNA==.html', info_only=True)
+        # Liuli ep 1: not VIP
+        youku.download('https://v.youku.com/v_show/id_XNDY4MDQwMjY0MA==.html?spm=a2hbt.13141534.app.5~5!2~5!2~5~5~5!2~5~5!2~5!2~5!2~5~A&s=dfee54c74cc240e7ba04', info_only=True)
 
 
 if __name__ == '__main__':
