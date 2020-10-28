@@ -204,13 +204,22 @@ class YouTube(VideoExtractor):
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 try:
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
-                    self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
+
                     # Workaround: get_video_info returns bad s. Why?
                     if 'url_encoded_fmt_stream_map' not in ytplayer_config['args']:
                         stream_list = json.loads(ytplayer_config['args']['player_response'])['streamingData']['formats']
                     else:
                         stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
                     #stream_list = ytplayer_config['args']['adaptive_fmts'].split(',')
+
+                    if 'assets' in ytplayer_config:
+                        self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
+                    elif re.search('([^"]*/base\.js)"', video_page):
+                        self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
+                        self.html5player = self.html5player.replace('\/', '/') # unescape URL
+                    else:
+                        self.html5player = None
+
                 except:
                     if 'url_encoded_fmt_stream_map' not in video_info:
                         stream_list = json.loads(video_info['player_response'][0])['streamingData']['formats']
