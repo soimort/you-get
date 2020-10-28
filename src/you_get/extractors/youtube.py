@@ -68,7 +68,7 @@ class YouTube(VideoExtractor):
          'audio_encoding': 'AAC', 'audio_bitrate': '24'},
     ]
 
-    def decipher(js, s):
+    def s_to_sig(js, s):
         # Examples:
         # - https://www.youtube.com/yts/jsbin/player-da_DK-vflWlK-zq/base.js
         # - https://www.youtube.com/yts/jsbin/player-vflvABTsY/da_DK/base.js
@@ -490,13 +490,13 @@ class YouTube(VideoExtractor):
                 if stream['type'].startswith('audio/mp4'):
                     dash_mp4_a_url = stream['url']
                     if 's' in stream:
-                        sig = self.__class__.decipher(self.js, stream['s'])
+                        sig = self.__class__.s_to_sig(self.js, stream['s'])
                         dash_mp4_a_url += '&sig={}'.format(sig)
                     dash_mp4_a_size = stream['clen']
                 elif stream['type'].startswith('audio/webm'):
                     dash_webm_a_url = stream['url']
                     if 's' in stream:
-                        sig = self.__class__.decipher(self.js, stream['s'])
+                        sig = self.__class__.s_to_sig(self.js, stream['s'])
                         dash_webm_a_url += '&sig={}'.format(sig)
                     dash_webm_a_size = stream['clen']
             for stream in streams: # video
@@ -505,7 +505,7 @@ class YouTube(VideoExtractor):
                         mimeType = 'video/mp4'
                         dash_url = stream['url']
                         if 's' in stream:
-                            sig = self.__class__.decipher(self.js, stream['s'])
+                            sig = self.__class__.s_to_sig(self.js, stream['s'])
                             dash_url += '&sig={}'.format(sig)
                         dash_size = stream['clen']
                         itag = stream['itag']
@@ -524,7 +524,7 @@ class YouTube(VideoExtractor):
                         mimeType = 'video/webm'
                         dash_url = stream['url']
                         if 's' in stream:
-                            sig = self.__class__.decipher(self.js, stream['s'])
+                            sig = self.__class__.s_to_sig(self.js, stream['s'])
                             dash_url += '&sig={}'.format(sig)
                         dash_size = stream['clen']
                         itag = stream['itag']
@@ -573,7 +573,7 @@ class YouTube(VideoExtractor):
                 if not hasattr(self, 'js'):
                     self.js = get_content(self.html5player)
                 s = self.streams[stream_id]['s']
-                sig = self.__class__.decipher(self.js, s)
+                sig = self.__class__.s_to_sig(self.js, s)
                 src += '&sig={}'.format(sig)
 
             self.streams[stream_id]['src'] = [src]
