@@ -4,6 +4,9 @@ from ..common import *
 from ..extractor import VideoExtractor
 
 import hashlib
+import threading
+
+threadLock = threading.Lock()
 
 class Bilibili(VideoExtractor):
     name = "Bilibili"
@@ -315,18 +318,30 @@ class Bilibili(VideoExtractor):
                 log.e(api_playinfo['message'])
                 return
             current_quality = api_playinfo['result']['quality']
+
+            def get_api_info(fnval, qn):
+                if qn != current_quality:
+                    api_url = self.bilibili_bangumi_api(avid, cid, ep_id, qn=qn, fnval=fnval)
+                    api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+                    api_playinfo = json.loads(api_content)
+                    if api_playinfo['code'] == 0:  # success
+                        threadLock.acquire()
+                        playinfos.append(api_playinfo)
+                        threadLock.release()
+
             # get alternative formats from API
+            threads = []
             for fnval in [8, 16]:
                 for qn in [120, 112, 80, 64, 32, 16]:
                     # automatic format for durl: qn=0
                     # for dash, qn does not matter
-                    if qn != current_quality:
-                        api_url = self.bilibili_bangumi_api(avid, cid, ep_id, qn=qn, fnval=fnval)
-                        api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
-                        api_playinfo = json.loads(api_content)
-                        if api_playinfo['code'] == 0:  # success
-                            playinfos.append(api_playinfo)
+                    threads.append(threading.Thread(target=get_api_info,
+                            args=(fnval, qn)))
+                    threads[-1].start()
+            for t in threads:
+                t.join()
 
+            threads = []
             for playinfo in playinfos:
                 if 'durl' in playinfo['result']:
                     quality = playinfo['result']['quality']
@@ -340,29 +355,39 @@ class Bilibili(VideoExtractor):
                         size += durl['size']
                     self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': src}
 
+                def get_dash(playinfo, video):
+                    # playinfo['result']['quality'] does not reflect the correct quality of DASH stream
+                    quality = self.height_to_quality(video['height'], video['id'])  # convert height to quality code
+                    s = self.stream_qualities[quality]
+                    format_id = 'dash-' + s['id']  # prefix
+                    container = 'mp4'  # enforce MP4 container
+                    desc = s['desc']
+                    audio_quality = s['audio_quality']
+                    baseurl = video['baseUrl']
+                    size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+
+                    # find matching audio track
+                    audio_baseurl = playinfo['result']['dash']['audio'][0]['baseUrl']
+                    for audio in playinfo['result']['dash']['audio']:
+                        if int(audio['id']) == audio_quality:
+                            audio_baseurl = audio['baseUrl']
+                            break
+                    size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+
+                    threadLock.acquire()
+                    self.dash_streams[format_id] = {'container': container, 'quality': desc,
+                                                    'src': [[baseurl], [audio_baseurl]], 'size': size}
+                    threadLock.release()
+
                 # DASH formats
                 if 'dash' in playinfo['result']:
                     for video in playinfo['result']['dash']['video']:
-                        # playinfo['result']['quality'] does not reflect the correct quality of DASH stream
-                        quality = self.height_to_quality(video['height'], video['id'])  # convert height to quality code
-                        s = self.stream_qualities[quality]
-                        format_id = 'dash-' + s['id']  # prefix
-                        container = 'mp4'  # enforce MP4 container
-                        desc = s['desc']
-                        audio_quality = s['audio_quality']
-                        baseurl = video['baseUrl']
-                        size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+                        threads.append(threading.Thread(target=get_dash,
+                            args=(playinfo, video)))
+                        threads[-1].start()
 
-                        # find matching audio track
-                        audio_baseurl = playinfo['result']['dash']['audio'][0]['baseUrl']
-                        for audio in playinfo['result']['dash']['audio']:
-                            if int(audio['id']) == audio_quality:
-                                audio_baseurl = audio['baseUrl']
-                                break
-                        size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
-
-                        self.dash_streams[format_id] = {'container': container, 'quality': desc,
-                                                        'src': [[baseurl], [audio_baseurl]], 'size': size}
+            for t in threads:
+                t.join()
 
             # get danmaku
             self.danmaku = get_content('http://comment.bilibili.com/%s.xml' % cid)
