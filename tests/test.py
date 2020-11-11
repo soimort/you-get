@@ -40,7 +40,7 @@ class YouGetTests(unittest.TestCase):
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
 
-    def test_bilibil(self):
+    def test_bilibili(self):
         bilibili.download(
             "https://www.bilibili.com/watchlater/#/BV1PE411q7mZ/p6", info_only=True
         )
@@ -58,10 +58,10 @@ class YouGetTests(unittest.TestCase):
         #    'https://soundcloud.com/anthony-flieger/sets/cytus', info_only=True
         #)
 
-    def tests_tiktok(self):
-        tiktok.download('https://www.tiktok.com/@nmb48_official/video/6850796940293164290', info_only=True)
-        tiktok.download('https://t.tiktok.com/i18n/share/video/6850796940293164290/', info_only=True)
-        tiktok.download('https://vt.tiktok.com/UGJR4R/', info_only=True)
+    #def tests_tiktok(self):
+    #    tiktok.download('https://www.tiktok.com/@nmb48_official/video/6850796940293164290', info_only=True)
+    #    tiktok.download('https://t.tiktok.com/i18n/share/video/6850796940293164290/', info_only=True)
+    #    tiktok.download('https://vt.tiktok.com/UGJR4R/', info_only=True)
 
 
 if __name__ == '__main__':
