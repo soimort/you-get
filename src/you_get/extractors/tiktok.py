@@ -13,7 +13,7 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     data = r1(r'<script id="__NEXT_DATA__".*?>(.*?)</script>', html)
     info = json.loads(data)
     wid = info['props']['initialProps']['$wid']
-    cookie = 'tt_webid=%s; tt_webid_v2=%s' % (wid, wid)
+    cookie = 'tt_webid_v2=%s' % (wid)
 
     # here's the cookie
     headers['Cookie'] = cookie
@@ -33,8 +33,9 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
     title = '%s [%s]' % (nickName or uniqueId, videoId)
 
-    # we also need the referer
+    # setup headers
     headers['Referer'] = referUrl
+    headers['Cookie'] = 'tt_webid_v2=%s' % (wid)
 
     mime, ext, size = url_info(videoUrl, headers=headers)
 
