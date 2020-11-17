@@ -41,7 +41,6 @@ class Youku(VideoExtractor):
     mobile_ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36'
     dispatcher_url = 'vali.cp31.ott.cibntv.net'
 
-    # Last updated: 2017-10-13
     stream_types = [
         {'id': 'hd3',      'container': 'flv', 'video_profile': '1080P'},
         {'id': 'hd3v2',    'container': 'flv', 'video_profile': '1080P'},
@@ -78,7 +77,7 @@ class Youku(VideoExtractor):
         self.api_error_code = None
         self.api_error_msg = None
 
-        self.ccode = '0519'
+        self.ccode = '0590'
         # Found in http://g.alicdn.com/player/ykplayer/0.5.64/youku-player.min.js
         # grep -oE '"[0-9a-zA-Z+/=]{256}"' youku-player.min.js
         self.ckey = 'DIl58SLFxFNndSV1GFNnMQVYkx1PP5tKe1siZu/86PR1u/Wh1Ptd+WOZsHHWxysSfAOhNJpdVWsdVJNsfJ8Sxd8WKVvNfAS8aS8fAOzYARzPyPc3JvtnPHjTdKfESTdnuTW6ZPvk2pNDh4uFzotgdMEFkzQ5wZVXl2Pf1/Y6hLK0OnCNxBj3+nb0v72gZ6b0td+WOZsHHWxysSo/0y9D2K42SaB8Y/+aD2K42SaB8Y/+ahU+WOZsHcrxysooUeND'
