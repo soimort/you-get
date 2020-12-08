@@ -436,7 +436,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 火猫TV   | <http://www.huomao.com/>       |✓| | |
 | 阳光宽频网 | <http://www.365yg.com/>      |✓| | |
 | 西瓜视频 | <https://www.ixigua.com/>      |✓| | |
-| 新片场 | <https://www.xinpianchang.com//>      |✓| | |
+| 新片场 | <https://www.xinpianchang.com/>      |✓| | |
 | 快手 | <https://www.kuaishou.com/>      |✓|✓| |
 | 抖音 | <https://www.douyin.com/>      |✓| | |
 | TikTok | <https://www.tiktok.com/>      |✓| | |
