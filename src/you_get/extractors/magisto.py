@@ -3,15 +3,19 @@
 __all__ = ['magisto_download']
 
 from ..common import *
+import json
 
 def magisto_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
-
-    title1 = r1(r'<meta name="twitter:title" content="([^"]*)"', html)
-    title2 = r1(r'<meta name="twitter:description" content="([^"]*)"', html)
-    video_hash = r1(r'http://www.magisto.com/video/([^/]+)', url)
-    title = "%s %s - %s" % (title1, title2, video_hash)
-    url = r1(r'<source type="[^"]+" src="([^"]*)"', html)
+    
+    video_hash = r1(r'video\/([a-zA-Z0-9]+)', url)
+    api_url = 'https://www.magisto.com/api/video/{}'.format(video_hash)
+    content = get_html(api_url)
+    data = json.loads(content)
+    title1 = data['title']
+    title2 = data['creator']
+    title = "%s - %s" % (title1, title2)
+    url = data['video_direct_url']
     type, ext, size = url_info(url)
 
     print_info(site_info, title, type, size)

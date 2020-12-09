@@ -14,7 +14,7 @@ def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
     title = title or t
     assert title
     urls = f.split(',')
-    ext = re.sub(r'.*\.', '', urls[0])
+    ext = match1(urls[0], r'.*\.(\w+)\??[^\.]*')
     assert ext in ('flv', 'mp4', 'f4v'), ext
     ext = {'f4v': 'flv'}.get(ext, ext)
     size = 0
@@ -37,6 +37,30 @@ def ku6_download(url, output_dir = '.', merge = True, info_only = False, **kwarg
                 r'http://my.ku6.com/watch\?.*v=(.*)\.\..*']
         id = r1_of(patterns, url)
 
+    if id is None:
+        # http://www.ku6.com/2017/detail-zt.html?vid=xvqTmvZrH8MNvErpvRxFn3
+        page = get_content(url)
+        meta = re.search(r'detailDataMap=(\{.+?\});', page)
+        if meta is not None:
+            meta = meta.group(1)
+        else:
+            raise Exception('Unsupported url')
+        vid = re.search(r'vid=([^&]+)', url)
+        if vid is not None:
+            vid = vid.group(1)
+        else:
+            raise Exception('Unsupported url')
+        this_meta = re.search('"?'+vid+'"?:\{(.+?)\}', meta)
+        if this_meta is not None:
+            this_meta = this_meta.group(1)
+            title = re.search('title:"(.+?)"', this_meta).group(1)
+            video_url = re.search('playUrl:"(.+?)"', this_meta).group(1)
+        video_size = url_size(video_url)
+        print_info(site_info, title, 'mp4', video_size)
+        if not info_only:
+            download_urls([video_url], title, 'mp4', video_size, output_dir, merge=merge, **kwargs)
+        return
+
     ku6_download_by_id(id, output_dir = output_dir, merge = merge, info_only = info_only)
 
 def baidu_ku6(url):
@@ -48,6 +72,10 @@ def baidu_ku6(url):
     if isrc is not None:
         h2 = get_html(isrc)
         id = match1(h2, r'http://v.ku6.com/show/(.*)\.\.\.html')
+#fix #1746
+#some ku6 urls really ends with three dots? A bug?
+        if id is None:
+            id = match1(h2, r'http://v.ku6.com/show/(.*)\.html')
 
     return id
 

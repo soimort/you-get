@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import platform
+from .os import detect_os
 
-def legitimize(text, os=platform.system()):
+def legitimize(text, os=detect_os()):
     """Converts a string to a valid filename.
     """
 
@@ -13,7 +13,8 @@ def legitimize(text, os=platform.system()):
         ord('|'): '-',
     })
 
-    if os == 'Windows':
+    # FIXME: do some filesystem detection
+    if os == 'windows' or os == 'cygwin' or os == 'wsl':
         # Windows (non-POSIX namespace)
         text = text.translate({
             # Reserved in Windows VFAT and NTFS
@@ -28,10 +29,11 @@ def legitimize(text, os=platform.system()):
             ord('>'): '-',
             ord('['): '(',
             ord(']'): ')',
+            ord('\t'): ' ',
         })
     else:
         # *nix
-        if os == 'Darwin':
+        if os == 'mac':
             # Mac OS HFS+
             text = text.translate({
                 ord(':'): '-',
@@ -41,5 +43,5 @@ def legitimize(text, os=platform.system()):
         if text.startswith("."):
             text = text[1:]
 
-    text = text[:82] # Trim to 82 Unicode characters long
+    text = text[:80] # Trim to 82 Unicode characters long
     return text

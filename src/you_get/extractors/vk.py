@@ -22,6 +22,19 @@ def get_video_info(url):
     return url, title, ext, size
 
 
+def get_video_from_user_videolist(url):
+    ep = 'https://vk.com/al_video.php'
+    to_post = dict(act='show', al=1, module='direct', video=re.search(r'video(\d+_\d+)', url).group(1))
+    page = post_content(ep, post_data=to_post)
+    video_pt = r'<source src="(.+?)" type="video\/mp4"'
+    url = re.search(video_pt, page).group(1)
+    title = re.search(r'<div class="mv_title".+?>(.+?)</div>', page).group(1)
+    mime, ext, size = url_info(url)
+    print_info(site_info, title, mime, size)
+
+    return url, title, ext, size
+
+
 def get_image_info(url):
     image_page = get_content(url)
     # used for title - vk page owner
@@ -43,6 +56,8 @@ def vk_download(url, output_dir='.', stream_type=None, merge=True, info_only=Fal
         link, title, ext, size = get_video_info(url)
     elif re.match(r'(.+)vk\.com\/photo(.+)', url):
         link, title, ext, size = get_image_info(url)
+    elif re.search(r'vk\.com\/video\d+_\d+', url):
+        link, title, ext, size = get_video_from_user_videolist(url)
     else:
         raise NotImplementedError('Nothing to download here')
 

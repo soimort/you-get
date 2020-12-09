@@ -20,7 +20,7 @@ Changelog:
    use @fffonion 's method in #617.
    Add trace AVM(asasm) code in Iqiyi's encode function where the salt is put into the encode array and reassemble by RABCDasm(or WinRABCDasm),then use Fiddler to response modified file to replace the src file with its AutoResponder function ,set browser Fiddler proxy and play with !debug version! Flash Player ,finially get result in flashlog.txt(its location can be easily found in search engine).
    Code Like (without letters after #comment:),it just do the job : trace("{IQIYI_SALT}:"+salt_array.join(""))
-   ```(Postion After getTimer)
+   ```(Position After getTimer)
      findpropstrict      QName(PackageNamespace(""), "trace")
      pushstring          "{IQIYI_SALT}:" #comment for you to locate the salt
      getscopeobject      1
@@ -97,7 +97,9 @@ class Iqiyi(VideoExtractor):
         {'id': '4k', 'container': 'm3u8', 'video_profile': '4k'},
         {'id': 'BD', 'container': 'm3u8', 'video_profile': '1080p'},
         {'id': 'TD', 'container': 'm3u8', 'video_profile': '720p'},
+        {'id': 'TD_H265', 'container': 'm3u8', 'video_profile': '720p H265'},
         {'id': 'HD', 'container': 'm3u8', 'video_profile': '540p'},
+        {'id': 'HD_H265', 'container': 'm3u8', 'video_profile': '540p H265'},
         {'id': 'SD', 'container': 'm3u8', 'video_profile': '360p'},
         {'id': 'LD', 'container': 'm3u8', 'video_profile': '210p'},
     ]
@@ -108,8 +110,8 @@ class Iqiyi(VideoExtractor):
     stream_to_bid = {  '4k': 10, 'fullhd' : 5, 'suprt-high' : 4, 'super' : 3, 'high' : 2, 'standard' :1, 'topspeed' :96}
     '''
     ids = ['4k','BD', 'TD', 'HD', 'SD', 'LD']
-    vd_2_id = {10: '4k', 19: '4k', 5:'BD', 18: 'BD', 21: 'HD', 2: 'HD', 4: 'TD', 17: 'TD', 96: 'LD', 1: 'SD'}
-    id_2_profile = {'4k':'4k', 'BD': '1080p','TD': '720p', 'HD': '540p', 'SD': '360p', 'LD': '210p'}
+    vd_2_id = {10: '4k', 19: '4k', 5:'BD', 18: 'BD', 21: 'HD_H265', 2: 'HD', 4: 'TD', 17: 'TD_H265', 96: 'LD', 1: 'SD', 14: 'TD'}
+    id_2_profile = {'4k':'4k', 'BD': '1080p','TD': '720p', 'HD': '540p', 'SD': '360p', 'LD': '210p', 'HD_H265': '540p H265', 'TD_H265': '720p H265'}
 
 
 
@@ -117,10 +119,10 @@ class Iqiyi(VideoExtractor):
         self.url = url
 
         video_page = get_content(url)
-        videos = set(re.findall(r'<a href="(http://www\.iqiyi\.com/v_[^"]+)"', video_page))
+        videos = set(re.findall(r'<a href="(?=https?:)?(//www\.iqiyi\.com/v_[^"]+)"', video_page))
 
         for video in videos:
-            self.__class__().download_by_url(video, **kwargs)
+            self.__class__().download_by_url('https:' + video, **kwargs)
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
@@ -129,15 +131,17 @@ class Iqiyi(VideoExtractor):
             html = get_html(self.url)
             tvid = r1(r'#curid=(.+)_', self.url) or \
                    r1(r'tvid=([^&]+)', self.url) or \
-                   r1(r'data-player-tvid="([^"]+)"', html)
+                   r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tv(?:i|I)d=(.+?)\&', html) or r1(r'param\[\'tvid\'\]\s*=\s*"(.+?)"', html)
             videoid = r1(r'#curid=.+_(.*)$', self.url) or \
                       r1(r'vid=([^&]+)', self.url) or \
-                      r1(r'data-player-videoid="([^"]+)"', html)
+                      r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=(.+?)\&', html) or r1(r'param\[\'vid\'\]\s*=\s*"(.+?)"', html)
             self.vid = (tvid, videoid)
-            self.title = match1(html, '<title>([^<]+)').split('-')[0]
+            info_u = 'http://pcw-api.iqiyi.com/video/video/playervideoinfo?tvid=' + tvid
+            json_res = get_content(info_u)
+            self.title = json.loads(json_res)['data']['vn']
         tvid, videoid = self.vid
         info = getVMS(tvid, videoid)
-        assert info['code'] == 'A00000', 'can\'t play this video'
+        assert info['code'] == 'A00000', "can't play this video"
 
         for stream in info['data']['vidl']:
             try:
@@ -145,11 +149,11 @@ class Iqiyi(VideoExtractor):
                 if stream_id in self.stream_types:
                     continue
                 stream_profile = self.id_2_profile[stream_id]
-                self.streams[stream_id] = {'video_profile': stream_profile, 'container': 'm3u8', 'src': [stream['m3u']], 'size' : 0}
-            except:
+                self.streams[stream_id] = {'video_profile': stream_profile, 'container': 'm3u8', 'src': [stream['m3u']], 'size' : 0, 'm3u8_url': stream['m3u']}
+            except Exception as e:
                 log.i("vd: {} is not handled".format(stream['vd']))
                 log.i("info is {}".format(stream))
-    
+
 
     def download(self, **kwargs):
         """Override the original one
@@ -197,11 +201,9 @@ class Iqiyi(VideoExtractor):
             if not urls:
                 log.wtf('[Failed] Cannot extract video source.')
             # For legacy main()
-            
+
             #Here's the change!!
-            download_url_ffmpeg(urls[0], self.title, 'mp4',
-                          output_dir=kwargs['output_dir'],
-                          merge=kwargs['merge'],)
+            download_url_ffmpeg(urls[0], self.title, 'mp4', output_dir=kwargs['output_dir'], merge=kwargs['merge'], stream=False)
 
             if not kwargs['caption']:
                 print('Skipping captions.')
@@ -213,7 +215,7 @@ class Iqiyi(VideoExtractor):
                 with open(os.path.join(kwargs['output_dir'], filename),
                           'w', encoding='utf-8') as x:
                     x.write(srt)
-                print('Done.')    
+                print('Done.')
 
 '''
         if info["code"] != "A000000":
