@@ -6,7 +6,7 @@ from ..common import *
 
 def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     url = r1(r'([^?]*)', url)
-    html = get_html(url)
+    html = get_html(url, faker=True)
 
     vid = r1(r'instagram.com/\w+/([^/]+)', url)
     description = r1(r'<meta property="og:title" content="([^"]*)"', html) or \
