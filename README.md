@@ -414,6 +414,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 酷我音乐 | <http://www.kuwo.cn/>          | | |✓|
 | 乐视网   | <http://www.le.com/>           |✓| | |
 | 荔枝FM   | <http://www.lizhi.fm/>         | | |✓|
+| 懒人听书 | <http://www.lrts.me/>          | | |✓|
 | 秒拍     | <http://www.miaopai.com/>      |✓| | |
 | MioMio弹幕网 | <http://www.miomio.tv/>    |✓| | |
 | MissEvan<br/>猫耳FM | <http://www.missevan.com/> | | |✓|
