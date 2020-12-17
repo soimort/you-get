@@ -10,7 +10,8 @@ from you_get.extractors import (
     acfun,
     bilibili,
     soundcloud,
-    tiktok
+    tiktok,
+    ixigua
 )
 
 
@@ -64,7 +65,7 @@ class YouGetTests(unittest.TestCase):
     #    tiktok.download('https://vt.tiktok.com/UGJR4R/', info_only=True)
 
     def test_ixigua(self):
-        soundcloud.download(
+        ixigua.download(
             'https://www.ixigua.com/i6631065141750268420', info_only=True
         )
 
