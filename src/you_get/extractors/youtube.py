@@ -157,7 +157,22 @@ class YouTube(VideoExtractor):
             log.wtf('[Failed] Unsupported URL pattern.')
 
         video_page = get_content('https://www.youtube.com/playlist?list=%s' % playlist_id)
-        ytInitialData = json.loads(match1(video_page, r'window\["ytInitialData"\]\s*=\s*(.+);'))
+        str_json = match1(video_page, r'window\["ytInitialData"\]\s*=\s*(.+);')
+
+        # 这里需要打个补丁，youtube 新版的播放列表，需要靠这个新的正则来处理
+        # 逻辑是，如果前面的老版正则无法处理，则使用新版正则处理一次，如果还不行，则报异常
+        if str_json is None:
+            # 通过新版正则，处理页面得到JSON
+            str_json = match1(video_page, r's*ytInitialData *= \s*(.+);')
+            # 由于有一些零碎，所以先排除掉JSON前面的部分
+            nIndex = str_json.find('{')
+            str_json = str_json[nIndex:]
+            # 排除掉JSON后面的部分
+            nIndex = str_json.find("};")
+            str_json = str_json[:nIndex + 1]
+            # 至此，得到的就是一个完整的JSON了
+
+        ytInitialData = json.loads(str_json)
 
         tab0 = ytInitialData['contents']['twoColumnBrowseResultsRenderer']['tabs'][0]
         itemSection0 = tab0['tabRenderer']['content']['sectionListRenderer']['contents'][0]
