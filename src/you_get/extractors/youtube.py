@@ -203,8 +203,9 @@ class YouTube(VideoExtractor):
                 # Parse video page (for DASH)
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 try:
+                    #Here is some thing wrong, but I dont konw how to fix it. json Error.
                     ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
-
+                    
                     # Workaround: get_video_info returns bad s. Why?
                     if 'url_encoded_fmt_stream_map' not in ytplayer_config['args']:
                         stream_list = json.loads(ytplayer_config['args']['player_response'])['streamingData']['formats']
