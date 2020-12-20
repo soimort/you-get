@@ -182,11 +182,40 @@ class YouTube(VideoExtractor):
         self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
         self.p_playlist()
         for index, video in enumerate(videos, 1):
-            vid = video['playlistVideoRenderer']['videoId']
-            try:
-                self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
-            except:
+            video_key = video.get('playlistVideoRenderer')
+            if video_key is not None:
+                # video_key = video['playlistVideoRenderer']
+                vid = video_key['videoId']
+                try:
+                    self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
+                except:
+                    pass
+            else:
+                # FIXME: 这里有个问题，就是如果列表最后是个扩展列表的话，需要重新下载这个扩展列表
+                # 目前经过这块代码之后， apiUrl 就是扩展列表的URL，请求是个 POST 请求
+                # 并且携带若干Cookie
+                next_key = video['continuationItemRenderer']
+                apiUrl = ""
+                if next_key is not None:
+                    continuationEndpoint = next_key['continuationEndpoint']
+                    if continuationEndpoint is not None:
+                        commandMetadata = continuationEndpoint['commandMetadata']
+                        if commandMetadata is not None:
+                            webCommandMetadata = commandMetadata['webCommandMetadata']
+                            if webCommandMetadata is not None:
+                                apiUrl = webCommandMetadata['apiUrl']
+                if apiUrl != "":
+                    apiUrl = "https://www.youtube.com" + apiUrl + "?key="
+                str_flag = "\"INNERTUBE_API_KEY\":\""
+                nIndex = video_page.find(str_flag)
+                str_key = video_page[nIndex + len(str_flag):]
+                nIndex = str_key.find("\"")
+                str_key = str_key[:nIndex]
+
+                apiUrl = apiUrl + str_key
+
                 pass
+
         # FIXME: show DASH stream sizes (by default) for playlist videos
 
     def prepare(self, **kwargs):
