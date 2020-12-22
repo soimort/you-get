@@ -42,7 +42,7 @@ class YouGetTests(unittest.TestCase):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
         
 #     https://twitter.com/i/status/1341368800063627265
-    def test_acfun(self):
+    def test_twitter(self):
         acfun.download('https://twitter.com/i/status/1341368800063627265', info_only=True)
 
     def test_bilibili(self):
