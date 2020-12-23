@@ -1,0 +1,25 @@
+PS C:\WINDOWS\system32> you-get -i 'https://www.mgtv.com/b/304117/3819840.html' --debug
+[DEBUG] get_content: http://pcweb.api.mgtv.com/player/video?video_id=3819840
+you-get: version 0.4.1488, a tiny downloader that scrapes the web.
+you-get: Namespace(URL=['https://www.mgtv.com/b/304117/3819840.html'], auto_rename=False, cookies=None, debug=True, extractor_proxy=None, force=False, format=None, help=False, http_proxy=None, info=True, input_file=None, insecure=False, itag=None, json=False, no_caption=False, no_merge=False, no_proxy=False, output_dir='.', output_filename=None, password=None, player=None, playlist=False, skip_existing_file_size_check=False, socks_proxy=None, stream=None, timeout=600, url=False, version=False)
+Traceback (most recent call last):
+  File "c:\program files (x86)\python38-32\lib\runpy.py", line 192, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "c:\program files (x86)\python38-32\lib\runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "C:\Program Files (x86)\Python38-32\Scripts\you-get.exe\__main__.py", line 7, in <module>
+  File "C:\Users\SJHAO\AppData\Roaming\Python\Python38\site-packages\you_get\__main__.py", line 92, in main
+    main(**kwargs)
+  File "C:\Users\SJHAO\AppData\Roaming\Python\Python38\site-packages\you_get\common.py", line 1799, in main
+    script_main(any_download, any_download_playlist, **kwargs)
+  File "C:\Users\SJHAO\AppData\Roaming\Python\Python38\site-packages\you_get\common.py", line 1681, in script_main
+    download_main(
+  File "C:\Users\SJHAO\AppData\Roaming\Python\Python38\site-packages\you_get\common.py", line 1328, in download_main
+    download(url, **kwargs)
+  File "C:\Users\SJHAO\AppData\Roaming\Python\Python38\site-packages\you_get\common.py", line 1790, in any_download
+    m.download(url, **kwargs)
+  File "C:\Users\SJHAO\AppData\Roaming\Python\Python38\site-packages\you_get\extractor.py", line 48, in download_by_url
+    self.prepare(**kwargs)
+  File "C:\Users\SJHAO\AppData\Roaming\Python\Python38\site-packages\you_get\extractors\mgtv.py", line 68, in prepare
+    self.title = content['data']['info']['title']
+KeyError: 'info'
