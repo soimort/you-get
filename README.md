@@ -427,7 +427,6 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **Tudou<br/>土豆** | <http://www.tudou.com/> |✓| | |
 | 虾米     | <http://www.xiami.com/>        |✓| |✓|
 | 阳光卫视 | <http://www.isuntv.com/>       |✓| | |
-| **音悦Tai** | <http://www.yinyuetai.com/> |✓| | |
 | **Youku<br/>优酷** | <http://www.youku.com/> |✓| | |
 | 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
 | 央视网   | <http://www.cntv.cn/>          |✓| | |
