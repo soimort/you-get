@@ -468,11 +468,16 @@ class YouTube(VideoExtractor):
                                for afmt in video_info['adaptive_fmts'][0].split(',')]
                 else:
                     try:
-                        streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
+                        try:
+                            streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
+                        except:
+                            streams = ytInitialPlayerResponse['streamingData']['adaptiveFormats']
                     except:  # no DASH stream at all
                         return
+
                     # streams without contentLength got broken urls, just remove them (#2767)
                     streams = [stream for stream in streams if 'contentLength' in stream]
+
                     for stream in streams:
                         stream['itag'] = str(stream['itag'])
                         if 'qualityLabel' in stream:
