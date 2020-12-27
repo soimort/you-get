@@ -40,20 +40,18 @@ def lrts_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
       'Referer': url
     }
     items = []
-    if (total_count > page_size):
-        for page in range(first_page, last_page):
-            page_url = 'http://www.lrts.me/ajax/book/%s/%s/%s' % (book_no, page, page_size)
-            response_content = json.loads(post_content(page_url, headers))
-            if response_content['status'] != 'success':
-                raise AssertionError("got the page failed: %s" % (page_url))
-            data = response_content['data']['data']
-            if data:
-                for i in data:
-                    i['resName'] = parse.unquote(i['resName'])
-                items.extend(data)
-            else:
-                break
-
+    for page in range(first_page, last_page):
+        page_url = 'http://www.lrts.me/ajax/book/%s/%s/%s' % (book_no, page, page_size)
+        response_content = json.loads(post_content(page_url, headers))
+        if response_content['status'] != 'success':
+            raise AssertionError("got the page failed: %s" % (page_url))
+        data = response_content['data']['data']
+        if data:
+            for i in data:
+                i['resName'] = parse.unquote(i['resName'])
+            items.extend(data)
+        else:
+            break
     headers = {
       'Referer': 'http://www.lrts.me/playlist'
     }
@@ -61,7 +59,6 @@ def lrts_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     for item in items:
         i_url = 'http://www.lrts.me/ajax/path/4/%s/%s' % (item['fatherResId'], item['resId'])
         response_content = json.loads(post_content(i_url, headers))
-        logging.debug(response_content)
         if response_content['status'] == 'success' and response_content['data']:
             item['ok'] = True
             item['url'] = response_content['data']
