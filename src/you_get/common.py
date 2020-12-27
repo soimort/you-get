@@ -76,6 +76,7 @@ SITES = {
     'letv'             : 'le',
     'lizhi'            : 'lizhi',
     'longzhu'          : 'longzhu',
+    'lrts'             : 'lrts',
     'magisto'          : 'magisto',
     'metacafe'         : 'metacafe',
     'mgtv'             : 'mgtv',
@@ -1555,6 +1556,21 @@ def script_main(download, download_playlist, **kwargs):
         '-l', '--playlist', action='store_true',
         help='Prefer to download a playlist'
     )
+
+    playlist_grp = parser.add_argument_group('Playlist optional options')
+    playlist_grp.add_argument(
+        '-first', '--first',  metavar='FIRST',
+        help='the first number'
+    )
+    playlist_grp.add_argument(
+        '-last', '--last',  metavar='LAST',
+        help='the last number'
+    )
+    playlist_grp.add_argument(
+        '-size', '--page-size',  metavar='PAGE_SIZE',
+        help='the page size number'
+    )
+
     download_grp.add_argument(
         '-a', '--auto-rename', action='store_true', default=False,
         help='Auto rename same name different files'
@@ -1672,7 +1688,7 @@ def script_main(download, download_playlist, **kwargs):
     socket.setdefaulttimeout(args.timeout)
 
     try:
-        extra = {}
+        extra = {'args': args}
         if extractor_proxy:
             extra['extractor_proxy'] = extractor_proxy
         if stream_id:
