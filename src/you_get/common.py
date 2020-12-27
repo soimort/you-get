@@ -1559,15 +1559,15 @@ def script_main(download, download_playlist, **kwargs):
 
     playlist_grp = parser.add_argument_group('Playlist optional options')
     playlist_grp.add_argument(
-        '-first', '--first',  metavar='FIRST',
+        '--first', metavar='FIRST',
         help='the first number'
     )
     playlist_grp.add_argument(
-        '-last', '--last',  metavar='LAST',
+        '--last', metavar='LAST',
         help='the last number'
     )
     playlist_grp.add_argument(
-        '-size', '--page-size',  metavar='PAGE_SIZE',
+        '--size', '--page-size', metavar='PAGE_SIZE',
         help='the page size number'
     )
 
