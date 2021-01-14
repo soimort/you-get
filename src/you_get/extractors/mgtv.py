@@ -47,6 +47,8 @@ class MGTV(VideoExtractor):
         vid = match1(url, 'https?://www.mgtv.com/(?:b|l)/\d+/(\d+).html')
         if not vid:
             vid = match1(url, 'https?://www.mgtv.com/hz/bdpz/\d+/(\d+).html')
+        if not vid:
+            vid = match1(url, 'https?://www.mgtv.com/s/(\d+).html')
         return vid
 
     # ----------------------------------------------------------------------
@@ -125,21 +127,21 @@ class MGTV(VideoExtractor):
                 for i in segment_list_this:
                     stream_fileid_list.append(os.path.basename(i).split('.')[0])
 
-            # make pieces
-            pieces = []
-            for i in zip(stream_fileid_list, segment_list_this):
-                pieces.append({'fileid': i[0], 'segs': i[1], })
+                # make pieces
+                pieces = []
+                for i in zip(stream_fileid_list, segment_list_this):
+                    pieces.append({'fileid': i[0], 'segs': i[1], })
 
-                self.streams[quality_id] = {
-                    'container': s['container'],
-                    'video_profile': s['video_profile'],
-                    'size': m3u8_size,
-                    'pieces': pieces,
-                    'm3u8_url': m3u8_url
-                }
+                    self.streams[quality_id] = {
+                        'container': s['container'],
+                        'video_profile': s['video_profile'],
+                        'size': m3u8_size,
+                        'pieces': pieces,
+                        'm3u8_url': m3u8_url
+                    }
 
-            if not kwargs['info_only']:
-                self.streams[quality_id]['src'] = segment_list_this
+                if not kwargs['info_only']:
+                    self.streams[quality_id]['src'] = segment_list_this
 
     def extract(self, **kwargs):
         if 'stream_id' in kwargs and kwargs['stream_id']:
