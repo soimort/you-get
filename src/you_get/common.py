@@ -137,6 +137,7 @@ cookies = None
 output_filename = None
 auto_rename = False
 insecure = False
+downloader = None
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -624,24 +625,20 @@ def url_save(
     headers=None, timeout=None, **kwargs
 ):
     tmp_headers = headers.copy() if headers is not None else {}
-    # When a referer specified with param refer,
-    # the key must be 'Referer' for the hack here
     if refer is not None:
         tmp_headers['Referer'] = refer
     if type(url) is list:
         chunk_sizes = [url_size(url, faker=faker, headers=tmp_headers) for url in url]
         file_size = sum(chunk_sizes)
-        is_chunked, urls = True, url
     else:
         file_size = url_size(url, faker=faker, headers=tmp_headers)
-        chunk_sizes = [file_size]
-        is_chunked, urls = False, [url]
 
     continue_renameing = True
     while continue_renameing:
         continue_renameing = False
         if os.path.exists(filepath):
-            if not force and (file_size == os.path.getsize(filepath) or skip_existing_file_size_check):
+            if not force and (file_size == os.path.getsize(filepath) \
+                    or skip_existing_file_size_check):
                 if not is_part:
                     if bar:
                         bar.done()
@@ -684,6 +681,28 @@ def url_save(
                         return
         elif not os.path.exists(os.path.dirname(filepath)):
             os.mkdir(os.path.dirname(filepath))
+    global downloader
+    downloader(url, filepath, bar, refer=refer, is_part=is_part, faker=faker,
+    headers=headers, timeout=timeout, **kwargs)
+
+
+def default_downloader(
+    url, filepath, bar, refer=None, is_part=False, faker=False,
+    headers=None, timeout=None, **kwargs
+):
+    tmp_headers = headers.copy() if headers is not None else {}
+    # When a referer specified with param refer,
+    # the key must be 'Referer' for the hack here
+    if refer is not None:
+        tmp_headers['Referer'] = refer
+    if type(url) is list:
+        chunk_sizes = [url_size(url, faker=faker, headers=tmp_headers) for url in url]
+        file_size = sum(chunk_sizes)
+        is_chunked, urls = True, url
+    else:
+        file_size = url_size(url, faker=faker, headers=tmp_headers)
+        chunk_sizes = [file_size]
+        is_chunked, urls = False, [url]
 
     temp_filepath = filepath + '.download' if file_size != float('inf') \
         else filepath
@@ -1604,6 +1623,20 @@ def script_main(download, download_playlist, **kwargs):
 
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
+    aria2c_grp = parser.add_argument_group('Aria2c options')
+    aria2c_grp.add_argument(
+        '--aria2c', action='store_true', help='Download using Aria2c'
+    )
+    aria2c_grp.add_argument(
+        '--aria2c-rpc', metavar='ARIA_RPC', help='''RPC link used by aria2c,
+        default to http://localhost:6800/jsonrpc''',
+        default="http://localhost:6800/jsonrpc"
+    )
+    aria2c_grp.add_argument(
+        '--aria2c-secret', metavar='ARIA_SECRET',
+        help='RPC secret authorization token'
+    )
+
     args = parser.parse_args()
 
     if args.help:
@@ -1627,8 +1660,11 @@ def script_main(download, download_playlist, **kwargs):
     global output_filename
     global auto_rename
     global insecure
+    global downloader
+    downloader = default_downloader
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
+    aria2c_options = {}
 
     info_only = args.info
     if args.force:
@@ -1660,13 +1696,22 @@ def script_main(download, download_playlist, **kwargs):
         # ignore ssl
         insecure = True
 
-
     if args.no_proxy:
         set_http_proxy('')
     else:
         set_http_proxy(args.http_proxy)
+        aria2c_options["all-proxy"] = args.http_proxy
     if args.socks_proxy:
+        if args.aria2c:
+            log.e('Aria2c does not support socket proxy')
+            exit(1)
         set_socks_proxy(args.socks_proxy)
+
+    if args.aria2c:
+        from .processor.aria2c import Aria2cDownloader
+        aria = Aria2cDownloader(
+            args.aria2c_rpc, args.aria2c_secret, aria2c_options, log.e)
+        downloader = aria.download
 
     URLs = []
     if args.input_file:
