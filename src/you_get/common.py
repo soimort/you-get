@@ -113,7 +113,6 @@ SITES = {
     'veoh'             : 'veoh',
     'vine'             : 'vine',
     'vk'               : 'vk',
-    'xiami'            : 'xiami',
     'xiaokaxiu'        : 'yixia',
     'xiaojiadianvideo' : 'fc2video',
     'ximalaya'         : 'ximalaya',
