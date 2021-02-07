@@ -14,7 +14,7 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         return
 
     import ssl
-    ssl_context = request.HTTPSHandler(context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
+    ssl_context = request.HTTPSHandler(context=ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)) # server requires TLS v1.2
     cookie_handler = request.HTTPCookieProcessor()
     opener = request.build_opener(ssl_context, cookie_handler)
     request.install_opener(opener)
@@ -45,23 +45,30 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
                      r1(r'<title>([^<\n]*)', html)
         urls = re.findall(r'(https?://[^;"&]+/tumblr_[^;"&]+_\d+\.jpg)', html) +\
                re.findall(r'(https?://[^;"&]+/tumblr_[^;"&]+_\d+\.png)', html) +\
-               re.findall(r'(https?://[^;"&]+/tumblr_[^";&]+_\d+\.gif)', html)
+               re.findall(r'(https?://[^;"&]+/tumblr_[^;"&]+_\d+\.gif)', html) +\
+               re.findall(r'(https?://\d+\.media\.tumblr\.com/[^;"&]+/s\d+x\d+/[^;"&]+\.jpg)', html) +\
+               re.findall(r'(https?://\d+\.media\.tumblr\.com/[^;"&]+/s\d+x\d+/[^;"&]+\.png)', html) +\
+               re.findall(r'(https?://\d+\.media\.tumblr\.com/[^;"&]+/s\d+x\d+/[^;"&]+\.gif)', html)
 
         tuggles = {}
         for url in urls:
             if url.endswith('.gif'):
                 hd_url = url
             elif url.endswith('.jpg'):
-                hd_url = r1(r'(.+)_\d+\.jpg$', url) + '_1280.jpg' # FIXME: decide actual quality
+                hd_url = url  # FIXME: decide actual quality # r1(r'(.+)_\d+\.jpg$', url) + '_1280.jpg'
             elif url.endswith('.png'):
-                hd_url = r1(r'(.+)_\d+\.png$', url) + '_1280.png' # FIXME: decide actual quality
+                hd_url = url  # FIXME: decide actual quality # r1(r'(.+)_\d+\.png$', url) + '_1280.png'
             else:
                 continue
             filename = parse.unquote(hd_url.split('/')[-1])
             title = '.'.join(filename.split('.')[:-1])
-            tumblr_id = r1(r'^tumblr_(.+)_\d+$', title)
-            quality = int(r1(r'^tumblr_.+_(\d+)$', title))
+            tumblr_id = r1(r'^tumblr_(.+)_\d+$', title) or title
+            try:
+                quality = int(r1(r'^tumblr_.+_(\d+)$', title))
+            except:
+                quality = int(r1(r'/s(\d+)x\d+/', hd_url))
             ext = filename.split('.')[-1]
+
             try:
                 size = int(get_head(hd_url)['Content-Length'])
                 if tumblr_id not in tuggles or tuggles[tumblr_id]['quality'] < quality:
