@@ -4,6 +4,8 @@ from ..common import *
 from ..extractor import VideoExtractor
 
 import hashlib
+import math
+
 
 class Bilibili(VideoExtractor):
     name = "Bilibili"
@@ -734,7 +736,8 @@ class Bilibili(VideoExtractor):
             api_url = self.bilibili_space_video_api(mid)
             api_content = get_content(api_url, headers=self.bilibili_headers())
             videos_info = json.loads(api_content)
-            pc = videos_info['data']['page']['count'] // videos_info['data']['page']['ps']
+            # pc = videos_info['data']['page']['count'] // videos_info['data']['page']['ps']
+            pc = math.ceil(videos_info['data']['page']['count'] / videos_info['data']['page']['ps'])
 
             for pn in range(1, pc + 1):
                 api_url = self.bilibili_space_video_api(mid, pn=pn)
