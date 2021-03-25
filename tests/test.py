@@ -10,7 +10,8 @@ from you_get.extractors import (
     acfun,
     bilibili,
     soundcloud,
-    tiktok
+    tiktok,
+    youku
 )
 
 
@@ -47,6 +48,10 @@ class YouGetTests(unittest.TestCase):
         bilibili.download(
             "https://www.bilibili.com/watchlater/#/av74906671/p6", info_only=True
         )
+        
+        
+    def test_acfun(self):
+        youku.download('https://v.youku.com/v_show/id_XNzIwMjM1ODAw.html', info_only=True)
 
     def test_soundcloud(self):
         ## single song
