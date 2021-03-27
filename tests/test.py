@@ -47,6 +47,10 @@ class YouGetTests(unittest.TestCase):
         bilibili.download(
             "https://www.bilibili.com/watchlater/#/av74906671/p6", info_only=True
         )
+        # for 1080p+
+        bilibili.download(
+            "https://www.bilibili.com/video/BV1Z4411A7Ye", info_only=True
+        )
 
     def test_soundcloud(self):
         ## single song
