@@ -181,7 +181,7 @@ class Bilibili(VideoExtractor):
             self.download_playlist_by_url(self.url, **kwargs)
             return
 
-        # regular av video
+        # regular video
         if sort == 'video':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
@@ -601,13 +601,21 @@ class Bilibili(VideoExtractor):
             log.e('[Error] Unsupported URL pattern.')
             exit(1)
 
-        # regular av video
+        # regular video
         if sort == 'video':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
             aid = initial_state['videoData']['aid']
             pn = initial_state['videoData']['videos']
-            if pn!= len(initial_state['videoData']['pages']):#interaction video 互动视频
+
+            if pn == len(initial_state['videoData']['pages']):
+                # non-interative video
+                for pi in range(1, pn + 1):
+                     purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
+                     self.__class__().download_by_url(purl, **kwargs)
+
+            else:
+                # interative video
                 search_node_list = []
                 download_cid_set = set([initial_state['videoData']['cid']])
                 params = {
@@ -658,24 +666,6 @@ class Bilibili(VideoExtractor):
                                     self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
                                 self.extract(**kwargs)
                                 self.download(**kwargs)
-            else:
-                playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
-                playinfo = json.loads(playinfo_text) if playinfo_text else None
-
-                html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
-                playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
-                playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
-                p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or '1')-1
-                for pi in range(p,pn):
-                    self.prepare_by_cid(aid,initial_state['videoData']['pages'][pi]['cid'],'%s (P%s. %s)' % (initial_state['videoData']['title'], pi+1, initial_state['videoData']['pages'][pi]['part']),html_content,playinfo,playinfo_,url)
-                    try:
-                        self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
-                    except:
-                        self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
-                    self.extract(**kwargs)
-                    self.download(**kwargs)
-                    # purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi+1)
-                    # self.__class__().download_by_url(purl, **kwargs)
 
         elif sort == 'bangumi':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
