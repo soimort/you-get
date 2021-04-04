@@ -162,6 +162,11 @@ class Bilibili(VideoExtractor):
             self.url = 'https://www.bilibili.com/bangumi/play/ep%s' % ep_id
             html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
 
+        # redirect: s
+        elif re.match(r'https?://(www\.)?bilibili\.com/s/(.+)', self.url):
+            self.url = 'https://www.bilibili.com/%s' % match1(self.url, r'/s/(.+)')
+            html_content = get_content(self.url, headers=self.bilibili_headers())
+
         # sort it out
         if re.match(r'https?://(www\.)?bilibili\.com/audio/au(\d+)', self.url):
             sort = 'audio'
