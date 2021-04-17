@@ -171,7 +171,14 @@ class YouTube(VideoExtractor):
 
         self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
         self.p_playlist()
+        firstIndex= kwargs['args'].first
+        lastIndex = kwargs['args'].last
         for index, video in enumerate(videos, 1):
+            if firstIndex and index < int(firstIndex):
+                index = int(firstIndex)
+                video = videos[index-1]
+            if lastIndex and index > int(lastIndex):
+                break
             vid = video['playlistVideoRenderer']['videoId']
             try:
                 self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
