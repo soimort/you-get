@@ -677,7 +677,10 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             epn, i = len(initial_state['epList']), 0
             for ep in initial_state['epList']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                i += 1
+                if i not in kwargs['args'].range:
+                    continue
+                log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
@@ -687,7 +690,10 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             epn, i = len(initial_state['mediaInfo']['episodes']), 0
             for ep in initial_state['mediaInfo']['episodes']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                i += 1
+                if i not in kwargs['args'].range:
+                    continue
+                log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['ep_id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
@@ -702,7 +708,10 @@ class Bilibili(VideoExtractor):
 
             epn, i = len(channel_info['data']['list']['archives']), 0
             for video in channel_info['data']['list']['archives']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                i += 1
+                if i not in kwargs['args'].range:
+                    continue
+                log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
 
@@ -743,7 +752,10 @@ class Bilibili(VideoExtractor):
 
                 epn, i = len(videos_info['data']['list']['vlist']), 0
                 for video in videos_info['data']['list']['vlist']:
-                    i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                    i += 1
+                    if i not in kwargs['args'].range:
+                        continue
+                    log.w('Extracting %s of %s videos ...' % (i, epn))
                     url = 'https://www.bilibili.com/video/av%s' % video['aid']
                     self.__class__().download_playlist_by_url(url, **kwargs)
 
@@ -758,7 +770,10 @@ class Bilibili(VideoExtractor):
             menusong_info = json.loads(api_content)
             epn, i = len(menusong_info['data']['data']), 0
             for song in menusong_info['data']['data']:
-                i += 1; log.w('Extracting %s of %s songs ...' % (i, epn))
+                i += 1
+                if i not in kwargs['args'].range:
+                    continue
+                log.w('Extracting %s of %s songs ...' % (i, epn))
                 url = 'https://www.bilibili.com/audio/au%s' % song['id']
                 self.__class__().download_by_url(url, **kwargs)
 
