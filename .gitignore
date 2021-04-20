@@ -84,6 +84,7 @@ _*
 *.m4a
 *.DS_Store
 *.txt
+*.sw[a-p]
 
 *.zip
 

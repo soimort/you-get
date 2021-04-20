@@ -123,10 +123,10 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
                             output_dir=output_dir, info_only=info_only)
 
 def netease_download_common(title, url_best, output_dir, info_only):
-    songtype, ext, size = url_info(url_best)
+    songtype, ext, size = url_info(url_best, faker=True)
     print_info(site_info, title, songtype, size)
     if not info_only:
-        download_urls([url_best], title, ext, size, output_dir)
+        download_urls([url_best], title, ext, size, output_dir, faker=True)
 
 
 def netease_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):

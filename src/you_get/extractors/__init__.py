@@ -78,9 +78,7 @@ from .vine import *
 from .vk import *
 from .w56 import *
 from .wanmen import *
-from .xiami import *
 from .xinpianchang import *
-from .yinyuetai import *
 from .yixia import *
 from .youku import *
 from .youtube import *

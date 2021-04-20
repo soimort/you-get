@@ -6,11 +6,13 @@ from ..common import *
 
 def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     url = r1(r'([^?]*)', url)
-    html = get_html(url)
+    html = get_html(url, faker=True)
 
     vid = r1(r'instagram.com/\w+/([^/]+)', url)
-    description = r1(r'<meta property="og:title" content="([^"]*)"', html)
+    description = r1(r'<meta property="og:title" content="([^"]*)"', html) or \
+        r1(r'<title>\s([^<]*)</title>', html) # with logged-in cookies
     title = "{} [{}]".format(description.replace("\n", " "), vid)
+
     stream = r1(r'<meta property="og:video" content="([^"]*)"', html)
     if stream:
         _, ext, size = url_info(stream)
@@ -20,10 +22,19 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
             download_urls([stream], title, ext, size, output_dir, merge=merge)
     else:
         data = re.search(r'window\._sharedData\s*=\s*(.*);</script>', html)
-        info = json.loads(data.group(1))
+        try:
+            info = json.loads(data.group(1))
+            post = info['entry_data']['PostPage'][0]
+            assert post
+        except:
+            # with logged-in cookies
+            data = re.search(r'window\.__additionalDataLoaded\(\'[^\']+\',(.*)\);</script>', html)
+            if data is not None:
+                log.e('[Warning] Cookies needed.')
+            post = json.loads(data.group(1))
 
-        if 'edge_sidecar_to_children' in info['entry_data']['PostPage'][0]['graphql']['shortcode_media']:
-            edges = info['entry_data']['PostPage'][0]['graphql']['shortcode_media']['edge_sidecar_to_children']['edges']
+        if 'edge_sidecar_to_children' in post['graphql']['shortcode_media']:
+            edges = post['graphql']['shortcode_media']['edge_sidecar_to_children']['edges']
             for edge in edges:
                 title = edge['node']['shortcode']
                 image_url = edge['node']['display_url']
@@ -40,10 +51,10 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                                   total_size=size,
                                   output_dir=output_dir)
         else:
-            title = info['entry_data']['PostPage'][0]['graphql']['shortcode_media']['shortcode']
-            image_url = info['entry_data']['PostPage'][0]['graphql']['shortcode_media']['display_url']
-            if 'video_url' in info['entry_data']['PostPage'][0]['graphql']['shortcode_media']:
-                image_url =info['entry_data']['PostPage'][0]['graphql']['shortcode_media']['video_url']
+            title = post['graphql']['shortcode_media']['shortcode']
+            image_url = post['graphql']['shortcode_media']['display_url']
+            if 'video_url' in post['graphql']['shortcode_media']:
+                image_url = post['graphql']['shortcode_media']['video_url']
             ext = image_url.split('?')[0].split('.')[-1]
             size = int(get_head(image_url)['Content-Length'])
 

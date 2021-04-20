@@ -40,14 +40,6 @@ class YouGetTests(unittest.TestCase):
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
 
-    def test_bilibili(self):
-        bilibili.download(
-            "https://www.bilibili.com/watchlater/#/BV1PE411q7mZ/p6", info_only=True
-        )
-        bilibili.download(
-            "https://www.bilibili.com/watchlater/#/av74906671/p6", info_only=True
-        )
-
     def test_soundcloud(self):
         ## single song
         soundcloud.download(
