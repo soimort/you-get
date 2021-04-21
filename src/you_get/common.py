@@ -1617,17 +1617,17 @@ def script_main(download, download_playlist, **kwargs):
         '-r', '--range', nargs='+', metavar="N", action=RangeProcessor,
         default=RangeContainer([[None, None]]),
         help='''Specify a list of or a range of videos to download.
-        If preceeded by the URL, seperate them using '--'.
+        If preceeded by the URL, range list should terminate with '--'.
         e.g. `-r - 3 7 8 - 12 16 -` will download videos
         1 to 3, 7, 8 to 12, 16 and onwrads.'''
     )
     playlist_grp.add_argument(
         '--first', metavar='FIRST',
-        help='the first number'
+        help='(deprecated, use `-r FIRST -`) the first number'
     )
     playlist_grp.add_argument(
         '--last', metavar='LAST',
-        help='the last number'
+        help='(deprecated, use `-r - LAST`)the last number'
     )
     playlist_grp.add_argument(
         '--size', '--page-size', metavar='PAGE_SIZE',
