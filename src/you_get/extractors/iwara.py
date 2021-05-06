@@ -27,6 +27,9 @@ def iwara_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     api_url = video_url + '/api/video/' + video_hash
     content = get_content(api_url, headers=headers)
     data = json.loads(content)
+    if len(data)<1 :
+        print('Maybe is Private Video?'+'['+title+']')
+        return True;
     down_urls = 'https:' + data[0]['uri']
     type, ext, size = url_info(down_urls, headers=headers)
     print_info(site_info, title+data[0]['resolution'], type, size)
@@ -35,10 +38,8 @@ def iwara_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         download_urls([down_urls], title, ext, size, output_dir, merge=merge, headers=headers)
 
 def download_playlist_by_url( url, **kwargs):
-    video_page = get_content(url)
-    # url_first=re.findall(r"(http[s]?://[^/]+)",url)
+    video_page = get_html(url)
     url_first=match1(url, r"(http[s]?://[^/]+)")
-    # print (url_first)
     videos = set(re.findall(r'<a href="(/videos/[^"]+)"', video_page))
     if(len(videos)>0):
         for video in videos:
