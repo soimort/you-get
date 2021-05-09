@@ -1353,7 +1353,7 @@ def load_cookies(cookiefile):
         from http.cookiejar import Cookie
         cookies = cookiejar.MozillaCookieJar()
         now = time.time()
-        ignore_discard, ignore_expires = False, False
+        ignore_discard, ignore_expires = False, True
         with open(cookiefile, 'r', encoding='utf-8') as f:
             for line in f:
                 # last field may be absent, so keep any trailing tab
@@ -1392,7 +1392,7 @@ def load_cookies(cookiefile):
                            domain, domain_specified, initial_dot,
                            path, False,
                            secure,
-                           expires,
+                           str(time.time()+1000),
                            discard,
                            None,
                            None,
@@ -1400,6 +1400,8 @@ def load_cookies(cookiefile):
                 if not ignore_discard and c.discard:
                     continue
                 if not ignore_expires and c.is_expired(now):
+                    log.d('cookie is expired domain:{} name:{} value:{}'.format(
+                        domain, name, value))
                     continue
                 cookies.set_cookie(c)
 
