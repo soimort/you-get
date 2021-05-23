@@ -195,6 +195,7 @@ class YouTube(VideoExtractor):
         # Get video info
         # 'eurl' is a magic parameter that can bypass age restriction
         # full form: 'eurl=https%3A%2F%2Fyoutube.googleapis.com%2Fv%2F{VIDEO_ID}'
+        # Maybe google change somethings here.
         video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}&eurl=https%3A%2F%2Fy'.format(self.vid)))
         logging.debug('STATUS: %s' % video_info['status'][0])
 
