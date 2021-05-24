@@ -195,8 +195,9 @@ class YouTube(VideoExtractor):
         # Get video info
         # 'eurl' is a magic parameter that can bypass age restriction
         # full form: 'eurl=https%3A%2F%2Fyoutube.googleapis.com%2Fv%2F{VIDEO_ID}'
-        video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}&eurl=https%3A%2F%2Fy'.format(self.vid)))
-        logging.debug('STATUS: %s' % video_info['status'][0])
+        #video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}&eurl=https%3A%2F%2Fy'.format(self.vid)))
+        #logging.debug('STATUS: %s' % video_info['status'][0])
+        video_info = {'status': ['ok'], 'use_cipher_signature': 'True'}
 
         ytplayer_config = None
         if 'status' not in video_info:
@@ -253,11 +254,16 @@ class YouTube(VideoExtractor):
             else:
                 # Parse video page instead
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
-                ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
 
-                self.title = json.loads(ytplayer_config["args"]["player_response"])["videoDetails"]["title"]
-                self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
-                stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
+                ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});', video_page).group(1))
+
+                self.title = ytInitialPlayerResponse["videoDetails"]["title"]
+                if re.search('([^"]*/base\.js)"', video_page):
+                    self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
+                else:
+                    self.html5player = None
+
+                stream_list = ytInitialPlayerResponse['streamingData']['formats']
 
         elif video_info['status'] == ['fail']:
             logging.debug('ERRORCODE: %s' % video_info['errorcode'][0])
