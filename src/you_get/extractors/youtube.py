@@ -76,11 +76,13 @@ class YouTube(VideoExtractor):
         # - https://www.youtube.com/yts/jsbin/player_ias-vfl_RGK2l/en_US/base.js
         # - https://www.youtube.com/yts/jsbin/player-vflRjqq_w/da_DK/base.js
         # - https://www.youtube.com/yts/jsbin/player_ias-vfl-jbnrr/da_DK/base.js
+        # - https://www.youtube.com/s/player/0b643cd1/player_ias.vflset/sv_SE/base.js
         def tr_js(code):
             code = re.sub(r'function', r'def', code)
-            code = re.sub(r'(\W)(as|if|in|is|or)\(', r'\1_\2(', code)
+            # add prefix '_sig_' to prevent namespace pollution
+            code = re.sub(r'(\W)([$\w][$\w])\(', r'\1_sig_\2(', code)
             code = re.sub(r'\$', '_dollar', code)
-            code = re.sub(r'\{', r':\n\t', code)
+            code = re.sub(r'\{', r': ', code)
             code = re.sub(r'\}', r'\n', code)
             code = re.sub(r'var\s+', r'', code)
             code = re.sub(r'(\w+).join\(""\)', r'"".join(\1)', code)
@@ -99,7 +101,7 @@ class YouTube(VideoExtractor):
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
                 match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
         f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
-        f1def = 'function main_%s%s' % (f1, f1def)  # prefix to avoid potential namespace conflict
+        f1def = 'function %s%s' % (f1, f1def)
         code = tr_js(f1def)
         f2s = set(re.findall(r'([$\w]+)\(\w+,\d+\)', f1def))
         for f2 in f2s:
@@ -112,13 +114,13 @@ class YouTube(VideoExtractor):
                 f2def = 'function {}({},b){}'.format(f2e, f2def.group(1), f2def.group(2))
             f2 = re.sub(r'(as|if|in|is|or)', r'_\1', f2)
             f2 = re.sub(r'\$', '_dollar', f2)
-            code = code + 'global %s\n' % f2 + tr_js(f2def)
+            code = code + 'global _sig_%s\n' % f2 + tr_js(f2def)
 
         f1 = re.sub(r'(as|if|in|is|or)', r'_\1', f1)
         f1 = re.sub(r'\$', '_dollar', f1)
-        code = code + 'sig=main_%s(s)' % f1  # prefix to avoid potential namespace conflict
+        code = code + '_sig=_sig_%s(s)' % f1
         exec(code, globals(), locals())
-        return locals()['sig']
+        return locals()['_sig']
 
     def chunk_by_range(url, size):
         urls = []
