@@ -353,7 +353,7 @@ class MissEvan(VideoExtractor):
 
     @staticmethod
     def url_resource(uri):
-        return 'https://static.missevan.com/' + uri
+        return uri if re.match(r'^https?:/{2}\w.+$', uri) else 'https://static.missevan.com/' + uri
 
 site = MissEvan()
 site_info = 'MissEvan.com'
