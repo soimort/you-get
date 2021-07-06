@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import re
+import json
 from urllib.parse import unquote
 
 from ..common import (
@@ -18,17 +19,17 @@ __all__ = ['douyin_download_by_url']
 
 def douyin_download_by_url(url, **kwargs):
     page_content = get_content(url, headers=fake_headers)
-    # The easiest way to get the title is, obviously, from <title>
-    title = re.findall(r'<title.*>(.*)</title>', page_content)[0].strip()
-    # Remove the site name from title
-    site_name = ' - 抖音'
-    if title.endswith(site_name):
-        title = title[:-len(site_name)]
+    # The video player and video source are rendered client-side, the data
+    # contains in a <script id="RENDER_DATA" type="application/json"> tag
+    # quoted, unquote the whole page content then search using regex with
+    # regular string.
+    page_content = unquote(page_content)
+    title = re.findall(r'"desc":"([^"]*)"', page_content)[0].strip()
     video_format = 'mp4'
-    # The video url is url escaped, as of today, there are 4 working CDN video
-    # urls for the same video, I chose the shortest one.
-    cdn_pattern = r'(api\.amemv\.com.*PackSourceEnum_AWEME_DETAIL)'
-    video_url = 'https://' + unquote(re.findall(cdn_pattern, page_content)[0])
+    # video URLs are in this pattern {"src":"THE_URL"}, in json format
+    urls_pattern = r'"playAddr":(\[.*?\])'
+    urls = json.loads(re.findall(urls_pattern, page_content)[0])
+    video_url = 'https:' + urls[0]['src']
     size = url_size(video_url, faker=True)
     print_info(
         site_info='douyin.com', title=title,
