@@ -27,8 +27,8 @@ def douyin_download_by_url(url, **kwargs):
     video_format = 'mp4'
     # The video url is url escaped, as of today, there are 4 working CDN video
     # urls for the same video, I chose the shortest one.
-    cdn_pattern = r'(api\.amemv\.com.*PackSourceEnum_AWEME_DETAIL)'
-    video_url = 'https://' + unquote(re.findall(cdn_pattern, page_content)[0])
+    cdn_pattern = r'(www\.douyin\.com%2Faweme.*PackSourceEnum_AWEME_DETAIL)'
+    video_url = 'http://' + unquote(re.findall(cdn_pattern, page_content)[0])
     size = url_size(video_url, faker=True)
     print_info(
         site_info='douyin.com', title=title,
