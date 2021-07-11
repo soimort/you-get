@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 
 script_name = 'you-get'
-__version__ = '0.4.1527'
+__version__ = '0.4.1536'
