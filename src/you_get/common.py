@@ -433,8 +433,17 @@ def get_content(url, headers={}, decoded=True):
 
     req = request.Request(url, headers=headers)
     if cookies:
-        cookies.add_cookie_header(req)
-        req.headers.update(req.unredirected_hdrs)
+        # NOTE: Do not use cookies.add_cookie_header(req)
+        # #HttpOnly_ cookies were not supported by CookieJar and MozillaCookieJar properly until python 3.10
+        # See also:
+        # - https://github.com/python/cpython/pull/17471
+        # - https://bugs.python.org/issue2190
+        # Here we add cookies to the request headers manually
+        cookie_strings = []
+        for cookie in list(cookies):
+            cookie_strings.append(cookie.name + '=' + cookie.value)
+        cookie_headers = {'Cookie': '; '.join(cookie_strings)}
+        req.headers.update(cookie_headers)
 
     response = urlopen_with_retry(req)
     data = response.read()
@@ -477,8 +486,17 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
 
     req = request.Request(url, headers=headers)
     if cookies:
-        cookies.add_cookie_header(req)
-        req.headers.update(req.unredirected_hdrs)
+        # NOTE: Do not use cookies.add_cookie_header(req)
+        # #HttpOnly_ cookies were not supported by CookieJar and MozillaCookieJar properly until python 3.10
+        # See also:
+        # - https://github.com/python/cpython/pull/17471
+        # - https://bugs.python.org/issue2190
+        # Here we add cookies to the request headers manually
+        cookie_strings = []
+        for cookie in list(cookies):
+            cookie_strings.append(cookie.name + '=' + cookie.value)
+        cookie_headers = {'Cookie': '; '.join(cookie_strings)}
+        req.headers.update(cookie_headers)
     if kwargs.get('post_data_raw'):
         post_data_enc = bytes(kwargs['post_data_raw'], 'utf-8')
     else:
