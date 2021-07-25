@@ -8,13 +8,12 @@ url = "https://www.bilibili.com/video/BV1GV411p7P9"
 path = os.path.dirname(os.path.realpath(__file__))
 
 def getJson(url):
-    from you_get import common as you
     try:
         __console__ = sys.stdout
         f = io.StringIO()
         sys.stdout = f
         sys.argv = ['you-get', url, '--json']
-        you.main()
+        you_get.main()
         text = f.getvalue()
         sys.stdout = __console__
         print(text)
