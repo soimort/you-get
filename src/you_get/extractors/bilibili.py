@@ -436,7 +436,9 @@ class Bilibili(VideoExtractor):
             self.title = song_info['data']['title']
 
             # get lyrics
-            self.lyrics = get_content(song_info['data']['lyric'])
+            lrc = song_info['data']['lyric']
+            if lrc is not None and len(lrc) > 0:
+                self.lyrics = get_content(lrc)
 
             api_url = self.bilibili_audio_api(sid)
             api_content = get_content(api_url, headers=self.bilibili_headers())
