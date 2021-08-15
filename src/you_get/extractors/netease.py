@@ -10,6 +10,8 @@ from json import loads
 import hashlib
 import base64
 import os
+import requests
+from mutagen.id3 import ID3, APIC, TIT2, TPE1, TALB
 
 def netease_hymn():
     return """
@@ -121,6 +123,35 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
     '''
     netease_download_common(title, url_best,
                             output_dir=output_dir, info_only=info_only)
+    '''
+    Here is my changes
+    '''
+    api_result = requests.get('https://api.imjad.cn/cloudmusic/?type=detail&id='+str(song['id']))
+    song_info = json.loads(api_result.text)['songs'][0]
+    songtype, ext, size = url_info(url_best, faker=True)
+    xiaokang00010_changed_ext = ext
+    if xiaokang00010_changed_ext == None:
+        xiaokang00010_changed_ext = 'None'
+    # build song infomations
+    artists = ''
+    # build artists
+    for i in song_info['ar']:
+        artists = artists + i['name'] + '/'
+    print(output_dir + '/' + title + '.' + xiaokang00010_changed_ext)
+    songFile = ID3( output_dir + '/' + title + '.' + xiaokang00010_changed_ext )
+    songFile['TIT2'] = TIT2(
+        encoding=3,
+        text=song_info['name']
+    )
+    songFile['TPE1'] = TPE1(
+        encoding=3,
+        text=artists[0:-1]
+    )
+    songFile['TALB'] = TALB(
+        encoding=3,
+        text=song_info['al']['name']
+    )
+    songFile.save()
 
 def netease_download_common(title, url_best, output_dir, info_only):
     songtype, ext, size = url_info(url_best, faker=True)
