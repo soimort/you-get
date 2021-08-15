@@ -42,9 +42,9 @@ class YouGetTests(unittest.TestCase):
 
     def test_soundcloud(self):
         ## single song
-        soundcloud.download(
-            'https://soundcloud.com/keiny-pham/impure-bird', info_only=True
-        )
+        #soundcloud.download(
+        #    'https://soundcloud.com/keiny-pham/impure-bird', info_only=True
+        #)
         ## playlist
         #soundcloud.download(
         #    'https://soundcloud.com/anthony-flieger/sets/cytus', info_only=True
