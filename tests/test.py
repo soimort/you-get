@@ -40,7 +40,7 @@ class YouGetTests(unittest.TestCase):
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
 
-    def test_soundcloud(self):
+    #def test_soundcloud(self):
         ## single song
         #soundcloud.download(
         #    'https://soundcloud.com/keiny-pham/impure-bird', info_only=True
