@@ -137,21 +137,22 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
     # build artists
     for i in song_info['ar']:
         artists = artists + i['name'] + '/'
-    print(output_dir + '/' + title + '.' + xiaokang00010_changed_ext)
-    songFile = ID3( output_dir + '/' + title + '.' + xiaokang00010_changed_ext )
-    songFile['TIT2'] = TIT2(
+    print(output_dir + '/' + get_output_filename(url_best, title, ext, output_dir, True))
+    songFile = ID3( output_dir + '/' + get_output_filename(url_best, title, ext, output_dir, True) )
+    songFile['TIT2'] = TIT2(  # 插入歌名
         encoding=3,
         text=song_info['name']
     )
-    songFile['TPE1'] = TPE1(
+    songFile['TPE1'] = TPE1(  # 插入第一演奏家、歌手、等
         encoding=3,
         text=artists[0:-1]
     )
-    songFile['TALB'] = TALB(
+    songFile['TALB'] = TALB(  # 插入专辑名
         encoding=3,
         text=song_info['al']['name']
     )
     songFile.save()
+    #print('Netease Music Downloader (Xiaokang00010 Edited)\n--- Thanks for using! ---\nAuto import music infomation success.')
 
 def netease_download_common(title, url_best, output_dir, info_only):
     songtype, ext, size = url_info(url_best, faker=True)
