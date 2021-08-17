@@ -56,7 +56,7 @@ Are you a Python programmer? Then check out [the source](https://github.com/soim
 The following dependencies are necessary:
 
 * **[Python](https://www.python.org/downloads/)**  3.2 or above
-* **[FFmpeg](https://www.ffmpeg.org/)** 1.0 or above
+* **[FFmpeg](https://www.ffmpeg.org/)**/**[LibAV](https://www.ffmpeg.org/)** 1.0 or above
 * (Optional) [RTMPDump](https://rtmpdump.mplayerhq.hu/)
 
 ### Option 1: Install via pip
