@@ -134,6 +134,8 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
         xiaokang00010_changed_ext = 'None'
     # build song infomations
     artists = ''
+    # al.picUrl
+    song_cover = requests.get(song_info['al']['picUrl'])
     # build artists
     for i in song_info['ar']:
         artists = artists + i['name'] + '/'
@@ -150,6 +152,13 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
     songFile['TALB'] = TALB(  # 插入专辑名
         encoding=3,
         text=song_info['al']['name']
+    )
+    songFile['APIC'] = APIC(  # 插入封面
+        encoding=3,
+        mime='image/jpeg',
+        type=3,
+        desc=u'Cover',
+        data=song_cover.content
     )
     songFile.save()
     #print('Netease Music Downloader (Xiaokang00010 Edited)\n--- Thanks for using! ---\nAuto import music infomation success.')
