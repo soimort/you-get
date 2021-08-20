@@ -77,10 +77,11 @@ class YouTube(VideoExtractor):
         # - https://www.youtube.com/yts/jsbin/player-vflRjqq_w/da_DK/base.js
         # - https://www.youtube.com/yts/jsbin/player_ias-vfl-jbnrr/da_DK/base.js
         # - https://www.youtube.com/s/player/0b643cd1/player_ias.vflset/sv_SE/base.js
+        # - https://www.youtube.com/s/player/50e823fc/player_ias.vflset/sv_SE/base.js
         def tr_js(code):
             code = re.sub(r'function', r'def', code)
             # add prefix '_sig_' to prevent namespace pollution
-            code = re.sub(r'(\W)([$\w][$\w])\(', r'\1_sig_\2(', code)
+            code = re.sub(r'(\W)([$\w][$\w][$\w]?)\(', r'\1_sig_\2(', code)
             code = re.sub(r'\$', '_dollar', code)
             code = re.sub(r'\{', r': ', code)
             code = re.sub(r'\}', r'\n', code)
