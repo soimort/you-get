@@ -139,8 +139,8 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
     # build artists
     for i in song_info['ar']:
         artists = artists + i['name'] + '/'
-    print(output_dir + '/' + get_output_filename(url_best, title, ext, output_dir, True))
-    songFile = ID3( output_dir + '/' + get_output_filename(url_best, title, ext, output_dir, True) )
+    print(output_dir + '/' + get_output_filename(url_best, tr(get_filename(title)), ext, output_dir, True))
+    songFile = ID3( output_dir + '/' + get_output_filename(url_best, tr(get_filename(title)), ext, output_dir, True) )
     songFile['TIT2'] = TIT2(  # 插入歌名
         encoding=3,
         text=song_info['name']
