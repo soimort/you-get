@@ -59,16 +59,20 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         prefix_width = len(str(len(j['playlist']['tracks'])))
         for n, i in enumerate(j['playlist']['tracks']):
             playlist_prefix = '%%.%dd_' % prefix_width % n
-            this_song_api_result = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (i['id'], i['id']), headers={"Referer": "http://music.163.com/"}))
-            netease_song_download(this_song_api_result['songs'][0], output_dir=new_dir, info_only=info_only, playlist_prefix=playlist_prefix)
+            this_song_api_result = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % i['id'], headers={"Referer": "http://music.163.com/"}))
+            details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
+            details['songs'][0]['url'] = this_song_api_result['data'][0]['url']
+            netease_song_download(details['songs'][0], output_dir=new_dir, info_only=info_only, playlist_prefix=playlist_prefix)
             try: # download lyrics
                 assert kwargs['caption']
                 l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
-                netease_lyric_download(this_song_api_result['songs'][0], l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only, playlist_prefix=playlist_prefix)
+                netease_lyric_download(details['songs'][0], l["lrc"]["lyric"], output_dir=new_dir, info_only=info_only, playlist_prefix=playlist_prefix)
             except: pass
 
     elif "song" in url:
-        j = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % rid, headers={"Referer": "http://music.163.com/"}))
+        details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
+        details['songs'][0]['url'] = j['data'][0]['url']
         netease_song_download(j["songs"][0], output_dir=output_dir, info_only=info_only)
         try: # download lyrics
             assert kwargs['caption']
@@ -109,9 +113,8 @@ def netease_video_download(vinfo, output_dir='.', info_only=False):
 
 def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix=""):
     print(song)
-    title = "%s%s. %s" % (playlist_prefix, song['position'], song['name'])
-    url_best = "http://music.163.com/song/media/outer/url?id=" + \
-        str(song['id']) + ".mp3"
+    title = "%s. %s" % (playlist_prefix, song['name'])
+    url_best = song['url']
     '''
     songNet = 'p' + song['mp3Url'].split('/')[2][1:]
 
