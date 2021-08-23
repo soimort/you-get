@@ -56,8 +56,9 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             cover_url = j['playlist']['coverImgUrl']
             download_urls([cover_url], "cover", "jpg", 0, new_dir)
         
-        prefix_width = len(str(len(j['playlist']['tracks'])))
-        for n, i in enumerate(j['playlist']['tracks']):
+        prefix_width = len(str(len(j['playlist']['trackIds'])))
+        print(prefix_width)
+        for n, i in enumerate(j['playlist']['trackIds']):
             playlist_prefix = '%%.%dd_' % prefix_width % n
             this_song_api_result = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % i['id'], headers={"Referer": "http://music.163.com/"}))
             details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
@@ -112,7 +113,6 @@ def netease_video_download(vinfo, output_dir='.', info_only=False):
                             output_dir=output_dir, info_only=info_only)
 
 def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix=""):
-    print(song)
     title = "%s. %s" % (playlist_prefix, song['name'])
     url_best = song['url']
     '''
