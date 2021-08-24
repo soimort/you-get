@@ -28,7 +28,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
     if rid is None:
         rid = match1(url, r'/(\d+)/?')
     if "album" in url:
-        j = loads(get_content("http://music.163.com/api/album/%s?id=%s&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("https://api.imjad.cn/cloudmusic/?type=album&id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
 
         artist_name = j['album']['artists'][0]['name']
         album_name = j['album']['name'].strip()
@@ -39,8 +39,11 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             cover_url = j['album']['picUrl']
             download_urls([cover_url], "cover", "jpg", 0, new_dir)
 
-        for i in j['album']['songs']:
-            netease_song_download(i, output_dir=new_dir, info_only=info_only)
+        for i in j['songs']:
+            this_song_api_result = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % i['id'], headers={"Referer": "http://music.163.com/"}))
+            details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
+            details['songs'][0]['url'] = this_song_api_result['data'][0]['url']
+            netease_song_download(details['songs'][0], output_dir=new_dir, info_only=info_only)
             try: # download lyrics
                 assert kwargs['caption']
                 l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % i['id'], headers={"Referer": "http://music.163.com/"}))
