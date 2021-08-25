@@ -343,7 +343,12 @@ def undeflate(data):
 # DEPRECATED in favor of get_content()
 def get_response(url, faker=False):
     logging.debug('get_response: %s' % url)
-
+    ctx = None
+    if insecure:
+        # ignore ssl errors
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
     # install cookies
     if cookies:
         opener = request.build_opener(request.HTTPCookieProcessor(cookies))
@@ -351,10 +356,10 @@ def get_response(url, faker=False):
 
     if faker:
         response = request.urlopen(
-            request.Request(url, headers=fake_headers), None
+            request.Request(url, headers=fake_headers), None, context=ctx,
         )
     else:
-        response = request.urlopen(url)
+        response = request.urlopen(url, context=ctx)
 
     data = response.read()
     if response.info().get('Content-Encoding') == 'gzip':
