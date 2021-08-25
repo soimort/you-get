@@ -210,7 +210,10 @@ class Bilibili(VideoExtractor):
                     '1')  # use URL to decide p-number, not initial_state['p']
             if pn > 1:
                 part = initial_state['videoData']['pages'][p - 1]['part']
-                self.title = '%s (P%s. %s)' % (self.title, p, part)
+                """
+                title's length is limited max 80 characters defined in `utils.fs.legitimize`.
+                """
+                self.title = 'P%s. %s' % (p, part)
 
             # construct playinfos
             avid = initial_state['aid']
