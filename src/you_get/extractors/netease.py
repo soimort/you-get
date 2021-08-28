@@ -77,11 +77,11 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         j = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % rid, headers={"Referer": "http://music.163.com/"}))
         details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
         details['songs'][0]['url'] = j['data'][0]['url']
-        netease_song_download(j["songs"][0], output_dir=output_dir, info_only=info_only)
+        netease_song_download(details['songs'][0], output_dir=output_dir, info_only=info_only)
         try: # download lyrics
             assert kwargs['caption']
             l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
-            netease_lyric_download(j["songs"][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
+            netease_lyric_download(details['songs'][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
         except: pass
 
     elif "program" in url:
