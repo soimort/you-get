@@ -66,6 +66,8 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             this_song_api_result = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % i['id'], headers={"Referer": "http://music.163.com/"}))
             details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
             details['songs'][0]['url'] = this_song_api_result['data'][0]['url']
+            if details['songs'][0]['url'] == None or details['songs'][0]['url'] == '':
+                continue
             netease_song_download(details['songs'][0], output_dir=new_dir, info_only=info_only, playlist_prefix=playlist_prefix)
             try: # download lyrics
                 assert kwargs['caption']
@@ -133,9 +135,11 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
     '''
     Here is my changes
     '''
+    songtype, ext, size = url_info(url_best, faker=True)
+    if(os.access(output_dir + '/' + get_output_filename(url_best, tr(get_filename(title)), ext, output_dir, True) ) == os.F_OK):
+        return
     api_result = requests.get('https://api.imjad.cn/cloudmusic/?type=detail&id='+str(song['id']))
     song_info = json.loads(api_result.text)['songs'][0]
-    songtype, ext, size = url_info(url_best, faker=True)
     xiaokang00010_changed_ext = ext
     if xiaokang00010_changed_ext == None:
         xiaokang00010_changed_ext = 'None'
