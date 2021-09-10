@@ -569,7 +569,8 @@ def url_info(url, faker=False, headers={}):
     headers = response.headers
 
     type = headers['content-type']
-    if type == 'image/jpg; charset=UTF-8' or type == 'image/jpg':
+    if type == 'image/jpg; charset=UTF-8' or type == 'image/jpg' or type == 'audio/mpeg;charset=UTF-8':
+        print(type)
         type = 'audio/mpeg'  # fix for netease
     mapping = {
         'video/3gpp': '3gp',
@@ -984,6 +985,7 @@ def download_urls(
 
     title = tr(get_filename(title))
     output_filename = get_output_filename(urls, title, ext, output_dir, merge)
+    print('temp:filename: ' + output_filename)
     output_filepath = os.path.join(output_dir, output_filename)
 
     if total_size:
