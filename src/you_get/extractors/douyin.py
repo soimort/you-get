@@ -18,6 +18,7 @@ __all__ = ['douyin_download_by_url']
 
 
 def douyin_download_by_url(url, **kwargs):
+    fake_headers.update({"referer": url})
     page_content = get_content(url, headers=fake_headers)
     # The video player and video source are rendered client-side, the data
     # contains in a <script id="RENDER_DATA" type="application/json"> tag
