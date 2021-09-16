@@ -581,6 +581,11 @@ class Bilibili(VideoExtractor):
     def download_playlist_by_url(self, url, **kwargs):
         self.url = url
         kwargs['playlist'] = True
+        args = kwargs.get('args')
+        first_page = 0
+        if ('first' in args and args.first!= None):
+            first_page = int(args.first)
+            if first_page < 0: first_page = 0
 
         html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
 
@@ -615,7 +620,7 @@ class Bilibili(VideoExtractor):
 
             if pn == len(initial_state['videoData']['pages']):
                 # non-interative video
-                for pi in range(1, pn + 1):
+                for pi in range(first_page+1, pn + 1):
                      purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
                      self.__class__().download_by_url(purl, **kwargs)
 
@@ -677,7 +682,9 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             epn, i = len(initial_state['epList']), 0
             for ep in initial_state['epList']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                i += 1
+                if i <= first_page: continue
+                log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
@@ -687,7 +694,9 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             epn, i = len(initial_state['mediaInfo']['episodes']), 0
             for ep in initial_state['mediaInfo']['episodes']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                i += 1
+                if i <= first_page: continue
+                log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['ep_id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
@@ -715,7 +724,7 @@ class Bilibili(VideoExtractor):
             pc = favlist_info['data']['info']['media_count'] // len(favlist_info['data']['medias'])
             if favlist_info['data']['info']['media_count'] % len(favlist_info['data']['medias']) != 0:
                 pc += 1
-            for pn in range(1, pc + 1):
+            for pn in range(first_page + 1, pc + 1):
                 log.w('Extracting %s of %s pages ...' % (pn, pc))
                 api_url = self.bilibili_space_favlist_api(fid, pn=pn)
                 api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
