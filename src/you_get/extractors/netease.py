@@ -28,7 +28,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
     if rid is None:
         rid = match1(url, r'/(\d+)/?')
     if "album" in url:
-        j = loads(get_content("https://api.imjad.cn/cloudmusic/?type=album&id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("http://xiaokang00010.top:11450/album?id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
 
         artist_name = j['album']['artists'][0]['name']
         album_name = j['album']['name'].strip()
@@ -40,8 +40,8 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             download_urls([cover_url], "cover", "jpg", 0, new_dir)
 
         for i in j['songs']:
-            this_song_api_result = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % i['id'], headers={"Referer": "http://music.163.com/"}))
-            details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
+            this_song_api_result = loads(get_content("http://xiaokang00010.top:11450/song/url?id=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
+            details = loads(get_content("http://xiaokang00010.top:11450/song/detail?ids=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
             details['songs'][0]['url'] = this_song_api_result['data'][0]['url']
             netease_song_download(details['songs'][0], output_dir=new_dir, info_only=info_only)
             try: # download lyrics
@@ -51,7 +51,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             except: pass
 
     elif "playlist" in url:
-        j = loads(get_content("https://api.imjad.cn/cloudmusic/?type=playlist&id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("http://xiaokang00010.top:11450/playlist/detail?id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
         new_dir = output_dir + '/' + fs.legitimize(j['playlist']['name'])
         if not info_only:
             if not os.path.exists(new_dir):
@@ -61,10 +61,15 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         
         prefix_width = len(str(len(j['playlist']['trackIds'])))
         print(prefix_width)
-        for n, i in enumerate(j['playlist']['trackIds']):
-            playlist_prefix = '%%.%dd_' % prefix_width % n
-            this_song_api_result = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % i['id'], headers={"Referer": "http://music.163.com/"}))
-            details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
+        for i in j['playlist']['trackIds']:
+            if j['playlist']['trackIds'].index(i) <= 1453:
+                continue
+            playlist_prefix = '%d' % j['playlist']['trackIds'].index(i)
+            details = loads(get_content("https://xiaokang00010.top:11450/song/detail?ids=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
+            if os.access(output_dir + '/' + get_output_filename('', tr(get_filename("%s. %s" % (playlist_prefix, details['songs'][0]['name']))), 'mp3', output_dir, True),os.F_OK):
+                sys.stderr.write("Skipped: " + "%s. %s" % (playlist_prefix, details['songs'][0]['name']) + " \n")
+                return
+            this_song_api_result = loads(get_content("https://xiaokang00010.top:11450/song/url?id=%s" % i['id'], headers={"Referer": "http://music.163.com/"}))
             details['songs'][0]['url'] = this_song_api_result['data'][0]['url']
             if details['songs'][0]['url'] == None or details['songs'][0]['url'] == '':
                 continue
@@ -76,8 +81,8 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
             except: pass
 
     elif "song" in url:
-        j = loads(get_content("https://api.imjad.cn/cloudmusic/?type=song&id=%s&br=320000" % rid, headers={"Referer": "http://music.163.com/"}))
-        details = loads(get_content("https://api.imjad.cn/cloudmusic/?type=detail&id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
+        j = loads(get_content("https://xiaokang00010.top:11450/song/url?id=%s" % rid, headers={"Referer": "http://music.163.com/"}))
+        details = loads(get_content("https://xiaokang00010.top:11450/song/detail?ids=%s" % rid, headers={"Referer": "http://music.163.com/"}))
         details['songs'][0]['url'] = j['data'][0]['url']
         netease_song_download(details['songs'][0], output_dir=output_dir, info_only=info_only)
         try: # download lyrics
@@ -130,15 +135,18 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
     elif 'bMusic' in song:
         url_best = make_url(songNet, song['bMusic']['dfsId'])
     '''
+    ext = 'mp3'
+    if os.access(output_dir + '/' + get_output_filename(url_best, tr(get_filename(title)), 'mp3', output_dir, True),os.F_OK):
+        sys.stderr.write("Skipped: " + title + " \n")
+        return
     netease_download_common(title, url_best,
                             output_dir=output_dir, info_only=info_only)
     '''
     Here is my changes
     '''
-    songtype, ext, size = url_info(url_best, faker=True)
-    if(os.access(output_dir + '/' + get_output_filename(url_best, tr(get_filename(title)), ext, output_dir, True) ) == os.F_OK):
-        return
-    api_result = requests.get('https://api.imjad.cn/cloudmusic/?type=detail&id='+str(song['id']))
+    
+    songFile = ID3( output_dir + '/' + get_output_filename(url_best, tr(get_filename(title)), ext, output_dir, True) )
+    api_result = requests.get('http://xiaokang00010.top:11450/song/detail?ids='+str(song['id']))
     song_info = json.loads(api_result.text)['songs'][0]
     xiaokang00010_changed_ext = ext
     if xiaokang00010_changed_ext == None:
@@ -151,7 +159,6 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
     for i in song_info['ar']:
         artists = artists + i['name'] + '/'
     print(output_dir + '/' + get_output_filename(url_best, tr(get_filename(title)), ext, output_dir, True))
-    songFile = ID3( output_dir + '/' + get_output_filename(url_best, tr(get_filename(title)), ext, output_dir, True) )
     songFile['TIT2'] = TIT2(  # 插入歌名
         encoding=3,
         text=song_info['name']
