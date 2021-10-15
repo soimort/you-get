@@ -2,6 +2,7 @@
 
 import re
 import json
+from urllib.parse import unquote
 
 from ..common import (
     url_size,
@@ -18,17 +19,17 @@ __all__ = ['douyin_download_by_url']
 
 def douyin_download_by_url(url, **kwargs):
     page_content = get_content(url, headers=fake_headers)
-    match_rule = re.compile(r'var data = \[(.*?)\];')
-    video_info = json.loads(match_rule.findall(page_content)[0])
-    video_url = video_info['video']['play_addr']['url_list'][0]
-    # fix: https://www.douyin.com/share/video/6553248251821165832
-    # if there is no title, use desc
-    cha_list = video_info['cha_list']
-    if cha_list:
-        title = cha_list[0]['cha_name']
-    else:
-        title = video_info['desc']
+    # The video player and video source are rendered client-side, the data
+    # contains in a <script id="RENDER_DATA" type="application/json"> tag
+    # quoted, unquote the whole page content then search using regex with
+    # regular string.
+    page_content = unquote(page_content)
+    title = re.findall(r'"desc":"([^"]*)"', page_content)[0].strip()
     video_format = 'mp4'
+    # video URLs are in this pattern {"src":"THE_URL"}, in json format
+    urls_pattern = r'"playAddr":(\[.*?\])'
+    urls = json.loads(re.findall(urls_pattern, page_content)[0])
+    video_url = 'https:' + urls[0]['src']
     size = url_size(video_url, faker=True)
     print_info(
         site_info='douyin.com', title=title,
