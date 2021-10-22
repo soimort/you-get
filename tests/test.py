@@ -40,6 +40,10 @@ class YouGetTests(unittest.TestCase):
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
 
+    def test_youku(self):
+        from you_get.extractors import youku
+        youku.download('https://v.youku.com/v_show/id_XNDQ0NTQ5MDUyMA==', info_only=True)
+
     #def test_soundcloud(self):
         ## single song
         #soundcloud.download(
