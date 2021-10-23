@@ -19,7 +19,7 @@ fake_headers_mobile = {
 
 def miaopai_download_by_fid(fid, output_dir = '.', merge = False, info_only = False, **kwargs):
     '''Source: Android mobile'''
-    page_url = 'http://video.weibo.com/show?fid=' + fid + '&type=mp4'
+    page_url = 'https://video.weibo.com/show?fid=' + fid + '&type=mp4'
 
     mobile_page = get_content(page_url, headers=fake_headers_mobile)
     url = match1(mobile_page, r'<video id=.*?src=[\'"](.*?)[\'"]\W')
@@ -78,6 +78,51 @@ def miaopai_download_story(url, output_dir='.', merge=False, info_only=False, **
         download_urls([stream_url], fs.legitimize(title), ext, total_size=None, headers=fake_headers_mobile, **kwargs)
 
 
+def miaopai_download_h5api(url, output_dir='.', merge=False, info_only=False, **kwargs):
+    oid = match1(url, r'/show/(\d{4}:\w+)')
+    page = "/show/%s" % oid
+    data_url = 'https://h5.video.weibo.com/api/component?%s' % parse.urlencode({
+        'page': page
+    })
+    headers = {}
+    headers.update(fake_headers_mobile)
+    headers['origin'] = 'https://h5.video.weibo.com'
+    headers['page-referer'] = page
+    headers['referer'] = 'https://h5.video.weibo.com/show/%s' % oid
+    post_data = {
+        "data": json.dumps({
+            "Component_Play_Playinfo": {"oid": oid}
+        })
+    }
+    data_content = post_content(data_url, headers=headers, post_data=post_data)
+    data = json.loads(data_content)
+    if data['msg'] != 'succ':
+        raise Exception('Weibo api returns non-success: (%s)%s'.format(data['code'], data['msg']))
+
+    play_info = data['data']['Component_Play_Playinfo']
+    title = play_info['title']
+
+    # get video formats and sort by size desc
+    video_formats = []
+    for fmt, relative_uri in play_info['urls'].items():
+        url = "https:%s" % relative_uri
+        type, ext, size = url_info(url, headers=headers)
+        video_formats.append({
+            'fmt': fmt,
+            'url': url,
+            'type': type,
+            'ext': ext,
+            'size': size,
+        })
+    video_formats.sort(key=lambda v:v['size'], reverse=True)
+    selected_video = video_formats[0]
+    video_url, ext, size = selected_video['url'], selected_video['ext'], selected_video['size']
+
+    print_info(site_info, title, ext, size)
+    if not info_only:
+        download_urls([video_url], fs.legitimize(title), ext, total_size=size, headers=headers, **kwargs)
+
+
 def miaopai_download_direct(url, output_dir='.', merge=False, info_only=False, **kwargs):
     mobile_page = get_content(url, headers=fake_headers_mobile)
     try:
@@ -108,12 +153,16 @@ def miaopai_download(url, output_dir='.', merge=False, info_only=False, **kwargs
     if re.match(r'^http[s]://.*\.weibo\.com/tv/v/(\w+)', url):
         return miaopai_download_direct(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
 
+    if re.match(r'^http[s]://(.+\.)?weibo\.com/(tv/)?show/(\d{4}:\w+)', url):
+        return miaopai_download_h5api(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
+
     fid = match1(url, r'\?fid=(\d{4}:\w+)')
     if fid is not None:
         miaopai_download_by_fid(fid, output_dir, merge, info_only)
     elif '/p/230444' in url:
         fid = match1(url, r'/p/230444(\w+)')
         miaopai_download_by_fid('1034:'+fid, output_dir, merge, info_only)
+        pass
     else:
         mobile_page = get_content(url, headers = fake_headers_mobile)
         hit = re.search(r'"page_url"\s*:\s*"([^"]+)"', mobile_page)

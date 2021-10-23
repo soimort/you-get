@@ -75,17 +75,13 @@ class _Dispatcher(object):
         raise _NoMatchException()
 
 missevan_stream_types = [
-    {'id': 'source', 'quality': '源文件', 'url_json_key': 'soundurl',
-     'resource_url_fmt': 'sound/{resource_url}'},
-    {'id': '320', 'quality': '320 Kbps', 'url_json_key': 'soundurl_64'},
+    {'id': 'source', 'quality': '源文件', 'url_json_key': 'soundurl'},
     {'id': '128', 'quality': '128 Kbps', 'url_json_key': 'soundurl_128'},
-    {'id': '32', 'quality': '32 Kbps', 'url_json_key': 'soundurl_32'},
     {'id': 'covers', 'desc': '封面图', 'url_json_key': 'cover_image',
      'default_src': 'covers/nocover.png',
      'resource_url_fmt': 'covers/{resource_url}'},
-    {'id': 'coversmini', 'desc': '封面缩略图', 'url_json_key': 'cover_image',
-     'default_src': 'coversmini/nocover.png',
-     'resource_url_fmt': 'coversmini/{resource_url}'}
+    {'id': 'coversmini', 'desc': '封面缩略图', 'url_json_key': 'front_cover',
+     'default_src': 'coversmini/nocover.png'}
 ]
 
 def _get_resource_uri(data, stream_type):
@@ -353,7 +349,7 @@ class MissEvan(VideoExtractor):
 
     @staticmethod
     def url_resource(uri):
-        return 'https://static.missevan.com/' + uri
+        return uri if re.match(r'^https?:/{2}\w.+$', uri) else 'https://static.missevan.com/' + uri
 
 site = MissEvan()
 site_info = 'MissEvan.com'

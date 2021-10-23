@@ -13,7 +13,6 @@ from .qq import qq_download_by_vid
 from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_id
 from .vimeo import vimeo_download_by_id
-from .yinyuetai import yinyuetai_download_by_id
 from .youku import youku_download_by_vid
 from . import iqiyi
 from . import bokecc
@@ -39,8 +38,6 @@ tudou_embed_patterns = [ 'tudou\.com[a-zA-Z0-9\/\?=\&\.\;]+code=([a-zA-Z0-9_-]+)
 refer to http://open.tudou.com/wiki/video/info
 """
 tudou_api_patterns = [ ]
-
-yinyuetai_embed_patterns = [ 'player\.yinyuetai\.com/video/swf/(\d+)' ]
 
 iqiyi_embed_patterns = [ 'player\.video\.qiyi\.com/([^/]+)/[^/]+/[^/]+/[^/]+\.swf[^"]+tvId=(\d+)' ]
 
@@ -81,11 +78,6 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     for vid in set(vids):
         found = True
         tudou_download_by_id(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
-
-    vids = matchall(content, yinyuetai_embed_patterns)
-    for vid in vids:
-        found = True
-        yinyuetai_download_by_id(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
 
     vids = matchall(content, iqiyi_embed_patterns)
     for vid in vids:

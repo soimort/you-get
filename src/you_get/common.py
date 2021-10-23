@@ -76,6 +76,7 @@ SITES = {
     'letv'             : 'le',
     'lizhi'            : 'lizhi',
     'longzhu'          : 'longzhu',
+    'lrts'             : 'lrts',
     'magisto'          : 'magisto',
     'metacafe'         : 'metacafe',
     'mgtv'             : 'mgtv',
@@ -112,12 +113,10 @@ SITES = {
     'veoh'             : 'veoh',
     'vine'             : 'vine',
     'vk'               : 'vk',
-    'xiami'            : 'xiami',
     'xiaokaxiu'        : 'yixia',
     'xiaojiadianvideo' : 'fc2video',
     'ximalaya'         : 'ximalaya',
     'xinpianchang'     : 'xinpianchang',
-    'yinyuetai'        : 'yinyuetai',
     'yizhibo'          : 'yizhibo',
     'youku'            : 'youku',
     'youtu'            : 'youtube',
@@ -434,8 +433,17 @@ def get_content(url, headers={}, decoded=True):
 
     req = request.Request(url, headers=headers)
     if cookies:
-        cookies.add_cookie_header(req)
-        req.headers.update(req.unredirected_hdrs)
+        # NOTE: Do not use cookies.add_cookie_header(req)
+        # #HttpOnly_ cookies were not supported by CookieJar and MozillaCookieJar properly until python 3.10
+        # See also:
+        # - https://github.com/python/cpython/pull/17471
+        # - https://bugs.python.org/issue2190
+        # Here we add cookies to the request headers manually
+        cookie_strings = []
+        for cookie in list(cookies):
+            cookie_strings.append(cookie.name + '=' + cookie.value)
+        cookie_headers = {'Cookie': '; '.join(cookie_strings)}
+        req.headers.update(cookie_headers)
 
     response = urlopen_with_retry(req)
     data = response.read()
@@ -478,8 +486,17 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
 
     req = request.Request(url, headers=headers)
     if cookies:
-        cookies.add_cookie_header(req)
-        req.headers.update(req.unredirected_hdrs)
+        # NOTE: Do not use cookies.add_cookie_header(req)
+        # #HttpOnly_ cookies were not supported by CookieJar and MozillaCookieJar properly until python 3.10
+        # See also:
+        # - https://github.com/python/cpython/pull/17471
+        # - https://bugs.python.org/issue2190
+        # Here we add cookies to the request headers manually
+        cookie_strings = []
+        for cookie in list(cookies):
+            cookie_strings.append(cookie.name + '=' + cookie.value)
+        cookie_headers = {'Cookie': '; '.join(cookie_strings)}
+        req.headers.update(cookie_headers)
     if kwargs.get('post_data_raw'):
         post_data_enc = bytes(kwargs['post_data_raw'], 'utf-8')
     else:
@@ -1556,6 +1573,21 @@ def script_main(download, download_playlist, **kwargs):
         '-l', '--playlist', action='store_true',
         help='Prefer to download a playlist'
     )
+
+    playlist_grp = parser.add_argument_group('Playlist optional options')
+    playlist_grp.add_argument(
+        '--first', metavar='FIRST',
+        help='the first number'
+    )
+    playlist_grp.add_argument(
+        '--last', metavar='LAST',
+        help='the last number'
+    )
+    playlist_grp.add_argument(
+        '--size', '--page-size', metavar='PAGE_SIZE',
+        help='the page size number'
+    )
+
     download_grp.add_argument(
         '-a', '--auto-rename', action='store_true', default=False,
         help='Auto rename same name different files'
@@ -1673,7 +1705,7 @@ def script_main(download, download_playlist, **kwargs):
     socket.setdefaulttimeout(args.timeout)
 
     try:
-        extra = {}
+        extra = {'args': args}
         if extractor_proxy:
             extra['extractor_proxy'] = extractor_proxy
         if stream_id:

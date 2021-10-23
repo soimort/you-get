@@ -70,12 +70,13 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                       '[-_][6-9]\d\dx1\d\d\d\.jpe?g',
                       '[-_][6-9]\d\dx[6-9]\d\d\.jpe?g',
                       's1600/[\w%]+\.jpe?g', # blogger
+                      'blogger\.googleusercontent\.com/img/a/\w*', # blogger
                       'img[6-9]\d\d/[\w%]+\.jpe?g' # oricon?
         ]
 
         urls = []
         for i in media_exts:
-            urls += re.findall(r'(https?://[^ ;&"\'\\<>]+' + i + r'[^ ;&"\'\\<>]*)', page)
+            urls += re.findall(r'(https?://[^ ;&"\'\\<>]*' + i + r'[^ =?;&"\'\\<>]*)', page)
 
             p_urls = re.findall(r'(https?%3A%2F%2F[^;&"]+' + i + r'[^;&"]*)', page)
             urls += [parse.unquote(url) for url in p_urls]

@@ -35,6 +35,7 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
 
     part_urls= []
     total_size = 0
+    ext = None
     for part in range(1, seg_cnt+1):
         if fc_cnt == 0:
             # fix json parsing error
