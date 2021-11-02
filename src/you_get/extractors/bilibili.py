@@ -193,10 +193,12 @@ class Bilibili(VideoExtractor):
 
             playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
             playinfo = json.loads(playinfo_text) if playinfo_text else None
+            playinfo = playinfo if playinfo['code'] == 0 else None
 
             html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
             playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
             playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
+            playinfo_ = playinfo_ if playinfo_['code'] == 0 else None
 
             # warn if it is a multi-part video
             pn = initial_state['videoData']['videos']
