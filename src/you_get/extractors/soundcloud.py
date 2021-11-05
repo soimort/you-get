@@ -5,6 +5,8 @@ __all__ = ['sndcd_download']
 from ..common import *
 import re
 import json
+import operator
+import functools
 import urllib.error
 
 
@@ -28,19 +30,19 @@ def get_resource_info(resource_url, client_id):
 
     ids = [i['id'] for i in info if i.get('comment_count') is None]
     ids = list(map(str, ids))
-    ids_split = ['%2C'.join(ids[i:i+10]) for i in range(0, len(ids), 10)]
+    ids_split = [['%2C'.join(ids[i:i+10])] for i in range(0, len(ids), 10)]
     api_url = 'https://api-v2.soundcloud.com/tracks?ids={ids}&client_id={client_id}&%5Bobject%20Object%5D=&app_version=1584348206&app_locale=en'
 
-    res = []
-    for ids in ids_split:
+    def action(ids):
         uri = api_url.format(ids=ids, client_id=client_id)
         cont = get_content(uri, decoded=True)
-        res += json.loads(cont)
+        return json.loads(cont)
 
-    res = iter(res)
-    info = [next(res) if i.get('comment_count') is None else i for i in info]
+    res = parallel_run(action, ids_split, True)
+    res = iter(functools.reduce(operator.iconcat, res) if res else [])
 
-    return info
+    return [next(res) if i.get('comment_count') is None else i for i in info]
+
 
 
 def sndcd_download(url, output_dir='.', merge=True, info_only=False, **kwargs):

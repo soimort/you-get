@@ -524,6 +524,58 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
     return data
 
 
+def parallel_in_process(target, params_list, **kwargs):
+    from multiprocessing import Pool
+
+    global lambda_to_function
+    def lambda_to_function(params):
+        return target(*params)
+
+    return Pool(job).map(lambda_to_function, params_list)
+
+
+def parallel_in_thread(target, params_list, **kwargs):
+    from threading import Thread
+
+    length = len(params_list)
+    step = (length + job - 1) // job
+
+    result = [None for i in range(length)]
+
+    def do_with_retry(n, act, args):
+        while n >= 0:
+            try:
+                return act(*args)
+            except:
+                n -= 1
+
+    def action(j):
+        for i in range(step * j, min(length, step * (j + 1))):
+            params = params_list[i]
+            result[i] = (do_with_retry(3, target, params))
+
+    pool = [Thread(target=action, args=(i,)) for i in range(job)]
+
+    [i.start() for i in pool]
+    [i.join() for i in pool]
+
+    return result
+
+
+def parallel_run(target, params_list, use_thread=True, **kwargs):
+    if len(params_list) == 0:
+        return []
+
+    if job <= 1:
+        return [target(*i) for i in params_list]
+
+    if use_thread:
+        res = parallel_in_thread(target, params_list, **kwargs)
+    else:
+        res = parallel_in_process(target, params_list, **kwargs)
+    return res
+
+
 def url_size(url, faker=False, headers={}):
     if faker:
         response = urlopen_with_retry(
@@ -539,7 +591,8 @@ def url_size(url, faker=False, headers={}):
 
 
 def urls_size(urls, faker=False, headers={}):
-    return sum([url_size(url, faker=faker, headers=headers) for url in urls])
+    params = [[url, faker, headers] for url in urls]
+    return sum(parallel_run(url_size, params))
 
 
 def get_head(url, headers=None, get_method='HEAD'):
@@ -617,8 +670,9 @@ def url_info(url, faker=False, headers={}):
 
 
 def url_locations(urls, faker=False, headers={}):
-    locations = []
-    for url in urls:
+    params = [[url, faker, headers] for url in urls]
+
+    def action(url, faker, headers):
         logging.debug('url_locations: %s' % url)
 
         if faker:
@@ -632,8 +686,9 @@ def url_locations(urls, faker=False, headers={}):
         else:
             response = urlopen_with_retry(request.Request(url))
 
-        locations.append(response.url)
-    return locations
+        return response.url
+
+    return parallel_run(action, paras, True)
 
 
 def url_save(
@@ -862,8 +917,11 @@ class SimpleProgressBar:
         self.last_updated = time.time()
         self.update()
 
-    def update_piece(self, n):
-        self.current_piece = n
+    def update_piece(self, n=-1):
+        if n >= 0:
+            self.current_piece = n
+        else:
+            self.current_piece += 1
 
     def done(self):
         if self.displayed:
@@ -1010,19 +1068,25 @@ def download_urls(
         )
         bar.done()
     else:
-        parts = []
         print('Downloading %s ...' % tr(output_filename))
         bar.update()
-        for i, url in enumerate(urls):
+        bar.update_piece(0)
+
+        params = [[i, url] for i, url in enumerate(urls)]
+
+        def action(i, url):
             output_filename_i = get_output_filename(urls, title, ext, output_dir, merge, part=i)
             output_filepath_i = os.path.join(output_dir, output_filename_i)
-            parts.append(output_filepath_i)
             # print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
-            bar.update_piece(i + 1)
             url_save(
                 url, output_filepath_i, bar, refer=refer, is_part=True, faker=faker,
                 headers=headers, **kwargs
             )
+            bar.update_piece()
+            return output_filepath_i
+
+        parts = parallel_run(action, params, True)
+
         bar.done()
 
         if not merge:
@@ -1597,6 +1661,10 @@ def script_main(download, download_playlist, **kwargs):
         '-k', '--insecure', action='store_true', default=False,
         help='ignore ssl errors'
     )
+    download_grp.add_argument(
+        '-j', '--job', type=int, default=1,
+        help='max thread/process to use (default 1)'
+    )
 
     proxy_grp = parser.add_argument_group('Proxy options')
     proxy_grp = proxy_grp.add_mutually_exclusive_group()
@@ -1644,10 +1712,12 @@ def script_main(download, download_playlist, **kwargs):
     global output_filename
     global auto_rename
     global insecure
+    global job
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
     info_only = args.info
+    job = args.job
     if args.force:
         force = True
     if args.skip_existing_file_size_check:
@@ -1716,6 +1786,7 @@ def script_main(download, download_playlist, **kwargs):
             output_dir=args.output_dir, merge=not args.no_merge,
             info_only=info_only, json_output=json_output, caption=caption,
             password=args.password,
+            job=args.job,
             **extra
         )
     except KeyboardInterrupt:
