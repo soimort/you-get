@@ -284,7 +284,7 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.', stream=
 
 def ffmpeg_concat_audio_and_video(files, output, ext):
     print('Merging video and audio parts... ', end="", flush=True)
-    if has_ffmpeg_installed:
+    if has_ffmpeg_installed():
         params = [FFMPEG] + LOGLEVEL
         params.extend(['-f', 'concat'])
         params.extend(['-safe', '0'])  # https://stackoverflow.com/questions/38996925/ffmpeg-concat-unsafe-file-name
@@ -308,3 +308,25 @@ def ffprobe_get_media_duration(file):
     params.extend(['-v', 'quiet'])
     params.extend(['-of', 'csv=p=0'])
     return subprocess.check_output(params, stdin=STDIN, stderr=subprocess.STDOUT).decode().strip()
+
+
+def ffmpeg_extract_audio_from_video(video_file_path, ext='mp3'):
+    if has_ffmpeg_installed():
+        print('extracting audio from video... ', end="", flush=True)
+
+        path_without_ext = os.path.splitext(video_file_path)[0]
+        output_path = path_without_ext+"."+ ext
+
+        params = [FFMPEG] + LOGLEVEL
+        params.extend(['-i', video_file_path])
+        params.extend(['-f', ext])
+        params.append(path_without_ext+"."+ext)
+        # os.remove(video_file_path)
+        return_val = subprocess.call(params, stdin=STDIN)
+        if return_val == 0:
+            print('\nextracted into ' + output_path)
+        else:
+            print("\nextract error")
+        return
+    else:
+        raise EnvironmentError('\nNo ffmpeg found')
