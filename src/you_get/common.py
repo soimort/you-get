@@ -20,110 +20,111 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
 
 SITES = {
-    '163'              : 'netease',
-    '56'               : 'w56',
-    '365yg'            : 'toutiao',
-    'acfun'            : 'acfun',
-    'archive'          : 'archive',
-    'baidu'            : 'baidu',
-    'bandcamp'         : 'bandcamp',
-    'baomihua'         : 'baomihua',
-    'bigthink'         : 'bigthink',
-    'bilibili'         : 'bilibili',
-    'cctv'             : 'cntv',
-    'cntv'             : 'cntv',
-    'cbs'              : 'cbs',
-    'coub'             : 'coub',
-    'dailymotion'      : 'dailymotion',
-    'douban'           : 'douban',
-    'douyin'           : 'douyin',
-    'douyu'            : 'douyutv',
-    'ehow'             : 'ehow',
-    'facebook'         : 'facebook',
-    'fc2'              : 'fc2video',
-    'flickr'           : 'flickr',
-    'freesound'        : 'freesound',
-    'fun'              : 'funshion',
-    'google'           : 'google',
-    'giphy'            : 'giphy',
-    'heavy-music'      : 'heavymusic',
-    'huomao'           : 'huomaotv',
-    'iask'             : 'sina',
-    'icourses'         : 'icourses',
-    'ifeng'            : 'ifeng',
-    'imgur'            : 'imgur',
-    'in'               : 'alive',
-    'infoq'            : 'infoq',
-    'instagram'        : 'instagram',
-    'interest'         : 'interest',
-    'iqilu'            : 'iqilu',
-    'iqiyi'            : 'iqiyi',
-    'ixigua'           : 'ixigua',
-    'isuntv'           : 'suntv',
-    'iwara'            : 'iwara',
-    'joy'              : 'joy',
-    'kankanews'        : 'bilibili',
-    'kakao'            : 'kakao',
-    'khanacademy'      : 'khan',
-    'ku6'              : 'ku6',
-    'kuaishou'         : 'kuaishou',
-    'kugou'            : 'kugou',
-    'kuwo'             : 'kuwo',
-    'le'               : 'le',
-    'letv'             : 'le',
-    'lizhi'            : 'lizhi',
-    'longzhu'          : 'longzhu',
-    'lrts'             : 'lrts',
-    'magisto'          : 'magisto',
-    'metacafe'         : 'metacafe',
-    'mgtv'             : 'mgtv',
-    'miomio'           : 'miomio',
-    'missevan'         : 'missevan',
-    'mixcloud'         : 'mixcloud',
-    'mtv81'            : 'mtv81',
-    'miaopai'          : 'yixia',
-    'naver'            : 'naver',
-    '7gogo'            : 'nanagogo',
-    'nicovideo'        : 'nicovideo',
-    'pinterest'        : 'pinterest',
-    'pixnet'           : 'pixnet',
-    'pptv'             : 'pptv',
-    'qingting'         : 'qingting',
-    'qq'               : 'qq',
-    'showroom-live'    : 'showroom',
-    'sina'             : 'sina',
-    'smgbb'            : 'bilibili',
-    'sohu'             : 'sohu',
-    'soundcloud'       : 'soundcloud',
-    'ted'              : 'ted',
-    'theplatform'      : 'theplatform',
-    'tiktok'           : 'tiktok',
-    'tucao'            : 'tucao',
-    'tudou'            : 'tudou',
-    'tumblr'           : 'tumblr',
-    'twimg'            : 'twitter',
-    'twitter'          : 'twitter',
-    'ucas'             : 'ucas',
-    'vimeo'            : 'vimeo',
-    'wanmen'           : 'wanmen',
-    'weibo'            : 'miaopai',
-    'veoh'             : 'veoh',
-    'vine'             : 'vine',
-    'vk'               : 'vk',
-    'xiaokaxiu'        : 'yixia',
-    'xiaojiadianvideo' : 'fc2video',
-    'ximalaya'         : 'ximalaya',
-    'xinpianchang'     : 'xinpianchang',
-    'yizhibo'          : 'yizhibo',
-    'youku'            : 'youku',
-    'youtu'            : 'youtube',
-    'youtube'          : 'youtube',
-    'zhanqi'           : 'zhanqi',
-    'zhibo'            : 'zhibo',
-    'zhihu'            : 'zhihu',
+    '163': 'netease',
+    '56': 'w56',
+    '365yg': 'toutiao',
+    'acfun': 'acfun',
+    'archive': 'archive',
+    'baidu': 'baidu',
+    'bandcamp': 'bandcamp',
+    'baomihua': 'baomihua',
+    'bigthink': 'bigthink',
+    'bilibili': 'bilibili',
+    'cctv': 'cntv',
+    'cntv': 'cntv',
+    'cbs': 'cbs',
+    'coub': 'coub',
+    'dailymotion': 'dailymotion',
+    'douban': 'douban',
+    'douyin': 'douyin',
+    'douyu': 'douyutv',
+    'ehow': 'ehow',
+    'facebook': 'facebook',
+    'fc2': 'fc2video',
+    'flickr': 'flickr',
+    'freesound': 'freesound',
+    'fun': 'funshion',
+    'google': 'google',
+    'giphy': 'giphy',
+    'heavy-music': 'heavymusic',
+    'huomao': 'huomaotv',
+    'iask': 'sina',
+    'icourses': 'icourses',
+    'ifeng': 'ifeng',
+    'imgur': 'imgur',
+    'in': 'alive',
+    'infoq': 'infoq',
+    'instagram': 'instagram',
+    'interest': 'interest',
+    'iqilu': 'iqilu',
+    'iqiyi': 'iqiyi',
+    'ixigua': 'ixigua',
+    'isuntv': 'suntv',
+    'iwara': 'iwara',
+    'joy': 'joy',
+    'kankanews': 'bilibili',
+    'kakao': 'kakao',
+    'khanacademy': 'khan',
+    'ku6': 'ku6',
+    'kuaishou': 'kuaishou',
+    'kugou': 'kugou',
+    'kuwo': 'kuwo',
+    'le': 'le',
+    'letv': 'le',
+    'lizhi': 'lizhi',
+    'longzhu': 'longzhu',
+    'lrts': 'lrts',
+    'magisto': 'magisto',
+    'metacafe': 'metacafe',
+    'mgtv': 'mgtv',
+    'miomio': 'miomio',
+    'missevan': 'missevan',
+    'mixcloud': 'mixcloud',
+    'mtv81': 'mtv81',
+    'miaopai': 'yixia',
+    'naver': 'naver',
+    '7gogo': 'nanagogo',
+    'nicovideo': 'nicovideo',
+    'pinterest': 'pinterest',
+    'pixnet': 'pixnet',
+    'pptv': 'pptv',
+    'qingting': 'qingting',
+    'qq': 'qq',
+    'showroom-live': 'showroom',
+    'sina': 'sina',
+    'smgbb': 'bilibili',
+    'sohu': 'sohu',
+    'soundcloud': 'soundcloud',
+    'ted': 'ted',
+    'theplatform': 'theplatform',
+    'tiktok': 'tiktok',
+    'tucao': 'tucao',
+    'tudou': 'tudou',
+    'tumblr': 'tumblr',
+    'twimg': 'twitter',
+    'twitter': 'twitter',
+    'ucas': 'ucas',
+    'vimeo': 'vimeo',
+    'wanmen': 'wanmen',
+    'weibo': 'miaopai',
+    'veoh': 'veoh',
+    'vine': 'vine',
+    'vk': 'vk',
+    'xiaokaxiu': 'yixia',
+    'xiaojiadianvideo': 'fc2video',
+    'ximalaya': 'ximalaya',
+    'xinpianchang': 'xinpianchang',
+    'yizhibo': 'yizhibo',
+    'youku': 'youku',
+    'youtu': 'youtube',
+    'youtube': 'youtube',
+    'zhanqi': 'zhanqi',
+    'zhibo': 'zhibo',
+    'zhihu': 'zhihu',
+    'zhihuishu': 'zhihuishu'
 }
 
 dry_run = False
@@ -278,7 +279,7 @@ def launch_player(player, urls):
     assert urls
     if (sys.version_info >= (3, 3)):
         import shutil
-        exefile=shlex.split(player)[0]
+        exefile = shlex.split(player)[0]
         if shutil.which(exefile) is not None:
             subprocess.call(shlex.split(player) + urls)
         else:
@@ -480,7 +481,8 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
         The content as a string.
     """
     if kwargs.get('post_data_raw'):
-        logging.debug('post_content: %s\npost_data_raw: %s' % (url, kwargs['post_data_raw']))
+        logging.debug('post_content: %s\npost_data_raw: %s' %
+                      (url, kwargs['post_data_raw']))
     else:
         logging.debug('post_content: %s\npost_data: %s' % (url, post_data))
 
@@ -646,7 +648,8 @@ def url_save(
     if refer is not None:
         tmp_headers['Referer'] = refer
     if type(url) is list:
-        chunk_sizes = [url_size(url, faker=faker, headers=tmp_headers) for url in url]
+        chunk_sizes = [
+            url_size(url, faker=faker, headers=tmp_headers) for url in url]
         file_size = sum(chunk_sizes)
         is_chunked, urls = True, url
     else:
@@ -691,12 +694,15 @@ def url_save(
                             def numreturn(a):
                                 return ' (' + str(int(a.group()[2:-1]) + 1) + ').'
                             thisfile = finder.sub(numreturn, path) + ext
-                        filepath = os.path.join(os.path.dirname(filepath), thisfile)
-                        print('Changing name to %s' % tr(os.path.basename(filepath)), '...')
+                        filepath = os.path.join(
+                            os.path.dirname(filepath), thisfile)
+                        print('Changing name to %s' %
+                              tr(os.path.basename(filepath)), '...')
                         continue_renameing = True
                         continue
                     if log.yes_or_no('File with this name already exists. Overwrite?'):
-                        log.w('Overwriting %s ...' % tr(os.path.basename(filepath)))
+                        log.w('Overwriting %s ...' %
+                              tr(os.path.basename(filepath)))
                     else:
                         return
         elif not os.path.exists(os.path.dirname(filepath)):
@@ -733,7 +739,8 @@ def url_save(
             '''
             if received:
                 # chunk_start will always be 0 if not chunked
-                tmp_headers['Range'] = 'bytes=' + str(received - chunk_start) + '-'
+                tmp_headers['Range'] = 'bytes=' + \
+                    str(received - chunk_start) + '-'
             if refer:
                 tmp_headers['Referer'] = refer
 
@@ -781,7 +788,8 @@ def url_save(
                         elif not is_chunked and received == file_size:  # Download finished
                             break
                         # Unexpected termination. Retry request
-                        tmp_headers['Range'] = 'bytes=' + str(received - chunk_start) + '-'
+                        tmp_headers['Range'] = 'bytes=' + \
+                            str(received - chunk_start) + '-'
                         response = urlopen_with_retry(
                             request.Request(url, headers=tmp_headers)
                         )
@@ -946,10 +954,12 @@ def get_output_filename(urls, title, ext, output_dir, merge, **kwargs):
     result = '%s.%s' % (result, merged_ext)
     return result.replace("'", "_")
 
+
 def print_user_agent(faker=False):
     urllib_default_user_agent = 'Python-urllib/%d.%d' % sys.version_info[:2]
     user_agent = fake_headers['User-Agent'] if faker else urllib_default_user_agent
     print('User Agent: %s' % user_agent)
+
 
 def download_urls(
     urls, title, ext, total_size, output_dir='.', refer=None, merge=True,
@@ -988,10 +998,11 @@ def download_urls(
 
     if total_size:
         if not force and os.path.exists(output_filepath) and not auto_rename\
-                and (os.path.getsize(output_filepath) >= total_size * 0.9\
-                or skip_existing_file_size_check):
+                and (os.path.getsize(output_filepath) >= total_size * 0.9
+                     or skip_existing_file_size_check):
             if skip_existing_file_size_check:
-                log.w('Skipping %s without checking size: file already exists' % output_filepath)
+                log.w('Skipping %s without checking size: file already exists' %
+                      output_filepath)
             else:
                 log.w('Skipping %s: file already exists' % output_filepath)
             print()
@@ -1014,7 +1025,8 @@ def download_urls(
         print('Downloading %s ...' % tr(output_filename))
         bar.update()
         for i, url in enumerate(urls):
-            output_filename_i = get_output_filename(urls, title, ext, output_dir, merge, part=i)
+            output_filename_i = get_output_filename(
+                urls, title, ext, output_dir, merge, part=i)
             output_filepath_i = os.path.join(output_dir, output_filename_i)
             parts.append(output_filepath_i)
             # print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
@@ -1355,24 +1367,25 @@ def load_cookies(cookiefile):
         #   - https://github.com/python/cpython/blob/4b219ce/Lib/http/cookiejar.py#L2014
         #   - https://curl.haxx.se/libcurl/c/CURLOPT_COOKIELIST.html#EXAMPLE
         #cookies = cookiejar.MozillaCookieJar(cookiefile)
-        #cookies.load()
+        # cookies.load()
         from http.cookiejar import Cookie
         cookies = cookiejar.MozillaCookieJar()
         now = time.time()
-        ignore_discard, ignore_expires = False, False
+        ignore_discard, ignore_expires = False, True
         with open(cookiefile, 'r', encoding='utf-8') as f:
             for line in f:
                 # last field may be absent, so keep any trailing tab
-                if line.endswith("\n"): line = line[:-1]
+                if line.endswith("\n"):
+                    line = line[:-1]
 
                 # skip comments and blank lines XXX what is $ for?
                 if (line.strip().startswith(("#", "$")) or
-                    line.strip() == ""):
+                        line.strip() == ""):
                     if not line.strip().startswith('#HttpOnly_'):  # skip for #HttpOnly_
                         continue
 
                 domain, domain_specified, path, secure, expires, name, value = \
-                        line.split("\t")
+                    line.split("\t")
                 secure = (secure == "TRUE")
                 domain_specified = (domain_specified == "TRUE")
                 if name == "":
@@ -1397,7 +1410,7 @@ def load_cookies(cookiefile):
                            domain, domain_specified, initial_dot,
                            path, False,
                            secure,
-                           expires,
+                           str(time.time()+1000),
                            discard,
                            None,
                            None,
@@ -1405,11 +1418,15 @@ def load_cookies(cookiefile):
                 if not ignore_discard and c.discard:
                     continue
                 if not ignore_expires and c.is_expired(now):
+                    log.d('cookie is expired domain:{} name:{} value:{}'.format(
+                        domain, name, value))
                     continue
                 cookies.set_cookie(c)
 
     elif cookiefile.endswith(('.sqlite', '.sqlite3')):
-        import sqlite3, shutil, tempfile
+        import sqlite3
+        import shutil
+        import tempfile
         temp_dir = tempfile.gettempdir()
         temp_cookiefile = os.path.join(temp_dir, 'temp_cookiefile.sqlite')
         shutil.copy2(cookiefile, temp_cookiefile)
@@ -1443,7 +1460,8 @@ def set_socks_proxy(proxy):
             proxy_info = proxy.split("@")
             socks_proxy_addrs = proxy_info[1].split(':')
             socks_proxy_auth = proxy_info[0].split(":")
-            print(socks_proxy_auth[0]+" "+socks_proxy_auth[1]+" "+socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
+            print(socks_proxy_auth[0]+" "+socks_proxy_auth[1] +
+                  " "+socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
             socks.set_default_proxy(
                 socks.SOCKS5,
                 socks_proxy_addrs[0],
@@ -1453,13 +1471,13 @@ def set_socks_proxy(proxy):
                 socks_proxy_auth[1]
             )
         else:
-           socks_proxy_addrs = proxy.split(':')
-           print(socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
-           socks.set_default_proxy(
-               socks.SOCKS5,
-               socks_proxy_addrs[0],
-               int(socks_proxy_addrs[1]),
-           )
+            socks_proxy_addrs = proxy.split(':')
+            print(socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
+            socks.set_default_proxy(
+                socks.SOCKS5,
+                socks_proxy_addrs[0],
+                int(socks_proxy_addrs[1]),
+            )
         socket.socket = socks.socksocket
 
         def getaddrinfo(*args):
@@ -1677,7 +1695,6 @@ def script_main(download, download_playlist, **kwargs):
         # ignore ssl
         insecure = True
 
-
     if args.no_proxy:
         set_http_proxy('')
     else:
@@ -1795,7 +1812,8 @@ def url_to_module(url):
     assert domain, 'unsupported url: ' + url
 
     # all non-ASCII code points must be quoted (percent-encoded UTF-8)
-    url = ''.join([ch if ord(ch) in range(128) else parse.quote(ch) for ch in url])
+    url = ''.join([ch if ord(ch) in range(128) else parse.quote(ch)
+                   for ch in url])
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
 
@@ -1807,7 +1825,7 @@ def url_to_module(url):
         )
     else:
         try:
-            location = get_location(url) # t.co isn't happy with fake_headers
+            location = get_location(url)  # t.co isn't happy with fake_headers
         except:
             location = get_location(url, headers=fake_headers)
 
