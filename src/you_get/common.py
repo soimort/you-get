@@ -1339,7 +1339,13 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         if re.match(r'https?://', url) is None:
             url = 'http://' + url
 
-        if playlist:
+        if m3u8:
+            if output_filename:
+                title = output_filename
+            else:
+                title = "m3u8file"
+            download_url_ffmpeg(url=url, title=title,ext = 'mp4',output_dir = '.')
+        elif playlist:
             download_playlist(url, **kwargs)
         else:
             download(url, **kwargs)
@@ -1443,7 +1449,6 @@ def set_socks_proxy(proxy):
             proxy_info = proxy.split("@")
             socks_proxy_addrs = proxy_info[1].split(':')
             socks_proxy_auth = proxy_info[0].split(":")
-            print(socks_proxy_auth[0]+" "+socks_proxy_auth[1]+" "+socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
             socks.set_default_proxy(
                 socks.SOCKS5,
                 socks_proxy_addrs[0],
@@ -1454,7 +1459,6 @@ def set_socks_proxy(proxy):
             )
         else:
            socks_proxy_addrs = proxy.split(':')
-           print(socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
            socks.set_default_proxy(
                socks.SOCKS5,
                socks_proxy_addrs[0],
@@ -1619,6 +1623,10 @@ def script_main(download, download_playlist, **kwargs):
     download_grp.add_argument('--stream', help=argparse.SUPPRESS)
     download_grp.add_argument('--itag', help=argparse.SUPPRESS)
 
+    download_grp.add_argument('-m', '--m3u8', action='store_true', default=False,
+        help = 'download vide using an m3u8 url')
+
+
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
     args = parser.parse_args()
@@ -1644,6 +1652,7 @@ def script_main(download, download_playlist, **kwargs):
     global output_filename
     global auto_rename
     global insecure
+    global m3u8
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
@@ -1664,6 +1673,9 @@ def script_main(download, download_playlist, **kwargs):
 
     if args.cookies:
         load_cookies(args.cookies)
+
+    if args.m3u8:
+        m3u8 = True
 
     caption = True
     stream_id = args.format or args.stream or args.itag
