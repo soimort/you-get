@@ -136,6 +136,7 @@ cookies = None
 output_filename = None
 auto_rename = False
 insecure = False
+m3u8 = False
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
