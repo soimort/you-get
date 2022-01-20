@@ -35,7 +35,8 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
         for item in post['items']:
             code = item['code']
-            for i, media in enumerate(item['carousel_media']):
+            carousel_media = item.get('carousel_media') or [item]
+            for i, media in enumerate(carousel_media):
                 title = '%s [%s]' % (code, i)
                 image_url = media['image_versions2']['candidates'][0]['url']
                 ext = image_url.split('?')[0].split('.')[-1]
