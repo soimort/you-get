@@ -50,6 +50,20 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                                   total_size=size,
                                   output_dir=output_dir)
 
+                # download videos (if any)
+                if 'video_versions' in media:
+                    video_url = media['video_versions'][0]['url']
+                    ext = video_url.split('?')[0].split('.')[-1]
+                    size = int(get_head(video_url)['Content-Length'])
+
+                    print_info(site_info, title, ext, size)
+                    if not info_only:
+                        download_urls(urls=[video_url],
+                                      title=title,
+                                      ext=ext,
+                                      total_size=size,
+                                      output_dir=output_dir)
+
 site_info = "Instagram.com"
 download = instagram_download
 download_playlist = playlist_not_supported('instagram')
