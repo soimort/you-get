@@ -12,6 +12,8 @@ class Bilibili(VideoExtractor):
 
     # Bilibili media encoding options, in descending quality order.
     stream_types = [
+        {'id': 'hdflv2_8k', 'quality': 127, 'audio_quality': 30280,
+         'container': 'FLV', 'video_resolution': '4320p', 'desc': '超高清 8K'},
         {'id': 'hdflv2', 'quality': 125, 'audio_quality': 30280,
          'container': 'FLV', 'video_resolution': '3840p', 'desc': '真彩 HDR'},
         {'id': 'hdflv2_4k', 'quality': 120, 'audio_quality': 30280,
