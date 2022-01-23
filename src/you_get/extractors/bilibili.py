@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from math import ceil
 from ..common import *
 from ..extractor import VideoExtractor
 
@@ -105,8 +105,8 @@ class Bilibili(VideoExtractor):
         return 'https://api.bilibili.com/x/space/fav/arc?vmid=%s&fid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (vmid, fid, pn, ps)
 
     @staticmethod
-    def bilibili_space_video_api(mid, pn=1, ps=100):
-        return 'https://space.bilibili.com/ajax/member/getSubmitVideos?mid=%s&page=%s&pagesize=%s&order=0&jsonp=jsonp' % (mid, pn, ps)
+    def bilibili_space_video_api(mid, pn=1, ps=30):
+        return 'https://api.bilibili.com/x/space/arc/search?mid=%s&pn=%s&ps=%s&tid=0&keyword=&order=pubdate&jsonp=jsonp' % (mid, pn, ps)
 
     @staticmethod
     def bilibili_vc_api(video_id):
@@ -537,15 +537,15 @@ class Bilibili(VideoExtractor):
             api_url = self.bilibili_space_video_api(mid)
             api_content = get_content(api_url, headers=self.bilibili_headers())
             videos_info = json.loads(api_content)
-            pc = videos_info['data']['pages']
+            pc = ceil(videos_info['data']['page']['count']/videos_info['data']['page']['ps'])
 
             for pn in range(1, pc + 1):
                 api_url = self.bilibili_space_video_api(mid, pn=pn)
                 api_content = get_content(api_url, headers=self.bilibili_headers())
                 videos_info = json.loads(api_content)
 
-                epn, i = len(videos_info['data']['vlist']), 0
-                for video in videos_info['data']['vlist']:
+                epn, i = len(videos_info['data']['list']['vlist']), 0
+                for video in videos_info['data']['list']['vlist']:
                     i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                     url = 'https://www.bilibili.com/video/av%s' % video['aid']
                     self.__class__().download_playlist_by_url(url, **kwargs)
