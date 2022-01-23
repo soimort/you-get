@@ -1,7 +1,7 @@
 # You-Get
 
+[![Build Status](https://github.com/soimort/you-get/workflows/develop/badge.svg)](https://github.com/soimort/you-get/actions)
 [![PyPI version](https://img.shields.io/pypi/v/you-get.svg)](https://pypi.python.org/pypi/you-get/)
-[![Build Status](https://travis-ci.org/soimort/you-get.svg)](https://travis-ci.org/soimort/you-get)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 **NOTICE: Read [this](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) if you are looking for the conventional "Issues" tab.**
@@ -368,15 +368,12 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | VK          | <http://vk.com/>              |✓|✓| |
 | Vine        | <https://vine.co/>            |✓| | |
 | Vimeo       | <https://vimeo.com/>          |✓| | |
-| Vidto       | <http://vidto.me/>            |✓| | |
-| Videomega   | <http://videomega.tv/>        |✓| | |
 | Veoh        | <http://www.veoh.com/>        |✓| | |
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
 | TED         | <http://www.ted.com/>         |✓| | |
 | SoundCloud  | <https://soundcloud.com/>     | | |✓|
 | SHOWROOM    | <https://www.showroom-live.com/> |✓| | |
 | Pinterest   | <https://www.pinterest.com/>  | |✓| |
-| MusicPlayOn | <http://en.musicplayon.com/>  |✓| | |
 | MTV81       | <http://www.mtv81.com/>       |✓| | |
 | Mixcloud    | <https://www.mixcloud.com/>   | | |✓|
 | Metacafe    | <http://www.metacafe.com/>    |✓| | |
@@ -387,7 +384,6 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | InfoQ       | <http://www.infoq.com/presentations/> |✓| | |
 | Imgur       | <http://imgur.com/>           | |✓| |
 | Heavy Music Archive | <http://www.heavy-music.ru/> | | |✓|
-| **Google+** | <https://plus.google.com/>    |✓|✓| |
 | Freesound   | <http://www.freesound.org/>   | | |✓|
 | Flickr      | <https://www.flickr.com/>     |✓|✓| |
 | FC2 Video   | <http://video.fc2.com/>       |✓| | |
@@ -406,10 +402,9 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **AcFun** | <http://www.acfun.cn/>        |✓| | |
 | **Baidu<br/>百度贴吧** | <http://tieba.baidu.com/> |✓|✓| |
 | 爆米花网 | <http://www.baomihua.com/>     |✓| | |
-| **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓| | |
+| **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓|✓|✓|
 | 豆瓣     | <http://www.douban.com/>       |✓| |✓|
 | 斗鱼     | <http://www.douyutv.com/>      |✓| | |
-| Panda<br/>熊猫 | <http://www.panda.tv/>      |✓| | |
 | 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
 | 风行网   | <http://www.fun.tv/>           |✓| | |
 | iQIYI<br/>爱奇艺 | <http://www.iqiyi.com/> |✓| | |
@@ -419,8 +414,10 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 酷我音乐 | <http://www.kuwo.cn/>          | | |✓|
 | 乐视网   | <http://www.le.com/>           |✓| | |
 | 荔枝FM   | <http://www.lizhi.fm/>         | | |✓|
+| 懒人听书 | <http://www.lrts.me/>          | | |✓|
 | 秒拍     | <http://www.miaopai.com/>      |✓| | |
 | MioMio弹幕网 | <http://www.miomio.tv/>    |✓| | |
+| MissEvan<br/>猫耳FM | <http://www.missevan.com/> | | |✓|
 | 痞客邦   | <https://www.pixnet.net/>      |✓| | |
 | PPTV聚力 | <http://www.pptv.com/>         |✓| | |
 | 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
@@ -429,9 +426,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
 | Sohu<br/>搜狐视频 | <http://tv.sohu.com/> |✓| | |
 | **Tudou<br/>土豆** | <http://www.tudou.com/> |✓| | |
-| 虾米     | <http://www.xiami.com/>        |✓| |✓|
 | 阳光卫视 | <http://www.isuntv.com/>       |✓| | |
-| **音悦Tai** | <http://www.yinyuetai.com/> |✓| | |
 | **Youku<br/>优酷** | <http://www.youku.com/> |✓| | |
 | 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
 | 央视网   | <http://www.cntv.cn/>          |✓| | |
@@ -440,6 +435,7 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | 火猫TV   | <http://www.huomao.com/>       |✓| | |
 | 阳光宽频网 | <http://www.365yg.com/>      |✓| | |
 | 西瓜视频 | <https://www.ixigua.com/>      |✓| | |
+| 新片场 | <https://www.xinpianchang.com/>      |✓| | |
 | 快手 | <https://www.kuaishou.com/>      |✓|✓| |
 | 抖音 | <https://www.douyin.com/>      |✓| | |
 | TikTok | <https://www.tiktok.com/>      |✓| | |

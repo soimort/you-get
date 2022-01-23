@@ -107,6 +107,9 @@ def netease_video_download(vinfo, output_dir='.', info_only=False):
 
 def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix=""):
     title = "%s%s. %s" % (playlist_prefix, song['position'], song['name'])
+    url_best = "http://music.163.com/song/media/outer/url?id=" + \
+        str(song['id']) + ".mp3"
+    '''
     songNet = 'p' + song['mp3Url'].split('/')[2][1:]
 
     if 'hMusic' in song and song['hMusic'] != None:
@@ -115,15 +118,15 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
         url_best = song['mp3Url']
     elif 'bMusic' in song:
         url_best = make_url(songNet, song['bMusic']['dfsId'])
-
+    '''
     netease_download_common(title, url_best,
                             output_dir=output_dir, info_only=info_only)
 
 def netease_download_common(title, url_best, output_dir, info_only):
-    songtype, ext, size = url_info(url_best)
+    songtype, ext, size = url_info(url_best, faker=True)
     print_info(site_info, title, songtype, size)
     if not info_only:
-        download_urls([url_best], title, ext, size, output_dir)
+        download_urls([url_best], title, ext, size, output_dir, faker=True)
 
 
 def netease_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):

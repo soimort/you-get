@@ -26,7 +26,7 @@ def sohu_download(url, output_dir='.', merge=True, info_only=False, extractor_pr
         vid = r1('id=(\d+)', url)
     else:
         html = get_html(url)
-        vid = r1(r'\Wvid\s*[\:=]\s*[\'"]?(\d+)[\'"]?', html)
+        vid = r1(r'\Wvid\s*[\:=]\s*[\'"]?(\d+)[\'"]?', html) or r1(r'bid:\'(\d+)\',', html) or r1(r'bid=(\d+)', html)
     assert vid
 
     if extractor_proxy:

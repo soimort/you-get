@@ -99,6 +99,4 @@ def wtf(message, exit_code=1):
 
 def yes_or_no(message):
     ans = str(input('%s (y/N) ' % message)).lower().strip()
-    if ans == 'y':
-        return True
-    return False
+    return ans == 'y'

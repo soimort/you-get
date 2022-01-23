@@ -68,7 +68,7 @@ class YouTube(VideoExtractor):
          'audio_encoding': 'AAC', 'audio_bitrate': '24'},
     ]
 
-    def decipher(js, s):
+    def s_to_sig(js, s):
         # Examples:
         # - https://www.youtube.com/yts/jsbin/player-da_DK-vflWlK-zq/base.js
         # - https://www.youtube.com/yts/jsbin/player-vflvABTsY/da_DK/base.js
@@ -76,11 +76,14 @@ class YouTube(VideoExtractor):
         # - https://www.youtube.com/yts/jsbin/player_ias-vfl_RGK2l/en_US/base.js
         # - https://www.youtube.com/yts/jsbin/player-vflRjqq_w/da_DK/base.js
         # - https://www.youtube.com/yts/jsbin/player_ias-vfl-jbnrr/da_DK/base.js
+        # - https://www.youtube.com/s/player/0b643cd1/player_ias.vflset/sv_SE/base.js
+        # - https://www.youtube.com/s/player/50e823fc/player_ias.vflset/sv_SE/base.js
         def tr_js(code):
             code = re.sub(r'function', r'def', code)
-            code = re.sub(r'(\W)(as|if|in|is|or)\(', r'\1_\2(', code)
+            # add prefix '_sig_' to prevent namespace pollution
+            code = re.sub(r'(\W)([$\w][$\w][$\w]?)\(', r'\1_sig_\2(', code)
             code = re.sub(r'\$', '_dollar', code)
-            code = re.sub(r'\{', r':\n\t', code)
+            code = re.sub(r'\{', r': ', code)
             code = re.sub(r'\}', r'\n', code)
             code = re.sub(r'var\s+', r'', code)
             code = re.sub(r'(\w+).join\(""\)', r'"".join(\1)', code)
@@ -94,11 +97,12 @@ class YouTube(VideoExtractor):
         f1 = match1(js, r'\.set\(\w+\.sp,encodeURIComponent\(([$\w]+)') or \
             match1(js, r'\.set\(\w+\.sp,\(0,window\.encodeURIComponent\)\(([$\w]+)') or \
             match1(js, r'\.set\(\w+\.sp,([$\w]+)\(\w+\.s\)\)') or \
-            match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)')
+            match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)') or \
+            match1(js, r'=([$\w]+)\(decodeURIComponent\(')
         f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
                 match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
         f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
-        f1def = 'function main_%s%s' % (f1, f1def)  # prefix to avoid potential namespace conflict
+        f1def = 'function %s%s' % (f1, f1def)
         code = tr_js(f1def)
         f2s = set(re.findall(r'([$\w]+)\(\w+,\d+\)', f1def))
         for f2 in f2s:
@@ -111,13 +115,13 @@ class YouTube(VideoExtractor):
                 f2def = 'function {}({},b){}'.format(f2e, f2def.group(1), f2def.group(2))
             f2 = re.sub(r'(as|if|in|is|or)', r'_\1', f2)
             f2 = re.sub(r'\$', '_dollar', f2)
-            code = code + 'global %s\n' % f2 + tr_js(f2def)
+            code = code + 'global _sig_%s\n' % f2 + tr_js(f2def)
 
         f1 = re.sub(r'(as|if|in|is|or)', r'_\1', f1)
         f1 = re.sub(r'\$', '_dollar', f1)
-        code = code + 'sig=main_%s(s)' % f1  # prefix to avoid potential namespace conflict
+        code = code + '_sig=_sig_%s(s)' % f1
         exec(code, globals(), locals())
-        return locals()['sig']
+        return locals()['_sig']
 
     def chunk_by_range(url, size):
         urls = []
@@ -156,34 +160,27 @@ class YouTube(VideoExtractor):
             log.wtf('[Failed] Unsupported URL pattern.')
 
         video_page = get_content('https://www.youtube.com/playlist?list=%s' % playlist_id)
-        from html.parser import HTMLParser
-        videos = sorted([HTMLParser().unescape(video)
-                         for video in re.findall(r'<a href="(/watch\?[^"]+)"', video_page)
-                         if parse_query_param(video, 'index')],
-                        key=lambda video: parse_query_param(video, 'index'))
+        playlist_json_serialized = match1(video_page, r'window\["ytInitialData"\]\s*=\s*(.+);', r'var\s+ytInitialData\s*=\s*([^;]+);')
 
-        # Parse browse_ajax page for more videos to load
-        load_more_href = match1(video_page, r'data-uix-load-more-href="([^"]+)"')
-        while load_more_href:
-            browse_ajax = get_content('https://www.youtube.com/%s' % load_more_href)
-            browse_data = json.loads(browse_ajax)
-            load_more_widget_html = browse_data['load_more_widget_html']
-            content_html = browse_data['content_html']
-            vs = set(re.findall(r'href="(/watch\?[^"]+)"', content_html))
-            videos += sorted([HTMLParser().unescape(video)
-                              for video in list(vs)
-                              if parse_query_param(video, 'index')])
-            load_more_href = match1(load_more_widget_html, r'data-uix-load-more-href="([^"]+)"')
+        if len(playlist_json_serialized) == 0:
+            log.wtf('[Failed] Unable to extract playlist data')
+
+        ytInitialData = json.loads(playlist_json_serialized[0])
+
+        tab0 = ytInitialData['contents']['twoColumnBrowseResultsRenderer']['tabs'][0]
+        itemSection0 = tab0['tabRenderer']['content']['sectionListRenderer']['contents'][0]
+        playlistVideoList0 = itemSection0['itemSectionRenderer']['contents'][0]
+        videos = playlistVideoList0['playlistVideoListRenderer']['contents']
 
         self.title = re.search(r'<meta name="title" content="([^"]+)"', video_page).group(1)
         self.p_playlist()
-        for video in videos:
-            vid = parse_query_param(video, 'v')
-            index = parse_query_param(video, 'index')
+        for index, video in enumerate(videos, 1):
+            vid = video['playlistVideoRenderer']['videoId']
             try:
                 self.__class__().download_by_url(self.__class__.get_url_from_vid(vid), index=index, **kwargs)
             except:
                 pass
+        # FIXME: show DASH stream sizes (by default) for playlist videos
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
@@ -201,8 +198,9 @@ class YouTube(VideoExtractor):
         # Get video info
         # 'eurl' is a magic parameter that can bypass age restriction
         # full form: 'eurl=https%3A%2F%2Fyoutube.googleapis.com%2Fv%2F{VIDEO_ID}'
-        video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}&eurl=https%3A%2F%2Fy'.format(self.vid)))
-        logging.debug('STATUS: %s' % video_info['status'][0])
+        #video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}&eurl=https%3A%2F%2Fy'.format(self.vid)))
+        #logging.debug('STATUS: %s' % video_info['status'][0])
+        video_info = {'status': ['ok'], 'use_cipher_signature': 'True'}
 
         ytplayer_config = None
         if 'status' not in video_info:
@@ -214,13 +212,43 @@ class YouTube(VideoExtractor):
                 # Parse video page (for DASH)
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
                 try:
-                    ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
-                    self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
-                    # Workaround: get_video_info returns bad s. Why?
-                    stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
-                    #stream_list = ytplayer_config['args']['adaptive_fmts'].split(',')
+                    try:
+                        # Complete ytplayer_config
+                        ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
+
+                        # Workaround: get_video_info returns bad s. Why?
+                        if 'url_encoded_fmt_stream_map' not in ytplayer_config['args']:
+                            stream_list = json.loads(ytplayer_config['args']['player_response'])['streamingData']['formats']
+                        else:
+                            stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
+                        #stream_list = ytplayer_config['args']['adaptive_fmts'].split(',')
+
+                        if 'assets' in ytplayer_config:
+                            self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
+                        elif re.search('([^"]*/base\.js)"', video_page):
+                            self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
+                            self.html5player = self.html5player.replace('\/', '/') # unescape URL
+                        else:
+                            self.html5player = None
+
+                    except:
+                        # ytplayer_config = {args:{raw_player_response:ytInitialPlayerResponse}}
+                        ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});', video_page).group(1))
+
+                        stream_list = ytInitialPlayerResponse['streamingData']['formats']
+                        #stream_list = ytInitialPlayerResponse['streamingData']['adaptiveFormats']
+
+                        if re.search('([^"]*/base\.js)"', video_page):
+                            self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
+                        else:
+                            self.html5player = None
+
                 except:
-                    stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
+                    if 'url_encoded_fmt_stream_map' not in video_info:
+                        stream_list = json.loads(video_info['player_response'][0])['streamingData']['formats']
+                    else:
+                        stream_list = video_info['url_encoded_fmt_stream_map'][0].split(',')
+
                     if re.search('([^"]*/base\.js)"', video_page):
                         self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
                     else:
@@ -229,11 +257,16 @@ class YouTube(VideoExtractor):
             else:
                 # Parse video page instead
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
-                ytplayer_config = json.loads(re.search('ytplayer.config\s*=\s*([^\n]+?});', video_page).group(1))
 
-                self.title = json.loads(ytplayer_config["args"]["player_response"])["videoDetails"]["title"]
-                self.html5player = 'https://www.youtube.com' + ytplayer_config['assets']['js']
-                stream_list = ytplayer_config['args']['url_encoded_fmt_stream_map'].split(',')
+                ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});', video_page).group(1))
+
+                self.title = ytInitialPlayerResponse["videoDetails"]["title"]
+                if re.search('([^"]*/base\.js)"', video_page):
+                    self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
+                else:
+                    self.html5player = None
+
+                stream_list = ytInitialPlayerResponse['streamingData']['formats']
 
         elif video_info['status'] == ['fail']:
             logging.debug('ERRORCODE: %s' % video_info['errorcode'][0])
@@ -302,23 +335,42 @@ class YouTube(VideoExtractor):
                 exit(0)
 
         for stream in stream_list:
-            metadata = parse.parse_qs(stream)
-            stream_itag = metadata['itag'][0]
-            self.streams[stream_itag] = {
-                'itag': metadata['itag'][0],
-                'url': metadata['url'][0],
-                'sig': metadata['sig'][0] if 'sig' in metadata else None,
-                's': metadata['s'][0] if 's' in metadata else None,
-                'quality': metadata['quality'][0] if 'quality' in metadata else None,
-                #'quality': metadata['quality_label'][0] if 'quality_label' in metadata else None,
-                'type': metadata['type'][0],
-                'mime': metadata['type'][0].split(';')[0],
-                'container': mime_to_container(metadata['type'][0].split(';')[0]),
-            }
+            if isinstance(stream, str):
+                metadata = parse.parse_qs(stream)
+                stream_itag = metadata['itag'][0]
+                self.streams[stream_itag] = {
+                    'itag': metadata['itag'][0],
+                    'url': metadata['url'][0],
+                    'sig': metadata['sig'][0] if 'sig' in metadata else None,
+                    's': metadata['s'][0] if 's' in metadata else None,
+                    'quality': metadata['quality'][0] if 'quality' in metadata else None,
+                    #'quality': metadata['quality_label'][0] if 'quality_label' in metadata else None,
+                    'type': metadata['type'][0],
+                    'mime': metadata['type'][0].split(';')[0],
+                    'container': mime_to_container(metadata['type'][0].split(';')[0]),
+                }
+            else:
+                stream_itag = str(stream['itag'])
+                self.streams[stream_itag] = {
+                    'itag': str(stream['itag']),
+                    'url': stream['url'] if 'url' in stream else None,
+                    'sig': None,
+                    's': None,
+                    'quality': stream['quality'],
+                    'type': stream['mimeType'],
+                    'mime': stream['mimeType'].split(';')[0],
+                    'container': mime_to_container(stream['mimeType'].split(';')[0]),
+                }
+                if 'signatureCipher' in stream:
+                    self.streams[stream_itag].update(dict([(_.split('=')[0], parse.unquote(_.split('=')[1]))
+                                                           for _ in stream['signatureCipher'].split('&')]))
 
         # Prepare caption tracks
         try:
-            caption_tracks = json.loads(ytplayer_config['args']['player_response'])['captions']['playerCaptionsTracklistRenderer']['captionTracks']
+            try:
+                caption_tracks = json.loads(ytplayer_config['args']['player_response'])['captions']['playerCaptionsTracklistRenderer']['captionTracks']
+            except:
+                caption_tracks = ytInitialPlayerResponse['captions']['playerCaptionsTracklistRenderer']['captionTracks']
             for ct in caption_tracks:
                 ttsurl, lang = ct['baseUrl'], ct['languageCode']
 
@@ -347,7 +399,7 @@ class YouTube(VideoExtractor):
                 self.caption_tracks[lang] = srt
         except: pass
 
-        # Prepare DASH streams
+        # Prepare DASH streams (NOTE: not every video has DASH streams!)
         try:
             dashmpd = ytplayer_config['args']['dashmpd']
             dash_xml = parseString(get_content(dashmpd))
@@ -416,6 +468,7 @@ class YouTube(VideoExtractor):
         except:
             # VEVO
             if not self.html5player: return
+            self.html5player = self.html5player.replace('\/', '/') # unescape URL (for age-restricted videos)
             self.js = get_content(self.html5player)
 
             try:
@@ -425,10 +478,48 @@ class YouTube(VideoExtractor):
                                  for i in afmt.split('&')])
                            for afmt in ytplayer_config['args']['adaptive_fmts'].split(',')]
             except:
-                streams = [dict([(i.split('=')[0],
-                                  parse.unquote(i.split('=')[1]))
-                                 for i in afmt.split('&')])
-                           for afmt in video_info['adaptive_fmts'][0].split(',')]
+                if 'adaptive_fmts' in video_info:
+                    streams = [dict([(i.split('=')[0],
+                                      parse.unquote(i.split('=')[1]))
+                                     for i in afmt.split('&')])
+                               for afmt in video_info['adaptive_fmts'][0].split(',')]
+                else:
+                    try:
+                        try:
+                            streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
+                        except:
+                            streams = ytInitialPlayerResponse['streamingData']['adaptiveFormats']
+                    except:  # no DASH stream at all
+                        return
+
+                    # streams without contentLength got broken urls, just remove them (#2767)
+                    streams = [stream for stream in streams if 'contentLength' in stream]
+
+                    for stream in streams:
+                        stream['itag'] = str(stream['itag'])
+                        if 'qualityLabel' in stream:
+                            stream['quality_label'] = stream['qualityLabel']
+                            del stream['qualityLabel']
+                        if 'width' in stream:
+                            stream['size'] = '{}x{}'.format(stream['width'], stream['height'])
+                            del stream['width']
+                            del stream['height']
+                        stream['type'] = stream['mimeType']
+                        stream['clen'] = stream['contentLength']
+                        stream['init'] = '{}-{}'.format(
+                            stream['initRange']['start'],
+                            stream['initRange']['end'])
+                        stream['index'] = '{}-{}'.format(
+                            stream['indexRange']['start'],
+                            stream['indexRange']['end'])
+                        del stream['mimeType']
+                        del stream['contentLength']
+                        del stream['initRange']
+                        del stream['indexRange']
+                        if 'signatureCipher' in stream:
+                            stream.update(dict([(_.split('=')[0], parse.unquote(_.split('=')[1]))
+                                                for _ in stream['signatureCipher'].split('&')]))
+                            del stream['signatureCipher']
 
             for stream in streams: # get over speed limiting
                 stream['url'] += '&ratebypass=yes'
@@ -436,13 +527,13 @@ class YouTube(VideoExtractor):
                 if stream['type'].startswith('audio/mp4'):
                     dash_mp4_a_url = stream['url']
                     if 's' in stream:
-                        sig = self.__class__.decipher(self.js, stream['s'])
+                        sig = self.__class__.s_to_sig(self.js, stream['s'])
                         dash_mp4_a_url += '&sig={}'.format(sig)
                     dash_mp4_a_size = stream['clen']
                 elif stream['type'].startswith('audio/webm'):
                     dash_webm_a_url = stream['url']
                     if 's' in stream:
-                        sig = self.__class__.decipher(self.js, stream['s'])
+                        sig = self.__class__.s_to_sig(self.js, stream['s'])
                         dash_webm_a_url += '&sig={}'.format(sig)
                     dash_webm_a_size = stream['clen']
             for stream in streams: # video
@@ -451,7 +542,7 @@ class YouTube(VideoExtractor):
                         mimeType = 'video/mp4'
                         dash_url = stream['url']
                         if 's' in stream:
-                            sig = self.__class__.decipher(self.js, stream['s'])
+                            sig = self.__class__.s_to_sig(self.js, stream['s'])
                             dash_url += '&sig={}'.format(sig)
                         dash_size = stream['clen']
                         itag = stream['itag']
@@ -470,7 +561,7 @@ class YouTube(VideoExtractor):
                         mimeType = 'video/webm'
                         dash_url = stream['url']
                         if 's' in stream:
-                            sig = self.__class__.decipher(self.js, stream['s'])
+                            sig = self.__class__.s_to_sig(self.js, stream['s'])
                             dash_url += '&sig={}'.format(sig)
                         dash_size = stream['clen']
                         itag = stream['itag']
@@ -519,7 +610,7 @@ class YouTube(VideoExtractor):
                 if not hasattr(self, 'js'):
                     self.js = get_content(self.html5player)
                 s = self.streams[stream_id]['s']
-                sig = self.__class__.decipher(self.js, s)
+                sig = self.__class__.s_to_sig(self.js, s)
                 src += '&sig={}'.format(sig)
 
             self.streams[stream_id]['src'] = [src]
