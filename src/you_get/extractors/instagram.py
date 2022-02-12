@@ -33,13 +33,12 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                 log.e('[Warning] Cookies needed.')
             post = json.loads(data.group(1))
 
-        if 'edge_sidecar_to_children' in post['graphql']['shortcode_media']:
-            edges = post['graphql']['shortcode_media']['edge_sidecar_to_children']['edges']
-            for edge in edges:
-                title = edge['node']['shortcode']
-                image_url = edge['node']['display_url']
-                if 'video_url' in edge['node']:
-                    image_url = edge['node']['video_url']
+        for item in post['items']:
+            code = item['code']
+            carousel_media = item.get('carousel_media') or [item]
+            for i, media in enumerate(carousel_media):
+                title = '%s [%s]' % (code, i)
+                image_url = media['image_versions2']['candidates'][0]['url']
                 ext = image_url.split('?')[0].split('.')[-1]
                 size = int(get_head(image_url)['Content-Length'])
 
@@ -50,21 +49,20 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                                   ext=ext,
                                   total_size=size,
                                   output_dir=output_dir)
-        else:
-            title = post['graphql']['shortcode_media']['shortcode']
-            image_url = post['graphql']['shortcode_media']['display_url']
-            if 'video_url' in post['graphql']['shortcode_media']:
-                image_url = post['graphql']['shortcode_media']['video_url']
-            ext = image_url.split('?')[0].split('.')[-1]
-            size = int(get_head(image_url)['Content-Length'])
 
-            print_info(site_info, title, ext, size)
-            if not info_only:
-                download_urls(urls=[image_url],
-                              title=title,
-                              ext=ext,
-                              total_size=size,
-                              output_dir=output_dir)
+                # download videos (if any)
+                if 'video_versions' in media:
+                    video_url = media['video_versions'][0]['url']
+                    ext = video_url.split('?')[0].split('.')[-1]
+                    size = int(get_head(video_url)['Content-Length'])
+
+                    print_info(site_info, title, ext, size)
+                    if not info_only:
+                        download_urls(urls=[video_url],
+                                      title=title,
+                                      ext=ext,
+                                      total_size=size,
+                                      output_dir=output_dir)
 
 site_info = "Instagram.com"
 download = instagram_download
