@@ -121,7 +121,7 @@ class Bilibili(VideoExtractor):
         return 'https://api.bilibili.com/x/v3/fav/resource/list?media_id=%s&pn=%s&ps=%s&order=mtime&type=0&tid=0&jsonp=jsonp' % (fid, pn, ps)
 
     @staticmethod
-    def bilibili_space_video_api(mid, pn=1, ps=100):
+    def bilibili_space_video_api(mid, pn=1, ps=50):
         return "https://api.bilibili.com/x/space/arc/search?mid=%s&pn=%s&ps=%s&tid=0&keyword=&order=pubdate&jsonp=jsonp" % (mid, pn, ps)
 
     @staticmethod
