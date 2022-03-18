@@ -25,7 +25,7 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
         try:
             info = json.loads(data.group(1))
             post = info['entry_data']['PostPage'][0]
-            assert post
+            assert post['items']
         except:
             # with logged-in cookies
             data = re.search(r'window\.__additionalDataLoaded\(\'[^\']+\',(.*)\);</script>', cont)
