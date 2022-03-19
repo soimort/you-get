@@ -3,46 +3,13 @@
 import unittest
 
 from you_get.extractors import (
-    imgur,
-    magisto,
-    youtube,
-    missevan,
-    acfun,
-    bilibili,
-    soundcloud,
-    tiktok
+    iqiyi
 )
 
 
 class YouGetTests(unittest.TestCase):
-    def test_imgur(self):
-        imgur.download('http://imgur.com/WVLk5nD', info_only=True)
-
-    def test_magisto(self):
-        magisto.download(
-            'http://www.magisto.com/album/video/f3x9AAQORAkfDnIFDA',
-            info_only=True
-        )
-
-    def test_youtube(self):
-        youtube.download(
-            'http://www.youtube.com/watch?v=pzKerr0JIPA', info_only=True
-        )
-        youtube.download('http://youtu.be/pzKerr0JIPA', info_only=True)
-        #youtube.download(
-        #    'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
-        #    info_only=True
-        #)
-        #youtube.download(
-        #    'https://www.youtube.com/watch?v=Fpr4fQSh1cc', info_only=True
-        #)
-
-    def test_acfun(self):
-        acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
-
-    def test_bilibili(self):
-        bilibili.download('https://space.bilibili.com/72270557/channel/seriesdetail?sid=218844', info_only=True)
-
+    def test_iqiyi(self):
+        iqiyi.download("https://www.iqiyi.com/v_19rrjbdi0s.html",output_dir='./',merge=True,caption=True)
     #def test_soundcloud(self):
         ## single song
         #soundcloud.download(
