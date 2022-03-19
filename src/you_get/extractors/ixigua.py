@@ -23,7 +23,7 @@ def ixigua_download(url, output_dir='.', merge=True, info_only=False, stream_id=
     headers['cookie'] = "MONITOR_WEB_ID=7892c49b-296e-4499-8704-e47c1b15123; " \
                         "ixigua-a-s=1; ttcid=af99669b6304453480454f1507011d5c234; BD_REF=1; " \
                         "__ac_nonce=060d88ff000a75e8d17eb; __ac_signature=_02B4Z6wo100f01kX9ZpgAAIDAKIBBQUIPYT5F2WIAAPG2ad; " \
-                        "ttwid=1%7CcIsVF_3vqSIk4XErhPB0H2VaTxT0tdsTMRbMjrJOPN8%7C1624806049%7C08ce7dd6f7d20506a41ba0a331ef96a6505d96731e6ad9f6c8c709f53f227ab1"
+                        "ttwid=1%7CcIsVF_3vqSIk4XErhPB0H2VaTxT0tdsTMRbMjrJOPN8%7C1624806049%7C08ce7dd6f7d20506a41ba0a331ef96a6505d96731e6ad9f6c8c709f53f227ab1; "
 
     resp = urlopen_with_retry(request.Request(url, headers=headers))
     html = resp.read().decode('utf-8')
@@ -31,7 +31,7 @@ def ixigua_download(url, output_dir='.', merge=True, info_only=False, stream_id=
     _cookies = []
     for c in resp.getheader('Set-Cookie').split("httponly,"):
         _cookies.append(c.strip().split(' ')[0])
-    headers['cookie'] += ';'.join(_cookies)
+    headers['cookie'] += ' '.join(_cookies)
 
     match_txt = match1(html, r"<script id=\"SSR_HYDRATED_DATA\">window._SSR_HYDRATED_DATA=(.*?)<\/script>")
     if not match_txt:
