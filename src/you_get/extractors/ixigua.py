@@ -18,68 +18,6 @@ headers = {
 }
 
 
-def int_overflow(val):
-    maxint = 2147483647
-    if not -maxint - 1 <= val <= maxint:
-        val = (val + (maxint + 1)) % (2 * (maxint + 1)) - maxint - 1
-    return val
-
-
-def unsigned_right_shitf(n, i):
-    if n < 0:
-        n = ctypes.c_uint32(n).value
-    if i < 0:
-        return -int_overflow(n << abs(i))
-    return int_overflow(n >> i)
-
-
-def get_video_url_from_video_id(video_id):
-    """Splicing URLs according to video ID to get video details"""
-    # from js
-    data = [""] * 256
-    for index, _ in enumerate(data):
-        t = index
-        for i in range(8):
-            t = -306674912 ^ unsigned_right_shitf(t, 1) if 1 & t else unsigned_right_shitf(t, 1)
-        data[index] = t
-
-    def tmp():
-        rand_num = random.random()
-        path = "/video/urls/v/1/toutiao/mp4/{video_id}?r={random_num}".format(video_id=video_id,
-                                                                              random_num=str(rand_num)[2:])
-        e = o = r = -1
-        i, a = 0, len(path)
-        while i < a:
-            e = ord(path[i])
-            i += 1
-            if e < 128:
-                r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ e)]
-            else:
-                if e < 2048:
-                    r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (192 | e >> 6 & 31))]
-                    r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (128 | 63 & e))]
-                else:
-                    if 55296 <= e < 57344:
-                        e = (1023 & e) + 64
-                        i += 1
-                        o = 1023 & t.url(i)
-                        r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (240 | e >> 8 & 7))]
-                        r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (128 | e >> 2 & 63))]
-                        r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (128 | o >> 6 & 15 | (3 & e) << 4))]
-                        r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (128 | 63 & o))]
-                    else:
-                        r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (224 | e >> 12 & 15))]
-                        r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (128 | e >> 6 & 63))]
-                        r = unsigned_right_shitf(r, 8) ^ data[255 & (r ^ (128 | 63 & e))]
-
-        return "https://ib.365yg.com{path}&s={param}".format(path=path, param=unsigned_right_shitf(r ^ -1, 0))
-
-    while 1:
-        url = tmp()
-        if url.split("=")[-1][0] != "-":  # 参数s不能为负数
-            return url
-
-
 def ixigua_download(url, output_dir='.', merge=True, info_only=False, stream_id='', **kwargs):
     # example url: https://www.ixigua.com/i6631065141750268420/#mid=63024814422
     headers['cookie'] = "MONITOR_WEB_ID=7892c49b-296e-4499-8704-e47c1b15123; " \
@@ -137,8 +75,8 @@ def ixigua_download(url, output_dir='.', merge=True, info_only=False, stream_id=
 
         print("    - format:        %s" % stream['definition'])
         print("      size:          %s MiB (%s bytes)" % (round(stream['size'] / 1048576, 1), stream['size']))
-        print("      quality:          %s " % stream['quality'])
-        print("      v_type:          %s " % stream['v_type'])
+        print("      quality:       %s " % stream['quality'])
+        print("      v_type:        %s " % stream['v_type'])
         # print("      video_url:          %s " % stream['video_url'])
         # print("      audio_url:          %s " % stream['audio_url'])
         print()
@@ -148,7 +86,8 @@ def ixigua_download(url, output_dir='.', merge=True, info_only=False, stream_id=
             urls = [stream['video_url']]
             if stream['audio_url'] != "":
                 urls.append(stream['audio_url'])
-                kwargs['av'] = 'av'
+                kwargs['av'] = 'av'  # 这将会合并音视频
+
             download_urls(urls, title, "mp4", stream['size'], output_dir, merge=merge, headers=headers,
                           **kwargs)
             return
