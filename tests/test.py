@@ -42,6 +42,7 @@ class YouGetTests(unittest.TestCase):
 
     def test_bilibili(self):
         bilibili.download('https://space.bilibili.com/72270557/channel/seriesdetail?sid=218844', info_only=True)
+        bilibili.download('https://space.bilibili.com/72270557/channel/collectiondetail?sid=254', info_only=True)
 
     #def test_soundcloud(self):
         ## single song
