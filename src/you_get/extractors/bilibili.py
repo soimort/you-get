@@ -141,6 +141,8 @@ class Bilibili(VideoExtractor):
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
+        self.streams.clear()
+        self.dash_streams.clear()
 
         try:
             html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
