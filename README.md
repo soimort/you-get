@@ -89,6 +89,14 @@ $ python3 setup.py install --user
 
 to install `you-get` to a permanent path.
 
+You can also use the [pipenv](https://pipenv.pypa.io/en/latest) to install the `you-get` in the Python virtual environment.
+
+```
+$ pipenv install -e .
+$ pipenv run you-get --version
+you-get: version 0.4.1555, a tiny downloader that scrapes the web.
+```
+
 ### Option 4: Git clone
 
 This is the recommended way for all developers, even if you don't often code in Python.
