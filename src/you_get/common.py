@@ -342,6 +342,23 @@ def undeflate(data):
     return decompressobj.decompress(data)+decompressobj.flush()
 
 
+# an http.client implementation of get_content()
+# because urllib does not support "Connection: keep-alive"
+def getHttps(host, url, headers, debuglevel=0):
+    import http.client
+
+    conn = http.client.HTTPSConnection(host)
+    conn.set_debuglevel(debuglevel)
+    conn.request("GET", url, headers=headers)
+    resp = conn.getresponse()
+
+    data = resp.read()
+    data = ungzip(data)
+    #data = undeflate(data)
+
+    return str(data, encoding='utf-8')
+
+
 # DEPRECATED in favor of get_content()
 def get_response(url, faker=False):
     logging.debug('get_response: %s' % url)
