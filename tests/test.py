@@ -41,7 +41,7 @@ class YouGetTests(unittest.TestCase):
         acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
 
     def test_bilibili(self):
-        bilibili.download('https://space.bilibili.com/72270557/channel/seriesdetail?sid=218844', info_only=True)
+        bilibili.download('https://www.bilibili.com/video/BV1sL4y177sC', info_only=True)
 
     #def test_soundcloud(self):
         ## single song
