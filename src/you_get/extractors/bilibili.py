@@ -213,7 +213,7 @@ class Bilibili(VideoExtractor):
             html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
             playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
             playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
-            playinfo_ = playinfo_ if playinfo and playinfo_.get('code') == 0 else None
+            playinfo_ = playinfo_ if playinfo_ and playinfo_.get('code') == 0 else None
 
             if 'videoData' in initial_state:
                 # (standard video)
