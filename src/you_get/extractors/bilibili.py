@@ -177,6 +177,11 @@ class Bilibili(VideoExtractor):
             self.url = 'https://www.bilibili.com/%s' % match1(self.url, r'/s/(.+)')
             html_content = get_content(self.url, headers=self.bilibili_headers())
 
+        # redirect: festival
+        elif re.match(r'https?://(www\.)?bilibili\.com/festival/(.+)', self.url):
+            self.url = 'https://www.bilibili.com/video/%s' % match1(self.url, r'bvid=([^&]+)')
+            html_content = get_content(self.url, headers=self.bilibili_headers())
+
         # sort it out
         if re.match(r'https?://(www\.)?bilibili\.com/audio/au(\d+)', self.url):
             sort = 'audio'
@@ -203,30 +208,43 @@ class Bilibili(VideoExtractor):
 
             playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
             playinfo = json.loads(playinfo_text) if playinfo_text else None
-            playinfo = playinfo if playinfo['code'] == 0 else None
+            playinfo = playinfo if playinfo and playinfo.get('code') == 0 else None
 
             html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
             playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
             playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
-            playinfo_ = playinfo_ if playinfo_['code'] == 0 else None
+            playinfo_ = playinfo_ if playinfo and playinfo_.get('code') == 0 else None
 
-            # warn if it is a multi-part video
-            pn = initial_state['videoData']['videos']
-            if pn > 1 and not kwargs.get('playlist'):
-                log.w('This is a multipart video. (use --playlist to download all parts.)')
+            if 'videoData' in initial_state:
+                # (standard video)
 
-            # set video title
-            self.title = initial_state['videoData']['title']
-            # refine title for a specific part, if it is a multi-part video
-            p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or
-                    '1')  # use URL to decide p-number, not initial_state['p']
-            if pn > 1:
-                part = initial_state['videoData']['pages'][p - 1]['part']
-                self.title = '%s (P%s. %s)' % (self.title, p, part)
+                # warn if it is a multi-part video
+                pn = initial_state['videoData']['videos']
+                if pn > 1 and not kwargs.get('playlist'):
+                    log.w('This is a multipart video. (use --playlist to download all parts.)')
 
-            # construct playinfos
-            avid = initial_state['aid']
-            cid = initial_state['videoData']['pages'][p - 1]['cid']  # use p-number, not initial_state['videoData']['cid']
+                # set video title
+                self.title = initial_state['videoData']['title']
+                # refine title for a specific part, if it is a multi-part video
+                p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or
+                        '1')  # use URL to decide p-number, not initial_state['p']
+                if pn > 1:
+                    part = initial_state['videoData']['pages'][p - 1]['part']
+                    self.title = '%s (P%s. %s)' % (self.title, p, part)
+
+                # construct playinfos
+                avid = initial_state['aid']
+                cid = initial_state['videoData']['pages'][p - 1]['cid']  # use p-number, not initial_state['videoData']['cid']
+            else:
+                # (festival video)
+
+                # set video title
+                self.title = initial_state['videoInfo']['title']
+
+                # construct playinfos
+                avid = initial_state['videoInfo']['aid']
+                cid = initial_state['videoInfo']['cid']
+
             current_quality, best_quality = None, None
             if playinfo is not None:
                 current_quality = playinfo['data']['quality'] or None  # 0 indicates an error, fallback to None
