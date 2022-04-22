@@ -23,7 +23,8 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     }
 
     html = getHttps(host, url, headers=headers)
-    data = r1(r'window\[\'SIGI_STATE\'\]=(.*?);window\[\'SIGI_RETRY\'\]', html)
+    data = r1(r'window\[\'SIGI_STATE\'\]=(.*?);window\[\'SIGI_RETRY\'\]', html) or \
+        r1(r'<script id="SIGI_STATE" type="application/json">(.*?)</script>', html)
     info = json.loads(data)
     downloadAddr = info['ItemModule'][vid]['video']['downloadAddr']
     author = info['ItemModule'][vid]['author']  # same as uniqueId
