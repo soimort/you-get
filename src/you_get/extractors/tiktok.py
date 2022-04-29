@@ -6,10 +6,10 @@ from ..common import *
 
 def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     while True:
-        m = re.match('https://([^/]+)(/.*)', url)
-        host = m.group(1)
+        m = re.match('(https?://)?([^/]+)(/.*)', url)
+        host = m.group(2)
         if host == 'www.tiktok.com':  # canonical URL reached
-            url = m.group(2).split('?')[0]
+            url = m.group(3).split('?')[0]
             vid = url.split('/')[3]  # should be a string of numbers
             break
         else:
