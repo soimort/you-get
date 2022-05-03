@@ -5,6 +5,7 @@ from ..extractor import VideoExtractor
 
 import hashlib
 import math
+from urllib import error
 
 
 class Bilibili(VideoExtractor):
@@ -390,15 +391,33 @@ class Bilibili(VideoExtractor):
                         desc = s['desc']
                         audio_quality = s['audio_quality']
                         baseurl = video['baseUrl']
-                        size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+                        video_backurl = video['backupUrl']
+                        # 如果baseurl使用不了
+                        for backurl in video_backurl:
+                            try:
+                                size = url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
+                            except error.URLError:
+                                # 使用备用URL
+                                baseurl = backurl
+                                logging.debug(f'Using video backup url {backurl}')
 
                         # find matching audio track
                         audio_baseurl = playinfo['result']['dash']['audio'][0]['baseUrl']
                         for audio in playinfo['result']['dash']['audio']:
                             if int(audio['id']) == audio_quality:
                                 audio_baseurl = audio['baseUrl']
+                                audio_backurl = audio['backupUrl']
                                 break
-                        size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+
+                        # 如果baseurl使用不了
+                        for backurl in audio_backurl:
+                            try:
+                                size += url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
+                            except error.URLError:
+                                # 使用备用URL
+                                audio_baseurl = backurl
+                                logging.debug(f'Using audio backup url {backurl}')
+
 
                         self.dash_streams[format_id] = {'container': container, 'quality': desc,
                                                         'src': [[baseurl], [audio_baseurl]], 'size': size}
