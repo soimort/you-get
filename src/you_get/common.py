@@ -1782,10 +1782,10 @@ def script_main(download, download_playlist, **kwargs):
 
 def google_search(url):
     keywords = r1(r'https?://(.*)', url)
-    url = 'https://www.google.com/search?tbm=vid&q=%s' % parse.quote(keywords)
+    url = 'https://www.google.com/search?tbm=vid&q=%s' % parse.quote(str(keywords))
     page = get_content(url, headers=fake_headers)
     videos = re.findall(
-        r'<a href="(https?://[^"]+)" onmousedown="[^"]+"><h3 class="[^"]*">([^<]+)<', page
+        r'<a href="(https?://www.youtube[^"]+)"', page
     )
     vdurs = re.findall(r'<span class="vdur[^"]*">([^<]+)<', page)
     durs = [r1(r'(\d+:\d+)', unescape_html(dur)) for dur in vdurs]
@@ -1798,7 +1798,7 @@ def google_search(url):
         print('# you-get %s' % log.sprint(v[0][0], log.UNDERLINE))
         print()
     print('Best matched result:')
-    return(videos[0][0])
+    return(videos[0])
 
 
 def url_to_module(url):
@@ -1807,9 +1807,12 @@ def url_to_module(url):
         video_url = r1(r'https?://[^/]+(.*)', url)
         assert video_host and video_url
     except AssertionError:
-        url = google_search(url)
-        video_host = r1(r'https?://([^/]+)/', url)
-        video_url = r1(r'https?://[^/]+(.*)', url)
+        try:
+            url = google_search(url)
+            video_host = r1(r'https?://([^/]+)/', url)
+            video_url = r1(r'https?://[^/]+(.*)', url)
+        except IndexError:
+            print("Google Search Backup failed, please enter a supported url")
 
     if video_host.endswith('.com.cn') or video_host.endswith('.ac.cn'):
         video_host = video_host[:-3]
