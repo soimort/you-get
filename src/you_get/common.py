@@ -1654,7 +1654,7 @@ def script_main(download, download_playlist, **kwargs):
     download_grp.add_argument('--itag', help=argparse.SUPPRESS)
 
     download_grp.add_argument('-m', '--m3u8', action='store_true', default=False,
-        help = 'download vide using an m3u8 url')
+        help = 'download video using an m3u8 url')
 
 
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
