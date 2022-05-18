@@ -10,7 +10,8 @@ from you_get.extractors import (
     acfun,
     bilibili,
     soundcloud,
-    tiktok
+    tiktok,
+    ixigua
 )
 
 
@@ -57,6 +58,10 @@ class YouGetTests(unittest.TestCase):
         tiktok.download('https://www.tiktok.com/@nmb48_official/video/6850796940293164290', info_only=True)
         tiktok.download('https://t.tiktok.com/i18n/share/video/6850796940293164290/', info_only=True)
 
+    def test_ixigua(self):
+        ixigua.download(
+            'https://www.ixigua.com/i6631065141750268420', info_only=True
+        )
 
 if __name__ == '__main__':
     unittest.main()
