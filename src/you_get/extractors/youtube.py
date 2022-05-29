@@ -237,7 +237,7 @@ class YouTube(VideoExtractor):
 
                     except:
                         # ytplayer_config = {args:{raw_player_response:ytInitialPlayerResponse}}
-                        ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});', video_page).group(1))
+                        ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});</script>', video_page).group(1))
 
                         stream_list = ytInitialPlayerResponse['streamingData']['formats']
                         #stream_list = ytInitialPlayerResponse['streamingData']['adaptiveFormats']
@@ -262,7 +262,7 @@ class YouTube(VideoExtractor):
                 # Parse video page instead
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
 
-                ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});', video_page).group(1))
+                ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});</script>', video_page).group(1))
 
                 self.title = ytInitialPlayerResponse["videoDetails"]["title"]
                 if re.search('([^"]*/base\.js)"', video_page):
