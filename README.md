@@ -57,7 +57,7 @@ Are you a Python programmer? Then check out [the source](https://github.com/soim
 
 The following dependencies are recommended:
 
-* **[Python](https://www.python.org/downloads/)**  3.8 or above
+* **[Python](https://www.python.org/downloads/)**  3.7.4 or above
 * **[FFmpeg](https://www.ffmpeg.org/)** 1.0 or above
 * (Optional) [RTMPDump](https://rtmpdump.mplayerhq.hu/)
 
