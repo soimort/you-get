@@ -76,7 +76,8 @@
 
 <h1 id="you-get">You-Get</h1>
 <p><a href="https://github.com/soimort/you-get/actions"><img src="https://github.com/soimort/you-get/workflows/develop/badge.svg" alt="Build Status" /></a> <a href="https://pypi.python.org/pypi/you-get/"><img src="https://img.shields.io/pypi/v/you-get.svg" alt="PyPI version" /></a> <a href="https://gitter.im/soimort/you-get?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter" /></a></p>
-<p><strong>NOTICE: Read <a href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">this</a> if you are looking for the conventional “Issues” tab.</strong></p>
+<p><strong>NOTICE (30 May 2022): Support for Python 3.5, 3.6 and 3.7 will eventually be dropped. (<a href="https://github.com/soimort/you-get/wiki/TLS-1.3-post-handshake-authentication-(PHA)">see details here</a>)</strong></p>
+<p><strong>NOTICE (8 Mar 2019): Read <a href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">this</a> if you are looking for the conventional “Issues” tab.</strong></p>
 <hr />
 <p><a href="https://you-get.org/">You-Get</a> is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.</p>
 <p>Here’s how you use <code>you-get</code> to download a video from <a href="https://www.youtube.com/watch?v=jNQXAC9IVRw">YouTube</a>:</p>
@@ -113,9 +114,9 @@ Saving Me at the zoo.en.srt ... Done.</code></pre>
 <p><img src="https://i.imgur.com/GfthFAz.png" /></p>
 <h2 id="installation">Installation</h2>
 <h3 id="prerequisites">Prerequisites</h3>
-<p>The following dependencies are necessary:</p>
+<p>The following dependencies are recommended:</p>
 <ul>
-<li><strong><a href="https://www.python.org/downloads/">Python</a></strong> 3.2 or above</li>
+<li><strong><a href="https://www.python.org/downloads/">Python</a></strong> 3.8 or above</li>
 <li><strong><a href="https://www.ffmpeg.org/">FFmpeg</a></strong> 1.0 or above</li>
 <li>(Optional) <a href="https://rtmpdump.mplayerhq.hu/">RTMPDump</a></li>
 </ul>
@@ -132,6 +133,10 @@ Saving Me at the zoo.en.srt ... Done.</code></pre>
 <p>Or</p>
 <pre><code>$ python3 setup.py install --user</code></pre>
 <p>to install <code>you-get</code> to a permanent path.</p>
+<p>You can also use the <a href="https://pipenv.pypa.io/en/latest">pipenv</a> to install the <code>you-get</code> in the Python virtual environment.</p>
+<pre><code>$ pipenv install -e .
+$ pipenv run you-get --version
+you-get: version 0.4.1555, a tiny downloader that scrapes the web.</code></pre>
 <h3 id="option-4-git-clone">Option 4: Git clone</h3>
 <p>This is the recommended way for all developers, even if you don’t often code in Python.</p>
 <pre><code>$ git clone git://github.com/soimort/you-get.git</code></pre>
