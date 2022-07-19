@@ -137,6 +137,8 @@ cookies = None
 output_filename = None
 auto_rename = False
 insecure = False
+m3u8 = False
+postfix = False
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -341,10 +343,34 @@ def undeflate(data):
     return decompressobj.decompress(data)+decompressobj.flush()
 
 
+# an http.client implementation of get_content()
+# because urllib does not support "Connection: keep-alive"
+def getHttps(host, url, headers, gzip=True, deflate=False, debuglevel=0):
+    import http.client
+
+    conn = http.client.HTTPSConnection(host)
+    conn.set_debuglevel(debuglevel)
+    conn.request("GET", url, headers=headers)
+    resp = conn.getresponse()
+
+    data = resp.read()
+    if gzip:
+        data = ungzip(data)
+    if deflate:
+        data = undeflate(data)
+
+    return str(data, encoding='utf-8')
+
+
 # DEPRECATED in favor of get_content()
 def get_response(url, faker=False):
     logging.debug('get_response: %s' % url)
-
+    ctx = None
+    if insecure:
+        # ignore ssl errors
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
     # install cookies
     if cookies:
         opener = request.build_opener(request.HTTPCookieProcessor(cookies))
@@ -352,10 +378,10 @@ def get_response(url, faker=False):
 
     if faker:
         response = request.urlopen(
-            request.Request(url, headers=fake_headers), None
+            request.Request(url, headers=fake_headers), None, context=ctx,
         )
     else:
-        response = request.urlopen(url)
+        response = request.urlopen(url, context=ctx)
 
     data = response.read()
     if response.info().get('Content-Encoding') == 'gzip':
@@ -984,6 +1010,8 @@ def download_urls(
             pass
 
     title = tr(get_filename(title))
+    if postfix and 'vid' in kwargs:
+        title = "%s [%s]" % (title, kwargs['vid'])
     output_filename = get_output_filename(urls, title, ext, output_dir, merge)
     output_filepath = os.path.join(output_dir, output_filename)
 
@@ -1340,7 +1368,13 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         if re.match(r'https?://', url) is None:
             url = 'http://' + url
 
-        if playlist:
+        if m3u8:
+            if output_filename:
+                title = output_filename
+            else:
+                title = "m3u8file"
+            download_url_ffmpeg(url=url, title=title,ext = 'mp4',output_dir = '.')
+        elif playlist:
             download_playlist(url, **kwargs)
         else:
             download(url, **kwargs)
@@ -1444,7 +1478,6 @@ def set_socks_proxy(proxy):
             proxy_info = proxy.split("@")
             socks_proxy_addrs = proxy_info[1].split(':')
             socks_proxy_auth = proxy_info[0].split(":")
-            print(socks_proxy_auth[0]+" "+socks_proxy_auth[1]+" "+socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
             socks.set_default_proxy(
                 socks.SOCKS5,
                 socks_proxy_addrs[0],
@@ -1455,7 +1488,6 @@ def set_socks_proxy(proxy):
             )
         else:
            socks_proxy_addrs = proxy.split(':')
-           print(socks_proxy_addrs[0]+" "+socks_proxy_addrs[1])
            socks.set_default_proxy(
                socks.SOCKS5,
                socks_proxy_addrs[0],
@@ -1527,6 +1559,10 @@ def script_main(download, download_playlist, **kwargs):
     download_grp.add_argument(
         '--no-caption', action='store_true',
         help='Do not download captions (subtitles, lyrics, danmaku, ...)'
+    )
+    download_grp.add_argument(
+        '--postfix', action='store_true', default=False,
+        help='Postfix downloaded files with unique identifiers'
     )
     download_grp.add_argument(
         '-f', '--force', action='store_true', default=False,
@@ -1620,6 +1656,10 @@ def script_main(download, download_playlist, **kwargs):
     download_grp.add_argument('--stream', help=argparse.SUPPRESS)
     download_grp.add_argument('--itag', help=argparse.SUPPRESS)
 
+    download_grp.add_argument('-m', '--m3u8', action='store_true', default=False,
+        help = 'download video using an m3u8 url')
+
+
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
     args = parser.parse_args()
@@ -1645,6 +1685,8 @@ def script_main(download, download_playlist, **kwargs):
     global output_filename
     global auto_rename
     global insecure
+    global m3u8
+    global postfix
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
@@ -1666,6 +1708,9 @@ def script_main(download, download_playlist, **kwargs):
     if args.cookies:
         load_cookies(args.cookies)
 
+    if args.m3u8:
+        m3u8 = True
+
     caption = True
     stream_id = args.format or args.stream or args.itag
     if args.no_caption:
@@ -1678,6 +1723,7 @@ def script_main(download, download_playlist, **kwargs):
         # ignore ssl
         insecure = True
 
+    postfix = args.postfix
 
     if args.no_proxy:
         set_http_proxy('')
@@ -1764,20 +1810,10 @@ def google_search(url):
     url = 'https://www.google.com/search?tbm=vid&q=%s' % parse.quote(keywords)
     page = get_content(url, headers=fake_headers)
     videos = re.findall(
-        r'<a href="(https?://[^"]+)" onmousedown="[^"]+"><h3 class="[^"]*">([^<]+)<', page
+        r'(https://www\.youtube\.com/watch\?v=[\w-]+)', page
     )
-    vdurs = re.findall(r'<span class="vdur[^"]*">([^<]+)<', page)
-    durs = [r1(r'(\d+:\d+)', unescape_html(dur)) for dur in vdurs]
-    print('Google Videos search:')
-    for v in zip(videos, durs):
-        print('- video:  {} [{}]'.format(
-            unescape_html(v[0][1]),
-            v[1] if v[1] else '?'
-        ))
-        print('# you-get %s' % log.sprint(v[0][0], log.UNDERLINE))
-        print()
     print('Best matched result:')
-    return(videos[0][0])
+    return(videos[0])
 
 
 def url_to_module(url):

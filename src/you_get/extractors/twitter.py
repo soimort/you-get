@@ -51,7 +51,12 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
     api_content = get_content(api_url, headers={'authorization': authorization, 'x-guest-token': guest_token})
 
     info = json.loads(api_content)
-    if 'extended_entities' in info['globalObjects']['tweets'][item_id]:
+    if item_id not in info['globalObjects']['tweets']:
+        # something wrong here
+        log.wtf('[Failed] ' + info['timeline']['instructions'][0]['addEntries']['entries'][0]['content']['item']['content']['tombstone']['tombstoneInfo']['richText']['text'], exit_code=None)
+        return
+
+    elif 'extended_entities' in info['globalObjects']['tweets'][item_id]:
         # if the tweet contains media, download them
         media = info['globalObjects']['tweets'][item_id]['extended_entities']['media']
 
