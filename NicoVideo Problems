@@ -1,0 +1,64 @@
+Why am I always being asked for credentials when trying to download from nicovideo? As far as I know, I've tried putting in my username/email account and password correctly, but always get the same error. This is the output when the --debug argument was included.
+
+
+Ethans-MacBook-Pro:~ nekoniichan$ you-get --debug https://www.nicovideo.jp/watch/sm22114957
+User:     
+Password: 
+you-get: version 0.4.1620, a tiny downloader that scrapes the web.
+you-get: Namespace(version=False, help=False, info=False, url=False, json=False, no_merge=False, no_caption=False, postfix=False, force=False, skip_existing_file_size_check=False, format=None, output_filename=None, output_dir='.', player=None, cookies=None, timeout=600, debug=True, input_file=None, password=None, playlist=False, first=None, last=None, size=None, auto_rename=False, insecure=False, http_proxy=None, extractor_proxy=None, no_proxy=False, socks_proxy=None, stream=None, itag=None, m3u8=False, URL=['https://www.nicovideo.jp/watch/sm22114957'])
+Logging in...
+Traceback (most recent call last):
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/urllib/request.py", line 1348, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 1282, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 1328, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 1277, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 1037, in _send_output
+    self.send(msg)
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 975, in send
+    self.connect()
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 1454, in connect
+    self.sock = self._context.wrap_socket(self.sock,
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/ssl.py", line 513, in wrap_socket
+    return self.sslsocket_class._create(
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/ssl.py", line 1071, in _create
+    self.do_handshake()
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/ssl.py", line 1342, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLError: [SSL: NO_CIPHERS_AVAILABLE] no ciphers available (_ssl.c:997)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/bin/you-get", line 33, in <module>
+    sys.exit(load_entry_point('you-get==0.4.1620', 'console_scripts', 'you-get')())
+  File "/usr/local/Cellar/you-get/0.4.1620/libexec/lib/python3.10/site-packages/you_get/__main__.py", line 92, in main
+    main(**kwargs)
+  File "/usr/local/Cellar/you-get/0.4.1620/libexec/lib/python3.10/site-packages/you_get/common.py", line 1867, in main
+    script_main(any_download, any_download_playlist, **kwargs)
+  File "/usr/local/Cellar/you-get/0.4.1620/libexec/lib/python3.10/site-packages/you_get/common.py", line 1759, in script_main
+    download_main(
+  File "/usr/local/Cellar/you-get/0.4.1620/libexec/lib/python3.10/site-packages/you_get/common.py", line 1379, in download_main
+    download(url, **kwargs)
+  File "/usr/local/Cellar/you-get/0.4.1620/libexec/lib/python3.10/site-packages/you_get/common.py", line 1858, in any_download
+    m.download(url, **kwargs)
+  File "/usr/local/Cellar/you-get/0.4.1620/libexec/lib/python3.10/site-packages/you_get/extractors/nicovideo.py", line 31, in nicovideo_download
+    nicovideo_login(user, password)
+  File "/usr/local/Cellar/you-get/0.4.1620/libexec/lib/python3.10/site-packages/you_get/extractors/nicovideo.py", line 9, in nicovideo_login
+    response = request.urlopen(request.Request("https://secure.nicovideo.jp/secure/login?site=niconico", headers=fake_headers, data=data.encode('utf-8')))
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/urllib/request.py", line 519, in open
+    response = self._open(req, data)
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/urllib/request.py", line 536, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/urllib/request.py", line 1391, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+  File "/usr/local/Cellar/python@3.10/3.10.5/Frameworks/Python.framework/Versions/3.10/lib/python3.10/urllib/request.py", line 1351, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [SSL: NO_CIPHERS_AVAILABLE] no ciphers available (_ssl.c:997)>
