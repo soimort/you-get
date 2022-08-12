@@ -2,6 +2,7 @@
 # This file is Python 2 compliant.
 
 import sys
+from .common import get_parser
 
 if sys.version_info[0] == 3:
     #from .extractor import Extractor, VideoExtractor

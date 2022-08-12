@@ -1,0 +1,5 @@
+#compdef {{programs}}
+# https://github.com/zsh-users/zsh/blob/master/Etc/completion-style-guide
+
+_arguments -s -S \
+  {{flags}}

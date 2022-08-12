@@ -5,7 +5,6 @@ import os
 import re
 import sys
 import time
-import json
 import socket
 import locale
 import logging
@@ -20,7 +19,7 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
 
 SITES = {
     '163'              : 'netease',
@@ -1506,19 +1505,7 @@ def set_socks_proxy(proxy):
         )
 
 
-def script_main(download, download_playlist, **kwargs):
-    logging.basicConfig(format='[%(levelname)s] %(message)s')
-
-    def print_version():
-        version = get_version(
-            kwargs['repo_path'] if 'repo_path' in kwargs else __version__
-        )
-        log.i(
-            'version {}, a tiny downloader that scrapes the web.'.format(
-                version
-            )
-        )
-
+def get_parser():
     parser = argparse.ArgumentParser(
         prog='you-get',
         usage='you-get [OPTION]... URL...',
@@ -1603,7 +1590,7 @@ def script_main(download, download_playlist, **kwargs):
         help='Read non-playlist URLs from FILE'
     )
     download_grp.add_argument(
-        '-P', '--password', help='Set video visit password to PASSWORD'
+        '-P', '--password', metavar="PASSWORD", help='Set video visit password to PASSWORD'
     )
     download_grp.add_argument(
         '-l', '--playlist', action='store_true',
@@ -1652,8 +1639,8 @@ def script_main(download, download_playlist, **kwargs):
         help='Use an SOCKS5 proxy for downloading'
     )
 
-    download_grp.add_argument('--stream', help=argparse.SUPPRESS)
-    download_grp.add_argument('--itag', help=argparse.SUPPRESS)
+    download_grp.add_argument('--stream', help=argparse.SUPPRESS, default=False)
+    download_grp.add_argument('--itag', help=argparse.SUPPRESS, default=False)
 
     download_grp.add_argument('-m', '--m3u8', action='store_true', default=False,
         help = 'download video using an m3u8 url')
@@ -1661,6 +1648,23 @@ def script_main(download, download_playlist, **kwargs):
 
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
+    return parser
+
+
+def script_main(download, download_playlist, **kwargs):
+    logging.basicConfig(format='[%(levelname)s] %(message)s')
+
+    def print_version():
+        version = get_version(
+            kwargs['repo_path'] if 'repo_path' in kwargs else __version__
+        )
+        log.i(
+            'version {}, a tiny downloader that scrapes the web.'.format(
+                version
+            )
+        )
+
+    parser = get_parser()
     args = parser.parse_args()
 
     if args.help:
@@ -1864,4 +1868,4 @@ def any_download_playlist(url, **kwargs):
 
 
 def main(**kwargs):
-    script_main(any_download, any_download_playlist, **kwargs)
+    return script_main(any_download, any_download_playlist, **kwargs)

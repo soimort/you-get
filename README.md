@@ -127,7 +127,9 @@ You can install `you-get` easily via:
 
 ### Shell completion
 
-Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](https://github.com/soimort/you-get/tree/develop/contrib/completion). Please consult your shell's manual for how to take advantage of them.
+Completion definitions for Bash, Fish can be found in [`contrib/completion`](https://github.com/soimort/you-get/tree/develop/contrib/completion). Please consult your shell's manual for how to take advantage of them.
+
+Zsh completion can be generated automatically by running `contrib/zsh_completion.py`.
 
 ## Upgrading
 
