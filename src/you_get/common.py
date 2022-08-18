@@ -467,7 +467,8 @@ def get_content(url, headers={}, decoded=True):
         # Here we add cookies to the request headers manually
         cookie_strings = []
         for cookie in list(cookies):
-            cookie_strings.append(cookie.name + '=' + cookie.value)
+            if cookie.domain in url and cookie.path in url:
+                cookie_strings.append(cookie.name + '=' + cookie.value)
         cookie_headers = {'Cookie': '; '.join(cookie_strings)}
         req.headers.update(cookie_headers)
 
