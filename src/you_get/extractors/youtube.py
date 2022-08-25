@@ -79,6 +79,7 @@ class YouTube(VideoExtractor):
         # - https://www.youtube.com/s/player/0b643cd1/player_ias.vflset/sv_SE/base.js
         # - https://www.youtube.com/s/player/50e823fc/player_ias.vflset/sv_SE/base.js
         # - https://www.youtube.com/s/player/3b5d5649/player_ias.vflset/sv_SE/base.js
+        # - https://www.youtube.com/s/player/dc0c6770/player_ias.vflset/sv_SE/base.js
         def tr_js(code):
             code = re.sub(r'function', r'def', code)
             # add prefix '_sig_' to prevent namespace pollution
@@ -114,14 +115,10 @@ class YouTube(VideoExtractor):
             else:
                 f2def = re.search(r'[^$\w]%s:function\((\w+)\)(\{[^\{\}]+\})' % f2e, js)
                 f2def = 'function {}({},b){}'.format(f2e, f2def.group(1), f2def.group(2))
-            f2 = re.sub(r'(as|if|in|is|or)', r'_\1', f2)
-            f2 = re.sub(r'\$', '_dollar', f2)
+            f2 = re.sub(r'\$', '_dollar', f2)  # replace dollar sign
             code = code + 'global _sig_%s\n' % f2 + tr_js(f2def)
 
-        # if f1 contains more than 2 characters, no need to do substitution
-        # FIXME: we probably shouldn't do any substitution here at all?
-        f1 = re.sub(r'^(as|if|in|is|or)$', r'_\1', f1)
-        f1 = re.sub(r'\$', '_dollar', f1)
+        f1 = re.sub(r'\$', '_dollar', f1)  # replace dollar sign
         code = code + '_sig=_sig_%s(s)' % f1
         exec(code, globals(), locals())
         return locals()['_sig']
