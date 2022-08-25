@@ -15,9 +15,7 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     m = re.match('(https?://)?([^/]+)(/.*)', url)
     host = m.group(2)
     if host != 'www.tiktok.com':  # non-canonical URL
-        html = getHttps(host, url, headers=headers, gzip=False)
-        url = r1(r'(https://www.tiktok.com/[^?"]+)', html)
-        # use canonical URL
+        url = get_location(url, headers=headers)
         m = re.match('(https?://)?([^/]+)(/.*)', url)
         host = m.group(2)
 
