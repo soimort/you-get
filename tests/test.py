@@ -11,7 +11,8 @@ from you_get.extractors import (
     bilibili,
     soundcloud,
     tiktok,
-    twitter
+    twitter,
+    qq
 )
 
 
@@ -22,6 +23,12 @@ class YouGetTests(unittest.TestCase):
     def test_magisto(self):
         magisto.download(
             'http://www.magisto.com/album/video/f3x9AAQORAkfDnIFDA',
+            info_only=True
+        )
+
+    def test_qq(self):
+        qq.download(
+            'https://v.qq.com/x/cover/awnia0n2erqryf3/n0033ecmh8f.html',
             info_only=True
         )
 
