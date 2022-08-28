@@ -43,6 +43,7 @@ setup(
 
     entry_points = {'console_scripts': proj_info['console_scripts']},
 
+    install_requires=["shtab"],
     extras_require={
         'socks': ['PySocks'],
     }
