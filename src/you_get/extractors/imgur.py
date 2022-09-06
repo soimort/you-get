@@ -52,7 +52,8 @@ class Imgur(VideoExtractor):
         else:
             # gallery image
             content = get_content(self.url)
-            url = match1(content, r'(https?://i.imgur.com/[^"]+)')
+            url = match1(content, r'meta property="og:video"[^>]+(https?://i.imgur.com/[^"?]+)') or \
+                match1(content, r'meta property="og:image"[^>]+(https?://i.imgur.com/[^"?]+)')
             _, container, size = url_info(url)
             self.streams = {
                 'original': {

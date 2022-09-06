@@ -93,7 +93,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
         concat_list = generate_concat_list(files, output)
-        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '-1',
+        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '0',
                                         '-i', concat_list, '-c', 'copy']
         params.extend(['--', output])
         if subprocess.call(params, stdin=STDIN) == 0:
@@ -149,7 +149,7 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
         concat_list = generate_concat_list(files, output)
-        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '-1',
+        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '0',
                                         '-i', concat_list, '-c', 'copy',
                                         '-bsf:a', 'aac_adtstoasc']
         params.extend(['--', output])
@@ -203,7 +203,7 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
     # Use concat demuxer on FFmpeg >= 1.1
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
         concat_list = generate_concat_list(files, output)
-        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '-1',
+        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '0',
                                         '-i', concat_list, '-c', 'copy',
                                         '-bsf:a', 'aac_adtstoasc']
         params.extend(['--', output])

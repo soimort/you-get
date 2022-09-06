@@ -43,5 +43,7 @@ install:
 	$(SETUP) install --user --prefix=
 
 release:
-	zenity --question
-	$(SETUP) sdist bdist_wheel upload --sign
+	#zenity --question
+	$(SETUP) sdist bdist_wheel
+	echo 'Upload new version to PyPI using:'
+	echo '	twine upload --sign dist/you-get-VERSION.tar.gz dist/you_get-VERSION-py3-none-any.whl'
