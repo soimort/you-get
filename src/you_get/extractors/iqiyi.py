@@ -203,8 +203,13 @@ class Iqiyi(VideoExtractor):
             # For legacy main()
 
             #Here's the change!!
-            download_url_ffmpeg(urls[0], self.title, 'mp4', output_dir=kwargs['output_dir'], merge=kwargs['merge'], stream=False)
-
+            # ffmpeg fails to parse.
+            # download_url_ffmpeg(urls[0], self.title, 'mp4', output_dir=kwargs['output_dir'], merge=kwargs['merge'], stream=False)
+            #Here's the way works out
+            urls = general_m3u8_extractor(urls[0])
+            # ffmpeg fail to convert the output video with mkv extension, due to sort of timestamp problem
+            download_urls(urls, self.title, 'mp4', 0, **kwargs)
+            
             if not kwargs['caption']:
                 print('Skipping captions.')
                 return
