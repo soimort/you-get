@@ -647,7 +647,12 @@ class Bilibili(VideoExtractor):
 
             if pn == len(initial_state['videoData']['pages']):
                 # non-interative video
-                for pi in range(1, pn + 1):
+                # enable choozing first to download by using "--first"
+                p_first = 1
+                args = kwargs.get('args')
+                if ('first' in args and args.first!= None):
+                    p_first = int(args.first)
+                for pi in range(p_first, pn + 1):
                      purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
                      self.__class__().download_by_url(purl, **kwargs)
 
