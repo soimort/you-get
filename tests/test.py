@@ -11,6 +11,7 @@ from you_get.extractors import (
     bilibili,
     soundcloud,
     tiktok,
+    haokan
     twitter
 )
 
@@ -38,8 +39,18 @@ class YouGetTests(unittest.TestCase):
         #    'https://www.youtube.com/watch?v=Fpr4fQSh1cc', info_only=True
         #)
 
-    def test_acfun(self):
-        acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
+    #def test_acfun(self):
+     #   acfun.download('https://www.acfun.cn/v/ac11701912', info_only=True)
+
+
+    #def test_bilibili(self):
+    #    bilibili.download(
+    #        "https://www.bilibili.com/watchlater/#/BV1PE411q7mZ/p6", info_only=True
+    #    )
+    #    bilibili.download(
+     #       "https://www.bilibili.com/watchlater/#/av74906671/p6", info_only=True
+     #   )
+
 
     #def test_bilibili(self):
     #    bilibili.download('https://www.bilibili.com/video/BV1sL4y177sC', info_only=True)
@@ -49,10 +60,15 @@ class YouGetTests(unittest.TestCase):
         #soundcloud.download(
         #    'https://soundcloud.com/keiny-pham/impure-bird', info_only=True
         #)
+
         ## playlist
         #soundcloud.download(
         #    'https://soundcloud.com/anthony-flieger/sets/cytus', info_only=True
         #)
+
+
+    def test_haokan(self):
+        haokan.download('https://haokan.baidu.com/v?vid=1792435769358388527',info_only=True)
 
     def test_tiktok(self):
         tiktok.download('https://www.tiktok.com/@nmb48_official/video/6850796940293164290', info_only=True)
@@ -60,6 +76,7 @@ class YouGetTests(unittest.TestCase):
 
     def test_twitter(self):
         twitter.download('https://twitter.com/elonmusk/status/1530516552084234244', info_only=True)
+
 
 
 if __name__ == '__main__':

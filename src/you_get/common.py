@@ -124,6 +124,7 @@ SITES = {
     'zhanqi'           : 'zhanqi',
     'zhibo'            : 'zhibo',
     'zhihu'            : 'zhihu',
+    'haokan'           : 'haokan',
 }
 
 dry_run = False
@@ -1836,6 +1837,8 @@ def url_to_module(url):
     video_url = r1(r'https?://[^/]+(.*)', url)
 
     k = r1(r'([^.]+)', domain)
+    if video_host == "haokan.baidu.com":
+        k = "haokan"
     if k in SITES:
         return (
             import_module('.'.join(['you_get', 'extractors', SITES[k]])),
