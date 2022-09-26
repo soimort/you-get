@@ -115,11 +115,15 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_space_channel_api(mid, cid, pn=1, ps=100):
         return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (mid, cid, pn, ps)
+   
+    @staticmethod
+    def bilibili_space_collection_api(mid, cid, pn=1, ps=30):
+        return 'https://api.bilibili.com/x/polymer/space/seasons_archives_list?mid=%s&season_id=%s&sort_reverse=false&page_num=%s&page_size=%s' % (mid, cid, pn, ps)
 
     @staticmethod
     def bilibili_series_archives_api(mid, sid, pn=1, ps=100):
         return 'https://api.bilibili.com/x/series/archives?mid=%s&series_id=%s&pn=%s&ps=%s&only_normal=true&sort=asc&jsonp=jsonp' % (mid, sid, pn, ps)
-
+    
     @staticmethod
     def bilibili_space_favlist_api(fid, pn=1, ps=20):
         return 'https://api.bilibili.com/x/v3/fav/resource/list?media_id=%s&pn=%s&ps=%s&order=mtime&type=0&tid=0&jsonp=jsonp' % (fid, pn, ps)
@@ -628,6 +632,8 @@ class Bilibili(VideoExtractor):
             sort = 'space_channel'
         elif re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/seriesdetail\?.*sid=(\d+)', self.url):
             sort = 'space_channel_series'
+        elif re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/collectiondetail\?.*sid=(\d+)', self.url):
+            sort = 'space_channel_collection'
         elif re.match(r'https?://space\.?bilibili\.com/(\d+)/favlist\?.*fid=(\d+)', self.url):
             sort = 'space_favlist'
         elif re.match(r'https?://space\.?bilibili\.com/(\d+)/video', self.url):
@@ -742,6 +748,20 @@ class Bilibili(VideoExtractor):
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/seriesdetail\?.*sid=(\d+)', self.url)
             mid, sid = m.group(1), m.group(2)
             api_url = self.bilibili_series_archives_api(mid, sid)
+            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+            archives_info = json.loads(api_content)
+            # TBD: channel of more than 100 videos
+
+            epn, i = len(archives_info['data']['archives']), 0
+            for video in archives_info['data']['archives']:
+                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                url = 'https://www.bilibili.com/video/av%s' % video['aid']
+                self.__class__().download_playlist_by_url(url, **kwargs)
+
+        elif sort == 'space_channel_collection':
+            m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/collectiondetail\?.*sid=(\d+)', self.url)
+            mid, sid = m.group(1), m.group(2)
+            api_url = self.bilibili_space_collection_api(mid, sid)
             api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
             archives_info = json.loads(api_content)
             # TBD: channel of more than 100 videos
