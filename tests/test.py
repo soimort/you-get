@@ -10,7 +10,8 @@ from you_get.extractors import (
     acfun,
     bilibili,
     soundcloud,
-    tiktok
+    tiktok,
+    twitter
 )
 
 
@@ -28,7 +29,7 @@ class YouGetTests(unittest.TestCase):
         youtube.download(
             'http://www.youtube.com/watch?v=pzKerr0JIPA', info_only=True
         )
-        youtube.download('http://youtu.be/pzKerr0JIPA', info_only=True)
+        #youtube.download('http://youtu.be/pzKerr0JIPA', info_only=True)
         #youtube.download(
         #    'http://www.youtube.com/attribution_link?u=/watch?v%3DldAKIzq7bvs%26feature%3Dshare',  # noqa
         #    info_only=True
@@ -56,6 +57,9 @@ class YouGetTests(unittest.TestCase):
     def test_tiktok(self):
         tiktok.download('https://www.tiktok.com/@nmb48_official/video/6850796940293164290', info_only=True)
         tiktok.download('https://t.tiktok.com/i18n/share/video/6850796940293164290/', info_only=True)
+
+    def test_twitter(self):
+        twitter.download('https://twitter.com/elonmusk/status/1530516552084234244', info_only=True)
 
     def test_bilibili(self):
         bilibili.download('https://space.bilibili.com/364152971/channel/collectiondetail?sid=13909', info_only=True)
