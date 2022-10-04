@@ -310,7 +310,7 @@ class MissEvan(VideoExtractor):
                 or kwargs.get('json_output'):
 
             for _, stream in self.streams.items():
-                stream['size'] = urls_size(stream['src'])
+                stream['size'] = urls_size(stream['src'], faker=True)
             return
 
         # fetch size of the selected stream only
@@ -319,7 +319,7 @@ class MissEvan(VideoExtractor):
 
         stream = self.streams[stream_id]
         if 'size' not in stream:
-            stream['size'] = urls_size(stream['src'])
+            stream['size'] = urls_size(stream['src'], faker=True)
 
     def _get_content(self, url):
         return get_content(url, headers=self.__headers)
