@@ -84,7 +84,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         if 'video_info' in medium:
             variants = medium['video_info']['variants']
             variants = sorted(variants, key=lambda kv: kv.get('bitrate', 0))
-            title = item_id + '_' + variants[-1]['url'].split('/')[-1].split('?')[0]
+            title = item_id + '_' + variants[-1]['url'].split('/')[-1].split('?')[0].split('.')[0]
             urls = [ variants[-1]['url'] ]
             size = urls_size(urls)
             mime, ext = variants[-1]['content_type'], 'mp4'
