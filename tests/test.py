@@ -11,7 +11,8 @@ from you_get.extractors import (
     bilibili,
     soundcloud,
     tiktok,
-    twitter
+    twitter,
+    miaopai
 )
 
 
@@ -61,6 +62,8 @@ class YouGetTests(unittest.TestCase):
     def test_twitter(self):
         twitter.download('https://twitter.com/elonmusk/status/1530516552084234244', info_only=True)
 
+    def test_weibo(self):
+        miaopai.download('https://video.weibo.com/show?fid=1034:4825403706245135', info_only=True)
 
 if __name__ == '__main__':
     unittest.main()
