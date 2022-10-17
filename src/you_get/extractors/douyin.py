@@ -53,7 +53,7 @@ def douyin_download_by_url(url, **kwargs):
     title = get_value(video_info, ['item_list', 0, 'desc'])
 
     # get video play url
-    video_url = "https://aweme.snssdk.com/aweme/v1/playwm/?ratio=720p&line=0&video_id={}".format(video_id)
+    video_url = "https://aweme.snssdk.com/aweme/v1/play/?ratio=720p&line=0&video_id={}".format(video_id)
     video_format = 'mp4'
     size = url_size(video_url, faker=True)
     print_info(
