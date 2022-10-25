@@ -63,11 +63,15 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             media = info['globalObjects']['tweets'][item_id]['extended_entities']['media']
 
         elif 'entities' in info['globalObjects']['tweets'][item_id]:
-            # if the tweet contains video from another tweet, download it
-            # FIXME: multiple urls?
-            expanded_url = info['globalObjects']['tweets'][item_id]['entities']['urls'][0]['expanded_url']
-            item_id = r1(r'/(\d+)/video', expanded_url)
-            assert False
+            # if the tweet contains media from another tweet, download it
+            expanded_url = None
+            for j in info['globalObjects']['tweets'][item_id]['entities']['urls']:
+                if re.match(r'^https://twitter.com/.*', j['expanded_url']):
+                    # FIXME: multiple valid expanded_url's?
+                    expanded_url = j['expanded_url']
+            if expanded_url is not None:
+                item_id = r1(r'/status/(\d+)', expanded_url)
+                assert False
 
         elif info['globalObjects']['tweets'][item_id].get('is_quote_status') == True:
             # if the tweet does not contain media, but it quotes a tweet
