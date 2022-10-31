@@ -441,6 +441,9 @@ def urlopen_with_retry(*args, **kwargs):
             logging.debug('HTTP Error with code{}'.format(http_error.code))
             if i + 1 == retry_time:
                 raise http_error
+        except Exception as e:
+            logging.debug('request.urlopen{}'.format(e))
+            raise e
 
 
 def get_content(url, headers={}, decoded=True):
