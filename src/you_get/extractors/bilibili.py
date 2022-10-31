@@ -90,7 +90,8 @@ class Bilibili(VideoExtractor):
 
     @staticmethod
     def bilibili_bangumi_api(avid, cid, ep_id, qn=0, fnval=16):
-        return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=%s' % (avid, cid, qn, ep_id, fnval)
+        # return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=%s' % (avid, cid, qn, ep_id, fnval)
+        return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&fnver=0&ep_id=%s&fnval=%s&fourk=1' % (avid, cid, qn, ep_id,fnval)
 
     @staticmethod
     def bilibili_interface_api(cid, qn=0):
