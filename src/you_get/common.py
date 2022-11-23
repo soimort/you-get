@@ -20,8 +20,9 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
 
+# fmt: off
 SITES = {
     '163'              : 'netease',
     '56'               : 'w56',
@@ -125,6 +126,7 @@ SITES = {
     'zhibo'            : 'zhibo',
     'zhihu'            : 'zhihu',
 }
+# fmt: on
 
 dry_run = False
 json_output = False
@@ -280,7 +282,7 @@ def launch_player(player, urls):
     assert urls
     if (sys.version_info >= (3, 3)):
         import shutil
-        exefile=shlex.split(player)[0]
+        exefile = shlex.split(player)[0]
         if shutil.which(exefile) is not None:
             subprocess.call(shlex.split(player) + urls)
         else:
@@ -459,17 +461,7 @@ def get_content(url, headers={}, decoded=True):
 
     req = request.Request(url, headers=headers)
     if cookies:
-        # NOTE: Do not use cookies.add_cookie_header(req)
-        # #HttpOnly_ cookies were not supported by CookieJar and MozillaCookieJar properly until python 3.10
-        # See also:
-        # - https://github.com/python/cpython/pull/17471
-        # - https://bugs.python.org/issue2190
-        # Here we add cookies to the request headers manually
-        cookie_strings = []
-        for cookie in list(cookies):
-            cookie_strings.append(cookie.name + '=' + cookie.value)
-        cookie_headers = {'Cookie': '; '.join(cookie_strings)}
-        req.headers.update(cookie_headers)
+        cookies.add_cookie_header(req)
 
     response = urlopen_with_retry(req)
     data = response.read()
@@ -512,17 +504,7 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
 
     req = request.Request(url, headers=headers)
     if cookies:
-        # NOTE: Do not use cookies.add_cookie_header(req)
-        # #HttpOnly_ cookies were not supported by CookieJar and MozillaCookieJar properly until python 3.10
-        # See also:
-        # - https://github.com/python/cpython/pull/17471
-        # - https://bugs.python.org/issue2190
-        # Here we add cookies to the request headers manually
-        cookie_strings = []
-        for cookie in list(cookies):
-            cookie_strings.append(cookie.name + '=' + cookie.value)
-        cookie_headers = {'Cookie': '; '.join(cookie_strings)}
-        req.headers.update(cookie_headers)
+        cookies.add_cookie_header(req)
     if kwargs.get('post_data_raw'):
         post_data_enc = bytes(kwargs['post_data_raw'], 'utf-8')
     else:
@@ -972,10 +954,12 @@ def get_output_filename(urls, title, ext, output_dir, merge, **kwargs):
     result = '%s.%s' % (result, merged_ext)
     return result.replace("'", "_")
 
+
 def print_user_agent(faker=False):
     urllib_default_user_agent = 'Python-urllib/%d.%d' % sys.version_info[:2]
     user_agent = fake_headers['User-Agent'] if faker else urllib_default_user_agent
     print('User Agent: %s' % user_agent)
+
 
 def download_urls(
     urls, title, ext, total_size, output_dir='.', refer=None, merge=True,
@@ -1015,9 +999,9 @@ def download_urls(
     output_filepath = os.path.join(output_dir, output_filename)
 
     if total_size:
-        if not force and os.path.exists(output_filepath) and not auto_rename\
-                and (os.path.getsize(output_filepath) >= total_size * 0.9\
-                or skip_existing_file_size_check):
+        if not force and os.path.exists(output_filepath) and not auto_rename \
+                and (os.path.getsize(output_filepath) >= total_size * 0.9
+                     or skip_existing_file_size_check):
             if skip_existing_file_size_check:
                 log.w('Skipping %s without checking size: file already exists' % output_filepath)
             else:
@@ -1372,7 +1356,7 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
                 title = output_filename
             else:
                 title = "m3u8file"
-            download_url_ffmpeg(url=url, title=title,ext = 'mp4',output_dir = '.')
+            download_url_ffmpeg(url=url, title=title, ext='mp4', output_dir='.')
         elif playlist:
             download_playlist(url, **kwargs)
         else:
@@ -1381,6 +1365,7 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
 
 def load_cookies(cookiefile):
     global cookies
+    HTTPONLY_PREFIX, HTTPONLY_ATTR = "#HttpOnly_", "HTTPOnly"
     if cookiefile.endswith('.txt'):
         # MozillaCookieJar treats prefix '#HttpOnly_' as comments incorrectly!
         # do not use its load()
@@ -1389,24 +1374,30 @@ def load_cookies(cookiefile):
         #   - https://github.com/python/cpython/blob/4b219ce/Lib/http/cookiejar.py#L2014
         #   - https://curl.haxx.se/libcurl/c/CURLOPT_COOKIELIST.html#EXAMPLE
         #cookies = cookiejar.MozillaCookieJar(cookiefile)
-        #cookies.load()
+        # cookies.load()
         from http.cookiejar import Cookie
         cookies = cookiejar.MozillaCookieJar()
         now = time.time()
         ignore_discard, ignore_expires = False, False
         with open(cookiefile, 'r', encoding='utf-8') as f:
             for line in f:
+
+                rest = {}
+                if line.startswith(HTTPONLY_PREFIX):
+                    rest[HTTPONLY_ATTR] = ""
+                    line = line[len(HTTPONLY_PREFIX):]
+
                 # last field may be absent, so keep any trailing tab
-                if line.endswith("\n"): line = line[:-1]
+                if line.endswith("\n"):
+                    line = line[:-1]
 
                 # skip comments and blank lines XXX what is $ for?
                 if (line.strip().startswith(("#", "$")) or
-                    line.strip() == ""):
-                    if not line.strip().startswith('#HttpOnly_'):  # skip for #HttpOnly_
-                        continue
+                        line.strip() == ""):
+                    continue
 
                 domain, domain_specified, path, secure, expires, name, value = \
-                        line.split("\t")
+                    line.split("\t")
                 secure = (secure == "TRUE")
                 domain_specified = (domain_specified == "TRUE")
                 if name == "":
@@ -1417,8 +1408,7 @@ def load_cookies(cookiefile):
                     value = None
 
                 initial_dot = domain.startswith(".")
-                if not line.strip().startswith('#HttpOnly_'):  # skip for #HttpOnly_
-                    assert domain_specified == initial_dot
+                assert domain_specified == initial_dot
 
                 discard = False
                 if expires == "":
@@ -1435,7 +1425,7 @@ def load_cookies(cookiefile):
                            discard,
                            None,
                            None,
-                           {})
+                           rest)
                 if not ignore_discard and c.discard:
                     continue
                 if not ignore_expires and c.is_expired(now):
@@ -1443,24 +1433,25 @@ def load_cookies(cookiefile):
                 cookies.set_cookie(c)
 
     elif cookiefile.endswith(('.sqlite', '.sqlite3')):
-        import sqlite3, shutil, tempfile
-        temp_dir = tempfile.gettempdir()
-        temp_cookiefile = os.path.join(temp_dir, 'temp_cookiefile.sqlite')
-        shutil.copy2(cookiefile, temp_cookiefile)
-
+        import sqlite3
         cookies = cookiejar.MozillaCookieJar()
-        con = sqlite3.connect(temp_cookiefile)
+        con = sqlite3.connect(cookiefile)
         cur = con.cursor()
-        cur.execute("""SELECT host, path, isSecure, expiry, name, value
+        cur.execute("""SELECT host, path, isSecure, expiry, name, value, isHttpOnly
         FROM moz_cookies""")
-        for item in cur.fetchall():
+        for item in cur:
+            rest = {}
+            if item[6] == 1:
+                rest[HTTPONLY_ATTR] = ""
             c = cookiejar.Cookie(
                 0, item[4], item[5], None, False, item[0],
                 item[0].startswith('.'), item[0].startswith('.'),
                 item[1], False, item[2], item[3], item[3] == '', None,
-                None, {},
+                None, rest,
             )
             cookies.set_cookie(c)
+        cur.close()
+        con.close()
 
     else:
         log.e('[error] unsupported cookies format')
@@ -1486,12 +1477,12 @@ def set_socks_proxy(proxy):
                 socks_proxy_auth[1]
             )
         else:
-           socks_proxy_addrs = proxy.split(':')
-           socks.set_default_proxy(
-               socks.SOCKS5,
-               socks_proxy_addrs[0],
-               int(socks_proxy_addrs[1]),
-           )
+            socks_proxy_addrs = proxy.split(':')
+            socks.set_default_proxy(
+                socks.SOCKS5,
+                socks_proxy_addrs[0],
+                int(socks_proxy_addrs[1]),
+            )
         socket.socket = socks.socksocket
 
         def getaddrinfo(*args):
@@ -1656,8 +1647,7 @@ def script_main(download, download_playlist, **kwargs):
     download_grp.add_argument('--itag', help=argparse.SUPPRESS)
 
     download_grp.add_argument('-m', '--m3u8', action='store_true', default=False,
-        help = 'download video using an m3u8 url')
-
+        help='download video using an m3u8 url')  # nofmt
 
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
@@ -1843,7 +1833,7 @@ def url_to_module(url):
         )
     else:
         try:
-            location = get_location(url) # t.co isn't happy with fake_headers
+            location = get_location(url)  # t.co isn't happy with fake_headers
         except:
             location = get_location(url, headers=fake_headers)
 
