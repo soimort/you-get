@@ -2,11 +2,12 @@
 
 __all__ = ['kugou_download']
 
-from ..common import *
-from json import loads
-from base64 import b64decode
-import re
 import hashlib
+import re
+from base64 import b64decode
+from json import loads
+
+from ..common import *
 
 
 def kugou_download(url, output_dir=".", merge=True, info_only=False, **kwargs):
@@ -26,7 +27,7 @@ def kugou_download(url, output_dir=".", merge=True, info_only=False, **kwargs):
     else:
         # for the www.kugou.com/
         return kugou_download_playlist(url, output_dir=output_dir, merge=merge, info_only=info_only)
-        # raise NotImplementedError(url)       
+        # raise NotImplementedError(url)
 
 
 def kugou_download_by_hash(url, output_dir='.', merge=True, info_only=False):
@@ -41,7 +42,7 @@ def kugou_download_by_hash(url, output_dir='.', merge=True, info_only=False):
     url = j['data']['play_url']
     title = j['data']['audio_name']
     # some songs cann't play because of copyright protection
-    if (url == ''):
+    if url == '':
         return
     songtype, ext, size = url_info(url)
     print_info(site_info, title, songtype, size)
@@ -75,7 +76,7 @@ def kugou_download_playlist(url, output_dir='.', merge=True, info_only=False, **
         for v in json.loads(res):
             urls.append('http://www.kugou.com/song/#hash=%s&album_id=%s' % (v['hash'], v['album_id']))
 
-    # download the playlist        
+    # download the playlist
     # playlist sample:http://www.kugou.com/yy/special/single/487279.html
     else:
         html = get_html(url)

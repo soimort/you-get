@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+from json import loads
+
 from ..common import *
 from ..extractor import VideoExtractor
 from ..util.log import *
 
-from json import loads
 
 class QiE(VideoExtractor):
     name = "QiE （企鹅直播）"
@@ -16,9 +18,9 @@ class QiE(VideoExtractor):
         {'id': 'middle', 'container': 'flv', 'video_profile': '550'},
         {'id': 'middle2', 'container': 'flv', 'video_profile': '900'},
     ]
-    
+
     id_dic = {i['video_profile']:(i['id']) for i in stream_types}
-    
+
     api_endpoint = 'http://www.qie.tv/api/v1/room/{room_id}'
     game_ep = 'http://live.qq.com/game/game_details/get_game_details_info/'
 
@@ -53,7 +55,7 @@ class QiE(VideoExtractor):
     def prepare(self, **kwargs):
         if self.url:
             self.vid = self.get_vid_from_url(self.url)
-        
+
         content = get_content(self.api_endpoint.format(room_id = self.vid))
         content = loads(content)
         self.title = content['data']['room_name']
@@ -64,7 +66,7 @@ class QiE(VideoExtractor):
         if len(content['data']['rtmp_multi_bitrate']) > 0:
             for k , v in content['data']['rtmp_multi_bitrate'].items():
                 stream_available[k] = rtmp_url + '/' + v
-        
+
         for s in self.stream_types:
             if s['id'] in stream_available.keys():
                 quality_id = s['id']
@@ -87,7 +89,7 @@ class QiE(VideoExtractor):
             if stream_id not in self.streams:
                 log.e('[Error] Invalid video format.')
                 log.e('Run \'-i\' command with no specific video format to view all available formats.')
-                exit(2)
+                sys.exit(2)
         else:
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']

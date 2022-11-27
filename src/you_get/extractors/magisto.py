@@ -2,12 +2,14 @@
 
 __all__ = ['magisto_download']
 
-from ..common import *
 import json
+
+from ..common import *
+
 
 def magisto_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
-    
+
     video_hash = r1(r'video\/([a-zA-Z0-9]+)', url)
     api_url = 'https://www.magisto.com/api/video/{}'.format(video_hash)
     content = get_html(api_url)

@@ -3,7 +3,7 @@ __all__ = ['embed_download']
 import urllib.parse
 
 from ..common import *
-
+from . import bokecc, iqiyi
 from .bilibili import bilibili_download
 from .dailymotion import dailymotion_download
 from .iqiyi import iqiyi_download_by_vid
@@ -14,8 +14,6 @@ from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_id
 from .vimeo import vimeo_download_by_id
 from .youku import youku_download_by_vid
-from . import iqiyi
-from . import bokecc
 
 """
 refer to http://open.youku.com/tools

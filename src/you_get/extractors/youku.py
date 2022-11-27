@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ..common import *
-from ..extractor import VideoExtractor
-
+import json
 import time
 import traceback
-import json
-import urllib.request
 import urllib.parse
+import urllib.request
+
+from ..common import *
+from ..extractor import VideoExtractor
 
 
 def fetch_cna():

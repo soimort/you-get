@@ -3,15 +3,10 @@
 __all__ = ['longzhu_download']
 
 import json
-from ..common import (
-    get_content,
-    general_m3u8_extractor,
-    match1,
-    print_info,
-    download_urls,
-    playlist_not_supported,
-)
-from ..common import player
+
+from ..common import (download_urls, general_m3u8_extractor, get_content,
+                      match1, player, playlist_not_supported, print_info)
+
 
 def longzhu_download(url, output_dir = '.', merge=True, info_only=False, **kwargs):
     web_domain = url.split('/')[2]

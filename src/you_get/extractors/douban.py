@@ -2,8 +2,11 @@
 
 __all__ = ['douban_download']
 
-import urllib.request, urllib.parse
+import urllib.parse
+import urllib.request
+
 from ..common import *
+
 
 def douban_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html = get_html(url)
@@ -37,13 +40,13 @@ def douban_download(url, output_dir = '.', merge = True, info_only = False, **kw
                 real_url = resp_data['r']
                 type, ext, size = url_info(real_url)
                 print_info(site_info, title, type, size)
-            except:
+            except Exception:
                 pass
 
             if not info_only:
                 try:
                     download_urls([real_url], title, ext, size, output_dir, merge = merge)
-                except:
+                except Exception:
                     pass
 
     else:

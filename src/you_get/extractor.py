@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
-from .common import match1, maybe_print, download_urls, get_filename, parse_host, set_proxy, unset_proxy, get_content, dry_run, player
-from .common import print_more_compatible as print
-from .util import log
-from . import json_output
 import os
 import sys
+
+from . import json_output
+from .common import (download_urls, dry_run, get_content, get_filename, match1,
+                     maybe_print, parse_host, player)
+from .common import print_more_compatible as print
+from .common import set_proxy, unset_proxy
+from .util import log
+
 
 class Extractor():
     def __init__(self, *args):
@@ -53,7 +57,7 @@ class VideoExtractor():
 
         try:
             self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
-        except:
+        except Exception:
             self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
 
         self.extract(**kwargs)
@@ -72,7 +76,7 @@ class VideoExtractor():
 
         try:
             self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
-        except:
+        except Exception:
             self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
 
         self.extract(**kwargs)

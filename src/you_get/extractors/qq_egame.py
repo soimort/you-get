@@ -1,5 +1,5 @@
-import re
 import json
+import re
 
 from ..common import *
 from ..extractors import VideoExtractor

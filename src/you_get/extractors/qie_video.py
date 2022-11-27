@@ -1,9 +1,10 @@
+import json
+import math
+
 from ..common import *
 from ..extractor import VideoExtractor
 from ..util.log import *
 
-import json
-import math
 
 class QieVideo(VideoExtractor):
     name = 'QiE Video'
@@ -71,7 +72,7 @@ def general_m3u8_extractor(url):
                     result.append(trimmed)
                 else:
                     result.append(base_url + '/' + trimmed)
-    return result, dur 
-    
+    return result, dur
+
 site = QieVideo()
 download_by_url = site.download_by_url

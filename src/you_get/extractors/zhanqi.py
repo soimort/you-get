@@ -2,10 +2,12 @@
 
 __all__ = ['zhanqi_download']
 
-from ..common import *
-import json
 import base64
+import json
 from urllib.parse import urlparse
+
+from ..common import *
+
 
 def zhanqi_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     path = urlparse(url).path[1:]

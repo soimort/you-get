@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-import urllib.request
-import urllib.parse
 import json
 import re
+import urllib.parse
+import urllib.request
 
+from ..common import (download_urls, get_content, playlist_not_supported,
+                      print_info, url_size)
 from ..util import log
-from ..common import get_content, download_urls, print_info, playlist_not_supported, url_size
 
 __all__ = ['kuaishou_download_by_url']
 
@@ -27,7 +28,7 @@ def kuaishou_download_by_url(url, info_only=False, **kwargs):
         print_info(site_info, title, video_format, size)
         if not info_only:
             download_urls([video_url], title, video_format, size, **kwargs)
-    except:# extract image
+    except Exception:# extract image
         og_image_url = re.search(r"<meta\s+property=\"og:image\"\s+content=\"(.+?)\"/>", page).group(1)
         image_url = og_image_url
         title = url.split('/')[-1]

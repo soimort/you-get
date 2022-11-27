@@ -2,10 +2,10 @@
 
 __all__ = ['ximalaya_download_playlist', 'ximalaya_download', 'ximalaya_download_by_id']
 
-from ..common import *
-
 import json
 import re
+
+from ..common import *
 
 stream_types = [
         {'itag': '1', 'container': 'm4a', 'bitrate': 'default'},
@@ -18,7 +18,7 @@ def ximalaya_download_by_id(id, title = None, output_dir = '.', info_only = Fals
     json_url = BASE_URL + id + '.json'
     json_data = json.loads(get_content(json_url, headers=fake_headers))
     if 'res' in json_data:
-        if json_data['res'] == False:
+        if json_data['res'] is False:
             raise ValueError('Server reported id %s is invalid' % id)
     if 'is_paid' in json_data and json_data['is_paid']:
         if 'is_free' in json_data and not json_data['is_free']:
@@ -34,7 +34,7 @@ def ximalaya_download_by_id(id, title = None, output_dir = '.', info_only = Fals
         elif stream_id == '0':
             url = json_data['play_path']
     logging.debug('ximalaya_download_by_id: %s' % url)
-    ext = 'm4a' 
+    ext = 'm4a'
     urls = [url]
     print('Site:        %s' % site_info)
     print('title:       %s' % title)
@@ -64,11 +64,11 @@ def ximalaya_download_page(playlist_url, output_dir = '.', info_only = False, st
         for id in ids:
             try:
                 ximalaya_download_by_id(id, output_dir=output_dir, info_only=info_only, stream_id=stream_id)
-            except(ValueError):
+            except ValueError:
                 print("something wrong with %s, perhaps paid item?" % id)
     else:
         raise NotImplementedError(playlist_url)
-    
+
 def ximalaya_download_playlist(url, output_dir='.', info_only=False, stream_id=None, **kwargs):
     match_result = re.match(r'http://www\.ximalaya\.com/(\d+)/album/(\d+)', url)
     if not match_result:
@@ -95,4 +95,4 @@ def print_stream_info(stream_id):
 
 site_info = 'ximalaya.com'
 download = ximalaya_download
-download_playlist = ximalaya_download_playlist 
+download_playlist = ximalaya_download_playlist

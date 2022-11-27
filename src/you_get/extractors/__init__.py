@@ -33,9 +33,9 @@ from .interest import *
 from .iqilu import *
 from .iqiyi import *
 from .joy import *
+from .kakao import *
 from .khan import *
 from .ku6 import *
-from .kakao import *
 from .kuaishou import *
 from .kugou import *
 from .kuwo import *

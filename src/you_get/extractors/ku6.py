@@ -2,10 +2,11 @@
 
 __all__ = ['ku6_download', 'ku6_download_by_id']
 
-from ..common import *
-
 import json
 import re
+
+from ..common import *
+
 
 def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_only = False):
     data = json.loads(get_html('http://v.ku6.com/fetchVideo4Player/%s...html' % id))['data']
@@ -21,7 +22,7 @@ def ku6_download_by_id(id, title = None, output_dir = '.', merge = True, info_on
     for url in urls:
         _, _, temp = url_info(url)
         size += temp
-    
+
     print_info(site_info, title, ext, size)
     if not info_only:
         download_urls(urls, title, ext, size, output_dir, merge = merge)

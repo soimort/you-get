@@ -2,11 +2,12 @@
 
 __all__ = ['miaopai_download']
 
-import string
 import random
-from ..common import *
+import string
 import urllib.error
 import urllib.parse
+
+from ..common import *
 from ..util import fs
 
 fake_headers_mobile = {
@@ -129,12 +130,12 @@ def miaopai_download_direct(url, output_dir='.', merge=False, info_only=False, *
     mobile_page = get_content(url, headers=fake_headers_mobile)
     try:
         title = re.search(r'([\'"])title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
-    except:
+    except Exception:
         title = re.search(r'([\'"])status_title\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
     title = title.replace('\n', '_')
     try:
         stream_url = re.search(r'([\'"])stream_url\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
-    except:
+    except Exception:
         page_url = re.search(r'([\'"])page_url\1:\s*([\'"])(.+?)\2,', mobile_page).group(3)
         return miaopai_download_story(page_url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
 

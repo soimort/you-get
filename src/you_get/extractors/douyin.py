@@ -2,16 +2,8 @@
 
 import json
 
-from ..common import (
-    url_size,
-    print_info,
-    get_content,
-    fake_headers,
-    download_urls,
-    playlist_not_supported,
-    match1,
-    get_location,
-)
+from ..common import (download_urls, fake_headers, get_content, get_location,
+                      match1, playlist_not_supported, print_info, url_size)
 
 __all__ = ['douyin_download_by_url']
 
@@ -32,7 +24,7 @@ def get_value(source: dict, path):
                 else:
                     value = None
                     break
-    except:
+    except Exception:
         value = None
     return value
 

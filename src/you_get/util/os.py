@@ -2,6 +2,7 @@
 
 from platform import system
 
+
 def detect_os():
     """Detect operating system.
     """
@@ -23,7 +24,8 @@ def detect_os():
             with open('/proc/version', 'r') as f:
                 if 'microsoft' in f.read().lower():
                     os = 'wsl'
-        except: pass
+        except Exception:
+            pass
     elif 'windows' in syst:
         os = 'windows'
     elif 'bsd' in syst:

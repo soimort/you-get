@@ -23,9 +23,9 @@ def concat_ts(ts_parts, output = None):
         output = guess_output(ts_parts)
     elif os.path.isdir(output):
         output = os.path.join(output, guess_output(ts_parts))
-    
+
     print('Merging video parts...')
-    
+
     ts_out_file = open(output, "wb")
     for ts_in in ts_parts:
         ts_in_file = open(ts_in, "rb")
@@ -39,7 +39,8 @@ def usage():
     print('Usage: [python3] join_ts.py --output TARGET.ts ts...')
 
 def main():
-    import sys, getopt
+    import getopt
+    import sys
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ho:", ["help", "output="])
     except getopt.GetoptError as err:
@@ -58,7 +59,7 @@ def main():
     if not args:
         usage()
         sys.exit(1)
-    
+
     concat_ts(args, output)
 
 if __name__ == '__main__':

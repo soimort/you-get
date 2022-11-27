@@ -4,6 +4,7 @@ __all__ = ['zhibo_download']
 
 from ..common import *
 
+
 def zhibo_vedio_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     # http://video.zhibo.tv/video/details/d103057f-663e-11e8-9d83-525400ccac43.html
 

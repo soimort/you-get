@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ..common import *
-from ..extractor import VideoExtractor
-
-from json import loads
-from urllib.parse import urlsplit
-from os.path import dirname
-import re
-
 import base64
+import sys
+import re
 import time
 import uuid
+from json import loads
+from os.path import dirname
+from urllib.parse import urlsplit
+
+from ..common import *
+from ..extractor import VideoExtractor
 
 
 class MGTV(VideoExtractor):
@@ -151,7 +151,7 @@ class MGTV(VideoExtractor):
             if stream_id not in self.streams:
                 log.e('[Error] Invalid video format.')
                 log.e('Run \'-i\' command with no specific video format to view all available formats.')
-                exit(2)
+                sys.exit(2)
         else:
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']

@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-import json
-import urllib.parse
 import base64
 import binascii
+import json
 import re
+import urllib.parse
 
+from ..common import get_content, playlist_not_supported
 from ..extractors import VideoExtractor
 from ..util import log
-from ..common import get_content, playlist_not_supported
 
 __all__ = ['funshion_download']
 

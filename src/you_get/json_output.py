@@ -34,7 +34,7 @@ def output(video_extractor, pretty_print=True):
         print(json.dumps(out))
 
 # a fake VideoExtractor object to save info
-class VideoExtractor(object):
+class VideoExtractor():
     pass
 
 def print_info(site_info=None, title=None, type=None, size=None):

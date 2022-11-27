@@ -299,7 +299,7 @@ def concat_flv(flvs, output = None):
         output = guess_output(flvs)
     elif os.path.isdir(output):
         output = os.path.join(output, guess_output(flvs))
-    
+
     print('Merging video parts...')
     ins = [open(flv, 'rb') for flv in flvs]
     for stream in ins:
@@ -309,13 +309,13 @@ def concat_flv(flvs, output = None):
     meta_types, metas = zip(*metas)
     assert len(set(meta_types)) == 1
     meta_type = meta_types[0]
-    
+
     # must merge fields: duration
     # TODO: check other meta info, update other meta info
     total_duration = sum(meta.get('duration') for meta in metas)
     meta_data = metas[0]
     meta_data.set('duration', total_duration)
-    
+
     out = open(output, 'wb')
     write_flv_header(out)
     write_meta_tag(out, meta_type, meta_data)
@@ -332,14 +332,15 @@ def concat_flv(flvs, output = None):
                 break
         timestamp_start = timestamp
     write_uint(out, previous_tag_size)
-    
+
     return output
 
 def usage():
     print('Usage: [python3] join_flv.py --output TARGET.flv flv...')
 
 def main():
-    import sys, getopt
+    import getopt
+    import sys
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ho:", ["help", "output="])
     except getopt.GetoptError as err:
@@ -358,7 +359,7 @@ def main():
     if not args:
         usage()
         sys.exit(1)
-    
+
     concat_flv(args, output)
 
 if __name__ == '__main__':

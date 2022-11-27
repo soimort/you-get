@@ -21,6 +21,7 @@ except ImportError:
 
 from .fs import legitimize
 
+
 def get_filename(htmlstring):
     return legitimize(unescape_html(htmlstring))
 

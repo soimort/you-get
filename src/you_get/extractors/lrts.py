@@ -3,13 +3,16 @@
 __all__ = ['lrts_download']
 
 import logging
+
 from ..common import *
 from ..util import log, term
+
 
 def lrts_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
     args = kwargs.get('args')
-    if not args: args = {}
+    if not args:
+        args = {}
     matched = re.search(r"/book/(\d+)", url)
     if not matched:
         raise AssertionError("not found book number: %s" % url)
@@ -25,14 +28,14 @@ def lrts_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     total_count = int(matched.group(1))
     log.i('%s total: %s' % (book_title, total_count))
     first_page = 0
-    if ('first' in args and args.first!= None):
+    if ('first' in args and args.first is not None):
         first_page = int(args.first)
 
     page_size = 10
-    if ('page_size' in args and args.page_size != None):
+    if ('page_size' in args and args.page_size is not None):
         page_size = int(args.page_size)
     last_page = (total_count // page_size) + 1
-    if ('last' in args and args.last != None):
+    if ('last' in args and args.last is not None):
         last_page = int(args.last)
 
     log.i('page size is %s, page from %s to %s' % (page_size, first_page, last_page))

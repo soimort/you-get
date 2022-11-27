@@ -4,6 +4,7 @@ __all__ = ['tiktok_download']
 
 from ..common import *
 
+
 def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',

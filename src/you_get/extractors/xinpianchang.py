@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-import re
 import json
-from ..extractor import VideoExtractor
+import re
+
 from ..common import get_content, playlist_not_supported
+from ..extractor import VideoExtractor
 
 
 class Xinpianchang(VideoExtractor):

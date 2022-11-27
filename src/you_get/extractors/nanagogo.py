@@ -5,6 +5,7 @@ __all__ = ['nanagogo_download']
 from ..common import *
 from .universal import *
 
+
 def nanagogo_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if re.match(r'https?://stat.7gogo.jp', url):
         universal_download(url, output_dir, merge=merge, info_only=info_only)
@@ -24,7 +25,8 @@ def nanagogo_download(url, output_dir='.', merge=True, info_only=False, **kwargs
     for i in info['data']['posts']['post']['body']:
         if 'image' in i:
             image_url = i['image']
-            if image_url[:2] == '//': continue # skip stamp images
+            if image_url[:2] == '//':
+                continue # skip stamp images
             _, ext, size = url_info(image_url)
             items.append({'title': title,
                           'url':   image_url,
@@ -39,7 +41,8 @@ def nanagogo_download(url, output_dir='.', merge=True, info_only=False, **kwargs
                           'size':  size})
 
     size = sum([i['size'] for i in items])
-    if size == 0: return # do not fail the whole process
+    if size == 0:
+        return # do not fail the whole process
     print_info(site_info, title, ext, size)
     if not info_only:
         for i in items:

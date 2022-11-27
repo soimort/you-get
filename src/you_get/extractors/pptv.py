@@ -2,15 +2,15 @@
 
 #__all__ = ['pptv_download', 'pptv_download_by_id']
 
-from ..common import *
-from ..extractor import VideoExtractor
-
+import binascii
+import random
 import re
 import time
 import urllib
-import random
-import binascii
 from xml.dom.minidom import parseString
+
+from ..common import *
+from ..extractor import VideoExtractor
 
 
 def lshift(a, b):
@@ -196,7 +196,7 @@ class PPTV(VideoExtractor):
         self.vid = match1(self.url, r'https?://sports.pptv.com/vod/(\d+)/*')
         if self.url and not self.vid:
             if not re.match(r'https?://v.pptv.com/show/(\w+)\.html', self.url):
-                raise('Unknown url pattern')
+                raise 'Unknown url pattern'
             page_content = get_content(self.url, headers)
 
             self.vid = match1(page_content, r'webcfg\s*=\s*{"id":\s*(\d+)')
@@ -206,7 +206,7 @@ class PPTV(VideoExtractor):
                 self.vid = match1(response.url, r'https?://sports.pptv.com/vod/(\d+)/*')
 
         if not self.vid:
-            raise('Cannot find id')
+            raise 'Cannot find id'
         api_url = 'http://web-play.pptv.com/webplay3-0-{}.xml'.format(self.vid)
         api_url += '?type=web.fpp&param=type=web.fpp&version=4'
         dom = parseString(get_content(api_url, headers))

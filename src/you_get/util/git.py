@@ -2,7 +2,9 @@
 
 import os
 import subprocess
+
 from ..version import __version__
+
 
 def get_head(repo_path):
     """Get (branch, commit) from HEAD of a git repo."""
@@ -11,7 +13,7 @@ def get_head(repo_path):
         branch = ref[-1]
         commit = open(os.path.join(repo_path, '.git', *ref), 'r').read().strip()[:7]
         return branch, commit
-    except:
+    except Exception:
         return None
 
 def get_version(repo_path):
@@ -35,5 +37,5 @@ def get_version(repo_path):
         cc = c_head - c_master
         assert cc
         return '%s.%s.%s' % (major, minor, cn + cc)
-    except:
+    except Exception:
         return __version__

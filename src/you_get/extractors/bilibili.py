@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-from ..common import *
-from ..extractor import VideoExtractor
+import sys
 
 import hashlib
 import math
+
+from ..common import *
+from ..extractor import VideoExtractor
 
 
 class Bilibili(VideoExtractor):
@@ -115,7 +117,7 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_space_channel_api(mid, cid, pn=1, ps=100):
         return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (mid, cid, pn, ps)
-   
+
     @staticmethod
     def bilibili_space_collection_api(mid, cid, pn=1, ps=30):
         return 'https://api.bilibili.com/x/polymer/space/seasons_archives_list?mid=%s&season_id=%s&sort_reverse=false&page_num=%s&page_size=%s' % (mid, cid, pn, ps)
@@ -123,7 +125,7 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_series_archives_api(mid, sid, pn=1, ps=100):
         return 'https://api.bilibili.com/x/series/archives?mid=%s&series_id=%s&pn=%s&ps=%s&only_normal=true&sort=asc&jsonp=jsonp' % (mid, sid, pn, ps)
-    
+
     @staticmethod
     def bilibili_space_favlist_api(fid, pn=1, ps=20):
         return 'https://api.bilibili.com/x/v3/fav/resource/list?media_id=%s&pn=%s&ps=%s&order=mtime&type=0&tid=0&jsonp=jsonp' % (fid, pn, ps)
@@ -144,7 +146,7 @@ class Bilibili(VideoExtractor):
     def url_size(url, faker=False, headers={},err_value=0):
         try:
             return url_size(url,faker,headers)
-        except:
+        except Exception:
             return err_value
 
     def prepare(self, **kwargs):
@@ -154,7 +156,7 @@ class Bilibili(VideoExtractor):
 
         try:
             html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
-        except:
+        except Exception:
             html_content = ''  # live always returns 400 (why?)
         #self.title = match1(html_content,
         #                    r'<h1 title="([^"]+)"')
@@ -607,7 +609,7 @@ class Bilibili(VideoExtractor):
             if stream_id not in self.streams and stream_id not in self.dash_streams:
                 log.e('[Error] Invalid video format.')
                 log.e('Run \'-i\' command with no specific video format to view all available formats.')
-                exit(2)
+                sys.exit(2)
         else:
             # extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']
@@ -642,7 +644,7 @@ class Bilibili(VideoExtractor):
             sort = 'audio_menu'
         else:
             log.e('[Error] Unsupported URL pattern.')
-            exit(1)
+            sys.exit(1)
 
         # regular video
         if sort == 'video':
@@ -654,8 +656,8 @@ class Bilibili(VideoExtractor):
             if pn == len(initial_state['videoData']['pages']):
                 # non-interative video
                 for pi in range(1, pn + 1):
-                     purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
-                     self.__class__().download_by_url(purl, **kwargs)
+                    purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
+                    self.__class__().download_by_url(purl, **kwargs)
 
             else:
                 # interative video
@@ -705,7 +707,7 @@ class Bilibili(VideoExtractor):
                                 self.prepare_by_cid(aid,choice['cid'],initial_state['videoData']['title']+('P{}. {}'.format(len(download_cid_set),choice['option'])),html_content,playinfo,playinfo_,url)
                                 try:
                                     self.streams_sorted = [dict([('id', stream_type['id'])] + list(self.streams[stream_type['id']].items())) for stream_type in self.__class__.stream_types if stream_type['id'] in self.streams]
-                                except:
+                                except Exception:
                                     self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
                                 self.extract(**kwargs)
                                 self.download(**kwargs)

@@ -2,8 +2,10 @@
 
 __all__ = ['dailymotion_download']
 
-from ..common import *
 import urllib.parse
+
+from ..common import *
+
 
 def rebuilt_url(url):
     path = urllib.parse.urlparse(url).path

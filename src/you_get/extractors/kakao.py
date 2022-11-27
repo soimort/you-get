@@ -41,7 +41,7 @@ def kakao_download(url, output_dir='.', info_only=False,  **kwargs):
         print_info(site_info, title, 'mp4', size)
         if not info_only:
             download_urls([video_url], title, 'mp4', size, output_dir, **kwargs)
-    except:
+    except Exception:
         universal_download(url, output_dir, merge=kwargs['merge'], info_only=info_only, **kwargs)
 
 

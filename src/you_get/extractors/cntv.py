@@ -3,7 +3,7 @@
 import json
 import re
 
-from ..common import get_content, r1, match1, playlist_not_supported
+from ..common import get_content, match1, playlist_not_supported, r1
 from ..extractor import VideoExtractor
 
 __all__ = ['cntv_download', 'cntv_download_by_id']
@@ -50,7 +50,7 @@ def cntv_download(url, **kwargs):
          re.match(r'http://\w+.cntv.cn/(\w+/)*VIDE\d+.shtml', url) or \
          re.match(r'http://(\w+).cntv.cn/(\w+)/classpage/video/(\d+)/(\d+).shtml', url) or \
          re.match(r'http(s)?://\w+.cctv.com/\d+/\d+/\d+/\w+.shtml', url) or \
-         re.match(r'http://\w+.cntv.cn/\d+/\d+/\d+/\w+.shtml', url): 
+         re.match(r'http://\w+.cntv.cn/\d+/\d+/\d+/\w+.shtml', url):
         page = get_content(url)
         rid = r1(r'videoCenterId","(\w+)"', page)
         if rid is None:

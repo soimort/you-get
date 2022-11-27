@@ -9,6 +9,7 @@
 import struct
 from io import BytesIO
 
+
 def skip(stream, n):
     stream.seek(stream.tell() + n)
 
@@ -167,14 +168,14 @@ def read_mvhd(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
     value = read_full_atom(stream)
     left -= 4
-    
-    # new Date(movieTime * 1000 - 2082850791998L); 
+
+    # new Date(movieTime * 1000 - 2082850791998L);
     creation_time = read_uint(stream)
     modification_time = read_uint(stream)
     time_scale = read_uint(stream)
     duration = read_uint(stream)
     left -= 16
-    
+
     qt_preferred_fate = read_uint(stream)
     qt_preferred_volume = read_ushort(stream)
     assert stream.read(10) == b'\x00' * 10
@@ -202,15 +203,15 @@ def read_tkhd(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
     value = read_full_atom(stream)
     left -= 4
-    
-    # new Date(movieTime * 1000 - 2082850791998L); 
+
+    # new Date(movieTime * 1000 - 2082850791998L);
     creation_time = read_uint(stream)
     modification_time = read_uint(stream)
     track_id = read_uint(stream)
     assert stream.read(4) == b'\x00' * 4
     duration = read_uint(stream)
     left -= 20
-    
+
     assert stream.read(8) == b'\x00' * 8
     qt_layer = read_ushort(stream)
     qt_alternate_group = read_ushort(stream)
@@ -245,7 +246,7 @@ def read_mdhd(stream, size, left, type):
         duration = read_ulong(stream)
         var = [('duration', 24, duration, 8)]
         left -= 28
-    else: 
+    else:
         assert ver == 0, "ver=%d" % ver
         creation_time = read_uint(stream)
         modification_time = read_uint(stream)
@@ -253,11 +254,11 @@ def read_mdhd(stream, size, left, type):
         duration = read_uint(stream)
         var = [('duration', 16, duration, 4)]
         left -= 16
-    
+
     packed_language = read_ushort(stream)
     qt_quality = read_ushort(stream)
     left -= 4
-    
+
     assert left == 0
     return VariableAtom(b'mdhd', size, body, var)
 
@@ -265,45 +266,45 @@ def read_hdlr(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
     value = read_full_atom(stream)
     left -= 4
-    
+
     qt_component_type = read_uint(stream)
     handler_type = read_uint(stream)
     qt_component_manufacturer = read_uint(stream)
     qt_component_flags = read_uint(stream)
     qt_component_flags_mask = read_uint(stream)
     left -= 20
-    
+
     track_name = stream.read(left)
     #assert track_name[-1] == b'\x00'
-    
+
     return Atom(b'hdlr', size, body)
 
 def read_vmhd(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
     value = read_full_atom(stream)
     left -= 4
-    
+
     assert left == 8
     graphic_mode = read_ushort(stream)
     op_color_read = read_ushort(stream)
     op_color_green = read_ushort(stream)
     op_color_blue = read_ushort(stream)
-    
+
     return Atom(b'vmhd', size, body)
 
 def read_stsd(stream, size, left, type):
     value = read_full_atom(stream)
     left -= 4
-    
+
     entry_count = read_uint(stream)
     left -= 4
-    
+
     children = []
     for i in range(entry_count):
         atom = read_atom(stream)
         children.append(atom)
         left -= atom.size
-    
+
     assert left == 0
     #return Atom('stsd', size, children)
     class stsd_atom(Atom):
@@ -324,7 +325,7 @@ def read_stsd(stream, size, left, type):
 
 def read_avc1(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
-    
+
     skip_zeros(stream, 6)
     data_reference_index = read_ushort(stream)
     skip_zeros(stream, 2)
@@ -341,7 +342,7 @@ def read_avc1(stream, size, left, type):
     depth = read_ushort(stream)
     assert stream.read(2) == b'\xff\xff'
     left -= 78
-    
+
     child = read_atom(stream)
     assert child.type in (b'avcC', b'pasp'), 'if the sub atom is not avcC or pasp (actual %s), you should not cache raw body' % child.type
     left -= child.size
@@ -355,11 +356,11 @@ def read_avcC(stream, size, left, type):
 def read_stts(stream, size, left, type):
     value = read_full_atom(stream)
     left -= 4
-    
+
     entry_count = read_uint(stream)
     #assert entry_count == 1
     left -= 4
-    
+
     samples = []
     for i in range(entry_count):
         sample_count = read_uint(stream)
@@ -389,16 +390,16 @@ def read_stts(stream, size, left, type):
 def read_stss(stream, size, left, type):
     value = read_full_atom(stream)
     left -= 4
-    
+
     entry_count = read_uint(stream)
     left -= 4
-    
+
     samples = []
     for i in range(entry_count):
-            sample = read_uint(stream)
-            samples.append(sample)
-            left -= 4
-    
+        sample = read_uint(stream)
+        samples.append(sample)
+        left -= 4
+
     assert left == 0
     #return Atom('stss', size, None)
     class stss_atom(Atom):
@@ -418,10 +419,10 @@ def read_stss(stream, size, left, type):
 def read_stsc(stream, size, left, type):
     value = read_full_atom(stream)
     left -= 4
-    
+
     entry_count = read_uint(stream)
     left -= 4
-    
+
     chunks = []
     for i in range(entry_count):
         first_chunk = read_uint(stream)
@@ -435,7 +436,7 @@ def read_stsc(stream, size, left, type):
     #for c, s in zip(chunks[1:], samples):
     #	total += c*s
     #print 'total', total
-    
+
     assert left == 0
     #return Atom('stsc', size, None)
     class stsc_atom(Atom):
@@ -457,11 +458,11 @@ def read_stsc(stream, size, left, type):
 def read_stsz(stream, size, left, type):
     value = read_full_atom(stream)
     left -= 4
-    
+
     sample_size = read_uint(stream)
     sample_count = read_uint(stream)
     left -= 8
-    
+
     assert sample_size == 0
     total = 0
     sizes = []
@@ -471,7 +472,7 @@ def read_stsz(stream, size, left, type):
             sizes.append(entry_size)
             total += entry_size
             left -= 4
-    
+
     assert left == 0
     #return Atom('stsz', size, None)
     class stsz_atom(Atom):
@@ -492,16 +493,16 @@ def read_stsz(stream, size, left, type):
 def read_stco(stream, size, left, type):
     value = read_full_atom(stream)
     left -= 4
-    
+
     entry_count = read_uint(stream)
     left -= 4
-    
+
     offsets = []
     for i in range(entry_count):
         chunk_offset = read_uint(stream)
         offsets.append(chunk_offset)
         left -= 4
-    
+
     assert left == 0
     #return Atom('stco', size, None)
     class stco_atom(Atom):
@@ -521,17 +522,17 @@ def read_stco(stream, size, left, type):
 def read_ctts(stream, size, left, type):
     value = read_full_atom(stream)
     left -= 4
-    
+
     entry_count = read_uint(stream)
     left -= 4
-    
+
     samples = []
     for i in range(entry_count):
         sample_count = read_uint(stream)
         sample_offset = read_uint(stream)
         samples.append((sample_count, sample_offset))
         left -= 8
-    
+
     assert left == 0
     class ctts_atom(Atom):
         def __init__(self, type, size, body):
@@ -552,17 +553,17 @@ def read_smhd(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
     value = read_full_atom(stream)
     left -= 4
-    
+
     balance = read_ushort(stream)
     assert stream.read(2) == b'\x00\x00'
     left -= 4
-    
+
     assert left == 0
     return Atom(b'smhd', size, body)
 
 def read_mp4a(stream, size, left, type):
     body, stream = read_body_stream(stream, left)
-    
+
     assert stream.read(6) == b'\x00' * 6
     data_reference_index = read_ushort(stream)
     assert stream.read(8) == b'\x00' * 8
@@ -572,11 +573,11 @@ def read_mp4a(stream, size, left, type):
     time_scale = read_ushort(stream)
     assert stream.read(2) == b'\x00' * 2
     left -= 28
-    
+
     atom = read_atom(stream)
     assert atom.type == b'esds'
     left -= atom.size
-    
+
     assert left == 0
     return Atom(b'mp4a', size, body)
 
@@ -590,7 +591,7 @@ def read_esds(stream, size, left, type):
     assert version == 0
     flags = value & 0xffffff
     left -= 4
-    
+
     body = stream.read(left)
     return Atom(b'esds', size, None)
 
@@ -642,7 +643,7 @@ atom_readers = {
     b'smhd': read_smhd, # nothing
     b'mp4a': read_mp4a, # nothing
     b'esds': read_esds, # noting
-    
+
     b'ftyp': read_raw,
     b'yqoo': read_raw,
     b'moov': read_composite_atom,
@@ -660,21 +661,21 @@ atom_readers = {
     b'mdat': read_mdat,
     b'udta': read_udta,
 }
-#stsd sample descriptions (codec types, initialization etc.) 
-#stts (decoding) time-to-sample  
-#ctts (composition) time to sample 
-#stsc sample-to-chunk, partial data-offset information 
-#stsz sample sizes (framing) 
-#stz2 compact sample sizes (framing) 
-#stco chunk offset, partial data-offset information 
-#co64 64-bit chunk offset 
-#stss sync sample table (random access points) 
-#stsh shadow sync sample table 
-#padb sample padding bits 
-#stdp sample degradation priority 
-#sdtp independent and disposable samples 
-#sbgp sample-to-group 
-#sgpd sample group description 
+#stsd sample descriptions (codec types, initialization etc.)
+#stts (decoding) time-to-sample
+#ctts (composition) time to sample
+#stsc sample-to-chunk, partial data-offset information
+#stsz sample sizes (framing)
+#stz2 compact sample sizes (framing)
+#stco chunk offset, partial data-offset information
+#co64 64-bit chunk offset
+#stss sync sample table (random access points)
+#stsh shadow sync sample table
+#padb sample padding bits
+#stdp sample degradation priority
+#sdtp independent and disposable samples
+#sbgp sample-to-group
+#sgpd sample group description
 #subs sub-sample information
 
 
@@ -693,7 +694,7 @@ def read_atom(stream):
     if size == 1:
         size = read_ulong(stream)
         n += 8
-    
+
     left = size - n
     if type in atom_readers:
         return atom_readers[type](stream, size, left, type)
@@ -802,28 +803,28 @@ def merge_moov(moovs, mdats):
         mdhd_durations[0] += traks[0].get(b'mdia', b'mdhd').get('duration')
         mdhd_durations[1] += traks[1].get(b'mdia', b'mdhd').get('duration')
     #mvhd_duration = min(mvhd_duration, tkhd_durations)
-    
+
     trak0s = [x.get_all(b'trak')[0] for x in moovs]
     trak1s = [x.get_all(b'trak')[1] for x in moovs]
-    
+
     stts0 = merge_stts(x.get(b'mdia', b'minf', b'stbl', b'stts').body[1] for x in trak0s)
     stts1 = merge_stts(x.get(b'mdia', b'minf', b'stbl', b'stts').body[1] for x in trak1s)
-    
+
     stss = merge_stss((x.get(b'mdia', b'minf', b'stbl', b'stss').body[1] for x in trak0s), (len(x.get(b'mdia', b'minf', b'stbl', b'stsz').body[3]) for x in trak0s))
-    
+
     stsc0 = merge_stsc((x.get(b'mdia', b'minf', b'stbl', b'stsc').body[1] for x in trak0s), (len(x.get(b'mdia', b'minf', b'stbl', b'stco').body[1]) for x in trak0s))
     stsc1 = merge_stsc((x.get(b'mdia', b'minf', b'stbl', b'stsc').body[1] for x in trak1s), (len(x.get(b'mdia', b'minf', b'stbl', b'stco').body[1]) for x in trak1s))
-    
+
     stco0 = merge_stco((x.get(b'mdia', b'minf', b'stbl', b'stco').body[1] for x in trak0s), mdats)
     stco1 = merge_stco((x.get(b'mdia', b'minf', b'stbl', b'stco').body[1] for x in trak1s), mdats)
-    
+
     stsz0 = merge_stsz((x.get(b'mdia', b'minf', b'stbl', b'stsz').body[3] for x in trak0s))
     stsz1 = merge_stsz((x.get(b'mdia', b'minf', b'stbl', b'stsz').body[3] for x in trak1s))
-    
+
     ctts = sum((x.get(b'mdia', b'minf', b'stbl', b'ctts').body[1] for x in trak0s), [])
-    
+
     moov = moovs[0]
-    
+
     moov.get(b'mvhd').set('duration', mvhd_duration)
     trak0 = moov.get_all(b'trak')[0]
     trak1 = moov.get_all(b'trak')[1]
@@ -831,33 +832,33 @@ def merge_moov(moovs, mdats):
     trak1.get(b'tkhd').set('duration', tkhd_durations[1])
     trak0.get(b'mdia', b'mdhd').set('duration', mdhd_durations[0])
     trak1.get(b'mdia', b'mdhd').set('duration', mdhd_durations[1])
-    
+
     stts_atom = trak0.get(b'mdia', b'minf', b'stbl', b'stts')
     stts_atom.body = stts_atom.body[0], stts0
     stts_atom = trak1.get(b'mdia', b'minf', b'stbl', b'stts')
     stts_atom.body = stts_atom.body[0], stts1
-    
+
     stss_atom = trak0.get(b'mdia', b'minf', b'stbl', b'stss')
     stss_atom.body = stss_atom.body[0], stss
-    
+
     stsc_atom = trak0.get(b'mdia', b'minf', b'stbl', b'stsc')
     stsc_atom.body = stsc_atom.body[0], stsc0
     stsc_atom = trak1.get(b'mdia', b'minf', b'stbl', b'stsc')
     stsc_atom.body = stsc_atom.body[0], stsc1
-    
+
     stco_atom = trak0.get(b'mdia', b'minf', b'stbl', b'stco')
     stco_atom.body = stss_atom.body[0], stco0
     stco_atom = trak1.get(b'mdia', b'minf', b'stbl', b'stco')
     stco_atom.body = stss_atom.body[0], stco1
-    
+
     stsz_atom = trak0.get(b'mdia', b'minf', b'stbl', b'stsz')
     stsz_atom.body = stsz_atom.body[0], stsz_atom.body[1], len(stsz0), stsz0
     stsz_atom = trak1.get(b'mdia', b'minf', b'stbl', b'stsz')
     stsz_atom.body = stsz_atom.body[0], stsz_atom.body[1], len(stsz1), stsz1
-    
+
     ctts_atom = trak0.get(b'mdia', b'minf', b'stbl', b'ctts')
     ctts_atom.body = ctts_atom.body[0], ctts
-    
+
     old_moov_size = moov.size
     new_moov_size = moov.calsize()
     new_mdat_start = mdats[0].body[1] + new_moov_size - old_moov_size
@@ -867,7 +868,7 @@ def merge_moov(moovs, mdats):
     stco_atom.body = stss_atom.body[0], stco0
     stco_atom = trak1.get(b'mdia', b'minf', b'stbl', b'stco')
     stco_atom.body = stss_atom.body[0], stco1
-    
+
     return moov
 
 def merge_mp4s(files, output):
@@ -909,17 +910,18 @@ def concat_mp4(mp4s, output = None):
         output = guess_output(mp4s)
     elif os.path.isdir(output):
         output = os.path.join(output, guess_output(mp4s))
-    
+
     print('Merging video parts...')
     merge_mp4s(mp4s, output)
-    
+
     return output
 
 def usage():
     print('Usage: [python3] join_mp4.py --output TARGET.mp4 mp4...')
 
 def main():
-    import sys, getopt
+    import getopt
+    import sys
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ho:", ["help", "output="])
     except getopt.GetoptError as err:
@@ -938,7 +940,7 @@ def main():
     if not args:
         usage()
         sys.exit(1)
-    
+
     concat_mp4(args, output)
 
 if __name__ == '__main__':

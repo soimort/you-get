@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-from ..common import *
-from urllib import parse, error
-import random
-from time import sleep
+import base64
 import datetime
 import hashlib
-import base64
 import logging
+import random
 import re
+from time import sleep
+from urllib import error, parse
 from xml.dom.minidom import parseString
+
+from ..common import *
 
 __all__ = ['icourses_download', 'icourses_playlist_download']
 
@@ -174,7 +175,7 @@ def get_playlist(res_id, course_id):
     return re.findall(patt, req)
 
 
-class ICousesExactor(object):
+class ICousesExactor():
     PLAYER_BASE_VER = '150606-1'
     ENCRYPT_MOD_VER = '151020'
     ENCRYPT_SALT = '3DAPmXsZ4o'  # It took really long time to find this...

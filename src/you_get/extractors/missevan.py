@@ -23,11 +23,12 @@ SOFTWARE.
 """
 
 import json
+import sys
 import os
 import re
 import urllib.parse
 
-from ..common import get_content, urls_size, log, player, dry_run
+from ..common import dry_run, get_content, log, player, urls_size
 from ..extractor import VideoExtractor
 
 _UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 ' \
@@ -38,7 +39,7 @@ class _NoMatchException(Exception):
     pass
 
 
-class _Dispatcher(object):
+class _Dispatcher():
 
     def __init__(self):
         self.entry = []
@@ -220,7 +221,7 @@ class MissEvan(VideoExtractor):
             self.__prepare_dispatcher.dispatch(self.url, self, **kwargs)
         except _NoMatchException:
             log.e('[Error] Unsupported URL pattern.')
-            exit(1)
+            sys.exit(1)
 
     @staticmethod
     def download_covers(title, streams, **kwargs):
@@ -291,7 +292,7 @@ class MissEvan(VideoExtractor):
             self._download_playlist_dispatcher.dispatch(url, self, **kwargs)
         except _NoMatchException:
             log.e('[Error] Unsupported URL pattern with --playlist option.')
-            exit(1)
+            sys.exit(1)
 
     def download_by_url(self, url, **kwargs):
         if not kwargs.get('playlist') and self._download_playlist_dispatcher.test(url):

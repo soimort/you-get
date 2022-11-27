@@ -2,13 +2,14 @@
 
 __all__ = ['ucas_download', 'ucas_download_single', 'ucas_download_playlist']
 
-from ..common import *
-import urllib.error
 import http.client
-from time import time
-from random import random
+import urllib.error
 import xml.etree.ElementTree as ET
 from copy import copy
+from random import random
+from time import time
+
+from ..common import *
 
 """
 Do not replace http.client with get_content
@@ -40,7 +41,7 @@ def _get_video_query_url(resourceID):
         'Connection': 'keep-alive',
     }
     conn = http.client.HTTPConnection("210.76.211.10")
-    
+
     conn.request("GET", "/vplus/remote.do?method=query2&loginname=videocas&pwd=af1c7a4c5f77f790722f7cae474c37e281203765d423a23b&resource=%5B%7B%22resourceID%22%3A%22" + resourceID + "%22%2C%22on%22%3A1%2C%22time%22%3A600%2C%22eid%22%3A100%2C%22w%22%3A800%2C%22h%22%3A600%7D%5D&timeStamp=" + str(int(time())), headers=headers)
     res = conn.getresponse()
     data = res.read()
@@ -51,14 +52,14 @@ def _get_video_query_url(resourceID):
 def _get_virtualPath(video_query_url):
     #getResourceJsCode2
     html = get_content(video_query_url)
-    
+
     return match1(html, r"function\s+getVirtualPath\(\)\s+{\s+return\s+'(\w+)'")
 
 
 def _get_video_list(resourceID):
     """"""
     conn = http.client.HTTPConnection("210.76.211.10")
-        
+
     conn.request("GET", '/vplus/member/resource.do?isyulan=0&method=queryFlashXmlByResourceId&resourceId={resourceID}&randoms={randoms}'.format(resourceID = resourceID,
                                                                                                                                             randoms = random()))
     res = conn.getresponse()
@@ -83,10 +84,10 @@ def _get_video_list(resourceID):
 def _ucas_get_url_lists_by_resourceID(resourceID):
     video_query_url = _get_video_query_url(resourceID)
     assert video_query_url != '', 'Cannot find video GUID!'
-    
+
     virtualPath = _get_virtualPath(video_query_url)
     assert virtualPath != '', 'Cannot find virtualPath!'
-    
+
     url_lists = _get_video_list(resourceID)
     assert url_lists, 'Cannot find any URL to download!'
 
@@ -109,7 +110,7 @@ def ucas_download_single(url, output_dir = '.', merge = False, info_only = False
     title = match1(html, r'<div class="bc-h">(.+)</div>')
     url_lists = _ucas_get_url_lists_by_resourceID(resourceID)
     assert url_lists, 'Cannot find any URL of such class!'
-    
+
     for k, part in enumerate(url_lists):
         part_title = title + '_' + str(k)
         print_info(site_info, part_title, 'flv', 0)

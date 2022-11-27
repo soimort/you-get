@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
+import ssl
+
 from ..common import *
 from ..extractor import VideoExtractor
 
-import ssl
 
 class Infoq(VideoExtractor):
     name = "InfoQ"
@@ -23,10 +24,12 @@ class Infoq(VideoExtractor):
         sck = match1(content, r'InfoQConstants\.sck\s*=\s*\'([^\']+)\'')
 
         mp3 = match1(content, r'name="filename"\s*value="([^"]+\.mp3)"')
-        if mp3: mp3 = 'http://res.infoq.com/downloads/mp3downloads/%s' % mp3
+        if mp3:
+            mp3 = 'http://res.infoq.com/downloads/mp3downloads/%s' % mp3
 
         pdf = match1(content, r'name="filename"\s*value="([^"]+\.pdf)"')
-        if pdf: pdf = 'http://res.infoq.com/downloads/pdfdownloads/%s' % pdf
+        if pdf:
+            pdf = 'http://res.infoq.com/downloads/pdfdownloads/%s' % pdf
 
         # cookie handler
         ssl_context = request.HTTPSHandler(
@@ -40,9 +43,12 @@ class Infoq(VideoExtractor):
         ]
         request.install_opener(opener)
 
-        if s: self.streams['video'] = {'url': s }
-        if mp3: self.streams['audio'] = { 'url': mp3 }
-        if pdf: self.streams['slides'] = { 'url': pdf }
+        if s:
+            self.streams['video'] = {'url': s }
+        if mp3:
+            self.streams['audio'] = { 'url': mp3 }
+        if pdf:
+            self.streams['slides'] = { 'url': pdf }
 
     def extract(self, **kwargs):
         for i in self.streams:

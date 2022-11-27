@@ -2,18 +2,8 @@
 
 import unittest
 
-from you_get.extractors import (
-    imgur,
-    magisto,
-    youtube,
-    missevan,
-    acfun,
-    bilibili,
-    soundcloud,
-    tiktok,
-    twitter,
-    miaopai
-)
+from you_get.extractors import (acfun, bilibili, imgur, magisto, miaopai,
+                                missevan, soundcloud, tiktok, twitter, youtube)
 
 
 class YouGetTests(unittest.TestCase):

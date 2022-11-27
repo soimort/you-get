@@ -44,7 +44,7 @@ def decode(data):
         loc4 = [0] * (2 * length)
         for i in range(length):
             loc4[2 * i] = loc2[i] >> 4
-            loc4[2 * i + 1] = loc2[i] & 15;
+            loc4[2 * i + 1] = loc2[i] & 15
         loc6 = loc4[len(loc4) - 11:] + loc4[:len(loc4) - 11]
         loc7 = [0] * length
         for i in range(length):
