@@ -2,11 +2,10 @@
 
 __all__ = ['mtv81_download']
 
-from ..common import *
-
+from html.parser import HTMLParser
 from xml.dom.minidom import parseString
 
-from html.parser import HTMLParser
+from ..common import *
 
 
 def mtv81_download(url, output_dir='.', merge=True, info_only=False, **kwargs):

@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 __all__ = ['lizhi_download']
-import json
 import datetime
+import json
+
 from ..common import *
+
 
 #
 # Worked well but not perfect.

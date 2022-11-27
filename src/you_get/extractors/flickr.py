@@ -2,9 +2,9 @@
 
 __all__ = ['flickr_download_main']
 
-from ..common import *
-
 import json
+
+from ..common import *
 
 pattern_url_photoset = r'https?://www\.flickr\.com/photos/.+/(?:(?:sets)|(?:albums))?/([^/]+)'
 pattern_url_photostream = r'https?://www\.flickr\.com/photos/([^/]+)(?:/|(?:/page))?$'
@@ -225,4 +225,4 @@ def get_single_photo_url(url):
 
 site_info = "Flickr.com"
 download = flickr_download_main
-download_playlist = playlist_not_supported('flickr');
+download_playlist = playlist_not_supported('flickr')

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
+import json
+
 from ..common import *
 from ..extractor import VideoExtractor
 
-import json
 
 class Bigthink(VideoExtractor):
     name = "Bigthink"
@@ -15,19 +16,19 @@ class Bigthink(VideoExtractor):
         # {'id': '288'},
         # {'id': '190'},
         # {'id': '180'},
-        
+
     ]
 
     @staticmethod
     def get_streams_by_id(account_number, video_id):
         """
         int, int->list
-        
+
         Get the height of the videos.
-        
+
         Since brightcove is using 3 kinds of links: rtmp, http and https,
         we will be using the HTTPS one to make it secure.
-        
+
         If somehow akamaihd.net is blocked by the Great Fucking Wall,
         change the "startswith https" to http.
         """
@@ -57,7 +58,7 @@ class Bigthink(VideoExtractor):
         account_number = match1(html, r'data-account="(\d+)"')
 
         video_id = match1(html, r'data-brightcove-id="(\d+)"')
-        
+
         assert account_number, video_id
 
         link_list = self.get_streams_by_id(account_number, video_id)

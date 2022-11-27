@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
+import hashlib
+import json
+import time
+from math import floor
+from random import randint, random
+from uuid import uuid4
+from zlib import decompress
+
+from .. import json_output
 from ..common import *
 from ..common import print_more_compatible as print
 from ..extractor import VideoExtractor
 from ..util import log
-from .. import json_output
-
-from uuid import uuid4
-from random import random,randint
-import json
-from math import floor
-from zlib import decompress
-import hashlib
-import time
 
 '''
 Changelog:
@@ -209,7 +209,7 @@ class Iqiyi(VideoExtractor):
             urls = general_m3u8_extractor(urls[0])
             # ffmpeg fail to convert the output video with mkv extension, due to sort of timestamp problem
             download_urls(urls, self.title, 'mp4', 0, **kwargs)
-            
+
             if not kwargs['caption']:
                 print('Skipping captions.')
                 return
@@ -240,7 +240,7 @@ class Iqiyi(VideoExtractor):
         try:
             if info["data"]['vp']["tkl"]=='' :
                 raise ValueError
-        except:
+        except Exception:
             log.e("[Error] Do not support for iQIYI VIP video.")
             exit(-1)
 

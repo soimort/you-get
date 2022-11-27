@@ -5,10 +5,11 @@ __all__ = ['universal_download']
 from ..common import *
 from .embed import *
 
+
 def universal_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     try:
         content_type = get_head(url, headers=fake_headers)['Content-Type']
-    except:
+    except Exception:
         content_type = get_head(url, headers=fake_headers, get_method='GET')['Content-Type']
     if content_type.startswith('text/html'):
         try:
@@ -19,7 +20,8 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
             return
 
     domains = url.split('/')[2].split('.')
-    if len(domains) > 2: domains = domains[1:]
+    if len(domains) > 2:
+        domains = domains[1:]
     site_info = '.'.join(domains)
 
     if content_type.startswith('text/html'):
@@ -43,7 +45,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                                       ext, size,
                                       output_dir=output_dir, merge=merge,
                                       faker=True)
-            except:
+            except Exception:
                 pass
             else:
                 return
@@ -58,7 +60,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                     if not info_only:
                         download_url_ffmpeg(url=hls_url, title=page_title,
                                             ext='mp4', output_dir=output_dir)
-            except:
+            except Exception:
                 pass
             else:
                 return
@@ -142,10 +144,11 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                 try:
                     mime, ext, size = url_info(candy['url'], faker=False)
                     assert size
-                except:
+                except Exception:
                     mime, ext, size = url_info(candy['url'], faker=True)
-                    if not size: size = float('Inf')
-            except:
+                    if not size:
+                        size = float('Inf')
+            except Exception:
                 continue
             else:
                 print_info(site_info, candy['title'], ext, size)
@@ -154,7 +157,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                         download_urls([candy['url']], candy['title'], ext, size,
                                       output_dir=output_dir, merge=merge,
                                       faker=False)
-                    except:
+                    except Exception:
                         download_urls([candy['url']], candy['title'], ext, size,
                                       output_dir=output_dir, merge=merge,
                                       faker=True)

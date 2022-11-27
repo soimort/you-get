@@ -2,9 +2,12 @@
 
 __all__ = ['tudou_download', 'tudou_download_playlist', 'tudou_download_by_id', 'tudou_download_by_iid']
 
-from ..common import *
 from xml.dom.minidom import parseString
+
 import you_get.extractors.acfun
+
+from ..common import *
+
 
 def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only = False):
     data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?iid=%s' % iid))
@@ -84,6 +87,7 @@ def parse_playlist(url):
     assert aid
     assert atitle
     import json
+
     #url = 'http://www.tudou.com/playlist/service/getZyAlbumItems.html?aid='+aid
     url = 'http://www.tudou.com/playlist/service/getAlbumItems.html?aid='+aid
     return [(atitle + '-' + x['title'], str(x['itemId'])) for x in json.loads(get_html(url))['message']]

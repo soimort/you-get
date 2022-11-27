@@ -67,7 +67,7 @@ def baidu_download_song(sid, output_dir='.', merge=True, info_only=False):
         print_info(site_info, title, type, size)
         if not info_only:
             download_urls([lrc], file_name, ext, size, output_dir, faker=True)
-    except:
+    except Exception:
         pass
 
 
@@ -124,7 +124,7 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
         try:
             # embedded videos
             embed_download(url, output_dir, merge=merge, info_only=info_only, **kwargs)
-        except:
+        except Exception:
             # images
             html = get_html(url)
             title = r1(r'title:"([^"]+)"', html)
@@ -185,17 +185,17 @@ def baidu_pan_download(url):
     isprotected = False
     sign, timestamp, bdstoken, appid, primary_id, fs_id, uk = baidu_pan_parse(
         html)
-    if sign == None:
+    if sign is None:
         if re.findall(r'\baccess-code\b', html):
             isprotected = True
             sign, timestamp, bdstoken, appid, primary_id, fs_id, uk, fake_headers, psk = baidu_pan_protected_share(
                 url)
             # raise NotImplementedError("Password required!")
-        if isprotected != True:
+        if isprotected is False:
             raise AssertionError("Share not found or canceled: %s" % url)
-    if bdstoken == None:
+    if bdstoken is None:
         bdstoken = ""
-    if isprotected != True:
+    if isprotected is False:
         sign, timestamp, bdstoken, appid, primary_id, fs_id, uk = baidu_pan_parse(
             html)
     request_url = "http://pan.baidu.com/api/sharedownload?sign=%s&timestamp=%s&bdstoken=%s&channel=chunlei&clienttype=0&web=1&app_id=%s" % (
@@ -208,7 +208,7 @@ def baidu_pan_download(url):
         'primaryid': primary_id,
         'fid_list': '[' + fs_id + ']'
     }
-    if isprotected == True:
+    if isprotected is True:
         post_data['sekey'] = psk
     response_content = post_content(request_url, fake_headers, post_data, True)
     errno = match1(response_content, errno_patt)
@@ -249,7 +249,7 @@ def baidu_pan_gen_cookies(url, post_data=None):
     cookiejar = cookiejar.CookieJar()
     opener = request.build_opener(request.HTTPCookieProcessor(cookiejar))
     resp = opener.open('http://pan.baidu.com')
-    if post_data != None:
+    if post_data is not None:
         resp = opener.open(url, bytes(parse.urlencode(post_data), 'utf-8'))
     return cookjar2hdr(cookiejar)
 
@@ -264,8 +264,8 @@ def baidu_pan_protected_share(url):
         'vcode': None,
         'vstr': None
     }
-    from http import cookiejar
     import time
+    from http import cookiejar
     cookiejar = cookiejar.CookieJar()
     opener = request.build_opener(request.HTTPCookieProcessor(cookiejar))
     resp = opener.open('http://pan.baidu.com')

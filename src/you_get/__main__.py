@@ -4,8 +4,9 @@ import getopt
 import os
 import platform
 import sys
-from .version import script_name, __version__
+
 from .util import git, log
+from .version import __version__, script_name
 
 _options = [
     'help',
@@ -60,7 +61,7 @@ def main_dev(**kwargs):
                     log.println("    branch:   {}\n    commit:   {}".format("(stable)", "(tag v{})".format(__version__)))
 
                 log.println("    platform: {}".format(platform.platform()))
-                log.println("    python:   {}".format(sys.version.split('\n')[0]))
+                log.println("    python:   {}".format(sys.version.split('\n', maxsplit=1)[0]))
 
             elif opt in ('-g', '--gui'):
                 # Run using GUI.

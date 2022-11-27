@@ -6,6 +6,7 @@ from ..common import *
 from .universal import *
 from .vine import vine_download
 
+
 def extract_m3u(source):
     r1 = get_content(source)
     s1 = re.findall(r'(/ext_tw_video/.*)', r1)
@@ -73,7 +74,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                 item_id = r1(r'/status/(\d+)', expanded_url)
                 assert False
 
-        elif info['globalObjects']['tweets'][item_id].get('is_quote_status') == True:
+        elif info['globalObjects']['tweets'][item_id].get('is_quote_status') is True:
             # if the tweet does not contain media, but it quotes a tweet
             # and the quoted tweet contains media, download them
             item_id = info['globalObjects']['tweets'][item_id]['quoted_status_id_str']
@@ -93,7 +94,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             # no media, no quoted tweet
             return
 
-    except:
+    except Exception:
         authorization = 'Bearer AAAAAAAAAAAAAAAAAAAAAPYXBAAAAAAACLXUNDekMxqa8h%2F40K4moUkGsoc%3DTYfbDKbT3jJPCEVnMYqilB28NHfOPqkca3qaAxGfsyKCs0wRbw'
 
         # FIXME: 403 with cookies

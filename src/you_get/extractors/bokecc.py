@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import xml.etree.ElementTree as ET
+
 from ..common import *
 from ..extractor import VideoExtractor
-import xml.etree.ElementTree as ET
+
 
 class BokeCC(VideoExtractor):
     name = "BokeCC"
@@ -16,14 +18,14 @@ class BokeCC(VideoExtractor):
 
     def download_by_id(self, vid = '', title = None, output_dir='.', merge=True, info_only=False,**kwargs):
         """self, str->None
-        
+
         Keyword arguments:
         self: self
         vid: The video ID for BokeCC cloud, something like
         FE3BB999594978049C33DC5901307461
-        
+
         Calls the prepare() to download the video.
-        
+
         If no title is provided, this method shall try to find a proper title
         with the information providin within the
         returned content of the API."""
@@ -34,8 +36,8 @@ class BokeCC(VideoExtractor):
 
         self.extract(**kwargs)
 
-        self.download(output_dir = output_dir, 
-                    merge = merge, 
+        self.download(output_dir = output_dir,
+                    merge = merge,
                     info_only = info_only, **kwargs)
 
     def prepare(self, vid = '', title = None, **kwargs):
@@ -49,7 +51,7 @@ class BokeCC(VideoExtractor):
 
         if self.tree.find('result').text != '1':
             log.wtf('API result says failed!')
-            raise 
+            raise
 
         if title is None:
             self.title = '_'.join([i.text for i in self.tree.iterfind('video/videomarks/videomark/markdesc')])
@@ -81,7 +83,7 @@ class BokeCC(VideoExtractor):
             if stream_id not in self.streams:
                 log.e('[Error] Invalid video format.')
                 log.e('Run \'-i\' command with no specific video format to view all available formats.')
-                exit(2)
+                sys.exit(2)
         else:
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['id']

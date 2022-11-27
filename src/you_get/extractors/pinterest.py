@@ -3,6 +3,7 @@
 from ..common import *
 from ..extractor import VideoExtractor
 
+
 class Pinterest(VideoExtractor):
     # site name
     name = "Pinterest"
@@ -29,8 +30,10 @@ class Pinterest(VideoExtractor):
                           r'<meta property="twitter:image:src" name="twitter:image:src" content="([^"]+)"')
 
         # construct available streams
-        if orig_img: self.streams['original'] = {'url': orig_img}
-        if twit_img: self.streams['small'] = {'url': twit_img}
+        if orig_img:
+            self.streams['original'] = {'url': orig_img}
+        if twit_img:
+            self.streams['small'] = {'url': twit_img}
 
     def extract(self, **kwargs):
         for i in self.streams:

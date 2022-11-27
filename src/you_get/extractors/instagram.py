@@ -4,6 +4,7 @@ __all__ = ['instagram_download']
 
 from ..common import *
 
+
 def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     url = r1(r'([^?]*)', url)
     cont = get_content(url, headers=fake_headers)
@@ -19,7 +20,7 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
     api_url = 'https://i.instagram.com/api/v1/media/%s/info/' % media_id
     try:
         api_cont = get_content(api_url, headers={**fake_headers, **{'x-ig-app-id': appId}})
-    except:
+    except Exception:
         log.wtf('[Error] Please specify a cookie file.')
     post = json.loads(api_cont)
 

@@ -3,12 +3,13 @@
 import os.path
 import subprocess
 
+
 def get_usable_rtmpdump(cmd):
     try:
         p = subprocess.Popen([cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = p.communicate()
         return cmd
-    except:
+    except Exception:
         return None
 
 RTMPDUMP = get_usable_rtmpdump('rtmpdump')
@@ -32,7 +33,7 @@ def download_rtmpdump_stream(url, title, ext,params={},output_dir='.'):
 
     for key in params.keys():
         cmdline.append(key)
-        if params[key]!=None:
+        if params[key] is not None:
             cmdline.append(params[key])
 
     # cmdline.append('-y')
@@ -43,15 +44,15 @@ def download_rtmpdump_stream(url, title, ext,params={},output_dir='.'):
 
 #
 def play_rtmpdump_stream(player, url, params={}):
-    
+
     #construct left side of pipe
     cmdline = [RTMPDUMP, '-r']
     cmdline.append(url)
-    
+
     #append other params if exist
     for key in params.keys():
         cmdline.append(key)
-        if params[key]!=None:
+        if params[key] is not None:
             cmdline.append(params[key])
 
     cmdline.append('-o')
@@ -67,6 +68,6 @@ def play_rtmpdump_stream(player, url, params={}):
 
     #call RTMPDump!
     subprocess.call(cmdline)
-    
+
     # os.system("rtmpdump -r '%s' -y '%s' -o - | %s -" % (url, playpath, player))
     return

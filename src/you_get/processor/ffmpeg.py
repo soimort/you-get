@@ -4,15 +4,16 @@ import logging
 import os
 import subprocess
 import sys
-from ..util.strings import parameterize
+
 from ..common import print_more_compatible as print
+from ..util.strings import parameterize
 
 try:
     from subprocess import DEVNULL
 except ImportError:
     # Python 3.2 or below
-    import os
     import atexit
+    import os
     DEVNULL = os.open(os.devnull, os.O_RDWR)
     atexit.register(lambda fd: os.close(fd), DEVNULL)
 
@@ -20,15 +21,15 @@ def get_usable_ffmpeg(cmd):
     try:
         p = subprocess.Popen([cmd, '-version'], stdin=DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = p.communicate()
-        vers = str(out, 'utf-8').split('\n')[0].split()
+        vers = str(out, 'utf-8').split('\n', maxsplit=1)[0].split()
         assert (vers[0] == 'ffmpeg' and vers[2][0] > '0') or (vers[0] == 'avconv')
         try:
             v = vers[2][1:] if vers[2][0] == 'n' else vers[2]
             version = [int(i) for i in v.split('.')]
-        except:
+        except Exception:
             version = [1, 0]
         return cmd, 'ffprobe', version
-    except:
+    except Exception:
         return None
 
 FFMPEG, FFPROBE, FFMPEG_VERSION = get_usable_ffmpeg('ffmpeg') or get_usable_ffmpeg('avconv') or (None, None, None)
@@ -58,16 +59,20 @@ def ffmpeg_concat_av(files, output, ext):
     print('Merging video parts... ', end="", flush=True)
     params = [FFMPEG] + LOGLEVEL
     for file in files:
-        if os.path.isfile(file): params.extend(['-i', file])
+        if os.path.isfile(file):
+            params.extend(['-i', file])
     params.extend(['-c', 'copy'])
     params.extend(['--', output])
     if subprocess.call(params, stdin=STDIN):
         print('Merging without re-encode failed.\nTry again re-encoding audio... ', end="", flush=True)
-        try: os.remove(output)
-        except FileNotFoundError: pass
+        try:
+            os.remove(output)
+        except FileNotFoundError:
+            pass
         params = [FFMPEG] + LOGLEVEL
         for file in files:
-            if os.path.isfile(file): params.extend(['-i', file])
+            if os.path.isfile(file):
+                params.extend(['-i', file])
         params.extend(['-c:v', 'copy'])
         if ext == 'mp4':
             params.extend(['-c:a', 'aac'])
@@ -137,11 +142,8 @@ def ffmpeg_concat_ts_to_mkv(files, output='output.mkv'):
     params.extend(['--', output])
 
     try:
-        if subprocess.call(params, stdin=STDIN) == 0:
-            return True
-        else:
-            return False
-    except:
+        return subprocess.call(params, stdin=STDIN) == 0
+    except Exception:
         return False
 
 def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
@@ -245,7 +247,7 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.', stream=
     """
     output = title + '.' + ext
 
-    if not (output_dir == '.'):
+    if not output_dir == '.':
         output = output_dir + '/' + output
 
     print('Downloading streaming content with FFmpeg, press q to stop recording...')
@@ -276,7 +278,7 @@ def ffmpeg_download_stream(files, title, ext, params={}, output_dir='.', stream=
     except KeyboardInterrupt:
         try:
             a.stdin.write('q'.encode('utf-8'))
-        except:
+        except Exception:
             pass
 
     return True

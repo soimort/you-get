@@ -2,14 +2,15 @@
 
 __all__ = ['sina_download', 'sina_download_by_vid', 'sina_download_by_vkey']
 
-from ..common import *
-from ..util.log import *
-
+import urllib.parse
 from hashlib import md5
 from random import randint
 from time import time
 from xml.dom.minidom import parseString
-import urllib.parse
+
+from ..common import *
+from ..util.log import *
+
 
 def api_req(vid):
     rand = "0.{0}{1}".format(randint(10000, 10000000), randint(10000, 10000000))

@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # This file is Python 2 compliant.
 
-from ..version import script_name
+import os
+import sys
 
-import os, sys
+from ..version import script_name
 
 TERM = os.getenv('TERM', '')
 IS_ANSI_TERMINAL = TERM in (

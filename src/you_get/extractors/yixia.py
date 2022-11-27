@@ -2,10 +2,12 @@
 
 __all__ = ['yixia_download']
 
-from ..common import *
-from urllib.parse import urlparse
-from json import loads
 import re
+from json import loads
+from urllib.parse import urlparse
+
+from ..common import *
+
 
 #----------------------------------------------------------------------
 def miaopai_download_by_smid(smid, output_dir = '.', merge = True, info_only = False):
@@ -65,8 +67,8 @@ def yixia_xiaokaxiu_download_by_scid(scid, output_dir = '.', merge = True, info_
 def yixia_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     """wrapper"""
     hostname = urlparse(url).hostname
-    if 'n.miaopai.com' == hostname: 
-        smid = match1(url, r'n\.miaopai\.com/media/([^.]+)') 
+    if 'n.miaopai.com' == hostname:
+        smid = match1(url, r'n\.miaopai\.com/media/([^.]+)')
         miaopai_download_by_smid(smid, output_dir, merge, info_only)
         return
     elif 'miaopai.com' in hostname:  #Miaopai

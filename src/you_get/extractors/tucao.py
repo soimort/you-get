@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 __all__ = ['tucao_download']
-from ..common import *
 # import re
 import random
 import time
 from xml.dom import minidom
+
+from ..common import *
+
 #possible raw list types
 #1. <li>type=tudou&vid=199687639</li>
 #2. <li>type=tudou&vid=199506910|</li>

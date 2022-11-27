@@ -33,7 +33,7 @@ def sign_video_url(vid):
                                                                                                     ts=ts)
 
 
-class ToutiaoVideoInfo(object):
+class ToutiaoVideoInfo():
 
     def __init__(self):
         self.bitrate = None

@@ -2,6 +2,7 @@
 
 from .os import detect_os
 
+
 def legitimize(text, os=detect_os()):
     """Converts a string to a valid filename.
     """

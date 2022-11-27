@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-from ..common import *
 from json import loads
+
+from ..common import *
+
 
 def interest_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     #http://ch.interest.me/zhtv/VOD/View/114789
@@ -16,7 +18,7 @@ def interest_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         serverurl = play_info['data']['cdn']['serverurl']
     except KeyError:
         raise ValueError('Cannot_Get_Play_URL')
-    except:
+    except Exception:
         raise ValueError('Cannot_Get_Play_URL')
     # I cannot find any example of "fileurl", so i just put it like this for now
     assert serverurl

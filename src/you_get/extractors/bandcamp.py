@@ -4,6 +4,7 @@ __all__ = ['bandcamp_download']
 
 from ..common import *
 
+
 def bandcamp_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
     trackinfo = json.loads(r1(r'(\[{"(video_poster_url|video_caption)".*}\]),', html))

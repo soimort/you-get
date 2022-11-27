@@ -2,8 +2,10 @@
 
 __all__ = ['kuwo_download']
 
-from ..common import *
 import re
+
+from ..common import *
+
 
 def kuwo_download_by_rid(rid, output_dir = '.', merge = True, info_only = False):
     html=get_content("http://player.kuwo.cn/webmusic/st/getNewMuiseByRid?rid=MUSIC_%s"%rid)

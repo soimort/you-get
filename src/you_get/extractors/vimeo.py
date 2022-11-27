@@ -2,12 +2,13 @@
 
 __all__ = ['vimeo_download', 'vimeo_download_by_id', 'vimeo_download_by_channel', 'vimeo_download_by_channel_id']
 
-from ..common import *
-from ..util.log import *
-from ..extractor import VideoExtractor
-from json import loads
 import urllib.error
 import urllib.parse
+from json import loads
+
+from ..common import *
+from ..extractor import VideoExtractor
+from ..util.log import *
 
 access_token = 'f6785418277b72c7c87d3132c79eec24'  #By Beining
 
@@ -141,7 +142,7 @@ def vimeo_download_by_id(id, title=None, output_dir='.', merge=True, info_only=F
         video_page = get_content(cfg['player']['config_url'], headers=fake_headers)
         title = cfg['clip']['title']
         info = loads(video_page)
-    except:
+    except Exception:
         # embedded player - referer may be required
         if 'referer' in kwargs:
             fake_headers['Referer'] = kwargs['referer']

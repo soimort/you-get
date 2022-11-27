@@ -3,10 +3,11 @@
 __all__ = ['tumblr_download']
 
 from ..common import *
-from .universal import *
 from .dailymotion import dailymotion_download
+from .universal import *
 from .vimeo import vimeo_download
 from .vine import vine_download
+
 
 def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     if re.match(r'https?://\d+\.media\.tumblr\.com/', url):
@@ -65,7 +66,7 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             tumblr_id = r1(r'^tumblr_(.+)_\d+$', title) or title
             try:
                 quality = int(r1(r'^tumblr_.+_(\d+)$', title))
-            except:
+            except Exception:
                 quality = int(r1(r'/s(\d+)x\d+/', hd_url))
             ext = filename.split('.')[-1]
 
@@ -79,7 +80,8 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
                         'ext': ext,
                         'size': size,
                     }
-            except: pass
+            except Exception:
+                pass
 
         if tuggles:
             size = sum([tuggles[t]['size'] for t in tuggles])
@@ -117,7 +119,8 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             real_url = r1(r'<video[^>]*>[\n ]*<source[^>]+src=[\'"]([^\'"]*)[\'"]', iframe_html)
         else:
             iframe_url = r1(r'<iframe[^>]+src=[\'"]([^\'"]*)[\'"]', html)
-            if iframe_url[:2] == '//': iframe_url = 'http:' + iframe_url
+            if iframe_url[:2] == '//':
+                iframe_url = 'http:' + iframe_url
             if re.search(r'player\.vimeo\.com', iframe_url):
                 vimeo_download(iframe_url, output_dir, merge=merge, info_only=info_only,
                                referer='http://tumblr.com/', **kwargs)

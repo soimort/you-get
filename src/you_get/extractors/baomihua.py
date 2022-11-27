@@ -2,20 +2,21 @@
 
 __all__ = ['baomihua_download', 'baomihua_download_by_id']
 
-from ..common import *
-
 import urllib
 
+from ..common import *
+
+
 def baomihua_headers(referer=None, cookie=None):
-	# a reasonable UA
-	ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
-	headers = {'Accept': '*/*', 'Accept-Language': 'en-US,en;q=0.5', 'User-Agent': ua}
-	if referer is not None:
-		headers.update({'Referer': referer})
-	if cookie is not None:
-		headers.update({'Cookie': cookie})
-	return headers
-	
+    # a reasonable UA
+    ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
+    headers = {'Accept': '*/*', 'Accept-Language': 'en-US,en;q=0.5', 'User-Agent': ua}
+    if referer is not None:
+        headers.update({'Referer': referer})
+    if cookie is not None:
+        headers.update({'Cookie': cookie})
+    return headers
+
 def baomihua_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html('http://play.baomihua.com/getvideourl.aspx?flvid=%s&devicetype=phone_app' % id)
     host = r1(r'host=([^&]*)', html)

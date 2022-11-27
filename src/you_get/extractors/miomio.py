@@ -2,11 +2,12 @@
 
 __all__ = ['miomio_download']
 
-from ..common import *
+from xml.dom.minidom import parseString
 
+from ..common import *
 from .tudou import tudou_download_by_id
 from .youku import youku_download_by_vid
-from xml.dom.minidom import parseString
+
 
 def miomio_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html = get_html(url)

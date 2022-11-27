@@ -2,12 +2,13 @@
 
 __all__ = ['douyutv_download']
 
+import hashlib
+import json
+import re
+import time
+
 from ..common import *
 from ..util.log import *
-import json
-import hashlib
-import time
-import re
 
 headers = {
         'user-agent': 'Mozilla/5.0 (iPad; CPU OS 8_1_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B466 Safari/600.1.4'

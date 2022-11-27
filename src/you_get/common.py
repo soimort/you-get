@@ -1,25 +1,26 @@
 #!/usr/bin/env python
 
+import argparse
 import io
-import os
-import re
-import sys
-import time
 import json
-import socket
 import locale
 import logging
-import argparse
+import os
+import re
+import socket
 import ssl
+import sys
+import time
 from http import cookiejar
 from importlib import import_module
-from urllib import request, parse, error
+from urllib import error, parse, request
 
-from .version import __version__
+from . import json_output as json_output_
 from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
-from . import json_output as json_output_
+from .version import __version__
+
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
 
 SITES = {
@@ -195,7 +196,7 @@ def general_m3u8_extractor(url, headers={}):
 def maybe_print(*s):
     try:
         print(*s)
-    except:
+    except Exception:
         pass
 
 
@@ -270,15 +271,15 @@ def matchall(text, patterns):
 
 
 def launch_player(player, urls):
-    import subprocess
     import shlex
+    import subprocess
     urls = list(urls)
     for url in urls.copy():
         if type(url) is list:
             urls.extend(url)
     urls = [url for url in urls if type(url) is str]
     assert urls
-    if (sys.version_info >= (3, 3)):
+    if sys.version_info >= (3, 3):
         import shutil
         exefile=shlex.split(player)[0]
         if shutil.which(exefile) is not None:
@@ -302,7 +303,7 @@ def parse_query_param(url, param):
 
     try:
         return parse.parse_qs(parse.urlparse(url).query)[param][0]
-    except:
+    except Exception:
         return None
 
 
@@ -326,8 +327,8 @@ def escape_file_path(path):
 def ungzip(data):
     """Decompresses data for Content-Encoding: gzip.
     """
-    from io import BytesIO
     import gzip
+    from io import BytesIO
     buffer = BytesIO(data)
     f = gzip.GzipFile(fileobj=buffer)
     return f.read()
@@ -629,7 +630,7 @@ def url_info(url, faker=False, headers={}):
                     ext = filename.split('.')[-1]
                 else:
                     ext = None
-            except:
+            except Exception:
                 ext = None
         else:
             ext = None
@@ -711,7 +712,7 @@ def url_save(
                     if not force and auto_rename:
                         path, ext = os.path.basename(filepath).rsplit('.', 1)
                         finder = re.compile(' \([1-9]\d*?\)$')
-                        if (finder.search(path) is None):
+                        if finder.search(path) is None:
                             thisfile = path + ' (1).' + ext
                         else:
                             def numreturn(a):
@@ -781,7 +782,7 @@ def url_save(
                     response.headers['content-range'][6:].split('/')[1]
                 )
                 range_length = end_length - range_start
-            except:
+            except Exception:
                 content_length = response.headers['content-length']
                 range_length = int(content_length) if content_length is not None \
                     else float('inf')
@@ -855,8 +856,7 @@ class SimpleProgressBar:
         self.displayed = True
         bar_size = self.bar_size
         percent = round(self.received * 100 / self.total_size, 1)
-        if percent >= 100:
-            percent = 100
+        percent = min(percent, 100)
         dots = bar_size * int(percent) // 100
         plus = int(percent) - dots // bar_size * 100
         if plus > 0.8:
@@ -992,7 +992,7 @@ def download_urls(
         print_user_agent(faker=faker)
         try:
             print('Real URLs:\n%s' % '\n'.join(urls))
-        except:
+        except Exception:
             print('Real URLs:\n%s' % '\n'.join([j for i in urls for j in i]))
         return
 
@@ -1003,7 +1003,7 @@ def download_urls(
     if not total_size:
         try:
             total_size = urls_size(urls, faker=faker, headers=headers)
-        except:
+        except Exception:
             import traceback
             traceback.print_exc(file=sys.stdout)
             pass
@@ -1077,7 +1077,7 @@ def download_urls(
                     from .processor.join_flv import concat_flv
                     concat_flv(parts, output_filepath)
                 print('Merged into %s' % output_filename)
-            except:
+            except Exception:
                 raise
             else:
                 for part in parts:
@@ -1093,7 +1093,7 @@ def download_urls(
                     from .processor.join_mp4 import concat_mp4
                     concat_mp4(parts, output_filepath)
                 print('Merged into %s' % output_filename)
-            except:
+            except Exception:
                 raise
             else:
                 for part in parts:
@@ -1109,7 +1109,7 @@ def download_urls(
                     from .processor.join_ts import concat_ts
                     concat_ts(parts, output_filepath)
                 print('Merged into %s' % output_filename)
-            except:
+            except Exception:
                 raise
             else:
                 for part in parts:
@@ -1123,7 +1123,7 @@ def download_urls(
                 from .processor.ffmpeg import ffmpeg_concat_mp3_to_mp3
                 ffmpeg_concat_mp3_to_mp3(parts, output_filepath)
                 print('Merged into %s' % output_filename)
-            except:
+            except Exception:
                 raise
             else:
                 for part in parts:
@@ -1152,9 +1152,8 @@ def download_rtmp_url(
         play_rtmpdump_stream(player, url, params)
         return
 
-    from .processor.rtmpdump import (
-        has_rtmpdump_installed, download_rtmpdump_stream
-    )
+    from .processor.rtmpdump import (download_rtmpdump_stream,
+                                     has_rtmpdump_installed)
     assert has_rtmpdump_installed(), 'RTMPDump not installed.'
     download_rtmpdump_stream(url,  title, ext, params, output_dir)
 
@@ -1175,7 +1174,7 @@ def download_url_ffmpeg(
         launch_player(player, [url])
         return
 
-    from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
+    from .processor.ffmpeg import ffmpeg_download_stream, has_ffmpeg_installed
     assert has_ffmpeg_installed(), 'FFmpeg not installed.'
 
     global output_filename
@@ -1397,7 +1396,8 @@ def load_cookies(cookiefile):
         with open(cookiefile, 'r', encoding='utf-8') as f:
             for line in f:
                 # last field may be absent, so keep any trailing tab
-                if line.endswith("\n"): line = line[:-1]
+                if line.endswith("\n"):
+                    line = line[:-1]
 
                 # skip comments and blank lines XXX what is $ for?
                 if (line.strip().startswith(("#", "$")) or
@@ -1443,7 +1443,9 @@ def load_cookies(cookiefile):
                 cookies.set_cookie(c)
 
     elif cookiefile.endswith(('.sqlite', '.sqlite3')):
-        import sqlite3, shutil, tempfile
+        import shutil
+        import sqlite3
+        import tempfile
         temp_dir = tempfile.gettempdir()
         temp_cookiefile = os.path.join(temp_dir, 'temp_cookiefile.sqlite')
         shutil.copy2(cookiefile, temp_cookiefile)
@@ -1486,12 +1488,12 @@ def set_socks_proxy(proxy):
                 socks_proxy_auth[1]
             )
         else:
-           socks_proxy_addrs = proxy.split(':')
-           socks.set_default_proxy(
-               socks.SOCKS5,
-               socks_proxy_addrs[0],
-               int(socks_proxy_addrs[1]),
-           )
+            socks_proxy_addrs = proxy.split(':')
+            socks.set_default_proxy(
+                socks.SOCKS5,
+                socks_proxy_addrs[0],
+                int(socks_proxy_addrs[1]),
+            )
         socket.socket = socks.socksocket
 
         def getaddrinfo(*args):
@@ -1812,7 +1814,7 @@ def google_search(url):
         r'(https://www\.youtube\.com/watch\?v=[\w-]+)', page
     )
     print('Best matched result:')
-    return(videos[0])
+    return videos[0]
 
 
 def url_to_module(url):
@@ -1844,7 +1846,7 @@ def url_to_module(url):
     else:
         try:
             location = get_location(url) # t.co isn't happy with fake_headers
-        except:
+        except Exception:
             location = get_location(url, headers=fake_headers)
 
         if location and location != url and not location.startswith('/'):

@@ -2,8 +2,9 @@
 
 __all__ = ['zhihu_download', 'zhihu_download_playlist']
 
-from ..common import *
 import json
+
+from ..common import *
 
 
 def zhihu_download(url, output_dir='.', merge=True, info_only=False, **kwargs):

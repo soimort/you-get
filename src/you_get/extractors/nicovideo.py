@@ -4,6 +4,7 @@ __all__ = ['nicovideo_download']
 
 from ..common import *
 
+
 def nicovideo_login(user, password):
     data = "current_form=login&mail=" + user +"&password=" + password + "&login_submit=Log+In"
     response = request.urlopen(request.Request("https://secure.nicovideo.jp/secure/login?site=niconico", headers=fake_headers, data=data.encode('utf-8')))
@@ -17,10 +18,11 @@ context=ssl.SSLContext(ssl.PROTOCOL_TLSv1))
     opener = request.build_opener(ssl_context, cookie_handler)
     request.install_opener(opener)
 
-    import netrc, getpass
+    import getpass
+    import netrc
     try:
         info = netrc.netrc().authenticators('nicovideo')
-    except:
+    except Exception:
         info = None
     if info is None:
         user = input("User:     ")

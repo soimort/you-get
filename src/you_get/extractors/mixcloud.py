@@ -4,6 +4,7 @@ __all__ = ['mixcloud_download']
 
 from ..common import *
 
+
 def mixcloud_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url, faker=True)
     title = r1(r'<meta property="og:title" content="([^"]*)"', html)
@@ -18,7 +19,8 @@ def mixcloud_download(url, output_dir='.', merge=True, info_only=False, **kwargs
         try:
             mime, ext, size = url_info(url)
             break
-        except: continue
+        except Exception:
+            continue
 
     print_info(site_info, title, ext, size)
     if not info_only:

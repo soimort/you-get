@@ -2,9 +2,9 @@
 
 __all__ = ['qq_download']
 
+from ..common import *
 from .qie import download as qieDownload
 from .qie_video import download_by_url as qie_video_download
-from ..common import *
 
 headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)  QQLive/10275340/50192209 Chrome/43.0.2357.134 Safari/537.36 QBCore/3.43.561.202 QQBrowser/9.0.2524.400'

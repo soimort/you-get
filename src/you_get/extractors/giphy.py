@@ -2,8 +2,10 @@
 
 __all__ = ['giphy_download']
 
-from ..common import *
 import json
+
+from ..common import *
+
 
 def giphy_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     html = get_html(url)
@@ -16,7 +18,7 @@ def giphy_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     title = r1(r'<meta property="og:title" content="(.*?)">', html)
 
     if title is None:
-      title = url[0]
+        title = url[0]
 
     type, ext, size = url_info(url[0], True)
     size = urls_size(url)

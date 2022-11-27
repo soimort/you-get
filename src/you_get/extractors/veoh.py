@@ -2,8 +2,10 @@
 
 __all__ = ['veoh_download']
 
-from ..common import *
 import urllib.error
+
+from ..common import *
+
 
 def veoh_download(url, output_dir = '.', merge = False, info_only = False, **kwargs):
     '''Get item_id'''

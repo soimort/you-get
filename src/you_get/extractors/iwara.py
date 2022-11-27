@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 __all__ = ['iwara_download']
 from ..common import *
+
 headers = {
     'DNT': '1',
     'Accept-Encoding': 'gzip, deflate, sdch, br',
@@ -29,7 +30,7 @@ def iwara_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     data = json.loads(content)
     if len(data)<1 :
         print('Maybe is Private Video?'+'['+title+']')
-        return True;
+        return True
     down_urls = 'https:' + data[0]['uri']
     type, ext, size = url_info(down_urls, headers=headers)
     print_info(site_info, title+data[0]['resolution'], type, size)
@@ -41,7 +42,7 @@ def download_playlist_by_url( url, **kwargs):
     video_page = get_html(url)
     url_first=match1(url, r"(http[s]?://[^/]+)")
     videos = set(re.findall(r'<a href="(/videos/[^"]+)"', video_page))
-    if(len(videos)>0):
+    if len(videos)>0:
         for video in videos:
             iwara_download(url_first+video, **kwargs)
     else:
