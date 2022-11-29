@@ -51,7 +51,6 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
 
         api_url = 'https://api.twitter.com/2/timeline/conversation/%s.json?tweet_mode=extended' % item_id
         api_content = get_content(api_url, headers={'authorization': authorization, 'x-guest-token': guest_token})
-
         info = json.loads(api_content)
         if item_id not in info['globalObjects']['tweets']:
             # something wrong here
@@ -110,7 +109,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         if 'video_info' in medium:
             variants = medium['video_info']['variants']
             variants = sorted(variants, key=lambda kv: kv.get('bitrate', 0))
-            title = item_id + '_' + variants[-1]['url'].split('/')[-1].split('?')[0].split('.')[0]
+            title = screen_name + '_' + item_id + '_' + variants[-1]['url'].split('/')[-1].split('?')[0].split('.')[0]
             urls = [ variants[-1]['url'] ]
             size = urls_size(urls)
             mime, ext = variants[-1]['content_type'], 'mp4'
@@ -120,7 +119,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                 download_urls(urls, title, ext, size, output_dir, merge=merge)
 
         else:
-            title = item_id + '_' + medium['media_url_https'].split('.')[-2].split('/')[-1]
+            title = screen_name + '_' + item_id + '_' + medium['media_url_https'].split('.')[-2].split('/')[-1]
             urls = [ medium['media_url_https'] + ':orig' ]
             size = urls_size(urls)
             ext = medium['media_url_https'].split('.')[-1]
