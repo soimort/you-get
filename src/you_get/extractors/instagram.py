@@ -19,9 +19,9 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
     api_url = 'https://i.instagram.com/api/v1/media/%s/info/' % media_id
     try:
         api_cont = get_content(api_url, headers={**fake_headers, **{'x-ig-app-id': appId}})
+        post = json.loads(api_cont)
     except:
         log.wtf('[Error] Please specify a cookie file.')
-    post = json.loads(api_cont)
 
     for item in post['items']:
         code = item['code']
