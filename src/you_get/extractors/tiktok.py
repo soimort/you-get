@@ -9,6 +9,7 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',
         'Accept-Encoding': 'gzip, deflate',
         'Accept': '*/*',
+        'Referer': 'https://www.tiktok.com/',
         'Connection': 'keep-alive'  # important
     }
 
@@ -22,7 +23,9 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     url = m.group(3).split('?')[0]
     vid = url.split('/')[3]  # should be a string of numbers
 
-    html = getHttps(host, url, headers=headers)
+    html, set_cookie = getHttps(host, url, headers=headers)
+    tt_chain_token = r1('tt_chain_token=([^;]+);', set_cookie)
+    headers['Cookie'] = 'tt_chain_token=%s' % tt_chain_token
 
     data = r1(r'window\[\'SIGI_STATE\'\]=(.*?);window\[\'SIGI_RETRY\'\]', html) or \
         r1(r'<script id="SIGI_STATE" type="application/json">(.*?)</script>', html)

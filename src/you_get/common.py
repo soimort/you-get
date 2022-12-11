@@ -358,7 +358,7 @@ def getHttps(host, url, headers, gzip=True, deflate=False, debuglevel=0):
     if deflate:
         data = undeflate(data)
 
-    return str(data, encoding='utf-8')
+    return str(data, encoding='utf-8'), resp.getheader('set-cookie')
 
 
 # DEPRECATED in favor of get_content()
