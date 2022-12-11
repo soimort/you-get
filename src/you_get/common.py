@@ -344,21 +344,24 @@ def undeflate(data):
 
 # an http.client implementation of get_content()
 # because urllib does not support "Connection: keep-alive"
-def getHttps(host, url, headers, gzip=True, deflate=False, debuglevel=0):
+def getHttps(host, url, headers, debuglevel=0):
     import http.client
 
     conn = http.client.HTTPSConnection(host)
     conn.set_debuglevel(debuglevel)
     conn.request("GET", url, headers=headers)
     resp = conn.getresponse()
+    set_cookie = resp.getheader('set-cookie')
 
     data = resp.read()
-    if gzip:
-        data = ungzip(data)
-    if deflate:
-        data = undeflate(data)
+    try:
+        data = ungzip(data)  # gzip
+        data = undeflate(data)  # deflate
+    except:
+        pass
 
-    return str(data, encoding='utf-8'), resp.getheader('set-cookie')
+    conn.close()
+    return str(data, encoding='utf-8'), set_cookie
 
 
 # DEPRECATED in favor of get_content()

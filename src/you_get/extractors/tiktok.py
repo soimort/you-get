@@ -16,12 +16,12 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     m = re.match('(https?://)?([^/]+)(/.*)', url)
     host = m.group(2)
     if host != 'www.tiktok.com':  # non-canonical URL
-        url = get_location(url, headers=headers)
-        m = re.match('(https?://)?([^/]+)(/.*)', url)
-        host = m.group(2)
-
-    url = m.group(3).split('?')[0]
-    vid = url.split('/')[3]  # should be a string of numbers
+        vid = r1(r'/video/(\d+)', url)
+        url = 'https://www.tiktok.com/@/video/%s/' % vid
+        host = 'www.tiktok.com'
+    else:
+        url = m.group(3).split('?')[0]
+        vid = url.split('/')[3]  # should be a string of numbers
 
     html, set_cookie = getHttps(host, url, headers=headers)
     tt_chain_token = r1('tt_chain_token=([^;]+);', set_cookie)
