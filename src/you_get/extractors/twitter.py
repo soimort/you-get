@@ -55,7 +55,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         info = json.loads(api_content)
         if item_id not in info['globalObjects']['tweets']:
             # something wrong here
-            #log.wtf('[Failed] ' + info['timeline']['instructions'][0]['addEntries']['entries'][0]['content']['item']['content']['tombstone']['tombstoneInfo']['richText']['text'], exit_code=None)
+            log.w('[Failed] ' + info['timeline']['instructions'][0]['addEntries']['entries'][0]['content']['item']['content']['tombstone']['tombstoneInfo']['richText']['text'])
             assert False
 
         elif 'extended_entities' in info['globalObjects']['tweets'][item_id]:
@@ -94,6 +94,8 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             return
 
     except:
+        log.w('[Warning] Falling back to deprecated Twitter API. Extraction may be incomplete.')
+
         authorization = 'Bearer AAAAAAAAAAAAAAAAAAAAAPYXBAAAAAAACLXUNDekMxqa8h%2F40K4moUkGsoc%3DTYfbDKbT3jJPCEVnMYqilB28NHfOPqkca3qaAxGfsyKCs0wRbw'
 
         # FIXME: 403 with cookies
