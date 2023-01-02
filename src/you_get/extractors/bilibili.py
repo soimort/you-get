@@ -747,13 +747,20 @@ class Bilibili(VideoExtractor):
         elif sort == 'space_channel_series':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/seriesdetail\?.*sid=(\d+)', self.url)
             mid, sid = m.group(1), m.group(2)
-            api_url = self.bilibili_series_archives_api(mid, sid)
-            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
-            archives_info = json.loads(api_content)
-            # TBD: channel of more than 100 videos
+            pn = 1
+            video_list = []
+            while True:
+                api_url = self.bilibili_series_archives_api(mid, sid, pn)
+                api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+                archives_info = json.loads(api_content)
+                video_list.extend(archives_info['data']['archives'])
+                if len(video_list) < archives_info['data']['page']['total'] and len(archives_info['data']['archives']) > 0:
+                    pn += 1
+                else:
+                    break
 
-            epn, i = len(archives_info['data']['archives']), 0
-            for video in archives_info['data']['archives']:
+            epn, i = len(video_list), 0
+            for video in video_list:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
@@ -761,13 +768,20 @@ class Bilibili(VideoExtractor):
         elif sort == 'space_channel_collection':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/collectiondetail\?.*sid=(\d+)', self.url)
             mid, sid = m.group(1), m.group(2)
-            api_url = self.bilibili_space_collection_api(mid, sid)
-            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
-            archives_info = json.loads(api_content)
-            # TBD: channel of more than 100 videos
+            pn = 1
+            video_list = []
+            while True:
+                api_url = self.bilibili_space_collection_api(mid, sid, pn)
+                api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+                archives_info = json.loads(api_content)
+                video_list.extend(archives_info['data']['archives'])
+                if len(video_list) < archives_info['data']['page']['total'] and len(archives_info['data']['archives']) > 0:
+                    pn += 1
+                else:
+                    break
 
-            epn, i = len(archives_info['data']['archives']), 0
-            for video in archives_info['data']['archives']:
+            epn, i = len(video_list), 0
+            for video in video_list:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
