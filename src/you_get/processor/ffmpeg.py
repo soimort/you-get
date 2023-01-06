@@ -128,7 +128,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
 
 def ffmpeg_concat_ts_to_mkv(files, output='output.mkv'):
     print('Merging video parts... ', end="", flush=True)
-    params = [FFMPEG] + LOGLEVEL + ['-isync', '-y', '-i']
+    params = [FFMPEG] + LOGLEVEL + ['-y', '-i']
     params.append('concat:')
     for file in files:
         if os.path.isfile(file):
