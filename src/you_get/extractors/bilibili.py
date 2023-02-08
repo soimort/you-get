@@ -42,6 +42,8 @@ class Bilibili(VideoExtractor):
         {'id': 'jpg', 'quality': 0},
     ]
 
+    codecids = {7: 'AVC', 12: 'HEVC', 13: 'AV1'}
+
     @staticmethod
     def height_to_quality(height, qn):
         if height <= 360 and qn <= 16:
@@ -70,7 +72,7 @@ class Bilibili(VideoExtractor):
 
     @staticmethod
     def bilibili_api(avid, cid, qn=0):
-        return 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&fnver=0&fnval=16&fourk=1' % (avid, cid, qn)
+        return 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&fnver=0&fnval=4048&fourk=1' % (avid, cid, qn)
 
     @staticmethod
     def bilibili_audio_api(sid):
@@ -302,11 +304,10 @@ class Bilibili(VideoExtractor):
                 if 'dash' in playinfo['data']:
                     audio_size_cache = {}
                     for video in playinfo['data']['dash']['video']:
-                        # prefer the latter codecs!
                         s = self.stream_qualities[video['id']]
-                        format_id = 'dash-' + s['id']  # prefix
+                        format_id = f"dash-{s['id']}-{self.codecids[video['codecid']]}"  # prefix
                         container = 'mp4'  # enforce MP4 container
-                        desc = s['desc']
+                        desc = s['desc'] + ' ' + video['codecs']
                         audio_quality = s['audio_quality']
                         baseurl = video['baseUrl']
                         size = self.url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
