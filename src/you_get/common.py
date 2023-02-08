@@ -138,6 +138,7 @@ auto_rename = False
 insecure = False
 m3u8 = False
 postfix = False
+prefix = None
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -1014,6 +1015,8 @@ def download_urls(
     title = tr(get_filename(title))
     if postfix and 'vid' in kwargs:
         title = "%s [%s]" % (title, kwargs['vid'])
+    if prefix is not None:
+        title = "[%s] %s" % (prefix, title)
     output_filename = get_output_filename(urls, title, ext, output_dir, merge)
     output_filepath = os.path.join(output_dir, output_filename)
 
@@ -1563,8 +1566,12 @@ def script_main(download, download_playlist, **kwargs):
         help='Do not download captions (subtitles, lyrics, danmaku, ...)'
     )
     download_grp.add_argument(
-        '--postfix', action='store_true', default=False,
+        '--post', '--postfix', dest='postfix', action='store_true', default=False,
         help='Postfix downloaded files with unique identifiers'
+    )
+    download_grp.add_argument(
+        '--pre', '--prefix', dest='prefix', metavar='PREFIX', default=None,
+        help='Prefix downloaded files with string'
     )
     download_grp.add_argument(
         '-f', '--force', action='store_true', default=False,
@@ -1689,6 +1696,7 @@ def script_main(download, download_playlist, **kwargs):
     global insecure
     global m3u8
     global postfix
+    global prefix
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
@@ -1726,6 +1734,7 @@ def script_main(download, download_playlist, **kwargs):
         insecure = True
 
     postfix = args.postfix
+    prefix = args.prefix
 
     if args.no_proxy:
         set_http_proxy('')
