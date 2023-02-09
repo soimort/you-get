@@ -117,7 +117,7 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_space_channel_api(mid, cid, pn=1, ps=100):
         return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (mid, cid, pn, ps)
-   
+
     @staticmethod
     def bilibili_space_collection_api(mid, cid, pn=1, ps=30):
         return 'https://api.bilibili.com/x/polymer/space/seasons_archives_list?mid=%s&season_id=%s&sort_reverse=false&page_num=%s&page_size=%s' % (mid, cid, pn, ps)
@@ -125,7 +125,7 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_series_archives_api(mid, sid, pn=1, ps=100):
         return 'https://api.bilibili.com/x/series/archives?mid=%s&series_id=%s&pn=%s&ps=%s&only_normal=true&sort=asc&jsonp=jsonp' % (mid, sid, pn, ps)
-    
+
     @staticmethod
     def bilibili_space_favlist_api(fid, pn=1, ps=20):
         return 'https://api.bilibili.com/x/v3/fav/resource/list?media_id=%s&pn=%s&ps=%s&order=mtime&type=0&tid=0&jsonp=jsonp' % (fid, pn, ps)
@@ -223,6 +223,10 @@ class Bilibili(VideoExtractor):
 
             if 'videoData' in initial_state:
                 # (standard video)
+
+                # warn if cookies are not loaded
+                if cookies is None:
+                    log.w('You will need login cookies for 720p formats or above. (use --cookies to load cookies.txt.)')
 
                 # warn if it is a multi-part video
                 pn = initial_state['videoData']['videos']
