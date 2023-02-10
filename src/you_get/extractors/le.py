@@ -134,7 +134,7 @@ def letvcloud_download(url, output_dir='.', merge=True, info_only=False):
 
 
 def letv_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
-    url = url_locations([url])[0]
+    url = get_location()
     if re.match(r'http://yuntv.letv.com/', url):
         letvcloud_download(url, output_dir=output_dir, merge=merge, info_only=info_only)
     elif 'sports.le.com' in url:
