@@ -365,52 +365,14 @@ def getHttps(host, url, headers, debuglevel=0):
     conn.close()
     return str(data, encoding='utf-8'), set_cookie  # TODO: support raw data
 
-
-# DEPRECATED in favor of get_content()
-def get_response(url, faker=False):
-    logging.debug('get_response: %s' % url)
-    ctx = None
-    if insecure:
-        # ignore ssl errors
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-    # install cookies
-    if cookies:
-        opener = request.build_opener(request.HTTPCookieProcessor(cookies))
-        request.install_opener(opener)
-
-    if faker:
-        response = request.urlopen(
-            request.Request(url, headers=fake_headers), None, context=ctx,
-        )
-    else:
-        response = request.urlopen(url, context=ctx)
-
-    data = response.read()
-    if response.info().get('Content-Encoding') == 'gzip':
-        data = ungzip(data)
-    elif response.info().get('Content-Encoding') == 'deflate':
-        data = undeflate(data)
-    response.data = data
-    return response
-
-
 # DEPRECATED in favor of get_content()
 def get_html(url, encoding=None, faker=False):
-    content = get_response(url, faker).data
-    return str(content, 'utf-8', 'ignore')
+    return get_content(url, headers=fake_headers if faker else {})
 
 
 # DEPRECATED in favor of get_content()
 def get_decoded_html(url, faker=False):
-    response = get_response(url, faker)
-    data = response.data
-    charset = r1(r'charset=([\w-]+)', response.headers['content-type'])
-    if charset:
-        return data.decode(charset, 'ignore')
-    else:
-        return data
+    return get_content(url, headers=fake_headers if faker else {})
 
 
 def get_location(url, headers=None, get_method='HEAD'):
@@ -645,26 +607,6 @@ def url_info(url, faker=False, headers={}):
         size = None
 
     return type, ext, size
-
-
-def url_locations(urls, faker=False, headers={}):
-    locations = []
-    for url in urls:
-        logging.debug('url_locations: %s' % url)
-
-        if faker:
-            response = urlopen_with_retry(
-                request.Request(url, headers=fake_headers)
-            )
-        elif headers:
-            response = urlopen_with_retry(
-                request.Request(url, headers=headers)
-            )
-        else:
-            response = urlopen_with_retry(request.Request(url))
-
-        locations.append(response.url)
-    return locations
 
 
 def url_save(
@@ -1337,20 +1279,6 @@ def unset_proxy():
     request.install_opener(opener)
 
 
-# DEPRECATED in favor of set_proxy() and unset_proxy()
-def set_http_proxy(proxy):
-    if proxy is None:  # Use system default setting
-        proxy_support = request.ProxyHandler()
-    elif proxy == '':  # Don't use any proxy
-        proxy_support = request.ProxyHandler({})
-    else:  # Use proxy
-        proxy_support = request.ProxyHandler(
-            {'http': '%s' % proxy, 'https': '%s' % proxy}
-        )
-    opener = request.build_opener(proxy_support)
-    request.install_opener(opener)
-
-
 def print_more_compatible(*args, **kwargs):
     import builtins as __builtin__
     """Overload default print function as py (<3.3) does not support 'flush' keyword.
@@ -1738,9 +1666,9 @@ def script_main(download, download_playlist, **kwargs):
     prefix = args.prefix
 
     if args.no_proxy:
-        set_http_proxy('')
-    else:
-        set_http_proxy(args.http_proxy)
+        unset_proxy()
+    elif args.http_proxy is not None:
+        set_proxy(args.http_proxy)
     if args.socks_proxy:
         set_socks_proxy(args.socks_proxy)
 
