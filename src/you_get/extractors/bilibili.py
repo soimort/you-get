@@ -338,21 +338,47 @@ class Bilibili(VideoExtractor):
 
         # bangumi
         elif sort == 'bangumi':
+            ep_id = ""
+            avid = ""
+            cid = ""
+
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
-            initial_state = json.loads(initial_state_text)
+            if (initial_state_text):
+                initial_state = json.loads(initial_state_text)
+ 
+                # warn if this bangumi has more than 1 video
+                epn = len(initial_state['epList'])
+                if epn > 1 and not kwargs.get('playlist'):
+                    log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
 
-            # warn if this bangumi has more than 1 video
-            epn = len(initial_state['epList'])
-            if epn > 1 and not kwargs.get('playlist'):
-                log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
+                # set video title
+                self.title = initial_state['h1Title']
 
-            # set video title
-            self.title = initial_state['h1Title']
+                # construct playinfos
+                ep_id = initial_state['epInfo']['id']
+                avid = initial_state['epInfo']['aid']
+                cid = initial_state['epInfo']['cid']
+            else:
+                initial_state_text = match1(html_content, r'\"episodes\":(.*?)\,\"user_status')
+                pinitial_state = json.loads(initial_state_text)
 
-            # construct playinfos
-            ep_id = initial_state['epInfo']['id']
-            avid = initial_state['epInfo']['aid']
-            cid = initial_state['epInfo']['cid']
+                epn = len(pinitial_state)
+                if epn > 1 and not kwargs.get('playlist'):
+                    log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
+
+                initial_state = {}
+                for dic in pinitial_state:
+                    if dic['link'] == self.url.rstrip('/'):
+                        initial_state = dic
+                        break
+
+                self.title = initial_state['share_copy']
+
+                # construct playinfos
+                ep_id = initial_state['id']
+                avid = initial_state['aid']
+                cid = initial_state['cid']
+
             playinfos = []
             api_url = self.bilibili_bangumi_api(avid, cid, ep_id)
             api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
@@ -716,10 +742,18 @@ class Bilibili(VideoExtractor):
                                 self.download(**kwargs)
 
         elif sort == 'bangumi':
+            episodes = []
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
-            initial_state = json.loads(initial_state_text)
-            epn, i = len(initial_state['epList']), 0
-            for ep in initial_state['epList']:
+            if (initial_state_text):
+                # initial_state = json.loads(initial_state_text)
+                episodes = json.loads(initial_state_text)['epList']
+            else:
+                initial_state_text = match1(html_content, r'\"episodes\":(.*?)\,\"user_status')
+                # initial_state = json.loads(initial_state_text)
+                episodes = json.loads(initial_state_text)
+
+            epn, i = len(episodes), 0
+            for ep in episodes:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
