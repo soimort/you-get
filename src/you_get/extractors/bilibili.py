@@ -368,7 +368,15 @@ class Bilibili(VideoExtractor):
 
                 initial_state = {}
                 for dic in pinitial_state:
-                    if dic['link'] == self.url.rstrip('/'):
+                    query_start = self.url.find('?')
+                    url = ""
+
+                    if query_start > 0:
+                       url = self.url[0:query_start].rstrip('/')
+                    else:
+                       url = self.url.rstrip('/')
+
+                    if dic['link'] == url:
                         initial_state = dic
                         break
 
