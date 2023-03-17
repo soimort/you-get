@@ -9,7 +9,7 @@ import math
 
 class Bilibili(VideoExtractor):
     name = "Bilibili"
-
+    epid = ""
     # Bilibili media encoding options, in descending quality order.
     stream_types = [
         {'id': 'hdflv2_8k', 'quality': 127, 'audio_quality': 30280,
@@ -42,8 +42,6 @@ class Bilibili(VideoExtractor):
         {'id': 'jpg', 'quality': 0},
     ]
 
-    codecids = {7: 'AVC', 12: 'HEVC', 13: 'AV1'}
-
     @staticmethod
     def height_to_quality(height, qn):
         if height <= 360 and qn <= 16:
@@ -72,7 +70,7 @@ class Bilibili(VideoExtractor):
 
     @staticmethod
     def bilibili_api(avid, cid, qn=0):
-        return 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&fnver=0&fnval=4048&fourk=1' % (avid, cid, qn)
+        return 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&fnver=0&fnval=16&fourk=1' % (avid, cid, qn)
 
     @staticmethod
     def bilibili_audio_api(sid):
@@ -117,7 +115,7 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_space_channel_api(mid, cid, pn=1, ps=100):
         return 'https://api.bilibili.com/x/space/channel/video?mid=%s&cid=%s&pn=%s&ps=%s&order=0&jsonp=jsonp' % (mid, cid, pn, ps)
-
+   
     @staticmethod
     def bilibili_space_collection_api(mid, cid, pn=1, ps=30):
         return 'https://api.bilibili.com/x/polymer/space/seasons_archives_list?mid=%s&season_id=%s&sort_reverse=false&page_num=%s&page_size=%s' % (mid, cid, pn, ps)
@@ -125,7 +123,7 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_series_archives_api(mid, sid, pn=1, ps=100):
         return 'https://api.bilibili.com/x/series/archives?mid=%s&series_id=%s&pn=%s&ps=%s&only_normal=true&sort=asc&jsonp=jsonp' % (mid, sid, pn, ps)
-
+    
     @staticmethod
     def bilibili_space_favlist_api(fid, pn=1, ps=20):
         return 'https://api.bilibili.com/x/v3/fav/resource/list?media_id=%s&pn=%s&ps=%s&order=mtime&type=0&tid=0&jsonp=jsonp' % (fid, pn, ps)
@@ -172,9 +170,9 @@ class Bilibili(VideoExtractor):
         # redirect: bangumi.bilibili.com/anime -> bangumi/play/ep
         elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url) or \
              re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)/play', self.url):
-            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+            initial_state_text = '{' + match1(html_content, r'("initEpList":.*?),"initSections"') + '}'  # FIXME
             initial_state = json.loads(initial_state_text)
-            ep_id = initial_state['epList'][0]['id']
+            ep_id = initial_state['initEpList'][0]['id']
             self.url = 'https://www.bilibili.com/bangumi/play/ep%s' % ep_id
             html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
 
@@ -193,6 +191,7 @@ class Bilibili(VideoExtractor):
             sort = 'audio'
         elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ep(\d+)', self.url):
             sort = 'bangumi'
+            self.epid = re.findall(r'https?://(www\.)?bilibili\.com/bangumi/play/ep(\d+)', self.url)[0][1]
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
             sort = 'bangumi'
         elif re.match(r'https?://live\.bilibili\.com/', self.url):
@@ -223,10 +222,6 @@ class Bilibili(VideoExtractor):
 
             if 'videoData' in initial_state:
                 # (standard video)
-
-                # warn if cookies are not loaded
-                if cookies is None:
-                    log.w('You will need login cookies for 720p formats or above. (use --cookies to load cookies.txt.)')
 
                 # warn if it is a multi-part video
                 pn = initial_state['videoData']['videos']
@@ -308,10 +303,11 @@ class Bilibili(VideoExtractor):
                 if 'dash' in playinfo['data']:
                     audio_size_cache = {}
                     for video in playinfo['data']['dash']['video']:
+                        # prefer the latter codecs!
                         s = self.stream_qualities[video['id']]
-                        format_id = f"dash-{s['id']}-{self.codecids[video['codecid']]}"  # prefix
+                        format_id = 'dash-' + s['id']  # prefix
                         container = 'mp4'  # enforce MP4 container
-                        desc = s['desc'] + ' ' + video['codecs']
+                        desc = s['desc']
                         audio_quality = s['audio_quality']
                         baseurl = video['baseUrl']
                         size = self.url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
@@ -338,21 +334,24 @@ class Bilibili(VideoExtractor):
 
         # bangumi
         elif sort == 'bangumi':
-            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+            initial_state_text = '{' + match1(html_content, r'("initEpList":.*?),"initSections"') + '}'
             initial_state = json.loads(initial_state_text)
 
             # warn if this bangumi has more than 1 video
-            epn = len(initial_state['epList'])
+            epn = len(initial_state['initEpList'])
             if epn > 1 and not kwargs.get('playlist'):
-                log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
+                log.w('This bangumi currently has %d videos. (use --playlist to download all videos.)' % epn)
 
             # set video title
-            self.title = initial_state['h1Title']
+            for i in range(epn):
+                if int(initial_state['initEpList'][i]['id']) == int(self.epid):
+                    break
+            self.title = initial_state['initEpList'][i]['share_copy']
 
             # construct playinfos
-            ep_id = initial_state['epInfo']['id']
-            avid = initial_state['epInfo']['aid']
-            cid = initial_state['epInfo']['cid']
+            ep_id = self.epid
+            avid = initial_state['initEpList'][i]['aid']
+            cid = initial_state['initEpList'][i]['cid']
             playinfos = []
             api_url = self.bilibili_bangumi_api(avid, cid, ep_id)
             api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
@@ -752,20 +751,13 @@ class Bilibili(VideoExtractor):
         elif sort == 'space_channel_series':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/seriesdetail\?.*sid=(\d+)', self.url)
             mid, sid = m.group(1), m.group(2)
-            pn = 1
-            video_list = []
-            while True:
-                api_url = self.bilibili_series_archives_api(mid, sid, pn)
-                api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
-                archives_info = json.loads(api_content)
-                video_list.extend(archives_info['data']['archives'])
-                if len(video_list) < archives_info['data']['page']['total'] and len(archives_info['data']['archives']) > 0:
-                    pn += 1
-                else:
-                    break
+            api_url = self.bilibili_series_archives_api(mid, sid)
+            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+            archives_info = json.loads(api_content)
+            # TBD: channel of more than 100 videos
 
-            epn, i = len(video_list), 0
-            for video in video_list:
+            epn, i = len(archives_info['data']['archives']), 0
+            for video in archives_info['data']['archives']:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
@@ -773,20 +765,13 @@ class Bilibili(VideoExtractor):
         elif sort == 'space_channel_collection':
             m = re.match(r'https?://space\.?bilibili\.com/(\d+)/channel/collectiondetail\?.*sid=(\d+)', self.url)
             mid, sid = m.group(1), m.group(2)
-            pn = 1
-            video_list = []
-            while True:
-                api_url = self.bilibili_space_collection_api(mid, sid, pn)
-                api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
-                archives_info = json.loads(api_content)
-                video_list.extend(archives_info['data']['archives'])
-                if len(video_list) < archives_info['data']['page']['total'] and len(archives_info['data']['archives']) > 0:
-                    pn += 1
-                else:
-                    break
+            api_url = self.bilibili_space_collection_api(mid, sid)
+            api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+            archives_info = json.loads(api_content)
+            # TBD: channel of more than 100 videos
 
-            epn, i = len(video_list), 0
-            for video in video_list:
+            epn, i = len(archives_info['data']['archives']), 0
+            for video in archives_info['data']['archives']:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
                 self.__class__().download_playlist_by_url(url, **kwargs)
