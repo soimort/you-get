@@ -4,6 +4,7 @@ from tkinter import ttk
 import subprocess
 
 
+
 class YouGetGUI:
     def __init__(self):
         self.root = tk.Tk()
@@ -15,10 +16,16 @@ class YouGetGUI:
             0: ("-i", "Print extracted information"),
             1: ("-u", "Print extracted information with URLs"),
             2: ("--json", "Print extracted URLs in JSON format"),
-            3: ("--no-caption", "Do not download captions (subtitles, lyrics, danmaku)"),
+            3: (
+                "--no-caption",
+                "Do not download captions (subtitles, lyrics, danmaku)",
+            ),
             4: ("--postfix", "Postfix downloaded files with unique identifiers"),
             5: ("-f", "Force overwriting existing files"),
-            6: ("--skip-existing-file-size-check", "Skip existing file without checking file size"),
+            6: (
+                "--skip-existing-file-size-check",
+                "Skip existing file without checking file size",
+            ),
             7: ("-F STREAM_ID", "Set video format to STREAM_ID"),
             8: ("-O FILE", "Set output filename"),
             9: ("-o DIR", "Set output directory"),
@@ -32,9 +39,9 @@ class YouGetGUI:
             17: ("-x HOST:PORT", "Use an HTTP proxy for downloading"),
             18: ("-y HOST:PORT", "Use an HTTP proxy for extracting only"),
             19: ("--no-proxy", "Never use a proxy"),
-            20: ("-s HOST:PORT", "Use a SOCKS5 proxy for downloading")
+            20: ("-s HOST:PORT", "Use a SOCKS5 proxy for downloading"),
         }
-        
+
         self.url = ""
         self.selected_options = []
         self.availible_formats = ["mp4", "mp3"]
@@ -81,8 +88,12 @@ class YouGetGUI:
 
         self.format_combobox_text = tk.StringVar()
         self.format_combobox_text.set("Choose format...")
-        self.format_combobox = ttk.Combobox(self.additional_frame, textvariable=self.format_combobox_text, state='readonly')
-        self.format_combobox['values'] = self.availible_formats
+        self.format_combobox = ttk.Combobox(
+            self.additional_frame,
+            textvariable=self.format_combobox_text,
+            state="readonly",
+        )
+        self.format_combobox["values"] = self.availible_formats
 
         self.format_combobox.grid(column=1, row=0, padx=5, pady=5)
 
@@ -97,25 +108,62 @@ class YouGetGUI:
 
         self.option_vars = [tk.BooleanVar() for _ in self.options_dict]
 
+        for i in self.selected_options:
+            self.option_vars[i].set(True)
+
+        self.dry_run_frame = tk.LabelFrame(self.settings_window, text="Dry run")
+        self.dry_run_frame.grid(
+            column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=5
+        )
+
+        self.download_options_frame = tk.LabelFrame(
+            self.settings_window, text="Download options"
+        )
+        self.download_options_frame.grid(
+            column=0, row=1, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=5
+        )
+
+        self.proxy_options_frame = tk.LabelFrame(
+            self.settings_window, text="Proxy options"
+        )
+        self.proxy_options_frame.grid(
+            column=0, row=2, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=5
+        )
+
         for key, value in self.options_dict.items():
-            option_checkbox = tk.Checkbutton(
-                self.settings_window,
+            if key in [0, 1, 2]:
+                temp = self.dry_run_frame
+            elif key in [17, 18, 19, 20]:
+                temp = self.proxy_options_frame
+            else:
+                temp = self.download_options_frame
+            option_checkbox = ttk.Checkbutton(
+                temp,
                 text=value[1],
                 variable=self.option_vars[key],
                 onvalue=True,
                 offvalue=False,
             )
-            option_checkbox.pack()
+            option_checkbox.pack(pady=2, anchor="w")
 
-        save_button = tk.Button(
-            self.settings_window, text="Save Settings", command=self.save_settings
-        )
-        save_button.pack()
+        self.button_frame = tk.Frame(self.settings_window)
+        self.button_frame.grid(column=0, row=3)
 
-        cancel_button = tk.Button(
-            self.settings_window, text="Cancel", command=self.hide_settings_window
+        cancel_button = ttk.Button(
+            self.button_frame,
+            text="Cancel",
+            command=self.hide_settings_window,
+            width=15,
         )
-        cancel_button.pack()
+        cancel_button.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+
+        save_button = ttk.Button(
+            self.button_frame,
+            text="Save Settings",
+            command=self.save_settings,
+            width=15,
+        )
+        save_button.grid(row=0, column=1, padx=10, pady=5, sticky="e")
 
     def hide_settings_window(self):
         self.settings_window.withdraw()
@@ -126,6 +174,7 @@ class YouGetGUI:
         self.first_step_widget()
 
     def save_settings(self):
+        self.selected_options.clear()
         for key, value in self.options_dict.items():
             if self.option_vars[key].get():
                 self.selected_options.append(key)
@@ -138,7 +187,6 @@ class YouGetGUI:
             cmd += [self.options_dict.get(key)[0]]
         cmd += [self.url]
         print(cmd)
-
 
     def clear_url_entry(self, event):
         if self.url_entry.get() == "Enter your URL here...":
