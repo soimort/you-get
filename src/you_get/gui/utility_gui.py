@@ -1,50 +1,120 @@
-from multiprocessing import Value
+from dataclasses import dataclass, field
+from typing import List
 import tkinter as tk
 from tkinter import ttk
 import subprocess
 
 
+@dataclass
+class Flag:
+    verbose_name: str
+    command: str
+    value: str = field(default_factory=str)
+
+    def __str__(self) -> str:
+        if self.value:
+            return self.command + " " + self.value
+        else:
+            return self.command
+
+
+class CommandBuilder:
+    root_command: str = "you-get"
+    url: str
+    flags: List[Flag]
+
+    def __init__(self, url: str) -> None:
+        self.url = url
+        self.flags = []
+
+    def build(self) -> str:
+        final_stirng = self.root_command + " "
+        for flag in self.flags:
+            final_stirng += str(flag) + " "
+        final_stirng += self.url
+        return final_stirng
+
+    def insert_flag(self, flag: Flag) -> None:
+        self.flags.append(flag)
+
+    def clear_flags(self) -> None:
+        self.flags.clear()
+
 
 class YouGetGUI:
+    builder: CommandBuilder
+
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("you-get")
         self.root.geometry("450x100")
         self.root.resizable(False, False)
 
-        self.options_dict = {
-            0: ("-i", "Print extracted information"),
-            1: ("-u", "Print extracted information with URLs"),
-            2: ("--json", "Print extracted URLs in JSON format"),
-            3: (
-                "--no-caption",
+        self.dry_run_options_list = [
+            Flag("without urls", "-i"),
+            Flag("with urls", "-u"),
+            Flag("JSON format", "--json"),
+        ]
+        self.download_options_checkboxes_list = [
+            Flag(
                 "Do not download captions (subtitles, lyrics, danmaku)",
+                "--no-caption",
             ),
-            4: ("--postfix", "Postfix downloaded files with unique identifiers"),
-            5: ("-f", "Force overwriting existing files"),
-            6: (
-                "--skip-existing-file-size-check",
+            Flag("Postfix downloaded files with unique identifiers", "--postfix"),
+            Flag("Force overwriting existing files", "-f"),
+            Flag(
                 "Skip existing file without checking file size",
+                "--skip-existing-file-size-check",
             ),
-            7: ("-F STREAM_ID", "Set video format to STREAM_ID"),
-            8: ("-O FILE", "Set output filename"),
-            9: ("-o DIR", "Set output directory"),
-            10: ("-p PLAYER", "Stream extracted URL to a PLAYER"),
-            11: ("-c", "Load cookies.txt or cookies.sqlite"),
-            12: ("-t SECONDS", "Set socket timeout"),
-            13: ("-d", "Show traceback and other debug info"),
-            14: ("-a", "Auto rename same name different files"),
-            15: ("-k", "Ignore SSL errors"),
-            16: ("-m", "Download video using an m3u8 URL"),
-            17: ("-x HOST:PORT", "Use an HTTP proxy for downloading"),
-            18: ("-y HOST:PORT", "Use an HTTP proxy for extracting only"),
-            19: ("--no-proxy", "Never use a proxy"),
-            20: ("-s HOST:PORT", "Use a SOCKS5 proxy for downloading"),
-        }
+            Flag("Load cookies.txt or cookies.sqlite", "-c"),
+            Flag("Show traceback and other debug info", "-d"),
+            Flag("Auto rename same name different files", "-a"),
+            Flag("Ignore SSL errors", "-k"),
+            Flag("Download video using an m3u8 URL", "-m"),
+        ]
+        self.download_options_entries_list = [
+            Flag("Set video format to STREAM_ID:", "-F"),
+            Flag("Set output filename:", "-O"),
+            Flag("Set output directory:", "-o"),
+            Flag("Stream extracted URL to a PLAYER:", "-p"),
+            Flag("Set socket timeout:", "-t"),
+        ]
+        self.proxy_options_list = [
+            Flag(
+                "HTTP proxy for downloading",
+                "-x",
+            ),
+            Flag("HTTP proxy for extracting only", "-y"),
+            Flag("SOCKS5 proxy for downloading", "-s"),
+        ]
+        self.other_proxy_options_list = [Flag("Never use a proxy", "--no-proxy")]
 
-        self.url = ""
         self.selected_options = []
         self.availible_formats = ["mp4", "mp3"]
+
+        self.print_var = tk.BooleanVar()
+
+        self.print_combobox_text = tk.StringVar()
+        self.print_combobox_text.set("without urls")
+
+        self.download_options_checkboxes_vars = [
+            tk.BooleanVar() for _ in self.download_options_checkboxes_list
+        ]
+        self.download_options_checkboxes_with_entry_vars = [
+            tk.BooleanVar() for _ in self.download_options_entries_list
+        ]
+        self.download_options_entries_vars = [
+            tk.StringVar() for _ in self.download_options_entries_list
+        ]
+        self.proxy_var = tk.BooleanVar()
+
+        self.proxy_combobox_text = tk.StringVar()
+        self.proxy_combobox_text.set("HTTP proxy for downloading")
+
+        self.other_proxy_options_vars = [
+            tk.BooleanVar() for _ in self.other_proxy_options_list
+        ]
+        self.host_port_entry_var = tk.StringVar()
 
         self.first_step_widget()
 
@@ -68,12 +138,12 @@ class YouGetGUI:
         self.continue_button.grid(column=1, row=0, padx=5, pady=5)
 
     def second_step_widget(self):
-        self.url = self.url_entry.get()
+        self.builder = CommandBuilder(self.url_entry.get())
         self.continue_button.grid_forget()
         self.url_entry.config(state="disabled")
 
         self.download_button = ttk.Button(
-            self.main_frame, text="Download", command=self.download_video
+            self.main_frame, text="Download", command=self.download
         )
 
         self.download_button.grid(column=1, row=0, padx=5, pady=5)
@@ -103,49 +173,49 @@ class YouGetGUI:
         self.settings_button.grid(column=2, row=0, padx=5, pady=5)
 
     def show_settings_window(self):
+        # Создаем окно
         self.settings_window = tk.Toplevel(self.root)
         self.settings_window.title("Settings")
+        self.settings_window.resizable(False, False)
 
-        self.option_vars = [tk.BooleanVar() for _ in self.options_dict]
-
-        for i in self.selected_options:
-            self.option_vars[i].set(True)
-
-        self.dry_run_frame = tk.LabelFrame(self.settings_window, text="Dry run")
-        self.dry_run_frame.grid(
+        # Создаем фреймы для каждого блока
+        self.dry_run_labelframe = tk.LabelFrame(self.settings_window, text="Dry run")
+        self.dry_run_labelframe.grid(
             column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=5
         )
 
-        self.download_options_frame = tk.LabelFrame(
+        self.download_options_labelframe = tk.LabelFrame(
             self.settings_window, text="Download options"
         )
-        self.download_options_frame.grid(
+        self.download_options_labelframe.grid(
             column=0, row=1, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=5
         )
 
-        self.proxy_options_frame = tk.LabelFrame(
+        self.download_options_checkboxes_frame = tk.Frame(
+            self.download_options_labelframe
+        )
+        self.download_options_checkboxes_frame.grid(
+            column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S)
+        )
+        self.download_options_entries_frame = tk.Frame(self.download_options_labelframe)
+        self.download_options_entries_frame.grid(
+            column=1, row=0, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20
+        )
+
+        self.proxy_options_labelframe = tk.LabelFrame(
             self.settings_window, text="Proxy options"
         )
-        self.proxy_options_frame.grid(
+        self.proxy_options_labelframe.grid(
             column=0, row=2, sticky=(tk.N, tk.W, tk.E, tk.S), padx=20, pady=5
         )
 
-        for key, value in self.options_dict.items():
-            if key in [0, 1, 2]:
-                temp = self.dry_run_frame
-            elif key in [17, 18, 19, 20]:
-                temp = self.proxy_options_frame
-            else:
-                temp = self.download_options_frame
-            option_checkbox = ttk.Checkbutton(
-                temp,
-                text=value[1],
-                variable=self.option_vars[key],
-                onvalue=True,
-                offvalue=False,
-            )
-            option_checkbox.pack(pady=2, anchor="w")
+        # Заполняем фреймы содержимым
+        self.dry_run_handler()
+        self.download_options_checkboxes_handler()
+        self.download_options_entries_handler()
+        self.proxy_options_handler()
 
+        # Заполняем фрейм для кнопок и сами кнопки
         self.button_frame = tk.Frame(self.settings_window)
         self.button_frame.grid(column=0, row=3)
 
@@ -165,6 +235,170 @@ class YouGetGUI:
         )
         save_button.grid(row=0, column=1, padx=10, pady=5, sticky="e")
 
+    def dry_run_handler(self):
+        self.print_checkbox = ttk.Checkbutton(
+            self.dry_run_labelframe,
+            text="Print extracted information",
+            variable=self.print_var,
+            onvalue=True,
+            offvalue=False,
+            command=lambda: self.print_combobox.config(state="readonly")
+            if self.print_var.get()
+            else self.print_combobox.config(state="disabled"),
+        )
+        self.print_checkbox.grid(column=0, row=0, pady=5)
+
+        self.print_combobox = ttk.Combobox(
+            self.dry_run_labelframe,
+            textvariable=self.print_combobox_text,
+            state="readonly" if self.print_var.get() else "disabled",
+        )
+        self.print_list = [value.verbose_name for value in self.dry_run_options_list]
+        self.print_combobox["values"] = list(self.print_list)
+        self.print_combobox.grid(column=1, row=0, padx=5, pady=5)
+
+    def download_options_checkboxes_handler(self):
+        for idx, value in enumerate(self.download_options_checkboxes_list):
+            option_checkbox = ttk.Checkbutton(
+                self.download_options_checkboxes_frame,
+                text=value.verbose_name,
+                variable=self.download_options_checkboxes_vars[idx],
+                onvalue=True,
+                offvalue=False,
+            )
+            option_checkbox.pack(pady=2, anchor="w")
+
+    def download_options_entries_handler(self):
+        for idx, value in enumerate(self.download_options_entries_list):
+            option_checkbox_with_entry = ttk.Checkbutton(
+                self.download_options_entries_frame,
+                text=value.verbose_name,
+                variable=self.download_options_checkboxes_with_entry_vars[idx],
+                onvalue=True,
+                offvalue=False,
+                command=lambda key=idx: self.download_option_entry_handle(key),
+            )
+            option_checkbox_with_entry.grid(
+                row=idx, column=0, padx=10, pady=5, sticky="w"
+            )
+            option_entry_for_checkbox = ttk.Entry(
+                self.download_options_entries_frame,
+                width=15,
+                textvariable=self.download_options_entries_vars[idx],
+                state="normal"
+                if self.download_options_checkboxes_with_entry_vars[idx].get()
+                else "disabled",
+            )
+            option_entry_for_checkbox.grid(row=idx, column=1, padx=10, pady=5)
+
+    def proxy_options_handler(self):
+        self.proxy_checkbox = ttk.Checkbutton(
+            self.proxy_options_labelframe,
+            text="Use",
+            variable=self.proxy_var,
+            onvalue=True,
+            offvalue=False,
+            state="disabled" if self.other_proxy_options_vars[0].get() else "normal",
+            command=lambda: self.proxy_options_enabled()
+            if self.proxy_var.get()
+            else self.proxy_options_disabled(),
+        )
+        self.proxy_checkbox.grid(column=0, row=0, pady=5, sticky="w")
+
+        self.proxy_combobox = ttk.Combobox(
+            self.proxy_options_labelframe,
+            width="30",
+            textvariable=self.proxy_combobox_text,
+            state="readonly" if self.proxy_var.get() else "disabled",
+        )
+        self.proxy_list = [value.verbose_name for value in self.proxy_options_list]
+        self.proxy_combobox["values"] = list(self.proxy_list)
+        self.proxy_combobox.grid(column=1, row=0, pady=5)
+
+        self.host_port_label = ttk.Label(
+            self.proxy_options_labelframe,
+            text="Enter HOST::PORT: ",
+            state="normal" if self.proxy_var.get() else "disabled",
+        )
+        self.host_port_label.grid(column=2, row=0, padx=10, pady=5)
+
+        self.host_port_entry = ttk.Entry(
+            self.proxy_options_labelframe,
+            width=15,
+            textvariable=self.host_port_entry_var,
+            state="normal" if self.proxy_var.get() else "disabled",
+        )
+        self.host_port_entry.grid(column=3, row=0, padx=5, pady=5)
+
+        for idx, value in enumerate(self.other_proxy_options_list):
+            option_checkbox = ttk.Checkbutton(
+                self.proxy_options_labelframe,
+                text=value.verbose_name,
+                variable=self.other_proxy_options_vars[idx],
+                onvalue=True,
+                offvalue=False,
+            )
+            option_checkbox.grid(column=0, row=idx + 1, pady=5)
+            if value.command == "--no-proxy":
+                option_checkbox.config(
+                    command=lambda: self.no_proxy_option_enabled()
+                    if self.other_proxy_options_vars[idx].get()
+                    else self.no_proxy_options_disabled()
+                )
+
+    # def download_options_enabled(self):
+    #     for widget in (
+    #         self.download_options_checkboxes_frame.winfo_children()
+    #         + self.download_options_entries_frame.winfo_children()
+    #     ):
+    #         widget.config(state="normal")
+
+    # def download_options_disabled(self):
+    #     for i, widget in enumerate(
+    #         self.download_options_checkboxes_frame.winfo_children()
+    #     ):
+    #         widget.config(state="disabled")
+    #     entry_widgets = [
+    #         widget
+    #         for widget in self.download_options_entries_frame.winfo_children()
+    #         if isinstance(widget, ttk.Entry)
+    #     ]
+    #     for i, widget in enumerate(entry_widgets):
+    #         widget.config(state="disabled")
+
+    def get_corresponding_entry(self, key):
+        entries = [
+            widget
+            for widget in self.download_options_entries_frame.winfo_children()
+            if isinstance(widget, ttk.Entry)
+        ]
+        return entries[key]
+
+    def download_option_entry_handle(self, key):
+        self.get_corresponding_entry(key).config(
+            state="normal"
+            if self.download_options_checkboxes_with_entry_vars[key].get()
+            else "disabled"
+        )
+
+    def proxy_options_enabled(self):
+        self.proxy_combobox.config(state="readonly")
+        self.host_port_label.config(state="normal")
+        self.host_port_entry.config(state="normal")
+
+    def proxy_options_disabled(self):
+        self.proxy_combobox.config(state="disabled")
+        self.host_port_label.config(state="disabled")
+        self.host_port_entry.config(state="disabled")
+
+    def no_proxy_option_enabled(self):
+        self.proxy_options_disabled()
+        self.proxy_checkbox.config(state="disabled")
+        self.proxy_var.set("False")
+
+    def no_proxy_options_disabled(self):
+        self.proxy_checkbox.config(state="normal")
+
     def hide_settings_window(self):
         self.settings_window.withdraw()
 
@@ -174,19 +408,53 @@ class YouGetGUI:
         self.first_step_widget()
 
     def save_settings(self):
-        self.selected_options.clear()
-        for key, value in self.options_dict.items():
-            if self.option_vars[key].get():
-                self.selected_options.append(key)
+        self.builder.clear_flags()
+        if self.print_var.get():
+            self.builder.insert_flag(
+                self.dry_run_options_list[self.print_combobox.current()]
+            )
+
+        for idx, flag in enumerate(self.download_options_checkboxes_list):
+            if self.download_options_checkboxes_vars[idx].get():
+                self.builder.insert_flag(flag)
+
+        for idx, flag in enumerate(self.download_options_entries_list):
+            if self.download_options_checkboxes_with_entry_vars[idx].get():
+                flag.value = self.get_corresponding_entry(idx).get()
+                self.builder.insert_flag(flag)
+
+        if self.proxy_var.get():
+            flag = self.proxy_options_list[self.proxy_combobox.current()]
+            flag.value = self.host_port_entry.get()
+            self.builder.insert_flag(flag)
+
+        for idx, flag in enumerate(self.other_proxy_options_list):
+            if self.other_proxy_options_vars[idx].get():
+                self.builder.insert_flag(flag)
 
         self.hide_settings_window()
 
-    def download_video(self):
-        cmd = ["you-get"]
-        for key in self.selected_options:
-            cmd += [self.options_dict.get(key)[0]]
-        cmd += [self.url]
-        print(cmd)
+    def download(self):
+        final_command = self.builder.build()
+        print(final_command)
+        process = subprocess.Popen(
+            final_command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+        )
+        self.output_window = tk.Toplevel(self.root)
+        self.output_window.geometry("720x405")
+        self.output_window.resizable(False, False)
+
+        output_text = tk.Text(self.output_window, width=80, height=20)
+        output_text.pack()
+
+        self.output_window.title("Output")
+        for line in process.stdout:
+            output_text.insert(tk.END, line)
+            output_text.see(tk.END)
 
     def clear_url_entry(self, event):
         if self.url_entry.get() == "Enter your URL here...":
