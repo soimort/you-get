@@ -34,7 +34,18 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                              **kwargs)
         return
 
-    html = get_html(url, faker=True) # now it seems faker must be enabled
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'
+    }
+    host = 'www.twitter.com'
+
+    html, set_cookie = getHttps(host, url, headers=headers)
+    # "Found. Redirecting to..."
+    guest_id = r1('guest_id=([^;]+);', set_cookie)
+    headers['Cookie'] = 'guest_id=%s' % guest_id
+
+    html = get_content(url, headers=headers)
+
     screen_name = r1(r'twitter\.com/([^/]+)', url) or r1(r'data-screen-name="([^"]*)"', html) or \
         r1(r'<meta name="twitter:title" content="([^"]*)"', html)
     item_id = r1(r'twitter\.com/[^/]+/status/(\d+)', url) or r1(r'data-item-id="([^"]*)"', html) or \
