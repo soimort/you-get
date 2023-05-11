@@ -62,8 +62,8 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
 
         api_url = 'https://api.twitter.com/2/timeline/conversation/%s.json?tweet_mode=extended' % item_id
         api_content = get_content(api_url, headers={'authorization': authorization, 'x-guest-token': guest_token})
-
         info = json.loads(api_content)
+        twitter_write_json(info, screen_name, item_id)
         if item_id not in info['globalObjects']['tweets']:
             # something wrong here
             log.w('[Failed] ' + info['timeline']['instructions'][0]['addEntries']['entries'][0]['content']['item']['content']['tombstone']['tombstoneInfo']['richText']['text'])
@@ -117,13 +117,14 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
         api_url = 'https://api.twitter.com/1.1/statuses/show/%s.json?tweet_mode=extended' % item_id
         api_content = get_content(api_url, headers={'authorization': authorization, 'x-guest-token': guest_token})
         info = json.loads(api_content)
+        twitter_write_json(info, screen_name, item_id)
         media = info['extended_entities']['media']
 
     for medium in media:
         if 'video_info' in medium:
             variants = medium['video_info']['variants']
             variants = sorted(variants, key=lambda kv: kv.get('bitrate', 0))
-            title = item_id + '_' + variants[-1]['url'].split('/')[-1].split('?')[0].split('.')[0]
+            title = screen_name + '_' + item_id + '_' + variants[-1]['url'].split('/')[-1].split('?')[0].split('.')[0]
             urls = [ variants[-1]['url'] ]
             size = urls_size(urls)
             mime, ext = variants[-1]['content_type'], 'mp4'
@@ -133,7 +134,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                 download_urls(urls, title, ext, size, output_dir, merge=merge)
 
         else:
-            title = item_id + '_' + medium['media_url_https'].split('.')[-2].split('/')[-1]
+            title = screen_name + '_' + item_id + '_' + medium['media_url_https'].split('.')[-2].split('/')[-1]
             urls = [ medium['media_url_https'] + ':orig' ]
             size = urls_size(urls)
             ext = medium['media_url_https'].split('.')[-1]
@@ -141,6 +142,30 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             print_info(site_info, title, ext, size)
             if not info_only:
                 download_urls(urls, title, ext, size, output_dir, merge=merge)
+
+
+def twitter_write_json(info, screen_name, item_id):
+    # this function save tweets in human readable json format
+    # # uncomment these lines if you need the original api returned json
+    # info_string = json.dumps(info, indent="    ", ensure_ascii=False)
+    # with open(screen_name+'_'+item_id+"_tweet.json", 'w') as fw:
+    #     fw.write(info_string)
+    if 'globalObjects' in info.keys():
+        tweets = info['globalObjects']['tweets']
+        info_users = info["globalObjects"]['users']
+        tweets_simplified = {}
+        for key in tweets.keys():
+            user_id_str = tweets[key]['user_id_str']
+            tweets_simplified[key] = {}
+            tweets_simplified[key]['created_at'] = tweets[key]['created_at']
+            tweets_simplified[key]['user_id_str'] = tweets[key]['user_id_str']
+            tweets_simplified[key]['full_text'] = tweets[key]['full_text']
+            tweets_simplified[key]['name'] = info_users[user_id_str]['name']
+
+        tweet_string = json.dumps(
+            tweets_simplified, indent="    ", ensure_ascii=False)
+        with open(screen_name+'_'+item_id+".json", 'w') as fw:
+            fw.write(tweet_string)
 
 
 site_info = "Twitter.com"
