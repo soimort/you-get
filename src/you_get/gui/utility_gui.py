@@ -2,7 +2,10 @@ from dataclasses import dataclass, field
 from typing import List
 import tkinter as tk
 from tkinter import ttk
-from you_get.common import *
+import os
+import sys
+
+from ..common import *
 
 @dataclass
 class Flag:
@@ -526,19 +529,6 @@ class YouGetGUI:
 
         URLs = [self.builder.url]
 
-        try:
-            download_main(
-                any_download, any_download_playlist,
-                URLs, None,
-               output_dir=output_dir, merge=False,
-               info_only=False, json_output=json_output, caption=not no_caption,
-              password=password,
-               **extra
-            )
-        except Exception:
-            sys.exit(1)
-
-
         self.output_window = tk.Toplevel(self.root)
         self.output_window.geometry("720x405")
         self.output_window.resizable(False, False)
@@ -547,9 +537,15 @@ class YouGetGUI:
         output_text.pack()
 
         self.output_window.title("Output")
-        for line in sys.stdout:
-            output_text.insert(tk.END, line)
-            output_text.see(tk.END)
+
+        download_main(
+            any_download, any_download_playlist,
+            URLs, None,
+            output_dir=output_dir, merge=False,
+            info_only=False, json_output=json_output, caption=not no_caption,
+            password=password,
+            **extra
+        )
 
     def clear_url_entry(self, event):
         if self.url_entry.get() == "Enter your URL here...":
