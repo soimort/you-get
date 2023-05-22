@@ -15,7 +15,6 @@ from http import cookiejar
 from importlib import import_module
 from urllib import request, parse, error
 
-from .version import __version__
 from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
@@ -139,6 +138,54 @@ insecure = False
 m3u8 = False
 postfix = False
 prefix = None
+
+def set_global_force(value: bool):
+    global force
+    force = value
+
+def set_global_skip_existing_file_size_check(value: bool):
+    global skip_existing_file_size_check
+    skip_existing_file_size_check = value
+
+def set_global_dry_run(value: bool):
+    global dry_run
+    dry_run = value
+
+def set_global_json_output(value: bool):
+    global json_output
+    json_output = value
+
+def set_global_player(value: str):
+    global player
+    player = value
+
+def set_global_extractor_proxy(value: str):
+    global extractor_proxy
+    extractor_proxy = value
+
+def set_global_output_filename(value: str):
+    global output_filename
+    output_filename = value
+
+def set_global_auto_rename(value: bool):
+    global auto_rename
+    auto_rename = value
+
+def set_global_insecure(value: bool):
+    global insecure
+    insecure = value
+
+def set_global_m3u8(value: bool):
+    global m3u8
+    m3u8 = value
+
+def set_global_postfix(value: bool):
+    global postfix
+    postfix = value
+
+def set_global_prefix(value: str):
+    global prefix
+    prefix = value
 
 fake_headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
@@ -1515,16 +1562,6 @@ def set_socks_proxy(proxy):
 def script_main(download, download_playlist, **kwargs):
     logging.basicConfig(format='[%(levelname)s] %(message)s')
 
-    def print_version():
-        version = get_version(
-            kwargs['repo_path'] if 'repo_path' in kwargs else __version__
-        )
-        log.i(
-            'version {}, a tiny downloader that scrapes the web.'.format(
-                version
-            )
-        )
-
     parser = argparse.ArgumentParser(
         prog='you-get',
         usage='you-get [OPTION]... URL...',
@@ -1672,14 +1709,6 @@ def script_main(download, download_playlist, **kwargs):
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
     args = parser.parse_args()
-
-    if args.help:
-        print_version()
-        parser.print_help()
-        sys.exit()
-    if args.version:
-        print_version()
-        sys.exit()
 
     if args.debug:
         # Set level of root logger to DEBUG
@@ -1876,4 +1905,6 @@ def any_download_playlist(url, **kwargs):
 
 
 def main(**kwargs):
-    script_main(any_download, any_download_playlist, **kwargs)
+    from .gui.utility_gui import YouGetGUI
+    YouGetGUI().run()
+    # script_main(any_download, any_download_playlist, **kwargs)

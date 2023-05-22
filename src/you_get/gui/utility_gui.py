@@ -2,8 +2,7 @@ from dataclasses import dataclass, field
 from typing import List
 import tkinter as tk
 from tkinter import ttk
-import subprocess
-
+from you_get.common import *
 
 @dataclass
 class Flag:
@@ -39,6 +38,14 @@ class CommandBuilder:
 
     def clear_flags(self) -> None:
         self.flags.clear()
+
+    def get_flag_value(self, command: str) -> str | None:
+        for flag in self.flags:
+            if flag.command == command:
+                return flag.value
+
+    def has_flag(self, command: str) -> bool:
+        return self.get_flag_value(command) != None
 
 
 class YouGetGUI:
@@ -435,15 +442,103 @@ class YouGetGUI:
         self.hide_settings_window()
 
     def download(self):
-        final_command = self.builder.build()
-        print(final_command)
-        process = subprocess.Popen(
-            final_command,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
-        )
+        extractor_proxy = self.builder.get_flag_value('-y')
+        output_filename = self.builder.get_flag_value('-O')
+        force = self.builder.has_flag('-f')
+        skip_size_check = self.builder.has_flag('--skip-existing-file-size-check')
+        auto_rename = self.builder.has_flag('-a')
+        dry_run = self.builder.has_flag('-u')
+        json_output = self.builder.has_flag('--json')
+        cookies = self.builder.get_flag_value('-c')
+        m3u8 = self.builder.has_flag('-m')
+        insecure = self.builder.has_flag('-k')
+        player = self.builder.get_flag_value('-p')
+        prefix = self.builder.get_flag_value('--prefix')
+        postfix = self.builder.has_flag('--postfix')
+        no_proxy = self.builder.has_flag('--no-proxy')
+        http_proxy = self.builder.get_flag_value('-x')
+        socks_proxy = self.builder.get_flag_value('-s')
+        no_caption = self.builder.has_flag('--no-caption')
+        socket_timeout = self.builder.get_flag_value('-t')
+        stream_id = self.builder.get_flag_value('-F')
+        output_dir = self.builder.get_flag_value('-o')
+        password = self.builder.get_flag_value('-P')
+
+        args = {}
+        extra = {'args': args}
+
+        if extractor_proxy:
+            set_global_extractor_proxy(extractor_proxy)
+            extra['extractor_proxy'] = extractor_proxy
+        if output_filename:
+            set_global_output_filename(output_filename)
+            args['output-filename'] = output_filename
+        if force:
+            set_global_force(True)
+            args['force'] = True
+        if skip_size_check:
+            set_global_skip_existing_file_size_check(True)
+            args['skip-existing-file-size-check'] = True
+        if auto_rename:
+            set_global_auto_rename(True)
+            args['auto-rename'] = True
+        if dry_run:
+            set_global_dry_run(True)
+            args['url'] = True
+        if json_output:
+            set_global_json_output(True)
+            set_global_dry_run(True)
+            args['json'] = True
+            args['url'] = True
+        if cookies:
+            load_cookies(cookies)
+            args['cookies'] = cookies
+        if m3u8:
+            set_global_m3u8(True)
+            args['m3u8'] = True
+        if insecure:
+            set_global_insecure(True)
+            args['insecure'] = True
+        if player:
+            set_global_player(player)
+            args['player'] = player
+        if prefix:
+            set_global_prefix(prefix)
+            args['prefix'] = prefix
+        if postfix:
+            set_global_postfix(True)
+            args['postfix'] = True
+        if no_proxy:
+            set_http_proxy('')
+        if http_proxy:
+            set_http_proxy(http_proxy)
+            args['http-proxy'] = http_proxy
+        if socks_proxy:
+            set_socks_proxy(socks_proxy)
+            args['socks-proxy'] = socks_proxy
+        if socket_timeout:
+            socket.setdefaulttimeout(float(socket_timeout))
+            args['timeout'] = int(socket_timeout)
+        if stream_id:
+            extra['stream_id'] = stream_id
+        if output_dir:
+            args['output-dir'] = output_dir
+
+        URLs = [self.builder.url]
+
+        try:
+            download_main(
+                any_download, any_download_playlist,
+                URLs, None,
+               output_dir=output_dir, merge=False,
+               info_only=False, json_output=json_output, caption=not no_caption,
+              password=password,
+               **extra
+            )
+        except Exception:
+            sys.exit(1)
+
+
         self.output_window = tk.Toplevel(self.root)
         self.output_window.geometry("720x405")
         self.output_window.resizable(False, False)
@@ -452,7 +547,7 @@ class YouGetGUI:
         output_text.pack()
 
         self.output_window.title("Output")
-        for line in process.stdout:
+        for line in sys.stdout:
             output_text.insert(tk.END, line)
             output_text.see(tk.END)
 
