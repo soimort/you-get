@@ -1,41 +1,11 @@
 # coding=utf-8
 
 import json
-
-from ..common import (
-    url_size,
-    print_info,
-    get_content,
-    fake_headers,
-    download_urls,
-    playlist_not_supported,
-    match1,
-    get_location,
-)
+import re
+from urllib import parse
+from ..common import *
 
 __all__ = ['douyin_download_by_url']
-
-
-def get_value(source: dict, path):
-    try:
-        value = source
-        for key in path:
-            if type(key) is str:
-                if key in value.keys():
-                    value = value[key]
-                else:
-                    value = None
-                    break
-            elif type(key) is int:
-                if len(value) != 0:
-                    value = value[key]
-                else:
-                    value = None
-                    break
-    except:
-        value = None
-    return value
-
 
 def douyin_download_by_url(url, **kwargs):
     # if short link, get the real url
@@ -43,17 +13,34 @@ def douyin_download_by_url(url, **kwargs):
         url = get_location(url)
     aweme_id = match1(url, r'/(\d+)/?')
     # get video info
-    video_info_api = 'https://www.douyin.com/web/api/v2/aweme/iteminfo/?item_ids={}'
+    video_info_api = 'https://www.douyin.com/video/{}?previous_page=app_code_link'
     url = video_info_api.format(aweme_id)
     page_content = get_content(url, headers=fake_headers)
-    video_info = json.loads(page_content)
+    json_data = re.findall(r'(?<=<script id=\"RENDER_DATA\" type=\"application\/json\">)(.*?)(?=<\/script>)', page_content)
+    try:
+        video_info = json.loads(parse.unquote(json_data[0]))
+    except:
+        log.wtf('[Error] Please specify a cookie file or cookie file need to be refresh.')
+    
+    data = None
+    for _, v in video_info.items():
+        if isinstance(v, str):
+            continue
+        if 'awemeId' in v:
+            data = v['aweme']
+    data = data['detail']
 
     # get video id and title
-    video_id = get_value(video_info, ['item_list', 0, 'video', 'vid'])
-    title = get_value(video_info, ['item_list', 0, 'desc'])
+    title = data['desc']
 
-    # get video play url
-    video_url = "https://aweme.snssdk.com/aweme/v1/play/?ratio=720p&line=0&video_id={}".format(video_id)
+    # get video play url (the highest rate) 
+    rate = 0
+    url = ''
+    for item in data['video']['bitRateList']:
+        if item['bitRate'] > rate:
+            rate = item['bitRate']
+            url = item['playApi']
+    video_url = "https:" + url
     video_format = 'mp4'
     size = url_size(video_url, faker=True)
     print_info(
