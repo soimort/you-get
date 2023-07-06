@@ -19,10 +19,10 @@ def get_sndcd_apikey():
 def get_resource_info(resource_url, client_id):
     cont = get_content(resource_url, decoded=True)
 
-    x = re.escape('forEach(function(e){n(e)})}catch(e){}})},')
-    x = re.search(r'' + x + r'(.*)\);</script>', cont)
+    x = re.escape('window.__sc_hydration = ')
+    x = re.search(r'' + x + r'(.*);</script>', cont)
 
-    info = json.loads(x.group(1))[-1]['data'][0]
+    info = json.loads(x.group(1))[-1]['data']
 
     info = info['tracks'] if info.get('track_count') else [info]
 
