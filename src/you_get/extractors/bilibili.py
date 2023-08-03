@@ -95,6 +95,14 @@ class Bilibili(VideoExtractor):
         return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=%s' % (avid, cid, qn, ep_id, fnval)
 
     @staticmethod
+    def bilibili_bangumi_ssid_api(season_id):
+        return 'https://api.bilibili.com/pgc/view/web/season?season_id=%s' % season_id
+
+    @staticmethod
+    def bilibili_bangumi_epid_api(ep_id):
+        return 'https://api.bilibili.com/pgc/view/web/season?ep_id=%s' % ep_id
+
+    @staticmethod
     def bilibili_interface_api(cid, qn=0):
         entropy = 'rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg'
         appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
@@ -169,9 +177,17 @@ class Bilibili(VideoExtractor):
             html_content = get_content(self.url, headers=self.bilibili_headers())
 
         # redirect: bangumi/play/ss -> bangumi/play/ep
+        elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url):
+            season_id = match1(self.url, r'/ss(\d+)')
+            api_url = self.bilibili_bangumi_ssid_api(season_id)
+            initial_state_text = get_content(api_url, headers=self.bilibili_headers())
+            initial_state = json.loads(initial_state_text)
+            ep_id = initial_state['result']['episodes'][0]['id']
+            self.url = 'https://www.bilibili.com/bangumi/play/ep%s' % ep_id
+            html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
+
         # redirect: bangumi.bilibili.com/anime -> bangumi/play/ep
-        elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url) or \
-             re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)/play', self.url):
+        elif re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)/play', self.url):
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
             ep_id = initial_state['epList'][0]['id']
@@ -338,21 +354,28 @@ class Bilibili(VideoExtractor):
 
         # bangumi
         elif sort == 'bangumi':
-            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
-            initial_state = json.loads(initial_state_text)
+            ep_id = match1(self.url, r'/ep(\d+)')
+            api_url = self.bilibili_bangumi_epid_api(ep_id)
+            initial_state_text = get_content(api_url, headers=self.bilibili_headers())
+            initial_state = json.loads(initial_state_text)['result']
 
             # warn if this bangumi has more than 1 video
-            epn = len(initial_state['epList'])
+            epn = len(initial_state['episodes'])
             if epn > 1 and not kwargs.get('playlist'):
                 log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
 
+            # iterate to the current episode
+            for ep in range(epn):
+                if int(initial_state['episodes'][ep]['id']) == int(ep_id):
+                    break
+
             # set video title
-            self.title = initial_state['h1Title']
+            self.title = initial_state['episodes'][ep]['long_title']
 
             # construct playinfos
-            ep_id = initial_state['epInfo']['id']
-            avid = initial_state['epInfo']['aid']
-            cid = initial_state['epInfo']['cid']
+            ep_id = initial_state['episodes'][ep]['id']
+            avid = initial_state['episodes'][ep]['aid']
+            cid = initial_state['episodes'][ep]['cid']
             playinfos = []
             api_url = self.bilibili_bangumi_api(avid, cid, ep_id)
             api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
@@ -716,10 +739,12 @@ class Bilibili(VideoExtractor):
                                 self.download(**kwargs)
 
         elif sort == 'bangumi':
-            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
-            initial_state = json.loads(initial_state_text)
-            epn, i = len(initial_state['epList']), 0
-            for ep in initial_state['epList']:
+            ep_id = match1(self.url, r'/ep(\d+)')
+            api_url = self.bilibili_bangumi_epid_api(ep_id)
+            initial_state_text = get_content(api_url, headers=self.bilibili_headers())
+            initial_state = json.loads(initial_state_text)['result']
+            epn, i = len(initial_state['episodes']), 0
+            for ep in initial_state['episodes']:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
