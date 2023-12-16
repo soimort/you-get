@@ -100,7 +100,8 @@ class Bilibili(VideoExtractor):
         appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
         params = 'appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type=' % (appkey, cid, qn, qn)
         chksum = hashlib.md5(bytes(params + sec, 'utf8')).hexdigest()
-        return 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
+        return 'https://api.bilibili.com/x/player/wbi/v2?%s&sign=%s' % (params, chksum)
+
 
     @staticmethod
     def bilibili_live_api(cid):
