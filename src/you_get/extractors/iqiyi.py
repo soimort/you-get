@@ -131,10 +131,10 @@ class Iqiyi(VideoExtractor):
             html = get_html(self.url)
             tvid = r1(r'#curid=(.+)_', self.url) or \
                    r1(r'tvid=([^&]+)', self.url) or \
-                   r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tv(?:i|I)d=(.+?)\&', html) or r1(r'param\[\'tvid\'\]\s*=\s*"(.+?)"', html)
+                   r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tv(?:i|I)d=(\w+?)\&', html) or r1(r'param\[\'tvid\'\]\s*=\s*"(.+?)"', html)
             videoid = r1(r'#curid=.+_(.*)$', self.url) or \
                       r1(r'vid=([^&]+)', self.url) or \
-                      r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=(.+?)\&', html) or r1(r'param\[\'vid\'\]\s*=\s*"(.+?)"', html)
+                      r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=(\w+?)\&', html) or r1(r'param\[\'vid\'\]\s*=\s*"(.+?)"', html)
             self.vid = (tvid, videoid)
             info_u = 'http://pcw-api.iqiyi.com/video/video/playervideoinfo?tvid=' + tvid
             json_res = get_content(info_u)
@@ -203,8 +203,13 @@ class Iqiyi(VideoExtractor):
             # For legacy main()
 
             #Here's the change!!
-            download_url_ffmpeg(urls[0], self.title, 'mp4', output_dir=kwargs['output_dir'], merge=kwargs['merge'], stream=False)
-
+            # ffmpeg fails to parse.
+            # download_url_ffmpeg(urls[0], self.title, 'mp4', output_dir=kwargs['output_dir'], merge=kwargs['merge'], stream=False)
+            #Here's the way works out
+            urls = general_m3u8_extractor(urls[0])
+            # ffmpeg fail to convert the output video with mkv extension, due to sort of timestamp problem
+            download_urls(urls, self.title, 'mp4', 0, **kwargs)
+            
             if not kwargs['caption']:
                 print('Skipping captions.')
                 return

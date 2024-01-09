@@ -23,7 +23,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
     if re.match(r'https?://mobile', url): # normalize mobile URL
         url = 'https://' + match1(url, r'//mobile\.(.+)')
 
-    if re.match(r'https?://twitter\.com/i/moments/', url): # moments
+    if re.match(r'https?://twitter\.com/i/moments/', url): # FIXME: moments
         html = get_html(url, faker=True)
         paths = re.findall(r'data-permalink-path="([^"]+)"', html)
         for path in paths:
@@ -34,69 +34,47 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                              **kwargs)
         return
 
-    html = get_html(url, faker=True) # now it seems faker must be enabled
-    screen_name = r1(r'twitter\.com/([^/]+)', url) or r1(r'data-screen-name="([^"]*)"', html) or \
-        r1(r'<meta name="twitter:title" content="([^"]*)"', html)
-    item_id = r1(r'twitter\.com/[^/]+/status/(\d+)', url) or r1(r'data-item-id="([^"]*)"', html) or \
-        r1(r'<meta name="twitter:site:id" content="([^"]*)"', html)
+    m = re.match('^https?://(mobile\.)?twitter\.com/([^/]+)/status/(\d+)', url)
+    assert m
+    screen_name, item_id = m.group(2), m.group(3)
     page_title = "{} [{}]".format(screen_name, item_id)
 
-    authorization = 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'
+    # FIXME: this API won't work for protected or nsfw contents
+    api_url = 'https://cdn.syndication.twimg.com/tweet-result?id=%s' % item_id
+    content = get_content(api_url)
+    info = json.loads(content)
 
-    ga_url = 'https://api.twitter.com/1.1/guest/activate.json'
-    ga_content = post_content(ga_url, headers={'authorization': authorization})
-    guest_token = json.loads(ga_content)['guest_token']
+    author = info['user']['name']
+    url = 'https://twitter.com/%s/status/%s' % (info['user']['screen_name'], item_id)
+    full_text = info['text']
 
-    api_url = 'https://api.twitter.com/2/timeline/conversation/%s.json?tweet_mode=extended' % item_id
-    api_content = get_content(api_url, headers={'authorization': authorization, 'x-guest-token': guest_token})
-
-    info = json.loads(api_content)
-    if 'extended_entities' in info['globalObjects']['tweets'][item_id]:
-        # if the tweet contains media, download them
-        media = info['globalObjects']['tweets'][item_id]['extended_entities']['media']
-
-    elif info['globalObjects']['tweets'][item_id].get('is_quote_status') == True:
-        # if the tweet does not contain media, but it quotes a tweet
-        # and the quoted tweet contains media, download them
-        item_id = info['globalObjects']['tweets'][item_id]['quoted_status_id_str']
-
-        api_url = 'https://api.twitter.com/2/timeline/conversation/%s.json?tweet_mode=extended' % item_id
-        api_content = get_content(api_url, headers={'authorization': authorization, 'x-guest-token': guest_token})
-
-        info = json.loads(api_content)
-
-        if 'extended_entities' in info['globalObjects']['tweets'][item_id]:
-            media = info['globalObjects']['tweets'][item_id]['extended_entities']['media']
-        else:
-            # quoted tweet has no media
-            return
-
-    else:
-        # no media, no quoted tweet
-        return
-
-    for medium in media:
-        if 'video_info' in medium:
-            # FIXME: we're assuming one tweet only contains one video here
-            variants = medium['video_info']['variants']
-            variants = sorted(variants, key=lambda kv: kv.get('bitrate', 0))
-            urls = [ variants[-1]['url'] ]
+    if 'photos' in info:
+        for photo in info['photos']:
+            photo_url = photo['url']
+            title = item_id + '_' + photo_url.split('.')[-2].split('/')[-1]
+            urls = [ photo_url + ':orig' ]
             size = urls_size(urls)
-            mime, ext = variants[-1]['content_type'], 'mp4'
-
-            print_info(site_info, page_title, mime, size)
-            if not info_only:
-                download_urls(urls, page_title, ext, size, output_dir, merge=merge)
-
-        else:
-            title = item_id + '_' + medium['media_url_https'].split('.')[-2].split('/')[-1]
-            urls = [ medium['media_url_https'] + ':orig' ]
-            size = urls_size(urls)
-            ext = medium['media_url_https'].split('.')[-1]
+            ext = photo_url.split('.')[-1]
 
             print_info(site_info, title, ext, size)
             if not info_only:
                 download_urls(urls, title, ext, size, output_dir, merge=merge)
+
+    if 'video' in info:
+        for mediaDetail in info['mediaDetails']:
+            if 'video_info' not in mediaDetail: continue
+            variants = mediaDetail['video_info']['variants']
+            variants = sorted(variants, key=lambda kv: kv.get('bitrate', 0))
+            title = item_id + '_' + variants[-1]['url'].split('/')[-1].split('?')[0].split('.')[0]
+            urls = [ variants[-1]['url'] ]
+            size = urls_size(urls)
+            mime, ext = variants[-1]['content_type'], 'mp4'
+
+            print_info(site_info, title, ext, size)
+            if not info_only:
+                download_urls(urls, title, ext, size, output_dir, merge=merge)
+
+    # TODO: should we deal with quoted tweets?
 
 
 site_info = "Twitter.com"

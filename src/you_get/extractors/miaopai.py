@@ -80,6 +80,8 @@ def miaopai_download_story(url, output_dir='.', merge=False, info_only=False, **
 
 def miaopai_download_h5api(url, output_dir='.', merge=False, info_only=False, **kwargs):
     oid = match1(url, r'/show/(\d{4}:\w+)')
+    if oid is None:
+        oid = match1(url, r'\?fid=(\d{4}:\w+)')
     page = "/show/%s" % oid
     data_url = 'https://h5.video.weibo.com/api/component?%s' % parse.urlencode({
         'page': page
@@ -154,6 +156,9 @@ def miaopai_download(url, output_dir='.', merge=False, info_only=False, **kwargs
         return miaopai_download_direct(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
 
     if re.match(r'^http[s]://(.+\.)?weibo\.com/(tv/)?show/(\d{4}:\w+)', url):
+        return miaopai_download_h5api(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
+
+    if re.match(r'^http[s]://(.+\.)?weibo\.com/show\?fid=(\d{4}:\w+)', url):
         return miaopai_download_h5api(url, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
 
     fid = match1(url, r'\?fid=(\d{4}:\w+)')

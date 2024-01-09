@@ -52,7 +52,7 @@ source <https://github.com/soimort/you-get>`__ and fork it!
 
 .. |PyPI version| image:: https://badge.fury.io/py/you-get.png
    :target: http://badge.fury.io/py/you-get
-.. |Build Status| image:: https://api.travis-ci.org/soimort/you-get.png
-   :target: https://travis-ci.org/soimort/you-get
+.. |Build Status| image:: https://github.com/soimort/you-get/workflows/develop/badge.svg
+   :target: https://github.com/soimort/you-get/actions
 .. |Gitter| image:: https://badges.gitter.im/Join%20Chat.svg
    :target: https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge

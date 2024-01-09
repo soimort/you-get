@@ -25,6 +25,7 @@ SOFTWARE.
 import json
 import os
 import re
+import urllib.parse
 
 from ..common import get_content, urls_size, log, player, dry_run
 from ..extractor import VideoExtractor
@@ -99,7 +100,8 @@ def is_covers_stream(stream):
     return stream.lower() in ('covers', 'coversmini')
 
 def get_file_extension(file_path, default=''):
-    _, suffix = os.path.splitext(file_path)
+    url_parse_result = urllib.parse.urlparse(file_path)
+    _, suffix = os.path.splitext(url_parse_result.path)
     if suffix:
         # remove dot
         suffix = suffix[1:]
@@ -310,7 +312,7 @@ class MissEvan(VideoExtractor):
                 or kwargs.get('json_output'):
 
             for _, stream in self.streams.items():
-                stream['size'] = urls_size(stream['src'])
+                stream['size'] = urls_size(stream['src'], faker=True)
             return
 
         # fetch size of the selected stream only
@@ -319,7 +321,7 @@ class MissEvan(VideoExtractor):
 
         stream = self.streams[stream_id]
         if 'size' not in stream:
-            stream['size'] = urls_size(stream['src'])
+            stream['size'] = urls_size(stream['src'], faker=True)
 
     def _get_content(self, url):
         return get_content(url, headers=self.__headers)
