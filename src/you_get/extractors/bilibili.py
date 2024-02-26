@@ -94,13 +94,13 @@ class Bilibili(VideoExtractor):
     def bilibili_bangumi_api(avid, cid, ep_id, qn=0, fnval=16):
         return 'https://api.bilibili.com/pgc/player/web/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&ep_id=%s&fnver=0&fnval=%s' % (avid, cid, qn, ep_id, fnval)
 
-    @staticmethod
-    def bilibili_interface_api(cid, qn=0):
-        entropy = 'rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg'
-        appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
-        params = 'appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type=' % (appkey, cid, qn, qn)
-        chksum = hashlib.md5(bytes(params + sec, 'utf8')).hexdigest()
-        return 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
+    # @staticmethod
+    # def bilibili_interface_api(cid, qn=0):
+    #     entropy = 'rbMCKn@KuamXWlPMoJGsKcbiJKUfkPF_8dABscJntvqhRSETg'
+    #     appkey, sec = ''.join([chr(ord(i) + 2) for i in entropy[::-1]]).split(':')
+    #     params = 'appkey=%s&cid=%s&otype=json&qn=%s&quality=%s&type=' % (appkey, cid, qn, qn)
+    #     chksum = hashlib.md5(bytes(params + sec, 'utf8')).hexdigest()
+    #     return 'https://interface.bilibili.com/v2/playurl?%s&sign=%s' % (params, chksum)
 
     @staticmethod
     def bilibili_live_api(cid):
@@ -278,7 +278,7 @@ class Bilibili(VideoExtractor):
                     else:
                         message = api_playinfo['data']['message']
                 if best_quality is None or qn <= best_quality:
-                    api_url = self.bilibili_interface_api(cid, qn=qn)
+                    api_url = self.bilibili_api(avid, cid, qn=qn)
                     api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
                     api_playinfo_data = json.loads(api_content)
                     if api_playinfo_data.get('quality'):
@@ -537,7 +537,7 @@ class Bilibili(VideoExtractor):
                 else:
                     message = api_playinfo['data']['message']
             if best_quality is None or qn <= best_quality:
-                api_url = self.bilibili_interface_api(cid, qn=qn)
+                api_url = self.bilibili_api(avid, cid, qn=qn)
                 api_content = get_content(api_url, headers=self.bilibili_headers())
                 api_playinfo_data = json.loads(api_content)
                 if api_playinfo_data.get('quality'):
