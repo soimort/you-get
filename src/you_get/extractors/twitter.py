@@ -40,7 +40,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
     page_title = "{} [{}]".format(screen_name, item_id)
 
     # FIXME: this API won't work for protected or nsfw contents
-    api_url = 'https://cdn.syndication.twimg.com/tweet-result?id=%s' % item_id
+    api_url = 'https://cdn.syndication.twimg.com/tweet-result?id=%s&token=!' % item_id
     content = get_content(api_url)
     info = json.loads(content)
 
