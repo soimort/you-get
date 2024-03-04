@@ -39,7 +39,7 @@ class Imgur(VideoExtractor):
 
         elif re.search(r'i\.imgur\.com/', self.url):
             # direct image
-            _, container, size = url_info(self.url)
+            _, container, size = url_info(self.url, faker=True)
             self.streams = {
                 'original': {
                     'src': [self.url],
