@@ -19,6 +19,9 @@ class Extractor():
             self.url = args[0]
 
 class VideoExtractor():
+    download_count = 0
+    skip_count = 0
+
     def __init__(self, *args):
         self.url = None
         self.title = None
@@ -177,6 +180,11 @@ class VideoExtractor():
         print("videos:")
 
     def download(self, **kwargs):
+        self.__class__.download_count += 1
+        if self.__class__.skip_count and self.__class__.download_count < self.__class__.skip_count:
+            log.i("skipped({}): {}".format(self.__class__.download_count, self.title))
+            return
+
         if 'json_output' in kwargs and kwargs['json_output']:
             json_output.output(self)
         elif 'info_only' in kwargs and kwargs['info_only']:
