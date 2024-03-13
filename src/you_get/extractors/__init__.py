@@ -75,6 +75,7 @@ from .ucas import *
 from .veoh import *
 from .vimeo import *
 from .vine import *
+from .vlook import *
 from .vk import *
 from .w56 import *
 from .wanmen import *
