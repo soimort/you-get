@@ -26,6 +26,7 @@ def kuwo_playlist_download(url, output_dir = '.', merge = True, info_only = Fals
 
 def kuwo_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if "www.kuwo.cn/yinyue" in url:
+        url = re.sub("play_detail","yinyue",url)
         rid=match1(url,'yinyue/(\d+)')
         kuwo_download_by_rid(rid,output_dir, merge, info_only)
     else:
