@@ -145,7 +145,7 @@ fake_headers = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36 Edg/115.0.1901.183'  # Latest Edge
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/123.0.2420.97'  # Latest Edge
 }
 
 if sys.stdout.isatty():
@@ -352,6 +352,7 @@ def getHttps(host, url, headers, debuglevel=0):
     conn.set_debuglevel(debuglevel)
     conn.request("GET", url, headers=headers)
     resp = conn.getresponse()
+    logging.debug('getHttps: %s' % resp.getheaders())
     set_cookie = resp.getheader('set-cookie')
 
     data = resp.read()
@@ -362,7 +363,7 @@ def getHttps(host, url, headers, debuglevel=0):
         pass
 
     conn.close()
-    return str(data, encoding='utf-8'), set_cookie
+    return str(data, encoding='utf-8'), set_cookie  # TODO: support raw data
 
 
 # DEPRECATED in favor of get_content()
