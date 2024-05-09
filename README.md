@@ -80,16 +80,18 @@ You may either download the [stable](https://github.com/soimort/you-get/archive/
 Alternatively, run
 
 ```
-$ [sudo] python3 setup.py install
+$ cd path/to/you-get
+$ [sudo] python -m pip install .
 ```
 
 Or
 
 ```
-$ python3 setup.py install --user
+$ cd path/to/you-get
+$ python -m pip install . --user
 ```
 
-to install `you-get` to a permanent path.
+to install `you-get` to a permanent path. (And don't omit the dot `.` representing the current directory)
 
 You can also use the [pipenv](https://pipenv.pypa.io/en/latest) to install the `you-get` in the Python virtual environment.
 
@@ -107,7 +109,7 @@ This is the recommended way for all developers, even if you don't often code in 
 $ git clone git://github.com/soimort/you-get.git
 ```
 
-Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
+Then put the cloned directory into your `PATH`, or run `python -m pip install path/to/you-get` to install `you-get` to a permanent path.
 
 ### Option 5: Homebrew (Mac only)
 
