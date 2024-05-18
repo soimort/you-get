@@ -113,6 +113,7 @@ SITES = {
     'veoh'             : 'veoh',
     'vine'             : 'vine',
     'vk'               : 'vk',
+    'x'                : 'twitter',
     'xiaokaxiu'        : 'yixia',
     'xiaojiadianvideo' : 'fc2video',
     'ximalaya'         : 'ximalaya',
@@ -1856,9 +1857,12 @@ def url_to_module(url):
         )
     else:
         try:
-            location = get_location(url) # t.co isn't happy with fake_headers
+            try:
+                location = get_location(url) # t.co isn't happy with fake_headers
+            except:
+                location = get_location(url, headers=fake_headers)
         except:
-            location = get_location(url, headers=fake_headers)
+            location = get_location(url, headers=fake_headers, get_method='GET')
 
         if location and location != url and not location.startswith('/'):
             return url_to_module(location)
