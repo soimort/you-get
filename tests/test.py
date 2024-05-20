@@ -19,6 +19,7 @@ from you_get.extractors import (
 class YouGetTests(unittest.TestCase):
     def test_imgur(self):
         imgur.download('http://imgur.com/WVLk5nD', info_only=True)
+        imgur.download('https://imgur.com/we-should-have-listened-WVLk5nD', info_only=True)
 
     def test_magisto(self):
         magisto.download(
