@@ -40,6 +40,9 @@ class YouGetTests(unittest.TestCase):
         #    'https://www.youtube.com/watch?v=Fpr4fQSh1cc', info_only=True
         #)
 
+    def test_acfun(self):
+        acfun.download('https://www.acfun.cn/v/ac44560432', info_only=True)
+
     def test_bilibili(self):
         bilibili.download('https://www.bilibili.com/video/BV1sL4y177sC', info_only=True)
 
