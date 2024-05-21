@@ -63,9 +63,9 @@ The following dependencies are recommended:
 
 ### Option 1: Install via pip
 
-The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi/you-get), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager. Note that you must use the Python 3 version of `pip`:
+The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi/you-get), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager: (Note that you must use the Python 3 version of `pip`)
 
-    $ pip3 install you-get
+    $ pip install you-get
 
 ### Option 2: Install via [Antigen](https://github.com/zsh-users/antigen) (for Zsh users)
 
@@ -136,7 +136,7 @@ Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completi
 Based on which option you chose to install `you-get`, you may upgrade it via:
 
 ```
-$ pip3 install --upgrade you-get
+$ pip install --upgrade you-get
 ```
 
 or download the latest release via:
@@ -148,7 +148,7 @@ $ you-get https://github.com/soimort/you-get/archive/master.zip
 In order to get the latest ```develop``` branch without messing up the PIP, you can try:
 
 ```
-$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop
+$ pip install --upgrade git+https://github.com/soimort/you-get@develop
 ```
 
 ## Getting Started
