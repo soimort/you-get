@@ -86,7 +86,7 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             #print_info(site_info, page_title, None, size)
 
             for t in tuggles:
-                title = tuggles[t]['title']
+                title = '[tumblr] ' + tuggles[t]['title']
                 ext = tuggles[t]['ext']
                 size = tuggles[t]['size']
                 url = tuggles[t]['url']
