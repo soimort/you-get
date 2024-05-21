@@ -27,12 +27,12 @@ def tiktok_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     tt_chain_token = r1('tt_chain_token=([^;]+);', set_cookie)
     headers['Cookie'] = 'tt_chain_token=%s' % tt_chain_token
 
-    data = r1(r'window\[\'SIGI_STATE\'\]=(.*?);window\[\'SIGI_RETRY\'\]', html) or \
-        r1(r'<script id="SIGI_STATE" type="application/json">(.*?)</script>', html)
+    data = r1(r'<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__" type="application/json">(.*?)</script>', html)
     info = json.loads(data)
-    downloadAddr = info['ItemModule'][vid]['video']['downloadAddr']
-    author = info['ItemModule'][vid]['author']  # same as uniqueId
-    nickname = info['UserModule']['users'][author]['nickname']
+    itemStruct = info['__DEFAULT_SCOPE__']['webapp.video-detail']['itemInfo']['itemStruct']
+    downloadAddr = itemStruct['video']['downloadAddr']
+    author = itemStruct['author']['uniqueId']
+    nickname = itemStruct['author']['nickname']
     title = '%s [%s]' % (nickname or author, vid)
 
     mime, ext, size = url_info(downloadAddr, headers=headers)
