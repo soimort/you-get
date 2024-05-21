@@ -111,7 +111,6 @@ SITES = {
     'wanmen'           : 'wanmen',
     'weibo'            : 'miaopai',
     'veoh'             : 'veoh',
-    'vine'             : 'vine',
     'vk'               : 'vk',
     'x'                : 'twitter',
     'xiaokaxiu'        : 'yixia',

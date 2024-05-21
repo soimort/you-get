@@ -373,7 +373,6 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | **YouTube** | <https://www.youtube.com/>    |✓| | |
 | **X (Twitter)** | <https://x.com/>        |✓|✓| |
 | VK          | <https://vk.com/>              |✓|✓| |
-| Vine        | <https://vine.co/>            |✓| | |
 | Vimeo       | <https://vimeo.com/>          |✓| | |
 | Veoh        | <https://www.veoh.com/>        |✓| | |
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
