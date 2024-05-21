@@ -82,16 +82,16 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
             except: pass
 
         if tuggles:
-            size = sum([tuggles[t]['size'] for t in tuggles])
-            print_info(site_info, page_title, None, size)
+            #size = sum([tuggles[t]['size'] for t in tuggles])
+            #print_info(site_info, page_title, None, size)
 
-            if not info_only:
-                for t in tuggles:
-                    title = tuggles[t]['title']
-                    ext = tuggles[t]['ext']
-                    size = tuggles[t]['size']
-                    url = tuggles[t]['url']
-                    print_info(site_info, title, ext, size)
+            for t in tuggles:
+                title = tuggles[t]['title']
+                ext = tuggles[t]['ext']
+                size = tuggles[t]['size']
+                url = tuggles[t]['url']
+                print_info(site_info, title, ext, size)
+                if not info_only:
                     download_urls([url], title, ext, size,
                                   output_dir=output_dir)
             return
