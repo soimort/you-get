@@ -116,23 +116,25 @@ Saving Me at the zoo.en.srt ... Done.</code></pre>
 <h3 id="prerequisites">Prerequisites</h3>
 <p>The following dependencies are recommended:</p>
 <ul>
-<li><strong><a href="https://www.python.org/downloads/">Python</a></strong> 3.8 or above</li>
+<li><strong><a href="https://www.python.org/downloads/">Python</a></strong> 3.7.4 or above</li>
 <li><strong><a href="https://www.ffmpeg.org/">FFmpeg</a></strong> 1.0 or above</li>
 <li>(Optional) <a href="https://rtmpdump.mplayerhq.hu/">RTMPDump</a></li>
 </ul>
 <h3 id="option-1-install-via-pip">Option 1: Install via pip</h3>
-<p>The official release of <code>you-get</code> is distributed on <a href="https://pypi.python.org/pypi/you-get">PyPI</a>, and can be installed easily from a PyPI mirror via the <a href="https://en.wikipedia.org/wiki/Pip_(package_manager)">pip</a> package manager. Note that you must use the Python 3 version of <code>pip</code>:</p>
-<pre><code>$ pip3 install you-get</code></pre>
+<p>The official release of <code>you-get</code> is distributed on <a href="https://pypi.python.org/pypi/you-get">PyPI</a>, and can be installed easily from a PyPI mirror via the <a href="https://en.wikipedia.org/wiki/Pip_(package_manager)">pip</a> package manager: (Note that you must use the Python 3 version of <code>pip</code>)</p>
+<pre><code>$ pip install you-get</code></pre>
 <h3 id="option-2-install-via-antigen-for-zsh-users">Option 2: Install via <a href="https://github.com/zsh-users/antigen">Antigen</a> (for Zsh users)</h3>
 <p>Add the following line to your <code>.zshrc</code>:</p>
 <pre><code>antigen bundle soimort/you-get</code></pre>
 <h3 id="option-3-download-from-github">Option 3: Download from GitHub</h3>
 <p>You may either download the <a href="https://github.com/soimort/you-get/archive/master.zip">stable</a> (identical with the latest release on PyPI) or the <a href="https://github.com/soimort/you-get/archive/develop.zip">develop</a> (more hotfixes, unstable features) branch of <code>you-get</code>. Unzip it, and put the directory containing the <code>you-get</code> script into your <code>PATH</code>.</p>
 <p>Alternatively, run</p>
-<pre><code>$ [sudo] python3 setup.py install</code></pre>
+<pre><code>$ cd path/to/you-get
+$ [sudo] python -m pip install .</code></pre>
 <p>Or</p>
-<pre><code>$ python3 setup.py install --user</code></pre>
-<p>to install <code>you-get</code> to a permanent path.</p>
+<pre><code>$ cd path/to/you-get
+$ python -m pip install . --user</code></pre>
+<p>to install <code>you-get</code> to a permanent path. (And don’t omit the dot <code>.</code> representing the current directory)</p>
 <p>You can also use the <a href="https://pipenv.pypa.io/en/latest">pipenv</a> to install the <code>you-get</code> in the Python virtual environment.</p>
 <pre><code>$ pipenv install -e .
 $ pipenv run you-get --version
@@ -140,7 +142,7 @@ you-get: version 0.4.1555, a tiny downloader that scrapes the web.</code></pre>
 <h3 id="option-4-git-clone">Option 4: Git clone</h3>
 <p>This is the recommended way for all developers, even if you don’t often code in Python.</p>
 <pre><code>$ git clone git://github.com/soimort/you-get.git</code></pre>
-<p>Then put the cloned directory into your <code>PATH</code>, or run <code>./setup.py install</code> to install <code>you-get</code> to a permanent path.</p>
+<p>Then put the cloned directory into your <code>PATH</code>, or run <code>python -m pip install path/to/you-get</code> to install <code>you-get</code> to a permanent path.</p>
 <h3 id="option-5-homebrew-mac-only">Option 5: Homebrew (Mac only)</h3>
 <p>You can install <code>you-get</code> easily via:</p>
 <pre><code>$ brew install you-get</code></pre>
@@ -151,11 +153,11 @@ you-get: version 0.4.1555, a tiny downloader that scrapes the web.</code></pre>
 <p>Completion definitions for Bash, Fish and Zsh can be found in <a href="https://github.com/soimort/you-get/tree/develop/contrib/completion"><code>contrib/completion</code></a>. Please consult your shell’s manual for how to take advantage of them.</p>
 <h2 id="upgrading">Upgrading</h2>
 <p>Based on which option you chose to install <code>you-get</code>, you may upgrade it via:</p>
-<pre><code>$ pip3 install --upgrade you-get</code></pre>
+<pre><code>$ pip install --upgrade you-get</code></pre>
 <p>or download the latest release via:</p>
 <pre><code>$ you-get https://github.com/soimort/you-get/archive/master.zip</code></pre>
 <p>In order to get the latest <code>develop</code> branch without messing up the PIP, you can try:</p>
-<pre><code>$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop</code></pre>
+<pre><code>$ pip install --upgrade git+https://github.com/soimort/you-get@develop</code></pre>
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="download-a-video">Download a video</h3>
 <p>When you get a video of interest, you might want to use the <code>--info</code>/<code>-i</code> option to see all available quality and formats:</p>
@@ -255,21 +257,16 @@ Type:       JPEG Image (image/jpeg)
 Size:       0.06 MiB (66482 Bytes)
 
 Downloading rms.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  127 kB/s</code></pre>
+ 100% (  0.1/  0.1MB) ├████████████████████████████████████████┤[1/1]  127 kB/s</code></pre>
 <p>Otherwise, <code>you-get</code> will scrape the web page and try to figure out if there’s anything interesting to you:</p>
-<pre><code>$ you-get http://kopasas.tumblr.com/post/69361932517
+<pre><code>$ you-get https://kopasas.tumblr.com/post/69361932517
 Site:       Tumblr.com
-Title:      kopasas
-Type:       Unknown type (None)
-Size:       0.51 MiB (536583 Bytes)
-
-Site:       Tumblr.com
-Title:      tumblr_mxhg13jx4n1sftq6do1_1280
+Title:      [tumblr] tumblr_mxhg13jx4n1sftq6do1_640
 Type:       Portable Network Graphics (image/png)
-Size:       0.51 MiB (536583 Bytes)
+Size:       0.11 MiB (118484 Bytes)
 
-Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
-100.0% (  0.5/0.5  MB) ├████████████████████████████████████████┤[1/1]   22 MB/s</code></pre>
+Downloading [tumblr] tumblr_mxhg13jx4n1sftq6do1_640.png ...
+ 100% (  0.1/  0.1MB) ├████████████████████████████████████████┤[1/1]   22 MB/s</code></pre>
 <p><strong>Note:</strong></p>
 <ul>
 <li>This feature is an experimental one and far from perfect. It works best on scraping large-sized images from popular websites like Tumblr and Blogger, but there is really no universal pattern that can apply to any site on the Internet.</li>
@@ -339,538 +336,531 @@ Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><strong>Twitter</strong></td>
-<td style="text-align: left;"><a href="https://twitter.com/" class="uri">https://twitter.com/</a></td>
+<td style="text-align: center;"><strong>X (Twitter)</strong></td>
+<td style="text-align: left;"><a href="https://x.com/" class="uri">https://x.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">VK</td>
-<td style="text-align: left;"><a href="http://vk.com/" class="uri">http://vk.com/</a></td>
+<td style="text-align: left;"><a href="https://vk.com/" class="uri">https://vk.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">Vine</td>
-<td style="text-align: left;"><a href="https://vine.co/" class="uri">https://vine.co/</a></td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="odd">
 <td style="text-align: center;">Vimeo</td>
 <td style="text-align: left;"><a href="https://vimeo.com/" class="uri">https://vimeo.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">Veoh</td>
-<td style="text-align: left;"><a href="http://www.veoh.com/" class="uri">http://www.veoh.com/</a></td>
+<td style="text-align: left;"><a href="https://www.veoh.com/" class="uri">https://www.veoh.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;"><strong>Tumblr</strong></td>
 <td style="text-align: left;"><a href="https://www.tumblr.com/" class="uri">https://www.tumblr.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">TED</td>
-<td style="text-align: left;"><a href="http://www.ted.com/" class="uri">http://www.ted.com/</a></td>
+<td style="text-align: left;"><a href="https://www.ted.com/" class="uri">https://www.ted.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">SoundCloud</td>
 <td style="text-align: left;"><a href="https://soundcloud.com/" class="uri">https://soundcloud.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">SHOWROOM</td>
 <td style="text-align: left;"><a href="https://www.showroom-live.com/" class="uri">https://www.showroom-live.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">Pinterest</td>
 <td style="text-align: left;"><a href="https://www.pinterest.com/" class="uri">https://www.pinterest.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">MTV81</td>
-<td style="text-align: left;"><a href="http://www.mtv81.com/" class="uri">http://www.mtv81.com/</a></td>
+<td style="text-align: left;"><a href="https://www.mtv81.com/" class="uri">https://www.mtv81.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">Mixcloud</td>
 <td style="text-align: left;"><a href="https://www.mixcloud.com/" class="uri">https://www.mixcloud.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">Metacafe</td>
-<td style="text-align: left;"><a href="http://www.metacafe.com/" class="uri">http://www.metacafe.com/</a></td>
+<td style="text-align: left;"><a href="https://www.metacafe.com/" class="uri">https://www.metacafe.com/</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Magisto</td>
+<td style="text-align: left;"><a href="https://www.magisto.com/" class="uri">https://www.magisto.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">Magisto</td>
-<td style="text-align: left;"><a href="http://www.magisto.com/" class="uri">http://www.magisto.com/</a></td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
 <td style="text-align: center;">Khan Academy</td>
 <td style="text-align: left;"><a href="https://www.khanacademy.org/" class="uri">https://www.khanacademy.org/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">Internet Archive</td>
 <td style="text-align: left;"><a href="https://archive.org/" class="uri">https://archive.org/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;"><strong>Instagram</strong></td>
 <td style="text-align: left;"><a href="https://instagram.com/" class="uri">https://instagram.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">InfoQ</td>
-<td style="text-align: left;"><a href="http://www.infoq.com/presentations/" class="uri">http://www.infoq.com/presentations/</a></td>
+<td style="text-align: left;"><a href="https://www.infoq.com/presentations/" class="uri">https://www.infoq.com/presentations/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">Imgur</td>
-<td style="text-align: left;"><a href="http://imgur.com/" class="uri">http://imgur.com/</a></td>
+<td style="text-align: left;"><a href="https://imgur.com/" class="uri">https://imgur.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">Heavy Music Archive</td>
-<td style="text-align: left;"><a href="http://www.heavy-music.ru/" class="uri">http://www.heavy-music.ru/</a></td>
+<td style="text-align: left;"><a href="https://www.heavy-music.ru/" class="uri">https://www.heavy-music.ru/</a></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Freesound</td>
+<td style="text-align: left;"><a href="https://www.freesound.org/" class="uri">https://www.freesound.org/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">Freesound</td>
-<td style="text-align: left;"><a href="http://www.freesound.org/" class="uri">http://www.freesound.org/</a></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;">✓</td>
-</tr>
-<tr class="odd">
 <td style="text-align: center;">Flickr</td>
 <td style="text-align: left;"><a href="https://www.flickr.com/" class="uri">https://www.flickr.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">FC2 Video</td>
-<td style="text-align: left;"><a href="http://video.fc2.com/" class="uri">http://video.fc2.com/</a></td>
+<td style="text-align: left;"><a href="https://video.fc2.com/" class="uri">https://video.fc2.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">Facebook</td>
 <td style="text-align: left;"><a href="https://www.facebook.com/" class="uri">https://www.facebook.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">eHow</td>
-<td style="text-align: left;"><a href="http://www.ehow.com/" class="uri">http://www.ehow.com/</a></td>
+<td style="text-align: left;"><a href="https://www.ehow.com/" class="uri">https://www.ehow.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">Dailymotion</td>
-<td style="text-align: left;"><a href="http://www.dailymotion.com/" class="uri">http://www.dailymotion.com/</a></td>
+<td style="text-align: left;"><a href="https://www.dailymotion.com/" class="uri">https://www.dailymotion.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">Coub</td>
-<td style="text-align: left;"><a href="http://coub.com/" class="uri">http://coub.com/</a></td>
+<td style="text-align: left;"><a href="https://coub.com/" class="uri">https://coub.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">CBS</td>
-<td style="text-align: left;"><a href="http://www.cbs.com/" class="uri">http://www.cbs.com/</a></td>
+<td style="text-align: left;"><a href="https://www.cbs.com/" class="uri">https://www.cbs.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">Bandcamp</td>
-<td style="text-align: left;"><a href="http://bandcamp.com/" class="uri">http://bandcamp.com/</a></td>
+<td style="text-align: left;"><a href="https://bandcamp.com/" class="uri">https://bandcamp.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">AliveThai</td>
-<td style="text-align: left;"><a href="http://alive.in.th/" class="uri">http://alive.in.th/</a></td>
+<td style="text-align: left;"><a href="https://alive.in.th/" class="uri">https://alive.in.th/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">interest.me</td>
-<td style="text-align: left;"><a href="http://ch.interest.me/tvn" class="uri">http://ch.interest.me/tvn</a></td>
+<td style="text-align: left;"><a href="https://ch.interest.me/tvn" class="uri">https://ch.interest.me/tvn</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;"><strong>755<br/>ナナゴーゴー</strong></td>
-<td style="text-align: left;"><a href="http://7gogo.jp/" class="uri">http://7gogo.jp/</a></td>
+<td style="text-align: left;"><a href="https://7gogo.jp/" class="uri">https://7gogo.jp/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;"><strong>niconico<br/>ニコニコ動画</strong></td>
-<td style="text-align: left;"><a href="http://www.nicovideo.jp/" class="uri">http://www.nicovideo.jp/</a></td>
+<td style="text-align: left;"><a href="https://www.nicovideo.jp/" class="uri">https://www.nicovideo.jp/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;"><strong>163<br/>网易视频<br/>网易云音乐</strong></td>
-<td style="text-align: left;"><a href="http://v.163.com/" class="uri">http://v.163.com/</a><br/><a href="http://music.163.com/" class="uri">http://music.163.com/</a></td>
+<td style="text-align: left;"><a href="https://v.163.com/" class="uri">https://v.163.com/</a><br/><a href="https://music.163.com/" class="uri">https://music.163.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">56网</td>
-<td style="text-align: left;"><a href="http://www.56.com/" class="uri">http://www.56.com/</a></td>
+<td style="text-align: left;"><a href="https://www.56.com/" class="uri">https://www.56.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;"><strong>AcFun</strong></td>
-<td style="text-align: left;"><a href="http://www.acfun.cn/" class="uri">http://www.acfun.cn/</a></td>
+<td style="text-align: left;"><a href="https://www.acfun.cn/" class="uri">https://www.acfun.cn/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;"><strong>Baidu<br/>百度贴吧</strong></td>
-<td style="text-align: left;"><a href="http://tieba.baidu.com/" class="uri">http://tieba.baidu.com/</a></td>
+<td style="text-align: left;"><a href="https://tieba.baidu.com/" class="uri">https://tieba.baidu.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">爆米花网</td>
-<td style="text-align: left;"><a href="http://www.baomihua.com/" class="uri">http://www.baomihua.com/</a></td>
+<td style="text-align: left;"><a href="https://www.baomihua.com/" class="uri">https://www.baomihua.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;"><strong>bilibili<br/>哔哩哔哩</strong></td>
-<td style="text-align: left;"><a href="http://www.bilibili.com/" class="uri">http://www.bilibili.com/</a></td>
+<td style="text-align: left;"><a href="https://www.bilibili.com/" class="uri">https://www.bilibili.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">豆瓣</td>
-<td style="text-align: left;"><a href="http://www.douban.com/" class="uri">http://www.douban.com/</a></td>
+<td style="text-align: left;"><a href="https://www.douban.com/" class="uri">https://www.douban.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">斗鱼</td>
-<td style="text-align: left;"><a href="http://www.douyutv.com/" class="uri">http://www.douyutv.com/</a></td>
+<td style="text-align: left;"><a href="https://www.douyutv.com/" class="uri">https://www.douyutv.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">凤凰视频</td>
-<td style="text-align: left;"><a href="http://v.ifeng.com/" class="uri">http://v.ifeng.com/</a></td>
+<td style="text-align: left;"><a href="https://v.ifeng.com/" class="uri">https://v.ifeng.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">风行网</td>
-<td style="text-align: left;"><a href="http://www.fun.tv/" class="uri">http://www.fun.tv/</a></td>
+<td style="text-align: left;"><a href="https://www.fun.tv/" class="uri">https://www.fun.tv/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">iQIYI<br/>爱奇艺</td>
-<td style="text-align: left;"><a href="http://www.iqiyi.com/" class="uri">http://www.iqiyi.com/</a></td>
+<td style="text-align: left;"><a href="https://www.iqiyi.com/" class="uri">https://www.iqiyi.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">激动网</td>
-<td style="text-align: left;"><a href="http://www.joy.cn/" class="uri">http://www.joy.cn/</a></td>
+<td style="text-align: left;"><a href="https://www.joy.cn/" class="uri">https://www.joy.cn/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">酷6网</td>
-<td style="text-align: left;"><a href="http://www.ku6.com/" class="uri">http://www.ku6.com/</a></td>
+<td style="text-align: left;"><a href="https://www.ku6.com/" class="uri">https://www.ku6.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">酷狗音乐</td>
-<td style="text-align: left;"><a href="http://www.kugou.com/" class="uri">http://www.kugou.com/</a></td>
+<td style="text-align: left;"><a href="https://www.kugou.com/" class="uri">https://www.kugou.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">酷我音乐</td>
-<td style="text-align: left;"><a href="http://www.kuwo.cn/" class="uri">http://www.kuwo.cn/</a></td>
+<td style="text-align: left;"><a href="https://www.kuwo.cn/" class="uri">https://www.kuwo.cn/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">乐视网</td>
-<td style="text-align: left;"><a href="http://www.le.com/" class="uri">http://www.le.com/</a></td>
+<td style="text-align: left;"><a href="https://www.le.com/" class="uri">https://www.le.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">荔枝FM</td>
-<td style="text-align: left;"><a href="http://www.lizhi.fm/" class="uri">http://www.lizhi.fm/</a></td>
+<td style="text-align: left;"><a href="https://www.lizhi.fm/" class="uri">https://www.lizhi.fm/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">懒人听书</td>
-<td style="text-align: left;"><a href="http://www.lrts.me/" class="uri">http://www.lrts.me/</a></td>
+<td style="text-align: left;"><a href="https://www.lrts.me/" class="uri">https://www.lrts.me/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">秒拍</td>
-<td style="text-align: left;"><a href="http://www.miaopai.com/" class="uri">http://www.miaopai.com/</a></td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">MioMio弹幕网</td>
-<td style="text-align: left;"><a href="http://www.miomio.tv/" class="uri">http://www.miomio.tv/</a></td>
+<td style="text-align: left;"><a href="https://www.miaopai.com/" class="uri">https://www.miaopai.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
+<td style="text-align: center;">MioMio弹幕网</td>
+<td style="text-align: left;"><a href="https://www.miomio.tv/" class="uri">https://www.miomio.tv/</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
 <td style="text-align: center;">MissEvan<br/>猫耳FM</td>
-<td style="text-align: left;"><a href="http://www.missevan.com/" class="uri">http://www.missevan.com/</a></td>
+<td style="text-align: left;"><a href="https://www.missevan.com/" class="uri">https://www.missevan.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">痞客邦</td>
 <td style="text-align: left;"><a href="https://www.pixnet.net/" class="uri">https://www.pixnet.net/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">PPTV聚力</td>
-<td style="text-align: left;"><a href="http://www.pptv.com/" class="uri">http://www.pptv.com/</a></td>
+<td style="text-align: left;"><a href="https://www.pptv.com/" class="uri">https://www.pptv.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">齐鲁网</td>
-<td style="text-align: left;"><a href="http://v.iqilu.com/" class="uri">http://v.iqilu.com/</a></td>
+<td style="text-align: left;"><a href="https://v.iqilu.com/" class="uri">https://v.iqilu.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">QQ<br/>腾讯视频</td>
-<td style="text-align: left;"><a href="http://v.qq.com/" class="uri">http://v.qq.com/</a></td>
+<td style="text-align: left;"><a href="https://v.qq.com/" class="uri">https://v.qq.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">企鹅直播</td>
-<td style="text-align: left;"><a href="http://live.qq.com/" class="uri">http://live.qq.com/</a></td>
+<td style="text-align: left;"><a href="https://live.qq.com/" class="uri">https://live.qq.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">Sina<br/>新浪视频<br/>微博秒拍视频</td>
-<td style="text-align: left;"><a href="http://video.sina.com.cn/" class="uri">http://video.sina.com.cn/</a><br/><a href="http://video.weibo.com/" class="uri">http://video.weibo.com/</a></td>
+<td style="text-align: left;"><a href="https://video.sina.com.cn/" class="uri">https://video.sina.com.cn/</a><br/><a href="https://video.weibo.com/" class="uri">https://video.weibo.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">Sohu<br/>搜狐视频</td>
-<td style="text-align: left;"><a href="http://tv.sohu.com/" class="uri">http://tv.sohu.com/</a></td>
+<td style="text-align: left;"><a href="https://tv.sohu.com/" class="uri">https://tv.sohu.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;"><strong>Tudou<br/>土豆</strong></td>
-<td style="text-align: left;"><a href="http://www.tudou.com/" class="uri">http://www.tudou.com/</a></td>
+<td style="text-align: left;"><a href="https://www.tudou.com/" class="uri">https://www.tudou.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">阳光卫视</td>
-<td style="text-align: left;"><a href="http://www.isuntv.com/" class="uri">http://www.isuntv.com/</a></td>
+<td style="text-align: left;"><a href="https://www.isuntv.com/" class="uri">https://www.isuntv.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;"><strong>Youku<br/>优酷</strong></td>
-<td style="text-align: left;"><a href="http://www.youku.com/" class="uri">http://www.youku.com/</a></td>
+<td style="text-align: left;"><a href="https://www.youku.com/" class="uri">https://www.youku.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">战旗TV</td>
-<td style="text-align: left;"><a href="http://www.zhanqi.tv/lives" class="uri">http://www.zhanqi.tv/lives</a></td>
+<td style="text-align: left;"><a href="https://www.zhanqi.tv/lives" class="uri">https://www.zhanqi.tv/lives</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">央视网</td>
-<td style="text-align: left;"><a href="http://www.cntv.cn/" class="uri">http://www.cntv.cn/</a></td>
+<td style="text-align: left;"><a href="https://www.cntv.cn/" class="uri">https://www.cntv.cn/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">Naver<br/>네이버</td>
-<td style="text-align: left;"><a href="http://tvcast.naver.com/" class="uri">http://tvcast.naver.com/</a></td>
+<td style="text-align: left;"><a href="https://tvcast.naver.com/" class="uri">https://tvcast.naver.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">芒果TV</td>
-<td style="text-align: left;"><a href="http://www.mgtv.com/" class="uri">http://www.mgtv.com/</a></td>
-<td style="text-align: center;">✓</td>
-<td style="text-align: center;"></td>
-<td style="text-align: center;"></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">火猫TV</td>
-<td style="text-align: left;"><a href="http://www.huomao.com/" class="uri">http://www.huomao.com/</a></td>
+<td style="text-align: left;"><a href="https://www.mgtv.com/" class="uri">https://www.mgtv.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">阳光宽频网</td>
-<td style="text-align: left;"><a href="http://www.365yg.com/" class="uri">http://www.365yg.com/</a></td>
+<td style="text-align: center;">火猫TV</td>
+<td style="text-align: left;"><a href="https://www.huomao.com/" class="uri">https://www.huomao.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
+<td style="text-align: center;">阳光宽频网</td>
+<td style="text-align: left;"><a href="https://www.365yg.com/" class="uri">https://www.365yg.com/</a></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
 <td style="text-align: center;">西瓜视频</td>
 <td style="text-align: left;"><a href="https://www.ixigua.com/" class="uri">https://www.ixigua.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">新片场</td>
 <td style="text-align: left;"><a href="https://www.xinpianchang.com/" class="uri">https://www.xinpianchang.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">快手</td>
 <td style="text-align: left;"><a href="https://www.kuaishou.com/" class="uri">https://www.kuaishou.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">抖音</td>
 <td style="text-align: left;"><a href="https://www.douyin.com/" class="uri">https://www.douyin.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">TikTok</td>
 <td style="text-align: left;"><a href="https://www.tiktok.com/" class="uri">https://www.tiktok.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: center;">中国体育(TV)</td>
-<td style="text-align: left;"><a href="http://v.zhibo.tv/" class="uri">http://v.zhibo.tv/</a> </br><a href="http://video.zhibo.tv/" class="uri">http://video.zhibo.tv/</a></td>
+<td style="text-align: left;"><a href="https://v.zhibo.tv/" class="uri">https://v.zhibo.tv/</a> </br><a href="https://video.zhibo.tv/" class="uri">https://video.zhibo.tv/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: center;">知乎</td>
 <td style="text-align: left;"><a href="https://www.zhihu.com/" class="uri">https://www.zhihu.com/</a></td>
 <td style="text-align: center;">✓</td>
@@ -884,7 +874,7 @@ Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
 <p>If something is broken and <code>you-get</code> can’t get you things you want, don’t panic. (Yes, this happens all the time!)</p>
 <p>Check if it’s already a known problem on <a href="https://github.com/soimort/you-get/wiki/Known-Bugs" class="uri">https://github.com/soimort/you-get/wiki/Known-Bugs</a>. If not, follow the guidelines on <a href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">how to report an issue</a>.</p>
 <h2 id="getting-involved">Getting Involved</h2>
-<p>You can reach us on the Gitter channel <a href="https://gitter.im/soimort/you-get">#soimort/you-get</a> (here’s how you <a href="http://irc.gitter.im">set up your IRC client</a> for Gitter). If you have a quick question regarding <code>you-get</code>, ask it there.</p>
+<p>You can reach us on the Gitter channel <a href="https://gitter.im/soimort/you-get">#soimort/you-get</a> (here’s how you <a href="https://irc.gitter.im">set up your IRC client</a> for Gitter). If you have a quick question regarding <code>you-get</code>, ask it there.</p>
 <p>If you are seeking to report an issue or contribute, please make sure to read <a href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">the guidelines</a> first.</p>
 <h2 id="legal-issues">Legal Issues</h2>
 <p>This software is distributed under the <a href="https://raw.github.com/soimort/you-get/master/LICENSE.txt">MIT license</a>.</p>
