@@ -15,6 +15,7 @@ from http import cookiejar
 from importlib import import_module
 from urllib import request, parse, error
 
+import shtab
 from .version import __version__
 from .util import log, term
 from .util.git import get_version
@@ -124,6 +125,23 @@ SITES = {
     'zhanqi'           : 'zhanqi',
     'zhibo'            : 'zhibo',
     'zhihu'            : 'zhihu',
+}
+URL = {
+    "zsh": "_urls",
+}
+HOST = {
+    "zsh": "_hosts",
+}
+HOST_USER = {
+    "zsh": "_hosts_users",
+}
+# https://github.com/zsh-users/zsh/blob/master/Etc/completion-style-guide#L320-L323
+PREAMBLE = {
+    "zsh": """\
+_hosts_users() {
+  _alternative 'hosts: :_hosts' 'users: :_users'
+}
+""",
 }
 
 dry_run = False
@@ -1532,6 +1550,7 @@ def script_main(download, download_playlist, **kwargs):
         description='A tiny downloader that scrapes the web',
         add_help=False,
     )
+    shtab.add_argument_to(parser, preamble=PREAMBLE)
     parser.add_argument(
         '-V', '--version', action='store_true',
         help='Print version and exit'
@@ -1551,7 +1570,7 @@ def script_main(download, download_playlist, **kwargs):
     dry_run_grp.add_argument(
         '-u', '--url', action='store_true',
         help='Print extracted information with URLs'
-    )
+    ).complete = URL
     dry_run_grp.add_argument(
         '--json', action='store_true',
         help='Print extracted URLs in JSON format'
@@ -1588,11 +1607,11 @@ def script_main(download, download_playlist, **kwargs):
     )
     download_grp.add_argument(
         '-O', '--output-filename', metavar='FILE', help='Set output filename'
-    )
+    ).complete = shtab.FILE
     download_grp.add_argument(
         '-o', '--output-dir', metavar='DIR', default='.',
         help='Set output directory'
-    )
+    ).complete = shtab.DIR
     download_grp.add_argument(
         '-p', '--player', metavar='PLAYER',
         help='Stream extracted URL to a PLAYER'
@@ -1600,7 +1619,7 @@ def script_main(download, download_playlist, **kwargs):
     download_grp.add_argument(
         '-c', '--cookies', metavar='COOKIES_FILE',
         help='Load cookies.txt or cookies.sqlite'
-    )
+    ).complete = shtab.FILE
     download_grp.add_argument(
         '-t', '--timeout', metavar='SECONDS', type=int, default=600,
         help='Set socket timeout'
@@ -1612,7 +1631,7 @@ def script_main(download, download_playlist, **kwargs):
     download_grp.add_argument(
         '-I', '--input-file', metavar='FILE', type=argparse.FileType('r'),
         help='Read non-playlist URLs from FILE'
-    )
+    ).complete = shtab.FILE
     download_grp.add_argument(
         '-P', '--password', help='Set video visit password to PASSWORD'
     )
@@ -1650,18 +1669,18 @@ def script_main(download, download_playlist, **kwargs):
     proxy_grp.add_argument(
         '-x', '--http-proxy', metavar='HOST:PORT',
         help='Use an HTTP proxy for downloading'
-    )
+    ).complete = HOST
     proxy_grp.add_argument(
         '-y', '--extractor-proxy', metavar='HOST:PORT',
         help='Use an HTTP proxy for extracting only'
-    )
+    ).complete = HOST
     proxy_grp.add_argument(
         '--no-proxy', action='store_true', help='Never use a proxy'
     )
     proxy_grp.add_argument(
         '-s', '--socks-proxy', metavar='HOST:PORT or USERNAME:PASSWORD@HOST:PORT',
         help='Use an SOCKS5 proxy for downloading'
-    )
+    ).complete = HOST_USER
 
     download_grp.add_argument('--stream', help=argparse.SUPPRESS)
     download_grp.add_argument('--itag', help=argparse.SUPPRESS)
@@ -1670,7 +1689,7 @@ def script_main(download, download_playlist, **kwargs):
         help = 'download video using an m3u8 url')
 
 
-    parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
+    parser.add_argument('URL', nargs='*').complete = URL
 
     args = parser.parse_args()
 
