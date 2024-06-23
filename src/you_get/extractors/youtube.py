@@ -3,7 +3,12 @@
 from ..common import *
 from ..extractor import VideoExtractor
 
-import dukpy
+try:
+    import dukpy
+except ImportError:
+    log.e('Please install dukpy in order to extract videos from YouTube:')
+    log.e('$ pip install dukpy')
+    exit(0)
 from urllib.parse import urlparse, parse_qs, urlencode
 from xml.dom.minidom import parseString
 
