@@ -211,7 +211,8 @@ class YouTube(VideoExtractor):
                 log.e('[Error] %s (%s)' % (playabilityStatus['reason'], subreason))
             except:
                 log.e('[Error] %s' % playabilityStatus['reason'])
-            log.e('View the video from a browser and export the cookies, then use --cookies to load cookies.')
+            if status == 'LOGIN_REQUIRED':
+                log.e('View the video from a browser and export the cookies, then use --cookies to load cookies.')
             exit(1)
 
         stream_list = ytInitialPlayerResponse['streamingData']['formats']
