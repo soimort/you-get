@@ -206,7 +206,13 @@ class YouTube(VideoExtractor):
         logging.debug('status: %s' % status)
         if status != 'OK':
             # If cookies are loaded, status should be OK
-            log.wtf('[Failed] %s (use --cookies to load cookies)' % playabilityStatus['reason'])
+            try:
+                subreason = playabilityStatus['errorScreen']['playerErrorMessageRenderer']['subreason']['runs'][0]['text']
+                log.e('[Error] %s (%s)' % (playabilityStatus['reason'], subreason))
+            except:
+                log.e('[Error] %s' % playabilityStatus['reason'])
+            log.e('View the video from a browser and export the cookies, then use --cookies to load cookies.')
+            exit(1)
 
         stream_list = ytInitialPlayerResponse['streamingData']['formats']
 
