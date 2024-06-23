@@ -3,6 +3,8 @@
 from ..common import *
 from ..extractor import VideoExtractor
 
+import dukpy
+from urllib.parse import urlparse, parse_qs, urlencode
 from xml.dom.minidom import parseString
 
 class YouTube(VideoExtractor):
@@ -68,45 +70,32 @@ class YouTube(VideoExtractor):
          'audio_encoding': 'AAC', 'audio_bitrate': '24'},
     ]
 
+    def dethrottle(js, url):
+        def n_to_n(js, n):
+            # Examples:
+            #   yma - https://www.youtube.com/s/player/84314bef/player_ias.vflset/en_US/base.js
+            #   Xka - https://www.youtube.com/s/player/dc0c6770/player_ias.vflset/sv_SE/base.js
+            f1 = match1(js, r'a\.set\("n",b\),[$\w]+\.length\|\|([$\w]+)\(""\)')
+            f1def = match1(js, r'\W%s=(function\(\w+\).+?\)});' % re.escape(f1))
+            n = dukpy.evaljs('(%s)("%s")' % (f1def, n))
+            return n
+
+        u = urlparse(url)
+        qs = parse_qs(u.query)
+        n = n_to_n(js, qs['n'][0])
+        qs['n'] = [n]
+        return u._replace(query=urlencode(qs, doseq=True)).geturl()
+
     def s_to_sig(js, s):
         # Examples:
-        # - https://www.youtube.com/yts/jsbin/player-da_DK-vflWlK-zq/base.js
-        # - https://www.youtube.com/yts/jsbin/player-vflvABTsY/da_DK/base.js
-        # - https://www.youtube.com/yts/jsbin/player-vfls4aurX/da_DK/base.js
-        # - https://www.youtube.com/yts/jsbin/player_ias-vfl_RGK2l/en_US/base.js
-        # - https://www.youtube.com/yts/jsbin/player-vflRjqq_w/da_DK/base.js
-        # - https://www.youtube.com/yts/jsbin/player_ias-vfl-jbnrr/da_DK/base.js
-        # - https://www.youtube.com/s/player/0b643cd1/player_ias.vflset/sv_SE/base.js
-        # - https://www.youtube.com/s/player/50e823fc/player_ias.vflset/sv_SE/base.js
-        # - https://www.youtube.com/s/player/3b5d5649/player_ias.vflset/sv_SE/base.js
-        # - https://www.youtube.com/s/player/dc0c6770/player_ias.vflset/sv_SE/base.js
-        def tr_js(code):
-            code = re.sub(r'function', r'def', code)
-            # add prefix '_sig_' to prevent namespace pollution
-            code = re.sub(r'(\W)([$\w][$\w][$\w]?)\(', r'\1_sig_\2(', code)
-            code = re.sub(r'\$', '_dollar', code)
-            code = re.sub(r'\{', r': ', code)
-            code = re.sub(r'\}', r'\n', code)
-            code = re.sub(r'var\s+', r'', code)
-            code = re.sub(r'(\w+).join\(""\)', r'"".join(\1)', code)
-            code = re.sub(r'(\w+).length', r'len(\1)', code)
-            code = re.sub(r'(\w+).slice\((\w+)\)', r'\1[\2:]', code)
-            code = re.sub(r'(\w+).splice\((\w+),(\w+)\)', r'del \1[\2:\2+\3]', code)
-            code = re.sub(r'(\w+).split\(""\)', r'list(\1)', code)
-            return code
-
-        js = js.replace('\n', ' ')
-        f1 = match1(js, r'\.set\(\w+\.sp,encodeURIComponent\(([$\w]+)') or \
-            match1(js, r'\.set\(\w+\.sp,\(0,window\.encodeURIComponent\)\(([$\w]+)') or \
-            match1(js, r'\.set\(\w+\.sp,([$\w]+)\(\w+\.s\)\)') or \
-            match1(js, r'"signature",([$\w]+)\(\w+\.\w+\)') or \
-            match1(js, r'=([$\w]+)\(decodeURIComponent\(')
-        f1def = match1(js, r'function %s(\(\w+\)\{[^\{]+\})' % re.escape(f1)) or \
-                match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
-        f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)
+        #   BPa - https://www.youtube.com/s/player/84314bef/player_ias.vflset/en_US/base.js
+        #   Xva - https://www.youtube.com/s/player/dc0c6770/player_ias.vflset/sv_SE/base.js
+        js_code = ''
+        f1 = match1(js, r'=([$\w]+)\(decodeURIComponent\(')
+        f1def = match1(js, r'\W%s=function(\(\w+\)\{[^\{]+\})' % re.escape(f1))
+        f1def = re.sub(r'([$\w]+\.)([$\w]+\(\w+,\d+\))', r'\2', f1def)  # remove . prefix
         f1def = 'function %s%s' % (f1, f1def)
-        code = tr_js(f1def)
-        f2s = set(re.findall(r'([$\w]+)\(\w+,\d+\)', f1def))
+        f2s = set(re.findall(r'([$\w]+)\(\w+,\d+\)', f1def))  # find all invoked function names
         for f2 in f2s:
             f2e = re.escape(f2)
             f2def = re.search(r'[^$\w]%s:function\((\w+,\w+)\)(\{[^\{\}]+\})' % f2e, js)
@@ -115,13 +104,10 @@ class YouTube(VideoExtractor):
             else:
                 f2def = re.search(r'[^$\w]%s:function\((\w+)\)(\{[^\{\}]+\})' % f2e, js)
                 f2def = 'function {}({},b){}'.format(f2e, f2def.group(1), f2def.group(2))
-            f2 = re.sub(r'\$', '_dollar', f2)  # replace dollar sign
-            code = code + 'global _sig_%s\n' % f2 + tr_js(f2def)
-
-        f1 = re.sub(r'\$', '_dollar', f1)  # replace dollar sign
-        code = code + '_sig=_sig_%s(s)' % f1
-        exec(code, globals(), locals())
-        return locals()['_sig']
+            js_code += f2def + ';'
+        js_code += f1def + ';%s("%s")' % (f1, s)
+        sig = dukpy.evaljs(js_code)
+        return sig
 
     def chunk_by_range(url, size):
         urls = []
@@ -209,6 +195,7 @@ class YouTube(VideoExtractor):
             raise
         elif video_info['status'] == ['ok']:
             if 'use_cipher_signature' not in video_info or video_info['use_cipher_signature'] == ['False']:
+                # FIXME: this is basically dead code, use_cipher_signature is always true
                 self.title = parse.unquote_plus(json.loads(video_info["player_response"][0])["videoDetails"]["title"])
                 # Parse video page (for DASH)
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
@@ -259,23 +246,30 @@ class YouTube(VideoExtractor):
                         self.html5player = None
 
             else:
-                # Parse video page instead
+                # Extract from video page
+                logging.debug('Extracting from the video page...')
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
 
-                try:  # FIXME: we should extract ytInitialPlayerResponse more reliably
-                    ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});</script>', video_page).group(1))
+                try:
+                    jsUrl = re.search('([^"]*/base\.js)"', video_page).group(1)
                 except:
-                    ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});', video_page).group(1))
+                    log.wtf('[Failed] Unable to find base.js on the video page')
+                # FIXME: do we still need this?
+                jsUrl = jsUrl.replace('\/', '/')  # unescape URL (for age-restricted videos)
+                self.html5player = 'https://www.youtube.com' + jsUrl
+                logging.debug('Retrieving the player code...')
+                self.js = get_content(self.html5player).replace('\n', ' ')
 
+                logging.debug('Loading ytInitialPlayerResponse...')
+                ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});(\n|</script>)', video_page).group(1))
+
+                # Get the video title
                 self.title = ytInitialPlayerResponse["videoDetails"]["title"]
-                if re.search('([^"]*/base\.js)"', video_page):
-                    self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
-                else:
-                    self.html5player = None
 
                 stream_list = ytInitialPlayerResponse['streamingData']['formats']
 
         elif video_info['status'] == ['fail']:
+            # FIXME: this is basically dead code, status is always ok
             logging.debug('ERRORCODE: %s' % video_info['errorcode'][0])
             if video_info['errorcode'] == ['150']:
                 # FIXME: still relevant?
@@ -327,7 +321,7 @@ class YouTube(VideoExtractor):
             log.wtf('[Failed] Invalid status.', exit_code=None)
             raise
 
-        # YouTube Live
+        # FIXME: YouTube Live
         if ytplayer_config and (ytplayer_config['args'].get('livestream') == '1' or ytplayer_config['args'].get('live_playback') == '1'):
             if 'hlsvp' in ytplayer_config['args']:
                 hlsvp = ytplayer_config['args']['hlsvp']
@@ -343,6 +337,7 @@ class YouTube(VideoExtractor):
 
         for stream in stream_list:
             if isinstance(stream, str):
+                # FIXME: dead code?
                 metadata = parse.parse_qs(stream)
                 stream_itag = metadata['itag'][0]
                 self.streams[stream_itag] = {
@@ -357,22 +352,29 @@ class YouTube(VideoExtractor):
                     'container': mime_to_container(metadata['type'][0].split(';')[0]),
                 }
             else:
-                stream_itag = str(stream['itag'])
-                self.streams[stream_itag] = {
+                if 'signatureCipher' in stream:
+                    logging.debug('Parsing signatureCipher for itag=%s...' % stream['itag'])
+                    qs = parse_qs(stream['signatureCipher'])
+                    #logging.debug(qs)
+                    sp = qs['sp'][0]
+                    sig = self.__class__.s_to_sig(self.js, qs['s'][0])
+                    url = qs['url'][0] + '&{}={}'.format(sp, sig)
+                elif 'url' in stream:
+                    url = stream['url']
+                else:
+                    log.wtf('No signatureCipher or url for itag=%s' % stream['itag'])
+                url = self.__class__.dethrottle(self.js, url)
+
+                self.streams[str(stream['itag'])] = {
                     'itag': str(stream['itag']),
-                    'url': stream['url'] if 'url' in stream else None,
-                    'sig': None,
-                    's': None,
+                    'url': url,
                     'quality': stream['quality'],
                     'type': stream['mimeType'],
                     'mime': stream['mimeType'].split(';')[0],
                     'container': mime_to_container(stream['mimeType'].split(';')[0]),
                 }
-                if 'signatureCipher' in stream:
-                    self.streams[stream_itag].update(dict([(_.split('=')[0], parse.unquote(_.split('=')[1]))
-                                                           for _ in stream['signatureCipher'].split('&')]))
 
-        # Prepare caption tracks
+        # FIXME: Prepare caption tracks
         try:
             try:
                 caption_tracks = json.loads(ytplayer_config['args']['player_response'])['captions']['playerCaptionsTracklistRenderer']['captionTracks']
@@ -408,6 +410,7 @@ class YouTube(VideoExtractor):
 
         # Prepare DASH streams (NOTE: not every video has DASH streams!)
         try:
+            # FIXME: dead code?
             dashmpd = ytplayer_config['args']['dashmpd']
             dash_xml = parseString(get_content(dashmpd))
             for aset in dash_xml.getElementsByTagName('AdaptationSet'):
@@ -473,12 +476,8 @@ class YouTube(VideoExtractor):
                             'size': int(dash_size) + int(dash_webm_a_size)
                         }
         except:
-            # VEVO
-            if not self.html5player: return
-            self.html5player = self.html5player.replace('\/', '/') # unescape URL (for age-restricted videos)
-            self.js = get_content(self.html5player)
-
             try:
+                # FIXME: dead code?
                 # Video info from video page (not always available)
                 streams = [dict([(i.split('=')[0],
                                   parse.unquote(i.split('=')[1]))
@@ -486,6 +485,7 @@ class YouTube(VideoExtractor):
                            for afmt in ytplayer_config['args']['adaptive_fmts'].split(',')]
             except:
                 if 'adaptive_fmts' in video_info:
+                    # FIXME: dead code?
                     streams = [dict([(i.split('=')[0],
                                       parse.unquote(i.split('=')[1]))
                                      for i in afmt.split('&')])
@@ -493,12 +493,15 @@ class YouTube(VideoExtractor):
                 else:
                     try:
                         try:
+                            # FIXME: dead code?
                             streams = json.loads(video_info['player_response'][0])['streamingData']['adaptiveFormats']
                         except:
                             streams = ytInitialPlayerResponse['streamingData']['adaptiveFormats']
                     except:  # no DASH stream at all
+                        # FIXME: dead code?
                         return
 
+                    # FIXME: dead code?
                     # streams without contentLength got broken urls, just remove them (#2767)
                     streams = [stream for stream in streams if 'contentLength' in stream]
 
@@ -523,34 +526,33 @@ class YouTube(VideoExtractor):
                         del stream['contentLength']
                         del stream['initRange']
                         del stream['indexRange']
-                        if 'signatureCipher' in stream:
-                            stream.update(dict([(_.split('=')[0], parse.unquote(_.split('=')[1]))
-                                                for _ in stream['signatureCipher'].split('&')]))
-                            del stream['signatureCipher']
 
-            for stream in streams: # get over speed limiting
-                stream['url'] += '&ratebypass=yes'
+                        if 'signatureCipher' in stream:
+                            logging.debug('Parsing signatureCipher for itag=%s...' % stream['itag'])
+                            qs = parse_qs(stream['signatureCipher'])
+                            #logging.debug(qs)
+                            sp = qs['sp'][0]
+                            sig = self.__class__.s_to_sig(self.js, qs['s'][0])
+                            url = qs['url'][0] + '&ratebypass=yes&{}={}'.format(sp, sig)
+                        elif 'url' in stream:
+                            url = stream['url']
+                        else:
+                            log.wtf('No signatureCipher or url for itag=%s' % stream['itag'])
+                        url = self.__class__.dethrottle(self.js, url)
+                        stream['url'] = url
+
             for stream in streams: # audio
                 if stream['type'].startswith('audio/mp4'):
                     dash_mp4_a_url = stream['url']
-                    if 's' in stream:
-                        sig = self.__class__.s_to_sig(self.js, stream['s'])
-                        dash_mp4_a_url += '&sig={}'.format(sig)
                     dash_mp4_a_size = stream['clen']
                 elif stream['type'].startswith('audio/webm'):
                     dash_webm_a_url = stream['url']
-                    if 's' in stream:
-                        sig = self.__class__.s_to_sig(self.js, stream['s'])
-                        dash_webm_a_url += '&sig={}'.format(sig)
                     dash_webm_a_size = stream['clen']
             for stream in streams: # video
                 if 'size' in stream:
                     if stream['type'].startswith('video/mp4'):
                         mimeType = 'video/mp4'
                         dash_url = stream['url']
-                        if 's' in stream:
-                            sig = self.__class__.s_to_sig(self.js, stream['s'])
-                            dash_url += '&sig={}'.format(sig)
                         dash_size = stream['clen']
                         itag = stream['itag']
                         dash_urls = self.__class__.chunk_by_range(dash_url, int(dash_size))
@@ -567,9 +569,6 @@ class YouTube(VideoExtractor):
                     elif stream['type'].startswith('video/webm'):
                         mimeType = 'video/webm'
                         dash_url = stream['url']
-                        if 's' in stream:
-                            sig = self.__class__.s_to_sig(self.js, stream['s'])
-                            dash_url += '&sig={}'.format(sig)
                         dash_size = stream['clen']
                         itag = stream['itag']
                         audio_url = None
@@ -610,15 +609,6 @@ class YouTube(VideoExtractor):
 
         if stream_id in self.streams:
             src = self.streams[stream_id]['url']
-            if self.streams[stream_id]['sig'] is not None:
-                sig = self.streams[stream_id]['sig']
-                src += '&sig={}'.format(sig)
-            elif self.streams[stream_id]['s'] is not None:
-                if not hasattr(self, 'js'):
-                    self.js = get_content(self.html5player)
-                s = self.streams[stream_id]['s']
-                sig = self.__class__.s_to_sig(self.js, s)
-                src += '&sig={}'.format(sig)
 
             self.streams[stream_id]['src'] = [src]
             self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'])

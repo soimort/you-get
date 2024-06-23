@@ -56,7 +56,8 @@ setup(
 
     entry_points = {'console_scripts': proj_info['console_scripts']},
 
-    extras_require={
+    install_requires = ['dukpy'],
+    extras_require = {
         'socks': ['PySocks'],
     }
 )
