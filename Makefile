@@ -8,7 +8,7 @@ i:
 	@(cd src/; python3 -i -c 'import you_get; print("You-Get %s\n>>> import you_get" % you_get.version.__version__)')
 
 test:
-	$(SETUP) test
+	(cd src; python -m unittest discover -s ../tests)
 
 clean:
 	zenity --question
