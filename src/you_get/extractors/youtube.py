@@ -190,8 +190,6 @@ class YouTube(VideoExtractor):
             jsUrl = re.search('([^"]*/base\.js)"', video_page).group(1)
         except:
             log.wtf('[Failed] Unable to find base.js on the video page')
-        # FIXME: do we still need this?
-        jsUrl = jsUrl.replace('\/', '/')  # unescape URL (for age-restricted videos)
         self.html5player = 'https://www.youtube.com' + jsUrl
         logging.debug('Retrieving the player code...')
         self.js = get_content(self.html5player).replace('\n', ' ')
@@ -201,6 +199,14 @@ class YouTube(VideoExtractor):
 
         # Get the video title
         self.title = ytInitialPlayerResponse["videoDetails"]["title"]
+
+        # Check the status
+        playabilityStatus = ytInitialPlayerResponse['playabilityStatus']
+        status = playabilityStatus['status']
+        logging.debug('status: %s' % status)
+        if status != 'OK':
+            # If cookies are loaded, status should be OK
+            log.wtf('[Failed] %s (use --cookies to load cookies)' % playabilityStatus['reason'])
 
         stream_list = ytInitialPlayerResponse['streamingData']['formats']
 
