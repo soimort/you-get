@@ -79,6 +79,7 @@ _*
 *.ts
 *.webm
 *.xml
+*.json
 /.env
 /.idea
 *.m4a
@@ -88,5 +89,5 @@ _*
 
 *.zip
 
+.emacs*
 .vscode
-
