@@ -4,3 +4,4 @@ include Makefile
 include README.md
 include you-get
 include you-get.json
+recursive-include contrib *
