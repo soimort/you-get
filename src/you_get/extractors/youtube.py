@@ -223,8 +223,9 @@ class YouTube(VideoExtractor):
         stream_list = ytInitialPlayerResponse['streamingData']['formats']
 
         for stream in stream_list:
+            logging.debug('Found format: itag=%s' % stream['itag'])
             if 'signatureCipher' in stream:
-                logging.debug('Parsing signatureCipher for itag=%s...' % stream['itag'])
+                logging.debug('  Parsing signatureCipher for itag=%s...' % stream['itag'])
                 qs = parse_qs(stream['signatureCipher'])
                 #logging.debug(qs)
                 sp = qs['sp'][0]
@@ -233,7 +234,7 @@ class YouTube(VideoExtractor):
             elif 'url' in stream:
                 url = stream['url']
             else:
-                log.wtf('No signatureCipher or url for itag=%s' % stream['itag'])
+                log.wtf('  No signatureCipher or url for itag=%s' % stream['itag'])
             url = self.__class__.dethrottle(self.js, url)
 
             self.streams[str(stream['itag'])] = {
@@ -285,15 +286,19 @@ class YouTube(VideoExtractor):
             streams = [stream for stream in streams if 'contentLength' in stream]
 
             for stream in streams:
+                logging.debug('Found adaptiveFormat: itag=%s' % stream['itag'])
                 stream['itag'] = str(stream['itag'])
                 if 'qualityLabel' in stream:
                     stream['quality_label'] = stream['qualityLabel']
                     del stream['qualityLabel']
+                    logging.debug('  quality_label: \t%s' % stream['quality_label'])
                 if 'width' in stream:
                     stream['size'] = '{}x{}'.format(stream['width'], stream['height'])
                     del stream['width']
                     del stream['height']
+                    logging.debug('  size: \t%s' % stream['size'])
                 stream['type'] = stream['mimeType']
+                logging.debug('  type: \t%s' % stream['type'])
                 stream['clen'] = stream['contentLength']
                 stream['init'] = '{}-{}'.format(
                     stream['initRange']['start'],
@@ -307,7 +312,7 @@ class YouTube(VideoExtractor):
                 del stream['indexRange']
 
                 if 'signatureCipher' in stream:
-                    logging.debug('Parsing signatureCipher for itag=%s...' % stream['itag'])
+                    logging.debug('  Parsing signatureCipher for itag=%s...' % stream['itag'])
                     qs = parse_qs(stream['signatureCipher'])
                     #logging.debug(qs)
                     sp = qs['sp'][0]
