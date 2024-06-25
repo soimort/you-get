@@ -145,7 +145,7 @@ fake_headers = {
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/123.0.2420.97'  # Latest Edge
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.2592.68'  # Latest Edge
 }
 
 if sys.stdout.isatty():
