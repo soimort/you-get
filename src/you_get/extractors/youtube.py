@@ -80,7 +80,8 @@ class YouTube(VideoExtractor):
             # Examples:
             #   yma - https://www.youtube.com/s/player/84314bef/player_ias.vflset/en_US/base.js
             #   Xka - https://www.youtube.com/s/player/dc0c6770/player_ias.vflset/sv_SE/base.js
-            f1 = match1(js, r'a\.set\("n",b\),[$\w]+\.length\|\|([$\w]+)\(""\)')
+            #   jma - https://www.youtube.com/s/player/8d9f6215/player_ias.vflset/sv_SE/base.js
+            f1 = match1(js, r',[$\w]+\.length\|\|([$\w]+)\(""\)\)}};')
             f1def = match1(js, r'\W%s=(function\(\w+\).+?\)});' % re.escape(f1))
             n = dukpy.evaljs('(%s)("%s")' % (f1def, n))
             return n
