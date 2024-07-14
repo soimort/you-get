@@ -39,6 +39,8 @@ class YouGetTests(unittest.TestCase):
         youtube.download(
             'https://www.youtube.com/watch?v=oRdxUFDoQe0', info_only=True
         )
+    def test_bilibili(self):
+	    bilibili.download('https://www.bilibili.com/video/av52500651\?spm_id_from\=333.6.b_686967685f656e65726779.3', info_only=True)
 
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac44560432', info_only=True)
