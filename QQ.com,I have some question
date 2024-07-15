@@ -1,0 +1,25 @@
+IF I use "you-get -i https://v.qq.com/x/cover/mzc002001clmhji/o0035vhl620.html?n_version=2021"
+I only got       
+            Site:       QQ.com
+            Title:      汪汪队立大功之超能救援(普通话版)
+            Type:       MPEG-4 video (video/mp4)
+            Size:       29.2 MiB (30616835 Bytes)
+It's not full video,and I can't download it.
+When I download it,it told me:
+            you-get: clip num is out of limit
+            you-get: [error] oops, something went wrong.
+            you-get: don't panic, c'est la vie. please try the following steps:
+            you-get:   (1) Rule out any network problem.
+            you-get:   (2) Make sure you-get is up-to-date.
+            you-get:   (3) Check if the issue is already known, on
+            you-get:         https://github.com/soimort/you-get/wiki/Known-Bugs
+            you-get:         https://github.com/soimort/you-get/issues
+            you-get:   (4) Run the command with '--debug' option,
+            you-get:       and report this issue with the full output.
+            Site:       QQ.com
+            Title:      汪汪队立大功之超能救援(普通话版)
+            Type:       MPEG-4 video (video/mp4)
+            Size:       29.2 MiB (30616835 Bytes)
+
+            Downloading 汪汪队立大功之超能救援(普通话版).mp4 ...
+            0.0% (  0.0/ 29.2MB) ├────────────────────────────────────────┤[1/1]
