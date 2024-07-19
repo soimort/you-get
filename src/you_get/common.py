@@ -798,7 +798,7 @@ def url_save(
                 if bar:
                     bar.received = 0
                 open_mode = 'wb'
-
+            # 当文件路径不能被Windows用来创建文件时，程序会崩溃退出。
             with open(temp_filepath, open_mode) as output:
                 while True:
                     buffer = None
