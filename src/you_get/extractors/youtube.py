@@ -201,7 +201,7 @@ class YouTube(VideoExtractor):
         self.js = get_content(self.html5player).replace('\n', ' ')
 
         logging.debug('Loading ytInitialPlayerResponse...')
-        ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});(\n|</script>)', video_page).group(1))
+        ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});(\n|</script>|var )', video_page).group(1))
 
         # Get the video title
         self.title = ytInitialPlayerResponse["videoDetails"]["title"]
