@@ -175,6 +175,16 @@ class YouTube(VideoExtractor):
                 pass
         # FIXME: show DASH stream sizes (by default) for playlist videos
 
+    def check_playability_response(self, ytInitialPlayerResponse):
+        STATUS_OK = "OK"
+        
+        playerResponseStatus = ytInitialPlayerResponse["playabilityStatus"]["status"]
+        if playerResponseStatus != STATUS_OK:
+            reason = ytInitialPlayerResponse["playabilityStatus"].get("reason", "")
+            raise AssertionError(
+                f"Server refused to provide video details. Returned status: {playerResponseStatus}, reason: {reason}."
+            )
+
     def prepare(self, **kwargs):
         assert self.url or self.vid
 
@@ -202,6 +212,7 @@ class YouTube(VideoExtractor):
 
         logging.debug('Loading ytInitialPlayerResponse...')
         ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});(\n|</script>|var )', video_page).group(1))
+        self.check_playability_response(ytInitialPlayerResponse)
 
         # Get the video title
         self.title = ytInitialPlayerResponse["videoDetails"]["title"]
