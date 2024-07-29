@@ -5,8 +5,13 @@ __all__ = ['instagram_download']
 from ..common import *
 
 def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.2592.87',
+        'sec-fetch-mode': 'navigate'  # important
+    }
+
     url = r1(r'([^?]*)', url)
-    cont = get_content(url, headers=fake_headers)
+    cont = get_content(url, headers=headers)
 
     vid = r1(r'instagram.com/\w+/([^/]+)', url)
     description = r1(r'<meta property="og:title" content="([^"]*)"', cont) or \
@@ -15,6 +20,8 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
     appId = r1(r'"appId":"(\d+)"', cont)
     media_id = r1(r'"media_id":"(\d+)"', cont)
+    logging.debug('appId: %s' % appId)
+    logging.debug('media_id: %s' % media_id)
 
     api_url = 'https://i.instagram.com/api/v1/media/%s/info/' % media_id
     try:
