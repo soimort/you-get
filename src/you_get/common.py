@@ -154,6 +154,62 @@ else:
     default_encoding = locale.getpreferredencoding().lower()
 
 
+class RangeContainer:
+    def __init__(self, ranges):
+        self.ranges = ranges
+
+    def __contains__(self, value):
+        for ran in self.ranges:
+            if ((not ran[0] or ran[0] <= value) and
+                    (not ran[1] or ran[1] >= value)):
+                return True
+        return False
+
+    def __str__(self):
+        result = []
+        for ran in self.ranges:
+            if ran[0] is None:
+                result.append("-")
+            else:
+                result.append(str(ran[0]))
+                if ran[0] != ran[1]:
+                    result.append("-")
+            if ran[1] is not None and ran[1] != ran[0]:
+                result.append(str(ran[1]))
+        return " ".join(result)
+
+
+class RangeProcessor(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        ranges = []
+        last_num = None
+        ranging = False
+        for s in values:
+            if s == '-':
+                ranging = True
+            else:
+                try:
+                    n = int(s)
+                except:
+                    raise Exception('invalid ranging index: ' + s)
+                if n < 1:
+                    raise Exception('ranging index must be positive: ' + s)
+                if ranging:
+                    ranges.append([last_num, n])
+                    ranging = False
+                    last_num = None
+                else:
+                    if last_num:
+                        ranges.append([last_num, last_num])
+                    last_num = n
+        if ranging:
+            ranges.append([last_num, None])
+            last_num = None
+        if last_num:
+            ranges.append([last_num, last_num])
+        setattr(namespace, self.dest, RangeContainer(ranges))
+
+
 def rc4(key, data):
     # all encryption algo should work on bytes
     assert type(key) == type(data) and type(key) == type(b'')
@@ -1623,12 +1679,20 @@ def script_main(download, download_playlist, **kwargs):
 
     playlist_grp = parser.add_argument_group('Playlist optional options')
     playlist_grp.add_argument(
+        '-r', '--range', nargs='+', metavar="N", action=RangeProcessor,
+        default=RangeContainer([[None, None]]),
+        help='''Specify a list of or a range of videos to download.
+        If preceeded by the URL, range list should terminate with '--'.
+        e.g. `-r - 3 7 8 - 12 16 -` will download videos
+        1 to 3, 7, 8 to 12, 16 and onwrads.'''
+    )
+    playlist_grp.add_argument(
         '--first', metavar='FIRST',
-        help='the first number'
+        help='(deprecated, use `-r FIRST -`) the first number'
     )
     playlist_grp.add_argument(
         '--last', metavar='LAST',
-        help='the last number'
+        help='(deprecated, use `-r - LAST`)the last number'
     )
     playlist_grp.add_argument(
         '--size', '--page-size', metavar='PAGE_SIZE',
