@@ -127,6 +127,14 @@ You can install `you-get` easily via:
 # pkg install you-get
 ```
 
+### Option 7: Flox (Mac, Linux, and Windows WSL)
+
+You can install `you-get` easily via:
+
+```
+$ flox install you-get
+```
+
 ### Shell completion
 
 Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](https://github.com/soimort/you-get/tree/develop/contrib/completion). Please consult your shell's manual for how to take advantage of them.
