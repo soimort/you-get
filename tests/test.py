@@ -57,12 +57,14 @@ class YouGetTests(unittest.TestCase):
         #)
 
     def test_tiktok(self):
-        tiktok.download('https://www.tiktok.com/@nmb48_official/video/6850796940293164290', info_only=True)
-        tiktok.download('https://www.tiktok.com/@/video/6850796940293164290', info_only=True)
-        tiktok.download('https://t.tiktok.com/i18n/share/video/6850796940293164290/', info_only=True)
+        tiktok.download('https://www.tiktok.com/@zukky_48/video/7398162058153315605', info_only=True)
+        tiktok.download('https://www.tiktok.com/@/video/7398162058153315605', info_only=True)
+        tiktok.download('https://t.tiktok.com/i18n/share/video/7398162058153315605/', info_only=True)
+        tiktok.download('https://vt.tiktok.com/ZSYKjKt6M/', info_only=True)
 
     def test_twitter(self):
         twitter.download('https://twitter.com/elonmusk/status/1530516552084234244', info_only=True)
+        twitter.download('https://x.com/elonmusk/status/1530516552084234244', info_only=True)
 
     def test_weibo(self):
         miaopai.download('https://video.weibo.com/show?fid=1034:4825403706245135', info_only=True)
