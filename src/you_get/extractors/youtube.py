@@ -177,7 +177,7 @@ class YouTube(VideoExtractor):
 
     def check_playability_response(self, ytInitialPlayerResponse):
         STATUS_OK = "OK"
-        
+
         playerResponseStatus = ytInitialPlayerResponse["playabilityStatus"]["status"]
         if playerResponseStatus != STATUS_OK:
             reason = ytInitialPlayerResponse["playabilityStatus"].get("reason", "")
@@ -186,6 +186,8 @@ class YouTube(VideoExtractor):
             )
 
     def prepare(self, **kwargs):
+        self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.2651.86'
+
         assert self.url or self.vid
 
         if not self.vid and self.url:
