@@ -46,6 +46,10 @@ class YouGetTests(unittest.TestCase):
     #def test_bilibili(self):
         #bilibili.download('https://www.bilibili.com/video/BV1sL4y177sC', info_only=True)
 
+    def test_youku(self):
+        from you_get.extractors import youku
+        youku.download('https://v.youku.com/v_show/id_XNDQ0NTQ5MDUyMA==', info_only=True)
+
     #def test_soundcloud(self):
         ## single song
         #soundcloud.download(
