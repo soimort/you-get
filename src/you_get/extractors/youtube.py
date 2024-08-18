@@ -186,7 +186,7 @@ class YouTube(VideoExtractor):
             )
 
     def prepare(self, **kwargs):
-        self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.2651.86'
+        self.ua = 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.6533.103 Mobile Safari/537.36'
 
         assert self.url or self.vid
 
@@ -202,7 +202,7 @@ class YouTube(VideoExtractor):
 
         # Extract from video page
         logging.debug('Extracting from the video page...')
-        video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
+        video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid, headers={'User-Agent': self.ua})
 
         try:
             jsUrl = re.search('([^"]*/base\.js)"', video_page).group(1)
