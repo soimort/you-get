@@ -44,11 +44,11 @@ class MGTV(VideoExtractor):
     def get_vid_from_url(url):
         """Extracts video ID from URL.
         """
-        vid = match1(url, 'https?://www.mgtv.com/(?:b|l)/\d+/(\d+).html')
+        vid = match1(url, r'https?://www.mgtv.com/(?:b|l)/\d+/(\d+).html')
         if not vid:
-            vid = match1(url, 'https?://www.mgtv.com/hz/bdpz/\d+/(\d+).html')
+            vid = match1(url, r'https?://www.mgtv.com/hz/bdpz/\d+/(\d+).html')
         if not vid:
-            vid = match1(url, 'https?://www.mgtv.com/s/(\d+).html')
+            vid = match1(url, r'https?://www.mgtv.com/s/(\d+).html')
         return vid
 
     # ----------------------------------------------------------------------

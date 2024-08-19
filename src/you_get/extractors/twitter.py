@@ -33,7 +33,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
                              **kwargs)
         return
 
-    m = re.match('^https?://(mobile\.)?(x|twitter)\.com/([^/]+)/status/(\d+)', url)
+    m = re.match(r'^https?://(mobile\.)?(x|twitter)\.com/([^/]+)/status/(\d+)', url)
     assert m
     screen_name, item_id = m.group(3), m.group(4)
     page_title = "{} [{}]".format(screen_name, item_id)

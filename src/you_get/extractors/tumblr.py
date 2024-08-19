@@ -34,7 +34,7 @@ def tumblr_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
                      post_data_raw='{"eu_resident":true,"gdpr_is_acceptable_age":true,"gdpr_consent_core":true,"gdpr_consent_first_party_ads":true,"gdpr_consent_third_party_ads":true,"gdpr_consent_search_history":true,"redirect_to":"%s","gdpr_reconsent":false}' % url)
         page = get_html(url, faker=True)
 
-    html = parse.unquote(page).replace('\/', '/')
+    html = parse.unquote(page).replace(r'\/', '/')
     feed = r1(r'<meta property="og:type" content="tumblr-feed:(\w+)" />', html)
 
     if feed in ['photo', 'photoset', 'entry'] or feed is None:

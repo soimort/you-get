@@ -20,18 +20,18 @@ from . import bokecc
 """
 refer to http://open.youku.com/tools
 """
-youku_embed_patterns = [ 'youku\.com/v_show/id_([a-zA-Z0-9=]+)',
-                         'player\.youku\.com/player\.php/sid/([a-zA-Z0-9=]+)/v\.swf',
-                         'loader\.swf\?VideoIDS=([a-zA-Z0-9=]+)',
-                         'player\.youku\.com/embed/([a-zA-Z0-9=]+)',
-                         'YKU.Player\(\'[a-zA-Z0-9]+\',{ client_id: \'[a-zA-Z0-9]+\', vid: \'([a-zA-Z0-9]+)\''
+youku_embed_patterns = [ r'youku\.com/v_show/id_([a-zA-Z0-9=]+)',
+                         r'player\.youku\.com/player\.php/sid/([a-zA-Z0-9=]+)/v\.swf',
+                         r'loader\.swf\?VideoIDS=([a-zA-Z0-9=]+)',
+                         r'player\.youku\.com/embed/([a-zA-Z0-9=]+)',
+                         r'YKU.Player\(\'[a-zA-Z0-9]+\',{ client_id: \'[a-zA-Z0-9]+\', vid: \'([a-zA-Z0-9]+)\''
                        ]
 
 """
 http://www.tudou.com/programs/view/html5embed.action?type=0&amp;code=3LS_URGvl54&amp;lcode=&amp;resourceId=0_06_05_99
 """
-tudou_embed_patterns = [ 'tudou\.com[a-zA-Z0-9\/\?=\&\.\;]+code=([a-zA-Z0-9_-]+)\&',
-                         'www\.tudou\.com/v/([a-zA-Z0-9_-]+)/[^"]*v\.swf'
+tudou_embed_patterns = [ r'tudou\.com[a-zA-Z0-9\/\?=\&\.\;]+code=([a-zA-Z0-9_-]+)\&',
+                         r'www\.tudou\.com/v/([a-zA-Z0-9_-]+)/[^"]*v\.swf'
                        ]
 
 """
@@ -39,18 +39,18 @@ refer to http://open.tudou.com/wiki/video/info
 """
 tudou_api_patterns = [ ]
 
-iqiyi_embed_patterns = [ 'player\.video\.qiyi\.com/([^/]+)/[^/]+/[^/]+/[^/]+\.swf[^"]+tvId=(\d+)' ]
+iqiyi_embed_patterns = [ r'player\.video\.qiyi\.com/([^/]+)/[^/]+/[^/]+/[^/]+\.swf[^"]+tvId=(\d+)' ]
 
-netease_embed_patterns = [ '(http://\w+\.163\.com/movie/[^\'"]+)' ]
+netease_embed_patterns = [ r'(http://\w+\.163\.com/movie/[^\'"]+)' ]
 
-vimeo_embed_patters = [ 'player\.vimeo\.com/video/(\d+)' ]
+vimeo_embed_patters = [ r'player\.vimeo\.com/video/(\d+)' ]
 
-dailymotion_embed_patterns = [ 'www\.dailymotion\.com/embed/video/(\w+)' ]
+dailymotion_embed_patterns = [ r'www\.dailymotion\.com/embed/video/(\w+)' ]
 
 """
 check the share button on http://www.bilibili.com/video/av5079467/
 """
-bilibili_embed_patterns = [ 'static\.hdslb\.com/miniloader\.swf.*aid=(\d+)' ]
+bilibili_embed_patterns = [ r'static\.hdslb\.com/miniloader\.swf.*aid=(\d+)' ]
 
 
 '''

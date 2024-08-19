@@ -48,7 +48,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
             else:
                 return
 
-        hls_urls = re.findall(r'(https?://[^;"\'\\]+' + '\.m3u8?' +
+        hls_urls = re.findall(r'(https?://[^;"\'\\]+' + r'\.m3u8?' +
                               r'[^;"\'\\]*)', page)
         if hls_urls:
             try:
@@ -64,14 +64,14 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
                 return
 
         # most common media file extensions on the Internet
-        media_exts = ['\.flv', '\.mp3', '\.mp4', '\.webm',
-                      '[-_]1\d\d\d\.jpe?g', '[-_][6-9]\d\d\.jpe?g', # tumblr
-                      '[-_]1\d\d\dx[6-9]\d\d\.jpe?g',
-                      '[-_][6-9]\d\dx1\d\d\d\.jpe?g',
-                      '[-_][6-9]\d\dx[6-9]\d\d\.jpe?g',
-                      's1600/[\w%]+\.jpe?g', # blogger
-                      'blogger\.googleusercontent\.com/img/a/\w*', # blogger
-                      'img[6-9]\d\d/[\w%]+\.jpe?g' # oricon?
+        media_exts = [r'\.flv', r'\.mp3', r'\.mp4', r'\.webm',
+                      r'[-_]1\d\d\d\.jpe?g', r'[-_][6-9]\d\d\.jpe?g', # tumblr
+                      r'[-_]1\d\d\dx[6-9]\d\d\.jpe?g',
+                      r'[-_][6-9]\d\dx1\d\d\d\.jpe?g',
+                      r'[-_][6-9]\d\dx[6-9]\d\d\.jpe?g',
+                      r's1600/[\w%]+\.jpe?g', # blogger
+                      r'blogger\.googleusercontent\.com/img/a/\w*', # blogger
+                      r'img[6-9]\d\d/[\w%]+\.jpe?g' # oricon?
         ]
 
         urls = []

@@ -116,7 +116,7 @@ def baidu_download(url, output_dir='.', stream_type=None, merge=True, info_only=
         id = r1(r'https?://music.baidu.com/album/(\d+)', url)
         baidu_download_album(id, output_dir, merge, info_only)
 
-    elif re.match('https?://music.baidu.com/song/\d+', url):
+    elif re.match(r'https?://music.baidu.com/song/\d+', url):
         id = r1(r'https?://music.baidu.com/song/(\d+)', url)
         baidu_download_song(id, output_dir, merge, info_only)
 

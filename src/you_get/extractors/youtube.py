@@ -197,7 +197,7 @@ class YouTube(VideoExtractor):
                 self.download_playlist_by_url(self.url, **kwargs)
                 exit(0)
 
-        if re.search('\Wlist=', self.url) and not kwargs.get('playlist'):
+        if re.search(r'\Wlist=', self.url) and not kwargs.get('playlist'):
             log.w('This video is from a playlist. (use --playlist to download all videos in the playlist.)')
 
         # Extract from video page
@@ -205,7 +205,7 @@ class YouTube(VideoExtractor):
         video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid, headers={'User-Agent': self.ua})
 
         try:
-            jsUrl = re.search('([^"]*/base\.js)"', video_page).group(1)
+            jsUrl = re.search(r'([^"]*/base\.js)"', video_page).group(1)
         except:
             log.wtf('[Failed] Unable to find base.js on the video page')
         self.html5player = 'https://www.youtube.com' + jsUrl
@@ -213,7 +213,7 @@ class YouTube(VideoExtractor):
         self.js = get_content(self.html5player).replace('\n', ' ')
 
         logging.debug('Loading ytInitialPlayerResponse...')
-        ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});(\n|</script>|var )', video_page).group(1))
+        ytInitialPlayerResponse = json.loads(re.search(r'ytInitialPlayerResponse\s*=\s*([^\n]+?});(\n|</script>|var )', video_page).group(1))
         self.check_playability_response(ytInitialPlayerResponse)
 
         # Get the video title

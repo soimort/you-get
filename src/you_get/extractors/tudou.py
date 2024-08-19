@@ -71,7 +71,7 @@ def tudou_download(url, output_dir = '.', merge = True, info_only = False, **kwa
 
 # obsolete?
 def parse_playlist(url):
-    aid = r1('http://www.tudou.com/playlist/p/a(\d+)(?:i\d+)?\.html', url)
+    aid = r1(r'http://www.tudou.com/playlist/p/a(\d+)(?:i\d+)?\.html', url)
     html = get_decoded_html(url)
     if not aid:
         aid = r1(r"aid\s*[:=]\s*'(\d+)'", html)

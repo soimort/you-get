@@ -715,7 +715,7 @@ def url_save(
                         bar.done()
                     if not force and auto_rename:
                         path, ext = os.path.basename(filepath).rsplit('.', 1)
-                        finder = re.compile(' \([1-9]\d*?\)$')
+                        finder = re.compile(r' \([1-9]\d*?\)$')
                         if (finder.search(path) is None):
                             thisfile = path + ' (1).' + ext
                         else:

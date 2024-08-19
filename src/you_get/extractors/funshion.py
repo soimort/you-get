@@ -84,7 +84,7 @@ class Funshion(VideoExtractor):
 
                 moz_ec_name = search_dict(sym_to_name, 'mozEcName')
                 push = search_dict(sym_to_name, 'push')
-                patt = '{}\.{}\("(.+?)"\)'.format(moz_ec_name, push)
+                patt = r'{}\.{}\("(.+?)"\)'.format(moz_ec_name, push)
                 ec_list = re.findall(patt, code)
                 [magic_list.append(sym_to_name[ec]) for ec in ec_list]
         return magic_list
