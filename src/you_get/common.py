@@ -20,7 +20,10 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+try:
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+except:
+    pass
 
 SITES = {
     '163'              : 'netease',
@@ -1097,9 +1100,17 @@ def download_urls(
                     from .processor.ffmpeg import ffmpeg_concat_mp4_to_mp4
                     ffmpeg_concat_mp4_to_mp4(parts, output_filepath)
                 else:
-                    from .processor.join_mp4 import concat_mp4
-                    concat_mp4(parts, output_filepath)
-                print('Merged into %s' % output_filename)
+                    print('Merged into %s' % output_filename)
+                    try:
+                        from .processor.join_mp4 import concat_mp4
+                        concat_mp4(parts, output_filepath)
+                    except:
+                    	try:
+                    		from .processor.join_flv import concat_flv
+                    		concat_flv(parts, output_filepath)
+                    	except:
+                    		from .processor.join_ts import concat_ts
+                    		concat_ts(parts, output_filepath)
             except:
                 raise
             else:
