@@ -25,6 +25,7 @@ SOFTWARE.
 import json
 import os
 import re
+import urllib.parse
 
 from ..common import get_content, urls_size, log, player, dry_run
 from ..extractor import VideoExtractor
@@ -75,17 +76,13 @@ class _Dispatcher(object):
         raise _NoMatchException()
 
 missevan_stream_types = [
-    {'id': 'source', 'quality': '源文件', 'url_json_key': 'soundurl',
-     'resource_url_fmt': 'sound/{resource_url}'},
-    {'id': '320', 'quality': '320 Kbps', 'url_json_key': 'soundurl_64'},
+    {'id': 'source', 'quality': '源文件', 'url_json_key': 'soundurl'},
     {'id': '128', 'quality': '128 Kbps', 'url_json_key': 'soundurl_128'},
-    {'id': '32', 'quality': '32 Kbps', 'url_json_key': 'soundurl_32'},
     {'id': 'covers', 'desc': '封面图', 'url_json_key': 'cover_image',
      'default_src': 'covers/nocover.png',
      'resource_url_fmt': 'covers/{resource_url}'},
-    {'id': 'coversmini', 'desc': '封面缩略图', 'url_json_key': 'cover_image',
-     'default_src': 'coversmini/nocover.png',
-     'resource_url_fmt': 'coversmini/{resource_url}'}
+    {'id': 'coversmini', 'desc': '封面缩略图', 'url_json_key': 'front_cover',
+     'default_src': 'coversmini/nocover.png'}
 ]
 
 def _get_resource_uri(data, stream_type):
@@ -103,7 +100,8 @@ def is_covers_stream(stream):
     return stream.lower() in ('covers', 'coversmini')
 
 def get_file_extension(file_path, default=''):
-    _, suffix = os.path.splitext(file_path)
+    url_parse_result = urllib.parse.urlparse(file_path)
+    _, suffix = os.path.splitext(url_parse_result.path)
     if suffix:
         # remove dot
         suffix = suffix[1:]
@@ -314,7 +312,7 @@ class MissEvan(VideoExtractor):
                 or kwargs.get('json_output'):
 
             for _, stream in self.streams.items():
-                stream['size'] = urls_size(stream['src'])
+                stream['size'] = urls_size(stream['src'], faker=True)
             return
 
         # fetch size of the selected stream only
@@ -323,7 +321,7 @@ class MissEvan(VideoExtractor):
 
         stream = self.streams[stream_id]
         if 'size' not in stream:
-            stream['size'] = urls_size(stream['src'])
+            stream['size'] = urls_size(stream['src'], faker=True)
 
     def _get_content(self, url):
         return get_content(url, headers=self.__headers)
@@ -353,7 +351,7 @@ class MissEvan(VideoExtractor):
 
     @staticmethod
     def url_resource(uri):
-        return 'https://static.missevan.com/' + uri
+        return uri if re.match(r'^https?:/{2}\w.+$', uri) else 'https://static.missevan.com/' + uri
 
 site = MissEvan()
 site_info = 'MissEvan.com'

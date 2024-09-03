@@ -18,7 +18,7 @@ def kuwo_download_by_rid(rid, output_dir = '.', merge = True, info_only = False)
 
 def kuwo_playlist_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     html=get_content(url)
-    matched=set(re.compile("yinyue/(\d+)").findall(html))#reduce duplicated
+    matched=set(re.compile(r"yinyue/(\d+)").findall(html))#reduce duplicated
     for rid in matched:
         kuwo_download_by_rid(rid,output_dir,merge,info_only)
 
@@ -26,7 +26,7 @@ def kuwo_playlist_download(url, output_dir = '.', merge = True, info_only = Fals
 
 def kuwo_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
     if "www.kuwo.cn/yinyue" in url:
-        rid=match1(url,'yinyue/(\d+)')
+        rid=match1(url, r'yinyue/(\d+)')
         kuwo_download_by_rid(rid,output_dir, merge, info_only)
     else:
         kuwo_playlist_download(url,output_dir,merge,info_only)

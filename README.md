@@ -1,10 +1,12 @@
 # You-Get
 
+[![Build Status](https://github.com/soimort/you-get/workflows/develop/badge.svg)](https://github.com/soimort/you-get/actions)
 [![PyPI version](https://img.shields.io/pypi/v/you-get.svg)](https://pypi.python.org/pypi/you-get/)
-[![Build Status](https://travis-ci.org/soimort/you-get.svg)](https://travis-ci.org/soimort/you-get)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**NOTICE: Read [this](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) if you are looking for the conventional "Issues" tab.**
+**NOTICE (30 May 2022): Support for Python 3.5, 3.6 and 3.7 will eventually be dropped. ([see details here](https://github.com/soimort/you-get/wiki/TLS-1.3-post-handshake-authentication-(PHA)))**
+
+**NOTICE (8 Mar 2019): Read [this](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) if you are looking for the conventional "Issues" tab.**
 
 ---
 
@@ -53,17 +55,17 @@ Are you a Python programmer? Then check out [the source](https://github.com/soim
 
 ### Prerequisites
 
-The following dependencies are necessary:
+The following dependencies are recommended:
 
-* **[Python](https://www.python.org/downloads/)**  3.2 or above
+* **[Python](https://www.python.org/downloads/)**  3.7.4 or above
 * **[FFmpeg](https://www.ffmpeg.org/)** 1.0 or above
 * (Optional) [RTMPDump](https://rtmpdump.mplayerhq.hu/)
 
 ### Option 1: Install via pip
 
-The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi/you-get), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager. Note that you must use the Python 3 version of `pip`:
+The official release of `you-get` is distributed on [PyPI](https://pypi.python.org/pypi/you-get), and can be installed easily from a PyPI mirror via the [pip](https://en.wikipedia.org/wiki/Pip_\(package_manager\)) package manager: (Note that you must use the Python 3 version of `pip`)
 
-    $ pip3 install you-get
+    $ pip install you-get
 
 ### Option 2: Install via [Antigen](https://github.com/zsh-users/antigen) (for Zsh users)
 
@@ -78,16 +80,26 @@ You may either download the [stable](https://github.com/soimort/you-get/archive/
 Alternatively, run
 
 ```
-$ [sudo] python3 setup.py install
+$ cd path/to/you-get
+$ [sudo] python -m pip install .
 ```
 
 Or
 
 ```
-$ python3 setup.py install --user
+$ cd path/to/you-get
+$ python -m pip install . --user
 ```
 
-to install `you-get` to a permanent path.
+to install `you-get` to a permanent path. (And don't omit the dot `.` representing the current directory)
+
+You can also use the [pipenv](https://pipenv.pypa.io/en/latest) to install the `you-get` in the Python virtual environment.
+
+```
+$ pipenv install -e .
+$ pipenv run you-get --version
+you-get: version 0.4.1555, a tiny downloader that scrapes the web.
+```
 
 ### Option 4: Git clone
 
@@ -97,7 +109,7 @@ This is the recommended way for all developers, even if you don't often code in 
 $ git clone git://github.com/soimort/you-get.git
 ```
 
-Then put the cloned directory into your `PATH`, or run `./setup.py install` to install `you-get` to a permanent path.
+Then put the cloned directory into your `PATH`, or run `python -m pip install path/to/you-get` to install `you-get` to a permanent path.
 
 ### Option 5: Homebrew (Mac only)
 
@@ -115,6 +127,14 @@ You can install `you-get` easily via:
 # pkg install you-get
 ```
 
+### Option 7: Flox (Mac, Linux, and Windows WSL)
+
+You can install `you-get` easily via:
+
+```
+$ flox install you-get
+```
+
 ### Shell completion
 
 Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completion`](https://github.com/soimort/you-get/tree/develop/contrib/completion). Please consult your shell's manual for how to take advantage of them.
@@ -124,7 +144,7 @@ Completion definitions for Bash, Fish and Zsh can be found in [`contrib/completi
 Based on which option you chose to install `you-get`, you may upgrade it via:
 
 ```
-$ pip3 install --upgrade you-get
+$ pip install --upgrade you-get
 ```
 
 or download the latest release via:
@@ -136,7 +156,7 @@ $ you-get https://github.com/soimort/you-get/archive/master.zip
 In order to get the latest ```develop``` branch without messing up the PIP, you can try:
 
 ```
-$ pip3 install --upgrade git+https://github.com/soimort/you-get@develop
+$ pip install --upgrade git+https://github.com/soimort/you-get@develop
 ```
 
 ## Getting Started
@@ -256,25 +276,20 @@ Type:       JPEG Image (image/jpeg)
 Size:       0.06 MiB (66482 Bytes)
 
 Downloading rms.jpg ...
-100.0% (  0.1/0.1  MB) ├████████████████████████████████████████┤[1/1]  127 kB/s
+ 100% (  0.1/  0.1MB) ├████████████████████████████████████████┤[1/1]  127 kB/s
 ```
 
 Otherwise, `you-get` will scrape the web page and try to figure out if there's anything interesting to you:
 
 ```
-$ you-get http://kopasas.tumblr.com/post/69361932517
+$ you-get https://kopasas.tumblr.com/post/69361932517
 Site:       Tumblr.com
-Title:      kopasas
-Type:       Unknown type (None)
-Size:       0.51 MiB (536583 Bytes)
-
-Site:       Tumblr.com
-Title:      tumblr_mxhg13jx4n1sftq6do1_1280
+Title:      [tumblr] tumblr_mxhg13jx4n1sftq6do1_640
 Type:       Portable Network Graphics (image/png)
-Size:       0.51 MiB (536583 Bytes)
+Size:       0.11 MiB (118484 Bytes)
 
-Downloading tumblr_mxhg13jx4n1sftq6do1_1280.png ...
-100.0% (  0.5/0.5  MB) ├████████████████████████████████████████┤[1/1]   22 MB/s
+Downloading [tumblr] tumblr_mxhg13jx4n1sftq6do1_640.png ...
+ 100% (  0.1/  0.1MB) ├████████████████████████████████████████┤[1/1]   22 MB/s
 ```
 
 **Note:**
@@ -364,83 +379,81 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 | Site | URL | Videos? | Images? | Audios? |
 | :--: | :-- | :-----: | :-----: | :-----: |
 | **YouTube** | <https://www.youtube.com/>    |✓| | |
-| **Twitter** | <https://twitter.com/>        |✓|✓| |
-| VK          | <http://vk.com/>              |✓|✓| |
-| Vine        | <https://vine.co/>            |✓| | |
+| **X (Twitter)** | <https://x.com/>        |✓|✓| |
+| VK          | <https://vk.com/>              |✓|✓| |
 | Vimeo       | <https://vimeo.com/>          |✓| | |
-| Veoh        | <http://www.veoh.com/>        |✓| | |
+| Veoh        | <https://www.veoh.com/>        |✓| | |
 | **Tumblr**  | <https://www.tumblr.com/>     |✓|✓|✓|
-| TED         | <http://www.ted.com/>         |✓| | |
+| TED         | <https://www.ted.com/>         |✓| | |
 | SoundCloud  | <https://soundcloud.com/>     | | |✓|
 | SHOWROOM    | <https://www.showroom-live.com/> |✓| | |
 | Pinterest   | <https://www.pinterest.com/>  | |✓| |
-| MTV81       | <http://www.mtv81.com/>       |✓| | |
+| MTV81       | <https://www.mtv81.com/>       |✓| | |
 | Mixcloud    | <https://www.mixcloud.com/>   | | |✓|
-| Metacafe    | <http://www.metacafe.com/>    |✓| | |
-| Magisto     | <http://www.magisto.com/>     |✓| | |
+| Metacafe    | <https://www.metacafe.com/>    |✓| | |
+| Magisto     | <https://www.magisto.com/>     |✓| | |
 | Khan Academy | <https://www.khanacademy.org/> |✓| | |
 | Internet Archive | <https://archive.org/>   |✓| | |
 | **Instagram** | <https://instagram.com/>    |✓|✓| |
-| InfoQ       | <http://www.infoq.com/presentations/> |✓| | |
-| Imgur       | <http://imgur.com/>           | |✓| |
-| Heavy Music Archive | <http://www.heavy-music.ru/> | | |✓|
-| Freesound   | <http://www.freesound.org/>   | | |✓|
+| InfoQ       | <https://www.infoq.com/presentations/> |✓| | |
+| Imgur       | <https://imgur.com/>           | |✓| |
+| Heavy Music Archive | <https://www.heavy-music.ru/> | | |✓|
+| Freesound   | <https://www.freesound.org/>   | | |✓|
 | Flickr      | <https://www.flickr.com/>     |✓|✓| |
-| FC2 Video   | <http://video.fc2.com/>       |✓| | |
+| FC2 Video   | <https://video.fc2.com/>       |✓| | |
 | Facebook    | <https://www.facebook.com/>   |✓| | |
-| eHow        | <http://www.ehow.com/>        |✓| | |
-| Dailymotion | <http://www.dailymotion.com/> |✓| | |
-| Coub        | <http://coub.com/>            |✓| | |
-| CBS         | <http://www.cbs.com/>         |✓| | |
-| Bandcamp    | <http://bandcamp.com/>        | | |✓|
-| AliveThai   | <http://alive.in.th/>         |✓| | |
-| interest.me | <http://ch.interest.me/tvn>   |✓| | |
-| **755<br/>ナナゴーゴー** | <http://7gogo.jp/> |✓|✓| |
-| **niconico<br/>ニコニコ動画** | <http://www.nicovideo.jp/> |✓| | |
-| **163<br/>网易视频<br/>网易云音乐** | <http://v.163.com/><br/><http://music.163.com/> |✓| |✓|
-| 56网     | <http://www.56.com/>           |✓| | |
-| **AcFun** | <http://www.acfun.cn/>        |✓| | |
-| **Baidu<br/>百度贴吧** | <http://tieba.baidu.com/> |✓|✓| |
-| 爆米花网 | <http://www.baomihua.com/>     |✓| | |
-| **bilibili<br/>哔哩哔哩** | <http://www.bilibili.com/> |✓|✓|✓|
-| 豆瓣     | <http://www.douban.com/>       |✓| |✓|
-| 斗鱼     | <http://www.douyutv.com/>      |✓| | |
-| 凤凰视频 | <http://v.ifeng.com/>          |✓| | |
-| 风行网   | <http://www.fun.tv/>           |✓| | |
-| iQIYI<br/>爱奇艺 | <http://www.iqiyi.com/> |✓| | |
-| 激动网   | <http://www.joy.cn/>           |✓| | |
-| 酷6网    | <http://www.ku6.com/>          |✓| | |
-| 酷狗音乐 | <http://www.kugou.com/>        | | |✓|
-| 酷我音乐 | <http://www.kuwo.cn/>          | | |✓|
-| 乐视网   | <http://www.le.com/>           |✓| | |
-| 荔枝FM   | <http://www.lizhi.fm/>         | | |✓|
-| 秒拍     | <http://www.miaopai.com/>      |✓| | |
-| MioMio弹幕网 | <http://www.miomio.tv/>    |✓| | |
-| MissEvan<br/>猫耳FM | <http://www.missevan.com/> | | |✓|
+| eHow        | <https://www.ehow.com/>        |✓| | |
+| Dailymotion | <https://www.dailymotion.com/> |✓| | |
+| Coub        | <https://coub.com/>            |✓| | |
+| CBS         | <https://www.cbs.com/>         |✓| | |
+| Bandcamp    | <https://bandcamp.com/>        | | |✓|
+| AliveThai   | <https://alive.in.th/>         |✓| | |
+| interest.me | <https://ch.interest.me/tvn>   |✓| | |
+| **755<br/>ナナゴーゴー** | <https://7gogo.jp/> |✓|✓| |
+| **niconico<br/>ニコニコ動画** | <https://www.nicovideo.jp/> |✓| | |
+| **163<br/>网易视频<br/>网易云音乐** | <https://v.163.com/><br/><https://music.163.com/> |✓| |✓|
+| 56网     | <https://www.56.com/>           |✓| | |
+| **AcFun** | <https://www.acfun.cn/>        |✓| | |
+| **Baidu<br/>百度贴吧** | <https://tieba.baidu.com/> |✓|✓| |
+| 爆米花网 | <https://www.baomihua.com/>     |✓| | |
+| **bilibili<br/>哔哩哔哩** | <https://www.bilibili.com/> |✓|✓|✓|
+| 豆瓣     | <https://www.douban.com/>       |✓| |✓|
+| 斗鱼     | <https://www.douyutv.com/>      |✓| | |
+| 凤凰视频 | <https://v.ifeng.com/>          |✓| | |
+| 风行网   | <https://www.fun.tv/>           |✓| | |
+| iQIYI<br/>爱奇艺 | <https://www.iqiyi.com/> |✓| | |
+| 激动网   | <https://www.joy.cn/>           |✓| | |
+| 酷6网    | <https://www.ku6.com/>          |✓| | |
+| 酷狗音乐 | <https://www.kugou.com/>        | | |✓|
+| 酷我音乐 | <https://www.kuwo.cn/>          | | |✓|
+| 乐视网   | <https://www.le.com/>           |✓| | |
+| 荔枝FM   | <https://www.lizhi.fm/>         | | |✓|
+| 懒人听书 | <https://www.lrts.me/>          | | |✓|
+| 秒拍     | <https://www.miaopai.com/>      |✓| | |
+| MioMio弹幕网 | <https://www.miomio.tv/>    |✓| | |
+| MissEvan<br/>猫耳FM | <https://www.missevan.com/> | | |✓|
 | 痞客邦   | <https://www.pixnet.net/>      |✓| | |
-| PPTV聚力 | <http://www.pptv.com/>         |✓| | |
-| 齐鲁网   | <http://v.iqilu.com/>          |✓| | |
-| QQ<br/>腾讯视频 | <http://v.qq.com/>      |✓| | |
-| 企鹅直播 | <http://live.qq.com/>          |✓| | |
-| Sina<br/>新浪视频<br/>微博秒拍视频 | <http://video.sina.com.cn/><br/><http://video.weibo.com/> |✓| | |
-| Sohu<br/>搜狐视频 | <http://tv.sohu.com/> |✓| | |
-| **Tudou<br/>土豆** | <http://www.tudou.com/> |✓| | |
-| 虾米     | <http://www.xiami.com/>        |✓| |✓|
-| 阳光卫视 | <http://www.isuntv.com/>       |✓| | |
-| **音悦Tai** | <http://www.yinyuetai.com/> |✓| | |
-| **Youku<br/>优酷** | <http://www.youku.com/> |✓| | |
-| 战旗TV   | <http://www.zhanqi.tv/lives>   |✓| | |
-| 央视网   | <http://www.cntv.cn/>          |✓| | |
-| Naver<br/>네이버 | <http://tvcast.naver.com/>     |✓| | |
-| 芒果TV   | <http://www.mgtv.com/>         |✓| | |
-| 火猫TV   | <http://www.huomao.com/>       |✓| | |
-| 阳光宽频网 | <http://www.365yg.com/>      |✓| | |
+| PPTV聚力 | <https://www.pptv.com/>         |✓| | |
+| 齐鲁网   | <https://v.iqilu.com/>          |✓| | |
+| QQ<br/>腾讯视频 | <https://v.qq.com/>      |✓| | |
+| 企鹅直播 | <https://live.qq.com/>          |✓| | |
+| Sina<br/>新浪视频<br/>微博秒拍视频 | <https://video.sina.com.cn/><br/><https://video.weibo.com/> |✓| | |
+| Sohu<br/>搜狐视频 | <https://tv.sohu.com/> |✓| | |
+| **Tudou<br/>土豆** | <https://www.tudou.com/> |✓| | |
+| 阳光卫视 | <https://www.isuntv.com/>       |✓| | |
+| **Youku<br/>优酷** | <https://www.youku.com/> |✓| | |
+| 战旗TV   | <https://www.zhanqi.tv/lives>   |✓| | |
+| 央视网   | <https://www.cntv.cn/>          |✓| | |
+| Naver<br/>네이버 | <https://tvcast.naver.com/>     |✓| | |
+| 芒果TV   | <https://www.mgtv.com/>         |✓| | |
+| 火猫TV   | <https://www.huomao.com/>       |✓| | |
+| 阳光宽频网 | <https://www.365yg.com/>      |✓| | |
 | 西瓜视频 | <https://www.ixigua.com/>      |✓| | |
-| 新片场 | <https://www.xinpianchang.com//>      |✓| | |
+| 新片场 | <https://www.xinpianchang.com/>      |✓| | |
 | 快手 | <https://www.kuaishou.com/>      |✓|✓| |
 | 抖音 | <https://www.douyin.com/>      |✓| | |
 | TikTok | <https://www.tiktok.com/>      |✓| | |
-| 中国体育(TV) | <http://v.zhibo.tv/> </br><http://video.zhibo.tv/>    |✓| | |
+| 中国体育(TV) | <https://v.zhibo.tv/> </br><https://video.zhibo.tv/>    |✓| | |
 | 知乎 | <https://www.zhihu.com/>      |✓| | |
 
 For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.
@@ -453,7 +466,7 @@ Check if it's already a known problem on <https://github.com/soimort/you-get/wik
 
 ## Getting Involved
 
-You can reach us on the Gitter channel [#soimort/you-get](https://gitter.im/soimort/you-get) (here's how you [set up your IRC client](http://irc.gitter.im) for Gitter). If you have a quick question regarding `you-get`, ask it there.
+You can reach us on the Gitter channel [#soimort/you-get](https://gitter.im/soimort/you-get) (here's how you [set up your IRC client](https://irc.gitter.im) for Gitter). If you have a quick question regarding `you-get`, ask it there.
 
 If you are seeking to report an issue or contribute, please make sure to read [the guidelines](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) first.
 

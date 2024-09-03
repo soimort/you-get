@@ -10,7 +10,7 @@ def douban_download(url, output_dir = '.', merge = True, info_only = False, **kw
 
     if re.match(r'https?://movie', url):
         title = match1(html, 'name="description" content="([^"]+)')
-        tid = match1(url, 'trailer/(\d+)')
+        tid = match1(url, r'trailer/(\d+)')
         real_url = 'https://movie.douban.com/trailer/video_url?tid=%s' % tid
         type, ext, size = url_info(real_url)
 

@@ -35,6 +35,7 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
 
     part_urls= []
     total_size = 0
+    ext = None
     for part in range(1, seg_cnt+1):
         if fc_cnt == 0:
             # fix json parsing error
@@ -82,7 +83,7 @@ def kg_qq_download_by_shareid(shareid, output_dir='.', info_only=False, caption=
     playurl = json_data['data']['playurl']
     videourl = json_data['data']['playurl_video']
     real_url = playurl if playurl else videourl
-    real_url = real_url.replace('\/', '/')
+    real_url = real_url.replace(r'\/', '/')
 
     ksong_mid = json_data['data']['ksong_mid']
     lyric_url = 'http://cgi.kg.qq.com/fcgi-bin/fcg_lyric?jsonpCallback=jsopgetlrcdata&outCharset=utf-8&ksongmid=' + ksong_mid

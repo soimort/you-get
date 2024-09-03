@@ -5,7 +5,20 @@ PACKAGE_NAME = 'you_get'
 
 PROJ_METADATA = '%s.json' % PROJ_NAME
 
-import os, json, imp
+import importlib.util
+import importlib.machinery
+
+def load_source(modname, filename):
+    loader = importlib.machinery.SourceFileLoader(modname, filename)
+    spec = importlib.util.spec_from_file_location(modname, filename, loader=loader)
+    module = importlib.util.module_from_spec(spec)
+    # The module is always executed and not cached in sys.modules.
+    # Uncomment the following line to cache the module.
+    # sys.modules[module.__name__] = module
+    loader.exec_module(module)
+    return module
+
+import os, json
 here = os.path.abspath(os.path.dirname(__file__))
 proj_info = json.loads(open(os.path.join(here, PROJ_METADATA), encoding='utf-8').read())
 try:
@@ -13,7 +26,7 @@ try:
 except:
     README = ""
 CHANGELOG = open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf-8').read()
-VERSION = imp.load_source('version', os.path.join(here, 'src/%s/version.py' % PACKAGE_NAME)).__version__
+VERSION = load_source('version', os.path.join(here, 'src/%s/version.py' % PACKAGE_NAME)).__version__
 
 from setuptools import setup, find_packages
 setup(
@@ -43,7 +56,8 @@ setup(
 
     entry_points = {'console_scripts': proj_info['console_scripts']},
 
-    extras_require={
+    install_requires = ['dukpy'],
+    extras_require = {
         'socks': ['PySocks'],
     }
 )

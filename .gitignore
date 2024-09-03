@@ -79,13 +79,15 @@ _*
 *.ts
 *.webm
 *.xml
+*.json
 /.env
 /.idea
 *.m4a
 *.DS_Store
 *.txt
+*.sw[a-p]
 
 *.zip
 
+.emacs*
 .vscode
-

@@ -50,7 +50,7 @@ def ku6_download(url, output_dir = '.', merge = True, info_only = False, **kwarg
             vid = vid.group(1)
         else:
             raise Exception('Unsupported url')
-        this_meta = re.search('"?'+vid+'"?:\{(.+?)\}', meta)
+        this_meta = re.search('"?'+vid+r'"?:\{(.+?)\}', meta)
         if this_meta is not None:
             this_meta = this_meta.group(1)
             title = re.search('title:"(.+?)"', this_meta).group(1)

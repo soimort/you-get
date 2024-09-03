@@ -32,8 +32,8 @@ def kugou_download(url, output_dir=".", merge=True, info_only=False, **kwargs):
 def kugou_download_by_hash(url, output_dir='.', merge=True, info_only=False):
     # sample
     # url_sample:http://www.kugou.com/song/#hash=93F7D2FC6E95424739448218B591AEAF&album_id=9019462
-    hash_val = match1(url, 'hash=(\w+)')
-    album_id = match1(url, 'album_id=(\d+)')
+    hash_val = match1(url, r'hash=(\w+)')
+    album_id = match1(url, r'album_id=(\d+)')
     if not album_id:
         album_id = 123
     html = get_html("http://www.kugou.com/yy/index.php?r=play/getdata&hash={}&album_id={}&mid=123".format(hash_val, album_id))
@@ -60,7 +60,7 @@ def kugou_download_playlist(url, output_dir='.', merge=True, info_only=False, **
         res = pattern.findall(html)
         for song in res:
             res = get_html(song)
-            pattern_url = re.compile('"hash":"(\w+)".*"album_id":(\d)+')
+            pattern_url = re.compile(r'"hash":"(\w+)".*"album_id":(\d)+')
             hash_val, album_id = res = pattern_url.findall(res)[0]
             if not album_id:
                 album_id = 123
@@ -70,7 +70,7 @@ def kugou_download_playlist(url, output_dir='.', merge=True, info_only=False, **
     # album sample:   http://www.kugou.com/yy/album/single/1645030.html
     elif url.lower().find('album') != -1:
         html = get_html(url)
-        pattern = re.compile('var data=(\[.*?\]);')
+        pattern = re.compile(r'var data=(\[.*?\]);')
         res = pattern.findall(html)[0]
         for v in json.loads(res):
             urls.append('http://www.kugou.com/song/#hash=%s&album_id=%s' % (v['hash'], v['album_id']))
@@ -79,7 +79,7 @@ def kugou_download_playlist(url, output_dir='.', merge=True, info_only=False, **
     # playlist sample:http://www.kugou.com/yy/special/single/487279.html
     else:
         html = get_html(url)
-        pattern = re.compile('data="(\w+)\|(\d+)"')
+        pattern = re.compile(r'data="(\w+)\|(\d+)"')
         for v in pattern.findall(html):
             urls.append('http://www.kugou.com/song/#hash=%s&album_id=%s' % (v[0], v[1]))
             print('http://www.kugou.com/song/#hash=%s&album_id=%s' % (v[0], v[1]))

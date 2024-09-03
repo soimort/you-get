@@ -79,9 +79,14 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
         netease_song_download(j["program"]["mainSong"], output_dir=output_dir, info_only=info_only)
 
     elif "radio" in url:
-        j = loads(get_content("http://music.163.com/api/dj/program/byradio/?radioId=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
-        for i in j['programs']:
-            netease_song_download(i["mainSong"],output_dir=output_dir, info_only=info_only)
+        offset = 0
+        while True:
+            j = loads(get_content("http://music.163.com/api/dj/program/byradio/?radioId=%s&ids=[%s]&csrf_token=&offset=%d" % (rid, rid, offset), headers={"Referer": "http://music.163.com/"}))
+            for i in j['programs']:
+                netease_song_download(i["mainSong"], output_dir=output_dir, info_only=info_only)
+            if not j['more']:
+                break
+            offset += len(j['programs'])
 
     elif "mv" in url:
         j = loads(get_content("http://music.163.com/api/mv/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
@@ -123,10 +128,10 @@ def netease_song_download(song, output_dir='.', info_only=False, playlist_prefix
                             output_dir=output_dir, info_only=info_only)
 
 def netease_download_common(title, url_best, output_dir, info_only):
-    songtype, ext, size = url_info(url_best)
+    songtype, ext, size = url_info(url_best, faker=True)
     print_info(site_info, title, songtype, size)
     if not info_only:
-        download_urls([url_best], title, ext, size, output_dir)
+        download_urls([url_best], title, ext, size, output_dir, faker=True)
 
 
 def netease_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):

@@ -10,7 +10,7 @@ __all__ = ['qingting_download_by_url']
 
 class Qingting(VideoExtractor):
     # every resource is described by its channel id and program id
-    # so vid is tuple (chaanel_id, program_id)
+    # so vid is tuple (channel_id, program_id)
 
     name = 'Qingting'
     stream_types = [

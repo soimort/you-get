@@ -23,7 +23,7 @@ def real_url(fileName, key, ch):
 
 def sohu_download(url, output_dir='.', merge=True, info_only=False, extractor_proxy=None, **kwargs):
     if re.match(r'http://share.vrs.sohu.com', url):
-        vid = r1('id=(\d+)', url)
+        vid = r1(r'id=(\d+)', url)
     else:
         html = get_html(url)
         vid = r1(r'\Wvid\s*[\:=]\s*[\'"]?(\d+)[\'"]?', html) or r1(r'bid:\'(\d+)\',', html) or r1(r'bid=(\d+)', html)

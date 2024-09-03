@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2012-2020 Mort Yao <mort.yao@gmail.com> and other contributors
+Copyright (c) 2012-2024 Mort Yao <mort.yao@gmail.com> and other contributors
               (https://github.com/soimort/you-get/graphs/contributors)
 Copyright (c) 2012 Boyu Guo <iambus@gmail.com>
 

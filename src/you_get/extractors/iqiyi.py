@@ -20,7 +20,7 @@ Changelog:
    use @fffonion 's method in #617.
    Add trace AVM(asasm) code in Iqiyi's encode function where the salt is put into the encode array and reassemble by RABCDasm(or WinRABCDasm),then use Fiddler to response modified file to replace the src file with its AutoResponder function ,set browser Fiddler proxy and play with !debug version! Flash Player ,finially get result in flashlog.txt(its location can be easily found in search engine).
    Code Like (without letters after #comment:),it just do the job : trace("{IQIYI_SALT}:"+salt_array.join(""))
-   ```(Postion After getTimer)
+   ```(Position After getTimer)
      findpropstrict      QName(PackageNamespace(""), "trace")
      pushstring          "{IQIYI_SALT}:" #comment for you to locate the salt
      getscopeobject      1
@@ -119,10 +119,10 @@ class Iqiyi(VideoExtractor):
         self.url = url
 
         video_page = get_content(url)
-        videos = set(re.findall(r'<a href="(http://www\.iqiyi\.com/v_[^"]+)"', video_page))
+        videos = set(re.findall(r'<a href="(?=https?:)?(//www\.iqiyi\.com/v_[^"]+)"', video_page))
 
         for video in videos:
-            self.__class__().download_by_url(video, **kwargs)
+            self.__class__().download_by_url('https:' + video, **kwargs)
 
     def prepare(self, **kwargs):
         assert self.url or self.vid
@@ -131,10 +131,10 @@ class Iqiyi(VideoExtractor):
             html = get_html(self.url)
             tvid = r1(r'#curid=(.+)_', self.url) or \
                    r1(r'tvid=([^&]+)', self.url) or \
-                   r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tv(?:i|I)d=(.+?)\&', html) or r1(r'param\[\'tvid\'\]\s*=\s*"(.+?)"', html)
+                   r1(r'data-player-tvid="([^"]+)"', html) or r1(r'tv(?:i|I)d=(\w+?)\&', html) or r1(r'param\[\'tvid\'\]\s*=\s*"(.+?)"', html)
             videoid = r1(r'#curid=.+_(.*)$', self.url) or \
                       r1(r'vid=([^&]+)', self.url) or \
-                      r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=(.+?)\&', html) or r1(r'param\[\'vid\'\]\s*=\s*"(.+?)"', html)
+                      r1(r'data-player-videoid="([^"]+)"', html) or r1(r'vid=(\w+?)\&', html) or r1(r'param\[\'vid\'\]\s*=\s*"(.+?)"', html)
             self.vid = (tvid, videoid)
             info_u = 'http://pcw-api.iqiyi.com/video/video/playervideoinfo?tvid=' + tvid
             json_res = get_content(info_u)
@@ -153,7 +153,7 @@ class Iqiyi(VideoExtractor):
             except Exception as e:
                 log.i("vd: {} is not handled".format(stream['vd']))
                 log.i("info is {}".format(stream))
-    
+
 
     def download(self, **kwargs):
         """Override the original one
@@ -201,10 +201,15 @@ class Iqiyi(VideoExtractor):
             if not urls:
                 log.wtf('[Failed] Cannot extract video source.')
             # For legacy main()
-            
-            #Here's the change!!
-            download_url_ffmpeg(urls[0], self.title, 'mp4', output_dir=kwargs['output_dir'], merge=kwargs['merge'], stream=False)
 
+            #Here's the change!!
+            # ffmpeg fails to parse.
+            # download_url_ffmpeg(urls[0], self.title, 'mp4', output_dir=kwargs['output_dir'], merge=kwargs['merge'], stream=False)
+            #Here's the way works out
+            urls = general_m3u8_extractor(urls[0])
+            # ffmpeg fail to convert the output video with mkv extension, due to sort of timestamp problem
+            download_urls(urls, self.title, 'mp4', 0, **kwargs)
+            
             if not kwargs['caption']:
                 print('Skipping captions.')
                 return
@@ -215,7 +220,7 @@ class Iqiyi(VideoExtractor):
                 with open(os.path.join(kwargs['output_dir'], filename),
                           'w', encoding='utf-8') as x:
                     x.write(srt)
-                print('Done.')    
+                print('Done.')
 
 '''
         if info["code"] != "A000000":

@@ -31,8 +31,8 @@ def zhihu_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
 
         play_list = video_info["playlist"]
         # first High Definition
-        # second Second Standard Definition
-        # third ld. What is ld ?
+        # second Standard Definition
+        # third Low Definition
         # finally continue
         data = play_list.get("hd", play_list.get("sd", play_list.get("ld", None)))
         if not data:

@@ -238,7 +238,8 @@ class VideoExtractor():
             download_urls(urls, self.title, ext, total_size, headers=headers,
                           output_dir=kwargs['output_dir'],
                           merge=kwargs['merge'],
-                          av=stream_id in self.dash_streams)
+                          av=stream_id in self.dash_streams,
+                          vid=self.vid)
 
             if 'caption' not in kwargs or not kwargs['caption']:
                 print('Skipping captions or danmaku.')

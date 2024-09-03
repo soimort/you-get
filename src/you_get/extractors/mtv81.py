@@ -28,7 +28,7 @@ def mtv81_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     #
     # rtmpdump  -r 'rtmpe://cp30865.edgefcs.net/ondemand/mtviestor/_!/intlod/MTVInternational/MBUS/GeoLocals/00JP/VIAMTVI/PYC/201304/7122HVAQ4/00JPVIAMTVIPYC7122HVAQ4_640x_360_1200_m30.mp4' -o "title.mp4" --swfVfy http://media.mtvnservices.com/player/prime/mediaplayerprime.1.10.8.swf
     #
-    # because rtmpdump is unstable,may try serveral times
+    # because rtmpdump is unstable,may try several times
     #
     if not info_only:
         # import pdb

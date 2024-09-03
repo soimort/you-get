@@ -1,14 +1,12 @@
-SETUP = python3 setup.py
-
-.PHONY: default i test clean all html rst build sdist bdist bdist_egg bdist_wheel install release
+.PHONY: default i test clean all html rst build install release
 
 default: i
 
 i:
-	@(cd src/; python3 -i -c 'import you_get; print("You-Get %s\n>>> import you_get" % you_get.version.__version__)')
+	@(cd src; python -i -c 'import you_get; print("You-Get %s\n>>> import you_get" % you_get.version.__version__)')
 
 test:
-	$(SETUP) test
+	(cd src; python -m unittest discover -s ../tests)
 
 clean:
 	zenity --question
@@ -16,7 +14,7 @@ clean:
 	find . | grep __pycache__ | xargs rm -fr
 	find . | grep .pyc | xargs rm -f
 
-all: build sdist bdist bdist_egg bdist_wheel
+all: build
 
 html:
 	pandoc README.md > README.html
@@ -25,23 +23,11 @@ rst:
 	pandoc -s -t rst README.md > README.rst
 
 build:
-	$(SETUP) build
-
-sdist:
-	$(SETUP) sdist
-
-bdist:
-	$(SETUP) bdist
-
-bdist_egg:
-	$(SETUP) bdist_egg
-
-bdist_wheel:
-	$(SETUP) bdist_wheel
+	python -m build
 
 install:
-	$(SETUP) install --user --prefix=
+	python -m pip install .
 
-release:
-	zenity --question
-	$(SETUP) sdist bdist_wheel upload --sign
+release: build
+	@echo 'Upload new version to PyPI using:'
+	@echo '	twine upload --sign dist/you_get-VERSION*'

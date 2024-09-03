@@ -20,7 +20,7 @@ class Xinpianchang(VideoExtractor):
     def prepare(self, **kwargs):
         # find key
         page_content = get_content(self.url)
-        match_rule = r"vid: \"(.+?)\","
+        match_rule = r"vid = \"(.+?)\";"
         key = re.findall(match_rule, page_content)[0]
 
         # get videos info

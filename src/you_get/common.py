@@ -76,6 +76,7 @@ SITES = {
     'letv'             : 'le',
     'lizhi'            : 'lizhi',
     'longzhu'          : 'longzhu',
+    'lrts'             : 'lrts',
     'magisto'          : 'magisto',
     'metacafe'         : 'metacafe',
     'mgtv'             : 'mgtv',
@@ -110,14 +111,12 @@ SITES = {
     'wanmen'           : 'wanmen',
     'weibo'            : 'miaopai',
     'veoh'             : 'veoh',
-    'vine'             : 'vine',
     'vk'               : 'vk',
-    'xiami'            : 'xiami',
+    'x'                : 'twitter',
     'xiaokaxiu'        : 'yixia',
     'xiaojiadianvideo' : 'fc2video',
     'ximalaya'         : 'ximalaya',
     'xinpianchang'     : 'xinpianchang',
-    'yinyuetai'        : 'yinyuetai',
     'yizhibo'          : 'yizhibo',
     'youku'            : 'youku',
     'youtu'            : 'youtube',
@@ -137,13 +136,16 @@ cookies = None
 output_filename = None
 auto_rename = False
 insecure = False
+m3u8 = False
+postfix = False
+prefix = None
 
 fake_headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',  # noqa
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Charset': 'UTF-8,*;q=0.5',
     'Accept-Encoding': 'gzip,deflate,sdch',
     'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0',  # noqa
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/126.0.2592.113'  # Latest Edge
 }
 
 if sys.stdout.isatty():
@@ -341,10 +343,38 @@ def undeflate(data):
     return decompressobj.decompress(data)+decompressobj.flush()
 
 
+# an http.client implementation of get_content()
+# because urllib does not support "Connection: keep-alive"
+def getHttps(host, url, headers, debuglevel=0):
+    import http.client
+
+    conn = http.client.HTTPSConnection(host)
+    conn.set_debuglevel(debuglevel)
+    conn.request("GET", url, headers=headers)
+    resp = conn.getresponse()
+    logging.debug('getHttps: %s' % resp.getheaders())
+    set_cookie = resp.getheader('set-cookie')
+
+    data = resp.read()
+    try:
+        data = ungzip(data)  # gzip
+        data = undeflate(data)  # deflate
+    except:
+        pass
+
+    conn.close()
+    return str(data, encoding='utf-8'), set_cookie  # TODO: support raw data
+
+
 # DEPRECATED in favor of get_content()
 def get_response(url, faker=False):
     logging.debug('get_response: %s' % url)
-
+    ctx = None
+    if insecure:
+        # ignore ssl errors
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
     # install cookies
     if cookies:
         opener = request.build_opener(request.HTTPCookieProcessor(cookies))
@@ -352,10 +382,10 @@ def get_response(url, faker=False):
 
     if faker:
         response = request.urlopen(
-            request.Request(url, headers=fake_headers), None
+            request.Request(url, headers=fake_headers), None, context=ctx,
         )
     else:
-        response = request.urlopen(url)
+        response = request.urlopen(url, context=ctx)
 
     data = response.read()
     if response.info().get('Content-Encoding') == 'gzip':
@@ -434,8 +464,17 @@ def get_content(url, headers={}, decoded=True):
 
     req = request.Request(url, headers=headers)
     if cookies:
-        cookies.add_cookie_header(req)
-        req.headers.update(req.unredirected_hdrs)
+        # NOTE: Do not use cookies.add_cookie_header(req)
+        # #HttpOnly_ cookies were not supported by CookieJar and MozillaCookieJar properly until python 3.10
+        # See also:
+        # - https://github.com/python/cpython/pull/17471
+        # - https://bugs.python.org/issue2190
+        # Here we add cookies to the request headers manually
+        cookie_strings = []
+        for cookie in list(cookies):
+            cookie_strings.append(cookie.name + '=' + cookie.value)
+        cookie_headers = {'Cookie': '; '.join(cookie_strings)}
+        req.headers.update(cookie_headers)
 
     response = urlopen_with_retry(req)
     data = response.read()
@@ -478,8 +517,17 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
 
     req = request.Request(url, headers=headers)
     if cookies:
-        cookies.add_cookie_header(req)
-        req.headers.update(req.unredirected_hdrs)
+        # NOTE: Do not use cookies.add_cookie_header(req)
+        # #HttpOnly_ cookies were not supported by CookieJar and MozillaCookieJar properly until python 3.10
+        # See also:
+        # - https://github.com/python/cpython/pull/17471
+        # - https://bugs.python.org/issue2190
+        # Here we add cookies to the request headers manually
+        cookie_strings = []
+        for cookie in list(cookies):
+            cookie_strings.append(cookie.name + '=' + cookie.value)
+        cookie_headers = {'Cookie': '; '.join(cookie_strings)}
+        req.headers.update(cookie_headers)
     if kwargs.get('post_data_raw'):
         post_data_enc = bytes(kwargs['post_data_raw'], 'utf-8')
     else:
@@ -667,7 +715,7 @@ def url_save(
                         bar.done()
                     if not force and auto_rename:
                         path, ext = os.path.basename(filepath).rsplit('.', 1)
-                        finder = re.compile(' \([1-9]\d*?\)$')
+                        finder = re.compile(r' \([1-9]\d*?\)$')
                         if (finder.search(path) is None):
                             thisfile = path + ' (1).' + ext
                         else:
@@ -966,6 +1014,10 @@ def download_urls(
             pass
 
     title = tr(get_filename(title))
+    if postfix and 'vid' in kwargs:
+        title = "%s [%s]" % (title, kwargs['vid'])
+    if prefix is not None:
+        title = "[%s] %s" % (prefix, title)
     output_filename = get_output_filename(urls, title, ext, output_dir, merge)
     output_filepath = os.path.join(output_dir, output_filename)
 
@@ -1322,7 +1374,13 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         if re.match(r'https?://', url) is None:
             url = 'http://' + url
 
-        if playlist:
+        if m3u8:
+            if output_filename:
+                title = output_filename
+            else:
+                title = "m3u8file"
+            download_url_ffmpeg(url=url, title=title,ext = 'mp4',output_dir = '.')
+        elif playlist:
             download_playlist(url, **kwargs)
         else:
             download(url, **kwargs)
@@ -1422,12 +1480,25 @@ def load_cookies(cookiefile):
 def set_socks_proxy(proxy):
     try:
         import socks
-        socks_proxy_addrs = proxy.split(':')
-        socks.set_default_proxy(
-            socks.SOCKS5,
-            socks_proxy_addrs[0],
-            int(socks_proxy_addrs[1])
-        )
+        if '@' in proxy:
+            proxy_info = proxy.split("@")
+            socks_proxy_addrs = proxy_info[1].split(':')
+            socks_proxy_auth = proxy_info[0].split(":")
+            socks.set_default_proxy(
+                socks.SOCKS5,
+                socks_proxy_addrs[0],
+                int(socks_proxy_addrs[1]),
+                True,
+                socks_proxy_auth[0],
+                socks_proxy_auth[1]
+            )
+        else:
+           socks_proxy_addrs = proxy.split(':')
+           socks.set_default_proxy(
+               socks.SOCKS5,
+               socks_proxy_addrs[0],
+               int(socks_proxy_addrs[1]),
+           )
         socket.socket = socks.socksocket
 
         def getaddrinfo(*args):
@@ -1496,6 +1567,14 @@ def script_main(download, download_playlist, **kwargs):
         help='Do not download captions (subtitles, lyrics, danmaku, ...)'
     )
     download_grp.add_argument(
+        '--post', '--postfix', dest='postfix', action='store_true', default=False,
+        help='Postfix downloaded files with unique identifiers'
+    )
+    download_grp.add_argument(
+        '--pre', '--prefix', dest='prefix', metavar='PREFIX', default=None,
+        help='Prefix downloaded files with string'
+    )
+    download_grp.add_argument(
         '-f', '--force', action='store_true', default=False,
         help='Force overwriting existing files'
     )
@@ -1541,6 +1620,21 @@ def script_main(download, download_playlist, **kwargs):
         '-l', '--playlist', action='store_true',
         help='Prefer to download a playlist'
     )
+
+    playlist_grp = parser.add_argument_group('Playlist optional options')
+    playlist_grp.add_argument(
+        '--first', metavar='FIRST',
+        help='the first number'
+    )
+    playlist_grp.add_argument(
+        '--last', metavar='LAST',
+        help='the last number'
+    )
+    playlist_grp.add_argument(
+        '--size', '--page-size', metavar='PAGE_SIZE',
+        help='the page size number'
+    )
+
     download_grp.add_argument(
         '-a', '--auto-rename', action='store_true', default=False,
         help='Auto rename same name different files'
@@ -1565,12 +1659,16 @@ def script_main(download, download_playlist, **kwargs):
         '--no-proxy', action='store_true', help='Never use a proxy'
     )
     proxy_grp.add_argument(
-        '-s', '--socks-proxy', metavar='HOST:PORT',
+        '-s', '--socks-proxy', metavar='HOST:PORT or USERNAME:PASSWORD@HOST:PORT',
         help='Use an SOCKS5 proxy for downloading'
     )
 
     download_grp.add_argument('--stream', help=argparse.SUPPRESS)
     download_grp.add_argument('--itag', help=argparse.SUPPRESS)
+
+    download_grp.add_argument('-m', '--m3u8', action='store_true', default=False,
+        help = 'download video using an m3u8 url')
+
 
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
@@ -1597,6 +1695,9 @@ def script_main(download, download_playlist, **kwargs):
     global output_filename
     global auto_rename
     global insecure
+    global m3u8
+    global postfix
+    global prefix
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
@@ -1618,6 +1719,9 @@ def script_main(download, download_playlist, **kwargs):
     if args.cookies:
         load_cookies(args.cookies)
 
+    if args.m3u8:
+        m3u8 = True
+
     caption = True
     stream_id = args.format or args.stream or args.itag
     if args.no_caption:
@@ -1630,6 +1734,8 @@ def script_main(download, download_playlist, **kwargs):
         # ignore ssl
         insecure = True
 
+    postfix = args.postfix
+    prefix = args.prefix
 
     if args.no_proxy:
         set_http_proxy('')
@@ -1658,7 +1764,7 @@ def script_main(download, download_playlist, **kwargs):
     socket.setdefaulttimeout(args.timeout)
 
     try:
-        extra = {}
+        extra = {'args': args}
         if extractor_proxy:
             extra['extractor_proxy'] = extractor_proxy
         if stream_id:
@@ -1716,20 +1822,10 @@ def google_search(url):
     url = 'https://www.google.com/search?tbm=vid&q=%s' % parse.quote(keywords)
     page = get_content(url, headers=fake_headers)
     videos = re.findall(
-        r'<a href="(https?://[^"]+)" onmousedown="[^"]+"><h3 class="[^"]*">([^<]+)<', page
+        r'(https://www\.youtube\.com/watch\?v=[\w-]+)', page
     )
-    vdurs = re.findall(r'<span class="vdur[^"]*">([^<]+)<', page)
-    durs = [r1(r'(\d+:\d+)', unescape_html(dur)) for dur in vdurs]
-    print('Google Videos search:')
-    for v in zip(videos, durs):
-        print('- video:  {} [{}]'.format(
-            unescape_html(v[0][1]),
-            v[1] if v[1] else '?'
-        ))
-        print('# you-get %s' % log.sprint(v[0][0], log.UNDERLINE))
-        print()
     print('Best matched result:')
-    return(videos[0][0])
+    return(videos[0])
 
 
 def url_to_module(url):
@@ -1760,9 +1856,12 @@ def url_to_module(url):
         )
     else:
         try:
-            location = get_location(url) # t.co isn't happy with fake_headers
+            try:
+                location = get_location(url) # t.co isn't happy with fake_headers
+            except:
+                location = get_location(url, headers=fake_headers)
         except:
-            location = get_location(url, headers=fake_headers)
+            location = get_location(url, headers=fake_headers, get_method='GET')
 
         if location and location != url and not location.startswith('/'):
             return url_to_module(location)

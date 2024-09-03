@@ -102,7 +102,7 @@ class VimeoExtractor(VideoExtractor):
         pos = 0
         while pos < len(lines):
             if lines[pos].startswith('#EXT-X-STREAM-INF'):
-                patt = 'RESOLUTION=(\d+)x(\d+)'
+                patt = r'RESOLUTION=(\d+)x(\d+)'
                 hit = re.search(patt, lines[pos])
                 if hit is None:
                     continue
@@ -132,34 +132,6 @@ class VimeoExtractor(VideoExtractor):
 
 
 def vimeo_download_by_id(id, title=None, output_dir='.', merge=True, info_only=False, **kwargs):
-    '''
-    try:
-        # normal Vimeo video
-        html = get_content('https://vimeo.com/' + id)
-        cfg_patt = r'clip_page_config\s*=\s*(\{.+?\});'
-        cfg = json.loads(match1(html, cfg_patt))
-        video_page = get_content(cfg['player']['config_url'], headers=fake_headers)
-        title = cfg['clip']['title']
-        info = loads(video_page)
-    except:
-        # embedded player - referer may be required
-        if 'referer' in kwargs:
-            fake_headers['Referer'] = kwargs['referer']
-
-        video_page = get_content('http://player.vimeo.com/video/%s' % id, headers=fake_headers)
-        title = r1(r'<title>([^<]+)</title>', video_page)
-        info = loads(match1(video_page, r'var t=(\{.+?\});'))
-
-    streams = info['request']['files']['progressive']
-    streams = sorted(streams, key=lambda i: i['height'])
-    url = streams[-1]['url']
-
-    type, ext, size = url_info(url, faker=True)
-
-    print_info(site_info, title, type, size)
-    if not info_only:
-        download_urls([url], title, ext, size, output_dir, merge=merge, faker=True)
-    '''
     site = VimeoExtractor()
     site.download_by_vid(id, info_only=info_only, output_dir=output_dir, merge=merge, **kwargs)
 
