@@ -37,7 +37,7 @@ def miaopai_download_by_fid(fid, output_dir = '.', merge = False, info_only = Fa
         download_urls([url], title, ext, total_size=None, output_dir=output_dir, merge=merge)
 
 
-def miaopai_download_by_wbmp(wbmp_url, fid, info_only=False, **kwargs):
+def miaopai_download_by_wbmp(wbmp_url, fid, output_dir='.', merge=False, info_only=False, **kwargs):
     headers = {}
     headers.update(fake_headers_mobile)
     headers['Host'] = 'imgaliyuncdn.miaopai.com'
@@ -62,7 +62,7 @@ def miaopai_download_by_wbmp(wbmp_url, fid, info_only=False, **kwargs):
     headers['Host'] = 'f.us.sinaimg.cn'
     print_info(site_info, title, ext, url_info(video_url, headers=headers)[2])
     if not info_only:
-        download_urls([video_url], fs.legitimize(title), ext, headers=headers, **kwargs)
+        download_urls([video_url], fs.legitimize(title), ext, output_dir=output_dir, headers=headers, **kwargs)
 
 
 def miaopai_download_story(url, output_dir='.', merge=False, info_only=False, **kwargs):
@@ -75,7 +75,7 @@ def miaopai_download_story(url, output_dir='.', merge=False, info_only=False, **
     ext = 'mp4'
     print_info(site_info, title, ext, url_info(stream_url, headers=fake_headers_mobile)[2])
     if not info_only:
-        download_urls([stream_url], fs.legitimize(title), ext, total_size=None, headers=fake_headers_mobile, **kwargs)
+        download_urls([stream_url], fs.legitimize(title), ext, total_size=None, output_dir=output_dir, headers=fake_headers_mobile, **kwargs)
 
 
 def miaopai_download_h5api(url, output_dir='.', merge=False, info_only=False, **kwargs):
@@ -122,7 +122,7 @@ def miaopai_download_h5api(url, output_dir='.', merge=False, info_only=False, **
 
     print_info(site_info, title, ext, size)
     if not info_only:
-        download_urls([video_url], fs.legitimize(title), ext, total_size=size, headers=headers, **kwargs)
+        download_urls([video_url], fs.legitimize(title), ext, total_size=size, output_dir=output_dir, headers=headers, **kwargs)
 
 
 def miaopai_download_direct(url, output_dir='.', merge=False, info_only=False, **kwargs):
@@ -141,7 +141,7 @@ def miaopai_download_direct(url, output_dir='.', merge=False, info_only=False, *
     ext = 'mp4'
     print_info(site_info, title, ext, url_info(stream_url, headers=fake_headers_mobile)[2])
     if not info_only:
-        download_urls([stream_url], fs.legitimize(title), ext, total_size=None, headers=fake_headers_mobile, **kwargs)
+        download_urls([stream_url], fs.legitimize(title), ext, total_size=None, output_dir=output_dir, headers=fake_headers_mobile, **kwargs)
 
 
 def miaopai_download(url, output_dir='.', merge=False, info_only=False, **kwargs):
