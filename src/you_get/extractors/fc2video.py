@@ -5,7 +5,6 @@ __all__ = ['fc2video_download']
 from ..common import *
 from hashlib import md5
 from urllib.parse import urlparse
-import re
 
 #----------------------------------------------------------------------
 def makeMimi(upid):

@@ -27,7 +27,6 @@ def suntv_download(url, output_dir = '.', merge = True, info_only = False, **kwa
         html = html.decode('gbk')
         title = match1(html, '<title>([^<]+)').strip()  #get rid of \r\n s
         
-        type_ = ''
         size = 0
         type, ext, size = url_info(video_url)
         

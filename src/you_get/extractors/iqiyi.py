@@ -10,7 +10,6 @@ from uuid import uuid4
 from random import random,randint
 import json
 from math import floor
-from zlib import decompress
 import hashlib
 import time
 

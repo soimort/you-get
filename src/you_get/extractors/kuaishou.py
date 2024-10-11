@@ -2,10 +2,8 @@
 
 import urllib.request
 import urllib.parse
-import json
 import re
 
-from ..util import log
 from ..common import get_content, download_urls, print_info, playlist_not_supported, url_size
 
 __all__ = ['kuaishou_download_by_url']

@@ -3,7 +3,6 @@
 __all__ = ['pixnet_download']
 
 from ..common import *
-import urllib.error
 from time import time
 from urllib.parse import quote
 from json import loads
