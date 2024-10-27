@@ -15,6 +15,12 @@ def extract_m3u(source):
     return ['https://video.twimg.com%s' % i for i in s2]
 
 def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept': '*/*'
+    }
+
     if re.match(r'https?://pbs\.twimg\.com', url):
         universal_download(url, output_dir, merge=merge, info_only=info_only, **kwargs)
         return
@@ -52,7 +58,7 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             photo_url = photo['url']
             title = item_id + '_' + photo_url.split('.')[-2].split('/')[-1]
             urls = [ photo_url + ':orig' ]
-            size = urls_size(urls)
+            size = urls_size(urls, headers=headers)
             ext = photo_url.split('.')[-1]
 
             print_info(site_info, title, ext, size)
@@ -66,12 +72,12 @@ def twitter_download(url, output_dir='.', merge=True, info_only=False, **kwargs)
             variants = sorted(variants, key=lambda kv: kv.get('bitrate', 0))
             title = item_id + '_' + variants[-1]['url'].split('/')[-1].split('?')[0].split('.')[0]
             urls = [ variants[-1]['url'] ]
-            size = urls_size(urls)
+            size = urls_size(urls, headers=headers)
             mime, ext = variants[-1]['content_type'], 'mp4'
 
             print_info(site_info, title, ext, size)
             if not info_only:
-                download_urls(urls, title, ext, size, output_dir, merge=merge)
+                download_urls(urls, title, ext, size, output_dir, merge=merge, headers=headers)
 
     # TODO: should we deal with quoted tweets?
 
