@@ -82,6 +82,14 @@ class YouTube(VideoExtractor):
             #   Xka - https://www.youtube.com/s/player/dc0c6770/player_ias.vflset/sv_SE/base.js
             #   jma - https://www.youtube.com/s/player/8d9f6215/player_ias.vflset/sv_SE/base.js
             f1 = match1(js, r',[$\w]+\.length\|\|([$\w]+)\(""\)\)}};')
+
+            # Examples:
+            #   Yla, ida - https://www.youtube.com/s/player/fb725ac8/player-plasma-ias-phone-sv_SE.vflset/base.js
+            #   Hla, eda - https://www.youtube.com/s/player/2f238d39/player-plasma-ias-phone-en_US.vflset/base.js
+            if not f1:
+                f0 = match1(js, r'c=([$\w]+)\[0\]\(c\),a\.set\(b,c\)')
+                f1 = match1(js, r'%s=\[([$\w]+)\]' % f0)
+
             f1def = match1(js, r'\W%s=(function\(\w+\).+?\)});' % re.escape(f1))
             n = dukpy.evaljs('(%s)("%s")' % (f1def, n))
             return n
@@ -186,7 +194,7 @@ class YouTube(VideoExtractor):
             )
 
     def prepare(self, **kwargs):
-        self.ua = 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.6533.103 Mobile Safari/537.36'
+        self.ua = 'Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.73 Mobile Safari/537.36'
 
         assert self.url or self.vid
 
