@@ -188,10 +188,17 @@ class YouTube(VideoExtractor):
 
         playerResponseStatus = ytInitialPlayerResponse["playabilityStatus"]["status"]
         if playerResponseStatus != STATUS_OK:
-            reason = ytInitialPlayerResponse["playabilityStatus"].get("reason", "")
-            raise AssertionError(
-                f"Server refused to provide video details. Returned status: {playerResponseStatus}, reason: {reason}."
-            )
+            try:
+                reason = ytInitialPlayerResponse["playabilityStatus"]['errorScreen']\
+                    ['playerErrorMessageRenderer']['reason']['runs'][0]['text']
+                reason += ' ' + ytInitialPlayerResponse["playabilityStatus"]['errorScreen']\
+                    ['playerErrorMessageRenderer']['subreason']['runs'][0]['text']
+            except:
+                reason = ytInitialPlayerResponse["playabilityStatus"].get("reason", "")
+            if reason:
+                log.wtf(f'Server refused to provide video details. Returned status: {playerResponseStatus}. Reason: {reason}')
+            else:
+                log.wtf(f'Server refused to provide video details. Returned status: {playerResponseStatus}.')
 
     def prepare(self, **kwargs):
         self.ua = 'Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.73 Mobile Safari/537.36'
