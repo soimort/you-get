@@ -86,12 +86,17 @@ class YouTube(VideoExtractor):
             # Examples:
             #   Yla, ida - https://www.youtube.com/s/player/fb725ac8/player-plasma-ias-phone-sv_SE.vflset/base.js
             #   Hla, eda - https://www.youtube.com/s/player/2f238d39/player-plasma-ias-phone-en_US.vflset/base.js
+            #   WyE, bE7, Gsn - https://www.youtube.com/s/player/3bb1f723/player-plasma-ias-phone-sv_SE.vflset/base.js
             if not f1:
-                f0 = match1(js, r'c=([$\w]+)\[0\]\(c\),a\.set\(b,c\)')
+                f0 = match1(js, r'\w=([$\w]+)\[0\]\(\w\),\w\.set\(\w,\w\)')
                 f1 = match1(js, r'%s=\[([$\w]+)\]' % f0)
 
             f1def = match1(js, r'\W%s=(function\(\w+\).+?\)});' % re.escape(f1))
-            n = dukpy.evaljs('(%s)("%s")' % (f1def, n))
+            v1 = match1(f1def, r'if\(typeof ([$\w]+)==="undefined"\)')
+            v1def = match1(js, r'(var %s=[^;]+;)' % v1)
+            if not v1def:
+                v1def = ''
+            n = dukpy.evaljs('%s(%s)("%s")' % (v1def, f1def, n))
             return n
 
         u = urlparse(url)
