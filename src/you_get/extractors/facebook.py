@@ -3,7 +3,6 @@
 __all__ = ['facebook_download']
 
 from ..common import *
-import json
 
 def facebook_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     url = re.sub(r'//.*?facebook.com','//facebook.com',url)

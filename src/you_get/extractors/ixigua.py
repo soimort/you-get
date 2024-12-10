@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 import base64
 
-import binascii
-
 from ..common import *
-import random
-import string
-import ctypes
 from json import loads
 from urllib import request
 

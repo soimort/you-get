@@ -3,7 +3,6 @@
 __all__ = ['ucas_download', 'ucas_download_single', 'ucas_download_playlist']
 
 from ..common import *
-import urllib.error
 import http.client
 from time import time
 from random import random

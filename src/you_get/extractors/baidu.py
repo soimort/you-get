@@ -185,7 +185,7 @@ def baidu_pan_download(url):
     isprotected = False
     sign, timestamp, bdstoken, appid, primary_id, fs_id, uk = baidu_pan_parse(
         html)
-    if sign == None:
+    if sign is None:
         if re.findall(r'\baccess-code\b', html):
             isprotected = True
             sign, timestamp, bdstoken, appid, primary_id, fs_id, uk, fake_headers, psk = baidu_pan_protected_share(
@@ -193,7 +193,7 @@ def baidu_pan_download(url):
             # raise NotImplementedError("Password required!")
         if isprotected != True:
             raise AssertionError("Share not found or canceled: %s" % url)
-    if bdstoken == None:
+    if bdstoken is None:
         bdstoken = ""
     if isprotected != True:
         sign, timestamp, bdstoken, appid, primary_id, fs_id, uk = baidu_pan_parse(

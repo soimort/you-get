@@ -5,7 +5,6 @@ __all__ = ['sndcd_download']
 from ..common import *
 import re
 import json
-import urllib.error
 
 
 def get_sndcd_apikey():

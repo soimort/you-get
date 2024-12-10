@@ -43,7 +43,7 @@ class AcFun(VideoExtractor):
             currentVideoInfo = json_data.get('currentVideoInfo')
 
         else:
-            raise NotImplemented            
+            raise NotImplementedError()         
 
         if 'ksPlayJson' in currentVideoInfo:
             durationMillis = currentVideoInfo['durationMillis']
@@ -193,7 +193,7 @@ class AcFun(VideoExtractor):
             m3u8_url = getM3u8UrlFromCurrentVideoInfo(currentVideoInfo)
 
         else:
-            raise NotImplemented
+            raise NotImplementedError()
 
         assert title and m3u8_url
         title = unescape_html(title)
