@@ -286,6 +286,8 @@ class YouTube(VideoExtractor):
             for ct in caption_tracks:
                 ttsurl, lang = ct['baseUrl'], ct['languageCode']
 
+                if ttsurl.startswith('/'):
+                    ttsurl = 'https://www.youtube.com' + ttsurl
                 tts_xml = parseString(get_content(ttsurl))
                 transcript = tts_xml.getElementsByTagName('transcript')[0]
                 texts = transcript.getElementsByTagName('text')
