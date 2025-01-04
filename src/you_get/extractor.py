@@ -254,12 +254,6 @@ class VideoExtractor():
                     x.write(srt)
                 print('Done.')
 
-            if self.danmaku is not None and not dry_run:
-                filename = '{}.cmt.xml'.format(get_filename(self.title))
-                print('Downloading {} ...\n'.format(filename))
-                with open(os.path.join(kwargs['output_dir'], filename), 'w', encoding='utf8') as fp:
-                    fp.write(self.danmaku)
-
             if self.lyrics is not None and not dry_run:
                 filename = '{}.lrc'.format(get_filename(self.title))
                 print('Downloading {} ...\n'.format(filename))
