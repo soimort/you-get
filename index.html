@@ -27,12 +27,12 @@
   <a href="https://you-get.org/"><img src="images/logo.jpg"/></a>
   <div id="desc">
     <h1>You-Get</h1>
-    <h2>version 0.4.1730</h2>
+    <h2>version 0.4.1743</h2>
     <a href="https://github.com/soimort/you-get">Star <i class="fa fa-github-square fa-2x"></i></a>
-    <a href="https://github.com/soimort/you-get/releases/download/v0.4.1730/you_get-0.4.1730.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
+    <a href="https://github.com/soimort/you-get/releases/download/v0.4.1743/you_get-0.4.1743.tar.gz">Download <i class="fa fa-download fa-2x"></i></a>
     <div id="msg">
-      <span id="checksum" onmouseover="this.innerHTML='384c174eb973506d73bdc1dbfa2f24e4cfc124d1'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
-      <a href="https://github.com/soimort/you-get/releases/download/v0.4.1730/you_get-0.4.1730.tar.gz.asc">PGP SIGNATURE</a>
+      <span id="checksum" onmouseover="this.innerHTML='8e82094421017087f42cf4066b6fd764790089cd'" onmouseout="this.innerHTML='SHA1SUM'">SHA1SUM</span>
+      <a href="https://github.com/soimort/you-get/releases/download/v0.4.1743/you_get-0.4.1743.tar.gz.asc">PGP SIGNATURE</a>
     </div>
   </div>
 </nav>
@@ -40,8 +40,7 @@
 <nav id="TOC">
   <hr/>
   <ul>
-  <li><a href="#you-get">You-Get</a>
-  <ul>
+  <li><a href="#you-get">You-Get</a><ul>
   <li><a href="#installation">Installation</a></li>
   <li><a href="#upgrading">Upgrading</a></li>
   <li><a href="#getting-started">Getting Started</a></li>
@@ -76,27 +75,12 @@
 </header>
 
 <h1 id="you-get">You-Get</h1>
-<p><a href="https://github.com/soimort/you-get/actions"><img
-src="https://github.com/soimort/you-get/workflows/develop/badge.svg"
-alt="Build Status" /></a> <a
-href="https://pypi.python.org/pypi/you-get/"><img
-src="https://img.shields.io/pypi/v/you-get.svg"
-alt="PyPI version" /></a> <a
-href="https://gitter.im/soimort/you-get?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img
-src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter" /></a></p>
-<p><strong>NOTICE (30 May 2022): Support for Python 3.5, 3.6 and 3.7
-will eventually be dropped. (<a
-href="https://github.com/soimort/you-get/wiki/TLS-1.3-post-handshake-authentication-(PHA)">see
-details here</a>)</strong></p>
-<p><strong>NOTICE (8 Mar 2019): Read <a
-href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">this</a>
-if you are looking for the conventional “Issues” tab.</strong></p>
+<p><a href="https://github.com/soimort/you-get/actions"><img src="https://github.com/soimort/you-get/workflows/develop/badge.svg" alt="Build Status" /></a> <a href="https://pypi.python.org/pypi/you-get/"><img src="https://img.shields.io/pypi/v/you-get.svg" alt="PyPI version" /></a> <a href="https://gitter.im/soimort/you-get?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter" /></a></p>
+<p><strong>NOTICE (30 May 2022): Support for Python 3.5, 3.6 and 3.7 will eventually be dropped. (<a href="https://github.com/soimort/you-get/wiki/TLS-1.3-post-handshake-authentication-(PHA)">see details here</a>)</strong></p>
+<p><strong>NOTICE (8 Mar 2019): Read <a href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">this</a> if you are looking for the conventional “Issues” tab.</strong></p>
 <hr />
-<p><a href="https://you-get.org/">You-Get</a> is a tiny command-line
-utility to download media contents (videos, audios, images) from the
-Web, in case there is no other handy way to do it.</p>
-<p>Here’s how you use <code>you-get</code> to download a video from <a
-href="https://www.youtube.com/watch?v=jNQXAC9IVRw">YouTube</a>:</p>
+<p><a href="https://you-get.org/">You-Get</a> is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.</p>
+<p>Here’s how you use <code>you-get</code> to download a video from <a href="https://www.youtube.com/watch?v=jNQXAC9IVRw">YouTube</a>:</p>
 <pre class="console"><code>$ you-get &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;
 site:                YouTube
 title:               Me at the zoo
@@ -113,117 +97,73 @@ Downloading Me at the zoo.webm ...
 Saving Me at the zoo.en.srt ... Done.</code></pre>
 <p>And here’s why you might want to use it:</p>
 <ul>
-<li>You enjoyed something on the Internet, and just want to download
-them for your own pleasure.</li>
-<li>You watch your favorite videos online from your computer, but you
-are prohibited from saving them. You feel that you have no control over
-your own computer. (And it’s not how an open Web is supposed to
-work.)</li>
-<li>You want to get rid of any closed-source technology or proprietary
-JavaScript code, and disallow things like Flash running on your
-computer.</li>
+<li>You enjoyed something on the Internet, and just want to download them for your own pleasure.</li>
+<li>You watch your favorite videos online from your computer, but you are prohibited from saving them. You feel that you have no control over your own computer. (And it’s not how an open Web is supposed to work.)</li>
+<li>You want to get rid of any closed-source technology or proprietary JavaScript code, and disallow things like Flash running on your computer.</li>
 <li>You are an adherent of hacker culture and free software.</li>
 </ul>
 <p>What <code>you-get</code> can do for you:</p>
 <ul>
-<li>Download videos / audios from popular websites such as YouTube,
-Youku, Niconico, and a bunch more. (See the <a
-href="#supported-sites">full list of supported sites</a>)</li>
-<li>Stream an online video in your media player. No web browser, no more
-ads.</li>
+<li>Download videos / audios from popular websites such as YouTube, Youku, Niconico, and a bunch more. (See the <a href="#supported-sites">full list of supported sites</a>)</li>
+<li>Stream an online video in your media player. No web browser, no more ads.</li>
 <li>Download images (of interest) by scraping a web page.</li>
 <li>Download arbitrary non-HTML contents, i.e., binary files.</li>
 </ul>
-<p>Interested? <a href="#installation">Install it</a> now and <a
-href="#getting-started">get started by examples</a>.</p>
-<p>Are you a Python programmer? Then check out <a
-href="https://github.com/soimort/you-get">the source</a> and fork
-it!</p>
+<p>Interested? <a href="#installation">Install it</a> now and <a href="#getting-started">get started by examples</a>.</p>
+<p>Are you a Python programmer? Then check out <a href="https://github.com/soimort/you-get">the source</a> and fork it!</p>
 <p><img src="https://i.imgur.com/GfthFAz.png" /></p>
 <h2 id="installation">Installation</h2>
 <h3 id="prerequisites">Prerequisites</h3>
 <p>The following dependencies are recommended:</p>
 <ul>
-<li><strong><a
-href="https://www.python.org/downloads/">Python</a></strong> 3.7.4 or
-above</li>
-<li><strong><a href="https://www.ffmpeg.org/">FFmpeg</a></strong> 1.0 or
-above</li>
-<li>(Optional) <a
-href="https://rtmpdump.mplayerhq.hu/">RTMPDump</a></li>
+<li><strong><a href="https://www.python.org/downloads/">Python</a></strong> 3.7.4 or above</li>
+<li><strong><a href="https://www.ffmpeg.org/">FFmpeg</a></strong> 1.0 or above</li>
+<li>(Optional) <a href="https://rtmpdump.mplayerhq.hu/">RTMPDump</a></li>
 </ul>
 <h3 id="option-1-install-via-pip">Option 1: Install via pip</h3>
-<p>The official release of <code>you-get</code> is distributed on <a
-href="https://pypi.python.org/pypi/you-get">PyPI</a>, and can be
-installed easily from a PyPI mirror via the <a
-href="https://en.wikipedia.org/wiki/Pip_(package_manager)">pip</a>
-package manager: (Note that you must use the Python 3 version of
-<code>pip</code>)</p>
+<p>The official release of <code>you-get</code> is distributed on <a href="https://pypi.python.org/pypi/you-get">PyPI</a>, and can be installed easily from a PyPI mirror via the <a href="https://en.wikipedia.org/wiki/Pip_(package_manager)">pip</a> package manager: (Note that you must use the Python 3 version of <code>pip</code>)</p>
 <pre><code>$ pip install you-get</code></pre>
-<h3 id="option-2-install-via-antigen-for-zsh-users">Option 2: Install
-via <a href="https://github.com/zsh-users/antigen">Antigen</a> (for Zsh
-users)</h3>
+<h3 id="option-2-install-via-antigen-for-zsh-users">Option 2: Install via <a href="https://github.com/zsh-users/antigen">Antigen</a> (for Zsh users)</h3>
 <p>Add the following line to your <code>.zshrc</code>:</p>
 <pre><code>antigen bundle soimort/you-get</code></pre>
-<h3 id="option-3-download-from-github">Option 3: Download from
-GitHub</h3>
-<p>You may either download the <a
-href="https://github.com/soimort/you-get/archive/master.zip">stable</a>
-(identical with the latest release on PyPI) or the <a
-href="https://github.com/soimort/you-get/archive/develop.zip">develop</a>
-(more hotfixes, unstable features) branch of <code>you-get</code>. Unzip
-it, and put the directory containing the <code>you-get</code> script
-into your <code>PATH</code>.</p>
+<h3 id="option-3-download-from-github">Option 3: Download from GitHub</h3>
+<p>You may either download the <a href="https://github.com/soimort/you-get/archive/master.zip">stable</a> (identical with the latest release on PyPI) or the <a href="https://github.com/soimort/you-get/archive/develop.zip">develop</a> (more hotfixes, unstable features) branch of <code>you-get</code>. Unzip it, and put the directory containing the <code>you-get</code> script into your <code>PATH</code>.</p>
 <p>Alternatively, run</p>
 <pre><code>$ cd path/to/you-get
 $ [sudo] python -m pip install .</code></pre>
 <p>Or</p>
 <pre><code>$ cd path/to/you-get
 $ python -m pip install . --user</code></pre>
-<p>to install <code>you-get</code> to a permanent path. (And don’t omit
-the dot <code>.</code> representing the current directory)</p>
-<p>You can also use the <a
-href="https://pipenv.pypa.io/en/latest">pipenv</a> to install the
-<code>you-get</code> in the Python virtual environment.</p>
+<p>to install <code>you-get</code> to a permanent path. (And don’t omit the dot <code>.</code> representing the current directory)</p>
+<p>You can also use the <a href="https://pipenv.pypa.io/en/latest">pipenv</a> to install the <code>you-get</code> in the Python virtual environment.</p>
 <pre><code>$ pipenv install -e .
 $ pipenv run you-get --version
 you-get: version 0.4.1555, a tiny downloader that scrapes the web.</code></pre>
 <h3 id="option-4-git-clone">Option 4: Git clone</h3>
-<p>This is the recommended way for all developers, even if you don’t
-often code in Python.</p>
+<p>This is the recommended way for all developers, even if you don’t often code in Python.</p>
 <pre><code>$ git clone git://github.com/soimort/you-get.git</code></pre>
-<p>Then put the cloned directory into your <code>PATH</code>, or run
-<code>python -m pip install path/to/you-get</code> to install
-<code>you-get</code> to a permanent path.</p>
+<p>Then put the cloned directory into your <code>PATH</code>, or run <code>python -m pip install path/to/you-get</code> to install <code>you-get</code> to a permanent path.</p>
 <h3 id="option-5-homebrew-mac-only">Option 5: Homebrew (Mac only)</h3>
 <p>You can install <code>you-get</code> easily via:</p>
 <pre><code>$ brew install you-get</code></pre>
 <h3 id="option-6-pkg-freebsd-only">Option 6: pkg (FreeBSD only)</h3>
 <p>You can install <code>you-get</code> easily via:</p>
 <pre><code># pkg install you-get</code></pre>
-<h3 id="option-7-flox-mac-linux-and-windows-wsl">Option 7: Flox (Mac,
-Linux, and Windows WSL)</h3>
+<h3 id="option-7-flox-mac-linux-and-windows-wsl">Option 7: Flox (Mac, Linux, and Windows WSL)</h3>
 <p>You can install <code>you-get</code> easily via:</p>
 <pre><code>$ flox install you-get</code></pre>
 <h3 id="shell-completion">Shell completion</h3>
-<p>Completion definitions for Bash, Fish and Zsh can be found in <a
-href="https://github.com/soimort/you-get/tree/develop/contrib/completion"><code>contrib/completion</code></a>.
-Please consult your shell’s manual for how to take advantage of
-them.</p>
+<p>Completion definitions for Bash, Fish and Zsh can be found in <a href="https://github.com/soimort/you-get/tree/develop/contrib/completion"><code>contrib/completion</code></a>. Please consult your shell’s manual for how to take advantage of them.</p>
 <h2 id="upgrading">Upgrading</h2>
-<p>Based on which option you chose to install <code>you-get</code>, you
-may upgrade it via:</p>
+<p>Based on which option you chose to install <code>you-get</code>, you may upgrade it via:</p>
 <pre><code>$ pip install --upgrade you-get</code></pre>
 <p>or download the latest release via:</p>
 <pre><code>$ you-get https://github.com/soimort/you-get/archive/master.zip</code></pre>
-<p>In order to get the latest <code>develop</code> branch without
-messing up the PIP, you can try:</p>
+<p>In order to get the latest <code>develop</code> branch without messing up the PIP, you can try:</p>
 <pre><code>$ pip install --upgrade git+https://github.com/soimort/you-get@develop</code></pre>
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="download-a-video">Download a video</h3>
-<p>When you get a video of interest, you might want to use the
-<code>--info</code>/<code>-i</code> option to see all available quality
-and formats:</p>
+<p>When you get a video of interest, you might want to use the <code>--info</code>/<code>-i</code> option to see all available quality and formats:</p>
 <pre><code>$ you-get -i &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;
 site:                YouTube
 title:               Me at the zoo
@@ -286,8 +226,7 @@ streams:             # Available quality and codecs
       container:     3gp
       quality:       small
     # download-with: you-get --itag=17 [URL]</code></pre>
-<p>By default, the one on the top is the one you will get. If that looks
-cool to you, download it:</p>
+<p>By default, the one on the top is the one you will get. If that looks cool to you, download it:</p>
 <pre><code>$ you-get &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;
 site:                YouTube
 title:               Me at the zoo
@@ -303,26 +242,17 @@ Downloading Me at the zoo.webm ...
 Merging video parts... Merged into Me at the zoo.webm
 
 Saving Me at the zoo.en.srt ... Done.</code></pre>
-<p>(If a YouTube video has any closed captions, they will be downloaded
-together with the video file, in SubRip subtitle format.)</p>
-<p>Or, if you prefer another format (mp4), just use whatever the option
-<code>you-get</code> shows to you:</p>
+<p>(If a YouTube video has any closed captions, they will be downloaded together with the video file, in SubRip subtitle format.)</p>
+<p>Or, if you prefer another format (mp4), just use whatever the option <code>you-get</code> shows to you:</p>
 <pre><code>$ you-get --itag=18 &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;</code></pre>
 <p><strong>Note:</strong></p>
 <ul>
-<li>At this point, format selection has not been generally implemented
-for most of our supported sites; in that case, the default format to
-download is the one with the highest quality.</li>
-<li><code>ffmpeg</code> is a required dependency, for downloading and
-joining videos streamed in multiple parts (e.g. on some sites like
-Youku), and for YouTube videos of 1080p or high resolution.</li>
-<li>If you don’t want <code>you-get</code> to join video parts after
-downloading them, use the <code>--no-merge</code>/<code>-n</code>
-option.</li>
+<li>At this point, format selection has not been generally implemented for most of our supported sites; in that case, the default format to download is the one with the highest quality.</li>
+<li><code>ffmpeg</code> is a required dependency, for downloading and joining videos streamed in multiple parts (e.g. on some sites like Youku), and for YouTube videos of 1080p or high resolution.</li>
+<li>If you don’t want <code>you-get</code> to join video parts after downloading them, use the <code>--no-merge</code>/<code>-n</code> option.</li>
 </ul>
 <h3 id="download-anything-else">Download anything else</h3>
-<p>If you already have the URL of the exact resource you want, you can
-download it directly with:</p>
+<p>If you already have the URL of the exact resource you want, you can download it directly with:</p>
 <pre><code>$ you-get https://stallman.org/rms.jpg
 Site:       stallman.org
 Title:      rms
@@ -331,8 +261,7 @@ Size:       0.06 MiB (66482 Bytes)
 
 Downloading rms.jpg ...
  100% (  0.1/  0.1MB) ├████████████████████████████████████████┤[1/1]  127 kB/s</code></pre>
-<p>Otherwise, <code>you-get</code> will scrape the web page and try to
-figure out if there’s anything interesting to you:</p>
+<p>Otherwise, <code>you-get</code> will scrape the web page and try to figure out if there’s anything interesting to you:</p>
 <pre><code>$ you-get https://kopasas.tumblr.com/post/69361932517
 Site:       Tumblr.com
 Title:      [tumblr] tumblr_mxhg13jx4n1sftq6do1_640
@@ -343,107 +272,55 @@ Downloading [tumblr] tumblr_mxhg13jx4n1sftq6do1_640.png ...
  100% (  0.1/  0.1MB) ├████████████████████████████████████████┤[1/1]   22 MB/s</code></pre>
 <p><strong>Note:</strong></p>
 <ul>
-<li>This feature is an experimental one and far from perfect. It works
-best on scraping large-sized images from popular websites like Tumblr
-and Blogger, but there is really no universal pattern that can apply to
-any site on the Internet.</li>
+<li>This feature is an experimental one and far from perfect. It works best on scraping large-sized images from popular websites like Tumblr and Blogger, but there is really no universal pattern that can apply to any site on the Internet.</li>
 </ul>
-<h3 id="search-on-google-videos-and-download">Search on Google Videos
-and download</h3>
-<p>You can pass literally anything to <code>you-get</code>. If it isn’t
-a valid URL, <code>you-get</code> will do a Google search and download
-the most relevant video for you. (It might not be exactly the thing you
-wish to see, but still very likely.)</p>
+<h3 id="search-on-google-videos-and-download">Search on Google Videos and download</h3>
+<p>You can pass literally anything to <code>you-get</code>. If it isn’t a valid URL, <code>you-get</code> will do a Google search and download the most relevant video for you. (It might not be exactly the thing you wish to see, but still very likely.)</p>
 <pre><code>$ you-get &quot;Richard Stallman eats&quot;</code></pre>
 <h3 id="pause-and-resume-a-download">Pause and resume a download</h3>
 <p>You may use <kbd>Ctrl</kbd>+<kbd>C</kbd> to interrupt a download.</p>
-<p>A temporary <code>.download</code> file is kept in the output
-directory. Next time you run <code>you-get</code> with the same
-arguments, the download progress will resume from the last session. In
-case the file is completely downloaded (the temporary
-<code>.download</code> extension is gone), <code>you-get</code> will
-just skip the download.</p>
-<p>To enforce re-downloading, use the
-<code>--force</code>/<code>-f</code> option. (<strong>Warning:</strong>
-doing so will overwrite any existing file or temporary file with the
-same name!)</p>
-<h3 id="set-the-path-and-name-of-downloaded-file">Set the path and name
-of downloaded file</h3>
-<p>Use the <code>--output-dir</code>/<code>-o</code> option to set the
-path, and <code>--output-filename</code>/<code>-O</code> to set the name
-of the downloaded file:</p>
+<p>A temporary <code>.download</code> file is kept in the output directory. Next time you run <code>you-get</code> with the same arguments, the download progress will resume from the last session. In case the file is completely downloaded (the temporary <code>.download</code> extension is gone), <code>you-get</code> will just skip the download.</p>
+<p>To enforce re-downloading, use the <code>--force</code>/<code>-f</code> option. (<strong>Warning:</strong> doing so will overwrite any existing file or temporary file with the same name!)</p>
+<h3 id="set-the-path-and-name-of-downloaded-file">Set the path and name of downloaded file</h3>
+<p>Use the <code>--output-dir</code>/<code>-o</code> option to set the path, and <code>--output-filename</code>/<code>-O</code> to set the name of the downloaded file:</p>
 <pre><code>$ you-get -o ~/Videos -O zoo.webm &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;</code></pre>
 <p><strong>Tips:</strong></p>
 <ul>
-<li>These options are helpful if you encounter problems with the default
-video titles, which may contain special characters that do not play well
-with your current shell / operating system / filesystem.</li>
-<li>These options are also helpful if you write a script to batch
-download files and put them into designated folders with designated
-names.</li>
+<li>These options are helpful if you encounter problems with the default video titles, which may contain special characters that do not play well with your current shell / operating system / filesystem.</li>
+<li>These options are also helpful if you write a script to batch download files and put them into designated folders with designated names.</li>
 </ul>
 <h3 id="proxy-settings">Proxy settings</h3>
-<p>You may specify an HTTP proxy for <code>you-get</code> to use, via
-the <code>--http-proxy</code>/<code>-x</code> option:</p>
+<p>You may specify an HTTP proxy for <code>you-get</code> to use, via the <code>--http-proxy</code>/<code>-x</code> option:</p>
 <pre><code>$ you-get -x 127.0.0.1:8087 &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;</code></pre>
-<p>However, the system proxy setting (i.e. the environment variable
-<code>http_proxy</code>) is applied by default. To disable any proxy,
-use the <code>--no-proxy</code> option.</p>
+<p>However, the system proxy setting (i.e. the environment variable <code>http_proxy</code>) is applied by default. To disable any proxy, use the <code>--no-proxy</code> option.</p>
 <p><strong>Tips:</strong></p>
 <ul>
-<li>If you need to use proxies a lot (in case your network is blocking
-certain sites), you might want to use <code>you-get</code> with <a
-href="https://github.com/rofl0r/proxychains-ng">proxychains</a> and set
-<code>alias you-get="proxychains -q you-get"</code> (in Bash).</li>
-<li>For some websites (e.g. Youku), if you need access to some videos
-that are only available in mainland China, there is an option of using a
-specific proxy to extract video information from the site:
-<code>--extractor-proxy</code>/<code>-y</code>.</li>
+<li>If you need to use proxies a lot (in case your network is blocking certain sites), you might want to use <code>you-get</code> with <a href="https://github.com/rofl0r/proxychains-ng">proxychains</a> and set <code>alias you-get="proxychains -q you-get"</code> (in Bash).</li>
+<li>For some websites (e.g. Youku), if you need access to some videos that are only available in mainland China, there is an option of using a specific proxy to extract video information from the site: <code>--extractor-proxy</code>/<code>-y</code>.</li>
 </ul>
 <h3 id="watch-a-video">Watch a video</h3>
-<p>Use the <code>--player</code>/<code>-p</code> option to feed the
-video into your media player of choice, e.g. <code>mpv</code> or
-<code>vlc</code>, instead of downloading it:</p>
+<p>Use the <code>--player</code>/<code>-p</code> option to feed the video into your media player of choice, e.g. <code>mpv</code> or <code>vlc</code>, instead of downloading it:</p>
 <pre><code>$ you-get -p vlc &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;</code></pre>
-<p>Or, if you prefer to watch the video in a browser, just without ads
-or comment section:</p>
+<p>Or, if you prefer to watch the video in a browser, just without ads or comment section:</p>
 <pre><code>$ you-get -p chromium &#39;https://www.youtube.com/watch?v=jNQXAC9IVRw&#39;</code></pre>
 <p><strong>Tips:</strong></p>
 <ul>
-<li>It is possible to use the <code>-p</code> option to start another
-download manager, e.g.,
-<code>you-get -p uget-gtk 'https://www.youtube.com/watch?v=jNQXAC9IVRw'</code>,
-though they may not play together very well.</li>
+<li>It is possible to use the <code>-p</code> option to start another download manager, e.g., <code>you-get -p uget-gtk 'https://www.youtube.com/watch?v=jNQXAC9IVRw'</code>, though they may not play together very well.</li>
 </ul>
 <h3 id="load-cookies">Load cookies</h3>
-<p>Not all videos are publicly available to anyone. If you need to log
-in your account to access something (e.g., a private video), it would be
-unavoidable to feed the browser cookies to <code>you-get</code> via the
-<code>--cookies</code>/<code>-c</code> option.</p>
+<p>Not all videos are publicly available to anyone. If you need to log in your account to access something (e.g., a private video), it would be unavoidable to feed the browser cookies to <code>you-get</code> via the <code>--cookies</code>/<code>-c</code> option.</p>
 <p><strong>Note:</strong></p>
 <ul>
-<li>As of now, we are supporting two formats of browser cookies: Mozilla
-<code>cookies.sqlite</code> and Netscape <code>cookies.txt</code>.</li>
+<li>As of now, we are supporting two formats of browser cookies: Mozilla <code>cookies.sqlite</code> and Netscape <code>cookies.txt</code>.</li>
 </ul>
 <h3 id="reuse-extracted-data">Reuse extracted data</h3>
-<p>Use <code>--url</code>/<code>-u</code> to get a list of downloadable
-resource URLs extracted from the page. Use <code>--json</code> to get an
-abstract of extracted data in the JSON format.</p>
+<p>Use <code>--url</code>/<code>-u</code> to get a list of downloadable resource URLs extracted from the page. Use <code>--json</code> to get an abstract of extracted data in the JSON format.</p>
 <p><strong>Warning:</strong></p>
 <ul>
-<li>For the time being, this feature has <strong>NOT</strong> been
-stabilized and the JSON schema may have breaking changes in the
-future.</li>
+<li>For the time being, this feature has <strong>NOT</strong> been stabilized and the JSON schema may have breaking changes in the future.</li>
 </ul>
 <h2 id="supported-sites">Supported Sites</h2>
 <table>
-<colgroup>
-<col style="width: 14%" />
-<col style="width: 10%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;">Site</th>
@@ -456,681 +333,564 @@ future.</li>
 <tbody>
 <tr class="odd">
 <td style="text-align: center;"><strong>YouTube</strong></td>
-<td style="text-align: left;"><a href="https://www.youtube.com/"
-class="uri">https://www.youtube.com/</a></td>
+<td style="text-align: left;"><a href="https://www.youtube.com/" class="uri">https://www.youtube.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;"><strong>X (Twitter)</strong></td>
-<td style="text-align: left;"><a href="https://x.com/"
-class="uri">https://x.com/</a></td>
+<td style="text-align: left;"><a href="https://x.com/" class="uri">https://x.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">VK</td>
-<td style="text-align: left;"><a href="https://vk.com/"
-class="uri">https://vk.com/</a></td>
+<td style="text-align: left;"><a href="https://vk.com/" class="uri">https://vk.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Vimeo</td>
-<td style="text-align: left;"><a href="https://vimeo.com/"
-class="uri">https://vimeo.com/</a></td>
+<td style="text-align: left;"><a href="https://vimeo.com/" class="uri">https://vimeo.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Veoh</td>
-<td style="text-align: left;"><a href="https://www.veoh.com/"
-class="uri">https://www.veoh.com/</a></td>
+<td style="text-align: left;"><a href="https://www.veoh.com/" class="uri">https://www.veoh.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;"><strong>Tumblr</strong></td>
-<td style="text-align: left;"><a href="https://www.tumblr.com/"
-class="uri">https://www.tumblr.com/</a></td>
+<td style="text-align: left;"><a href="https://www.tumblr.com/" class="uri">https://www.tumblr.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">TED</td>
-<td style="text-align: left;"><a href="https://www.ted.com/"
-class="uri">https://www.ted.com/</a></td>
+<td style="text-align: left;"><a href="https://www.ted.com/" class="uri">https://www.ted.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">SoundCloud</td>
-<td style="text-align: left;"><a href="https://soundcloud.com/"
-class="uri">https://soundcloud.com/</a></td>
+<td style="text-align: left;"><a href="https://soundcloud.com/" class="uri">https://soundcloud.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">SHOWROOM</td>
-<td style="text-align: left;"><a href="https://www.showroom-live.com/"
-class="uri">https://www.showroom-live.com/</a></td>
+<td style="text-align: left;"><a href="https://www.showroom-live.com/" class="uri">https://www.showroom-live.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Pinterest</td>
-<td style="text-align: left;"><a href="https://www.pinterest.com/"
-class="uri">https://www.pinterest.com/</a></td>
+<td style="text-align: left;"><a href="https://www.pinterest.com/" class="uri">https://www.pinterest.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">MTV81</td>
-<td style="text-align: left;"><a href="https://www.mtv81.com/"
-class="uri">https://www.mtv81.com/</a></td>
+<td style="text-align: left;"><a href="https://www.mtv81.com/" class="uri">https://www.mtv81.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Mixcloud</td>
-<td style="text-align: left;"><a href="https://www.mixcloud.com/"
-class="uri">https://www.mixcloud.com/</a></td>
+<td style="text-align: left;"><a href="https://www.mixcloud.com/" class="uri">https://www.mixcloud.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Metacafe</td>
-<td style="text-align: left;"><a href="https://www.metacafe.com/"
-class="uri">https://www.metacafe.com/</a></td>
+<td style="text-align: left;"><a href="https://www.metacafe.com/" class="uri">https://www.metacafe.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Magisto</td>
-<td style="text-align: left;"><a href="https://www.magisto.com/"
-class="uri">https://www.magisto.com/</a></td>
+<td style="text-align: left;"><a href="https://www.magisto.com/" class="uri">https://www.magisto.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Khan Academy</td>
-<td style="text-align: left;"><a href="https://www.khanacademy.org/"
-class="uri">https://www.khanacademy.org/</a></td>
+<td style="text-align: left;"><a href="https://www.khanacademy.org/" class="uri">https://www.khanacademy.org/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Internet Archive</td>
-<td style="text-align: left;"><a href="https://archive.org/"
-class="uri">https://archive.org/</a></td>
+<td style="text-align: left;"><a href="https://archive.org/" class="uri">https://archive.org/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;"><strong>Instagram</strong></td>
-<td style="text-align: left;"><a href="https://instagram.com/"
-class="uri">https://instagram.com/</a></td>
+<td style="text-align: left;"><a href="https://instagram.com/" class="uri">https://instagram.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">InfoQ</td>
-<td style="text-align: left;"><a
-href="https://www.infoq.com/presentations/"
-class="uri">https://www.infoq.com/presentations/</a></td>
+<td style="text-align: left;"><a href="https://www.infoq.com/presentations/" class="uri">https://www.infoq.com/presentations/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Imgur</td>
-<td style="text-align: left;"><a href="https://imgur.com/"
-class="uri">https://imgur.com/</a></td>
+<td style="text-align: left;"><a href="https://imgur.com/" class="uri">https://imgur.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Heavy Music Archive</td>
-<td style="text-align: left;"><a href="https://www.heavy-music.ru/"
-class="uri">https://www.heavy-music.ru/</a></td>
+<td style="text-align: left;"><a href="https://www.heavy-music.ru/" class="uri">https://www.heavy-music.ru/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Freesound</td>
-<td style="text-align: left;"><a href="https://www.freesound.org/"
-class="uri">https://www.freesound.org/</a></td>
+<td style="text-align: left;"><a href="https://www.freesound.org/" class="uri">https://www.freesound.org/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Flickr</td>
-<td style="text-align: left;"><a href="https://www.flickr.com/"
-class="uri">https://www.flickr.com/</a></td>
+<td style="text-align: left;"><a href="https://www.flickr.com/" class="uri">https://www.flickr.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">FC2 Video</td>
-<td style="text-align: left;"><a href="https://video.fc2.com/"
-class="uri">https://video.fc2.com/</a></td>
+<td style="text-align: left;"><a href="https://video.fc2.com/" class="uri">https://video.fc2.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Facebook</td>
-<td style="text-align: left;"><a href="https://www.facebook.com/"
-class="uri">https://www.facebook.com/</a></td>
+<td style="text-align: left;"><a href="https://www.facebook.com/" class="uri">https://www.facebook.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">eHow</td>
-<td style="text-align: left;"><a href="https://www.ehow.com/"
-class="uri">https://www.ehow.com/</a></td>
+<td style="text-align: left;"><a href="https://www.ehow.com/" class="uri">https://www.ehow.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Dailymotion</td>
-<td style="text-align: left;"><a href="https://www.dailymotion.com/"
-class="uri">https://www.dailymotion.com/</a></td>
+<td style="text-align: left;"><a href="https://www.dailymotion.com/" class="uri">https://www.dailymotion.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Coub</td>
-<td style="text-align: left;"><a href="https://coub.com/"
-class="uri">https://coub.com/</a></td>
+<td style="text-align: left;"><a href="https://coub.com/" class="uri">https://coub.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">CBS</td>
-<td style="text-align: left;"><a href="https://www.cbs.com/"
-class="uri">https://www.cbs.com/</a></td>
+<td style="text-align: left;"><a href="https://www.cbs.com/" class="uri">https://www.cbs.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Bandcamp</td>
-<td style="text-align: left;"><a href="https://bandcamp.com/"
-class="uri">https://bandcamp.com/</a></td>
+<td style="text-align: left;"><a href="https://bandcamp.com/" class="uri">https://bandcamp.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">AliveThai</td>
-<td style="text-align: left;"><a href="https://alive.in.th/"
-class="uri">https://alive.in.th/</a></td>
+<td style="text-align: left;"><a href="https://alive.in.th/" class="uri">https://alive.in.th/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">interest.me</td>
-<td style="text-align: left;"><a href="https://ch.interest.me/tvn"
-class="uri">https://ch.interest.me/tvn</a></td>
+<td style="text-align: left;"><a href="https://ch.interest.me/tvn" class="uri">https://ch.interest.me/tvn</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
-<td
-style="text-align: center;"><strong>755<br/>ナナゴーゴー</strong></td>
-<td style="text-align: left;"><a href="https://7gogo.jp/"
-class="uri">https://7gogo.jp/</a></td>
+<td style="text-align: center;"><strong>755<br/>ナナゴーゴー</strong></td>
+<td style="text-align: left;"><a href="https://7gogo.jp/" class="uri">https://7gogo.jp/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
-<td
-style="text-align: center;"><strong>niconico<br/>ニコニコ動画</strong></td>
-<td style="text-align: left;"><a href="https://www.nicovideo.jp/"
-class="uri">https://www.nicovideo.jp/</a></td>
+<td style="text-align: center;"><strong>niconico<br/>ニコニコ動画</strong></td>
+<td style="text-align: left;"><a href="https://www.nicovideo.jp/" class="uri">https://www.nicovideo.jp/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
-<td
-style="text-align: center;"><strong>163<br/>网易视频<br/>网易云音乐</strong></td>
-<td style="text-align: left;"><a href="https://v.163.com/"
-class="uri">https://v.163.com/</a><br/><a href="https://music.163.com/"
-class="uri">https://music.163.com/</a></td>
+<td style="text-align: center;"><strong>163<br/>网易视频<br/>网易云音乐</strong></td>
+<td style="text-align: left;"><a href="https://v.163.com/" class="uri">https://v.163.com/</a><br/><a href="https://music.163.com/" class="uri">https://music.163.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">56网</td>
-<td style="text-align: left;"><a href="https://www.56.com/"
-class="uri">https://www.56.com/</a></td>
+<td style="text-align: left;"><a href="https://www.56.com/" class="uri">https://www.56.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;"><strong>AcFun</strong></td>
-<td style="text-align: left;"><a href="https://www.acfun.cn/"
-class="uri">https://www.acfun.cn/</a></td>
+<td style="text-align: left;"><a href="https://www.acfun.cn/" class="uri">https://www.acfun.cn/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;"><strong>Baidu<br/>百度贴吧</strong></td>
-<td style="text-align: left;"><a href="https://tieba.baidu.com/"
-class="uri">https://tieba.baidu.com/</a></td>
+<td style="text-align: left;"><a href="https://tieba.baidu.com/" class="uri">https://tieba.baidu.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">爆米花网</td>
-<td style="text-align: left;"><a href="https://www.baomihua.com/"
-class="uri">https://www.baomihua.com/</a></td>
+<td style="text-align: left;"><a href="https://www.baomihua.com/" class="uri">https://www.baomihua.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
-<td
-style="text-align: center;"><strong>bilibili<br/>哔哩哔哩</strong></td>
-<td style="text-align: left;"><a href="https://www.bilibili.com/"
-class="uri">https://www.bilibili.com/</a></td>
+<td style="text-align: center;"><strong>bilibili<br/>哔哩哔哩</strong></td>
+<td style="text-align: left;"><a href="https://www.bilibili.com/" class="uri">https://www.bilibili.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">豆瓣</td>
-<td style="text-align: left;"><a href="https://www.douban.com/"
-class="uri">https://www.douban.com/</a></td>
+<td style="text-align: left;"><a href="https://www.douban.com/" class="uri">https://www.douban.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">斗鱼</td>
-<td style="text-align: left;"><a href="https://www.douyutv.com/"
-class="uri">https://www.douyutv.com/</a></td>
+<td style="text-align: left;"><a href="https://www.douyutv.com/" class="uri">https://www.douyutv.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">凤凰视频</td>
-<td style="text-align: left;"><a href="https://v.ifeng.com/"
-class="uri">https://v.ifeng.com/</a></td>
+<td style="text-align: left;"><a href="https://v.ifeng.com/" class="uri">https://v.ifeng.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">风行网</td>
-<td style="text-align: left;"><a href="https://www.fun.tv/"
-class="uri">https://www.fun.tv/</a></td>
+<td style="text-align: left;"><a href="https://www.fun.tv/" class="uri">https://www.fun.tv/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">iQIYI<br/>爱奇艺</td>
-<td style="text-align: left;"><a href="https://www.iqiyi.com/"
-class="uri">https://www.iqiyi.com/</a></td>
+<td style="text-align: left;"><a href="https://www.iqiyi.com/" class="uri">https://www.iqiyi.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">激动网</td>
-<td style="text-align: left;"><a href="https://www.joy.cn/"
-class="uri">https://www.joy.cn/</a></td>
+<td style="text-align: left;"><a href="https://www.joy.cn/" class="uri">https://www.joy.cn/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">酷6网</td>
-<td style="text-align: left;"><a href="https://www.ku6.com/"
-class="uri">https://www.ku6.com/</a></td>
+<td style="text-align: left;"><a href="https://www.ku6.com/" class="uri">https://www.ku6.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">酷狗音乐</td>
-<td style="text-align: left;"><a href="https://www.kugou.com/"
-class="uri">https://www.kugou.com/</a></td>
+<td style="text-align: left;"><a href="https://www.kugou.com/" class="uri">https://www.kugou.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">酷我音乐</td>
-<td style="text-align: left;"><a href="https://www.kuwo.cn/"
-class="uri">https://www.kuwo.cn/</a></td>
+<td style="text-align: left;"><a href="https://www.kuwo.cn/" class="uri">https://www.kuwo.cn/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">乐视网</td>
-<td style="text-align: left;"><a href="https://www.le.com/"
-class="uri">https://www.le.com/</a></td>
+<td style="text-align: left;"><a href="https://www.le.com/" class="uri">https://www.le.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">荔枝FM</td>
-<td style="text-align: left;"><a href="https://www.lizhi.fm/"
-class="uri">https://www.lizhi.fm/</a></td>
+<td style="text-align: left;"><a href="https://www.lizhi.fm/" class="uri">https://www.lizhi.fm/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">懒人听书</td>
-<td style="text-align: left;"><a href="https://www.lrts.me/"
-class="uri">https://www.lrts.me/</a></td>
+<td style="text-align: left;"><a href="https://www.lrts.me/" class="uri">https://www.lrts.me/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">秒拍</td>
-<td style="text-align: left;"><a href="https://www.miaopai.com/"
-class="uri">https://www.miaopai.com/</a></td>
+<td style="text-align: left;"><a href="https://www.miaopai.com/" class="uri">https://www.miaopai.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">MioMio弹幕网</td>
-<td style="text-align: left;"><a href="https://www.miomio.tv/"
-class="uri">https://www.miomio.tv/</a></td>
+<td style="text-align: left;"><a href="https://www.miomio.tv/" class="uri">https://www.miomio.tv/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">MissEvan<br/>猫耳FM</td>
-<td style="text-align: left;"><a href="https://www.missevan.com/"
-class="uri">https://www.missevan.com/</a></td>
+<td style="text-align: left;"><a href="https://www.missevan.com/" class="uri">https://www.missevan.com/</a></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">✓</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">痞客邦</td>
-<td style="text-align: left;"><a href="https://www.pixnet.net/"
-class="uri">https://www.pixnet.net/</a></td>
+<td style="text-align: left;"><a href="https://www.pixnet.net/" class="uri">https://www.pixnet.net/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">PPTV聚力</td>
-<td style="text-align: left;"><a href="https://www.pptv.com/"
-class="uri">https://www.pptv.com/</a></td>
+<td style="text-align: left;"><a href="https://www.pptv.com/" class="uri">https://www.pptv.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">齐鲁网</td>
-<td style="text-align: left;"><a href="https://v.iqilu.com/"
-class="uri">https://v.iqilu.com/</a></td>
+<td style="text-align: left;"><a href="https://v.iqilu.com/" class="uri">https://v.iqilu.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">QQ<br/>腾讯视频</td>
-<td style="text-align: left;"><a href="https://v.qq.com/"
-class="uri">https://v.qq.com/</a></td>
+<td style="text-align: left;"><a href="https://v.qq.com/" class="uri">https://v.qq.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">企鹅直播</td>
-<td style="text-align: left;"><a href="https://live.qq.com/"
-class="uri">https://live.qq.com/</a></td>
+<td style="text-align: left;"><a href="https://live.qq.com/" class="uri">https://live.qq.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Sina<br/>新浪视频<br/>微博秒拍视频</td>
-<td style="text-align: left;"><a href="https://video.sina.com.cn/"
-class="uri">https://video.sina.com.cn/</a><br/><a
-href="https://video.weibo.com/"
-class="uri">https://video.weibo.com/</a></td>
+<td style="text-align: left;"><a href="https://video.sina.com.cn/" class="uri">https://video.sina.com.cn/</a><br/><a href="https://video.weibo.com/" class="uri">https://video.weibo.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Sohu<br/>搜狐视频</td>
-<td style="text-align: left;"><a href="https://tv.sohu.com/"
-class="uri">https://tv.sohu.com/</a></td>
+<td style="text-align: left;"><a href="https://tv.sohu.com/" class="uri">https://tv.sohu.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;"><strong>Tudou<br/>土豆</strong></td>
-<td style="text-align: left;"><a href="https://www.tudou.com/"
-class="uri">https://www.tudou.com/</a></td>
+<td style="text-align: left;"><a href="https://www.tudou.com/" class="uri">https://www.tudou.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">阳光卫视</td>
-<td style="text-align: left;"><a href="https://www.isuntv.com/"
-class="uri">https://www.isuntv.com/</a></td>
+<td style="text-align: left;"><a href="https://www.isuntv.com/" class="uri">https://www.isuntv.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;"><strong>Youku<br/>优酷</strong></td>
-<td style="text-align: left;"><a href="https://www.youku.com/"
-class="uri">https://www.youku.com/</a></td>
+<td style="text-align: left;"><a href="https://www.youku.com/" class="uri">https://www.youku.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">战旗TV</td>
-<td style="text-align: left;"><a href="https://www.zhanqi.tv/lives"
-class="uri">https://www.zhanqi.tv/lives</a></td>
+<td style="text-align: left;"><a href="https://www.zhanqi.tv/lives" class="uri">https://www.zhanqi.tv/lives</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">央视网</td>
-<td style="text-align: left;"><a href="https://www.cntv.cn/"
-class="uri">https://www.cntv.cn/</a></td>
+<td style="text-align: left;"><a href="https://www.cntv.cn/" class="uri">https://www.cntv.cn/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Naver<br/>네이버</td>
-<td style="text-align: left;"><a href="https://tvcast.naver.com/"
-class="uri">https://tvcast.naver.com/</a></td>
+<td style="text-align: left;"><a href="https://tvcast.naver.com/" class="uri">https://tvcast.naver.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">芒果TV</td>
-<td style="text-align: left;"><a href="https://www.mgtv.com/"
-class="uri">https://www.mgtv.com/</a></td>
+<td style="text-align: left;"><a href="https://www.mgtv.com/" class="uri">https://www.mgtv.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">火猫TV</td>
-<td style="text-align: left;"><a href="https://www.huomao.com/"
-class="uri">https://www.huomao.com/</a></td>
+<td style="text-align: left;"><a href="https://www.huomao.com/" class="uri">https://www.huomao.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">阳光宽频网</td>
-<td style="text-align: left;"><a href="https://www.365yg.com/"
-class="uri">https://www.365yg.com/</a></td>
+<td style="text-align: left;"><a href="https://www.365yg.com/" class="uri">https://www.365yg.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">西瓜视频</td>
-<td style="text-align: left;"><a href="https://www.ixigua.com/"
-class="uri">https://www.ixigua.com/</a></td>
+<td style="text-align: left;"><a href="https://www.ixigua.com/" class="uri">https://www.ixigua.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">新片场</td>
-<td style="text-align: left;"><a href="https://www.xinpianchang.com/"
-class="uri">https://www.xinpianchang.com/</a></td>
+<td style="text-align: left;"><a href="https://www.xinpianchang.com/" class="uri">https://www.xinpianchang.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">快手</td>
-<td style="text-align: left;"><a href="https://www.kuaishou.com/"
-class="uri">https://www.kuaishou.com/</a></td>
+<td style="text-align: left;"><a href="https://www.kuaishou.com/" class="uri">https://www.kuaishou.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">抖音</td>
-<td style="text-align: left;"><a href="https://www.douyin.com/"
-class="uri">https://www.douyin.com/</a></td>
+<td style="text-align: left;"><a href="https://www.douyin.com/" class="uri">https://www.douyin.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">TikTok</td>
-<td style="text-align: left;"><a href="https://www.tiktok.com/"
-class="uri">https://www.tiktok.com/</a></td>
+<td style="text-align: left;"><a href="https://www.tiktok.com/" class="uri">https://www.tiktok.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">中国体育(TV)</td>
-<td style="text-align: left;"><a href="https://v.zhibo.tv/"
-class="uri">https://v.zhibo.tv/</a> </br><a
-href="https://video.zhibo.tv/"
-class="uri">https://video.zhibo.tv/</a></td>
+<td style="text-align: left;"><a href="https://v.zhibo.tv/" class="uri">https://v.zhibo.tv/</a> </br><a href="https://video.zhibo.tv/" class="uri">https://video.zhibo.tv/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">知乎</td>
-<td style="text-align: left;"><a href="https://www.zhihu.com/"
-class="uri">https://www.zhihu.com/</a></td>
+<td style="text-align: left;"><a href="https://www.zhihu.com/" class="uri">https://www.zhihu.com/</a></td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 </tr>
 </tbody>
 </table>
-<p>For all other sites not on the list, the universal extractor will
-take care of finding and downloading interesting resources from the
-page.</p>
+<p>For all other sites not on the list, the universal extractor will take care of finding and downloading interesting resources from the page.</p>
 <h3 id="known-bugs">Known bugs</h3>
-<p>If something is broken and <code>you-get</code> can’t get you things
-you want, don’t panic. (Yes, this happens all the time!)</p>
-<p>Check if it’s already a known problem on <a
-href="https://github.com/soimort/you-get/wiki/Known-Bugs"
-class="uri">https://github.com/soimort/you-get/wiki/Known-Bugs</a>. If
-not, follow the guidelines on <a
-href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">how
-to report an issue</a>.</p>
+<p>If something is broken and <code>you-get</code> can’t get you things you want, don’t panic. (Yes, this happens all the time!)</p>
+<p>Check if it’s already a known problem on <a href="https://github.com/soimort/you-get/wiki/Known-Bugs" class="uri">https://github.com/soimort/you-get/wiki/Known-Bugs</a>. If not, follow the guidelines on <a href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">how to report an issue</a>.</p>
 <h2 id="getting-involved">Getting Involved</h2>
-<p>You can reach us on the Gitter channel <a
-href="https://gitter.im/soimort/you-get">#soimort/you-get</a> (here’s
-how you <a href="https://irc.gitter.im">set up your IRC client</a> for
-Gitter). If you have a quick question regarding <code>you-get</code>,
-ask it there.</p>
-<p>If you are seeking to report an issue or contribute, please make sure
-to read <a
-href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">the
-guidelines</a> first.</p>
+<p>You can reach us on the Gitter channel <a href="https://gitter.im/soimort/you-get">#soimort/you-get</a> (here’s how you <a href="https://irc.gitter.im">set up your IRC client</a> for Gitter). If you have a quick question regarding <code>you-get</code>, ask it there.</p>
+<p>If you are seeking to report an issue or contribute, please make sure to read <a href="https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md">the guidelines</a> first.</p>
 <h2 id="legal-issues">Legal Issues</h2>
-<p>This software is distributed under the <a
-href="https://raw.github.com/soimort/you-get/master/LICENSE.txt">MIT
-license</a>.</p>
+<p>This software is distributed under the <a href="https://raw.github.com/soimort/you-get/master/LICENSE.txt">MIT license</a>.</p>
 <p>In particular, please be aware that</p>
 <blockquote>
-<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 </blockquote>
 <p>Translated to human words:</p>
-<p><em>In case your use of the software forms the basis of copyright
-infringement, or you use the software for any other illegal purposes,
-the authors cannot take any responsibility for you.</em></p>
-<p>We only ship the code here, and how you are going to use it is left
-to your own discretion.</p>
+<p><em>In case your use of the software forms the basis of copyright infringement, or you use the software for any other illegal purposes, the authors cannot take any responsibility for you.</em></p>
+<p>We only ship the code here, and how you are going to use it is left to your own discretion.</p>
 <h2 id="authors">Authors</h2>
-<p>Made by <a href="https://github.com/soimort"><span class="citation"
-data-cites="soimort">@soimort</span></a>, who is in turn powered by
-:coffee:, :beer: and :ramen:.</p>
-<p>You can find the <a
-href="https://github.com/soimort/you-get/graphs/contributors">list of
-all contributors</a> here.</p>
+<p>Made by <span class="citation" data-cites="soimort">[@soimort]</span>(https://github.com/soimort), who is in turn powered by :coffee:, :beer: and :ramen:.</p>
+<p>You can find the <a href="https://github.com/soimort/you-get/graphs/contributors">list of all contributors</a> here.</p>
 <hr/>
 
 <footer>
