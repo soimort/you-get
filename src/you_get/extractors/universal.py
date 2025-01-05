@@ -24,8 +24,7 @@ def universal_download(url, output_dir='.', merge=True, info_only=False, **kwarg
 
     if content_type.startswith('text/html'):
         # extract an HTML page
-        response = get_response(url, faker=True)
-        page = str(response.data)
+        page = get_content(url, headers=fake_headers)
 
         page_title = r1(r'<title>([^<]*)', page)
         if page_title:

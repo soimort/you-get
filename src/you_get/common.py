@@ -15,6 +15,22 @@ from http import cookiejar
 from importlib import import_module
 from urllib import request, parse, error
 
+try:
+    import httpx
+    session = httpx.Client(transport=httpx.HTTPTransport(retries=3), follow_redirects=True, http2=True,
+                           headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'}) # some website can accept 'Python-urllib' or 'python-requests' but not 'httpx'
+    __urllib__ = False
+except ImportError:
+    try:
+        import requests
+        from requests.adapters import HTTPAdapter
+        session = requests.Session()
+        session.mount('http://', HTTPAdapter(max_retries=3))
+        session.mount('https://', HTTPAdapter(max_retries=3))
+        __urllib__ = False
+    except ImportError:
+        __urllib__ = True
+
 from .version import __version__
 from .util import log, term
 from .util.git import get_version
@@ -346,6 +362,12 @@ def undeflate(data):
 # an http.client implementation of get_content()
 # because urllib does not support "Connection: keep-alive"
 def getHttps(host, url, headers, debuglevel=0):
+    if not __urllib__:
+        if not (url.startswith('http://') or url.startswith('https://')):
+            url = 'https://' + host + url
+        r = session.get(url, headers=headers)
+        return r.text, r.headers.get('set-cookie')
+    
     import http.client
 
     conn = http.client.HTTPSConnection(host)
@@ -365,56 +387,21 @@ def getHttps(host, url, headers, debuglevel=0):
     conn.close()
     return str(data, encoding='utf-8'), set_cookie  # TODO: support raw data
 
-
-# DEPRECATED in favor of get_content()
-def get_response(url, faker=False):
-    logging.debug('get_response: %s' % url)
-    ctx = None
-    if insecure:
-        # ignore ssl errors
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-    # install cookies
-    if cookies:
-        opener = request.build_opener(request.HTTPCookieProcessor(cookies))
-        request.install_opener(opener)
-
-    if faker:
-        response = request.urlopen(
-            request.Request(url, headers=fake_headers), None, context=ctx,
-        )
-    else:
-        response = request.urlopen(url, context=ctx)
-
-    data = response.read()
-    if response.info().get('Content-Encoding') == 'gzip':
-        data = ungzip(data)
-    elif response.info().get('Content-Encoding') == 'deflate':
-        data = undeflate(data)
-    response.data = data
-    return response
-
-
 # DEPRECATED in favor of get_content()
 def get_html(url, encoding=None, faker=False):
-    content = get_response(url, faker).data
-    return str(content, 'utf-8', 'ignore')
+    return get_content(url, headers=fake_headers if faker else {})
 
 
 # DEPRECATED in favor of get_content()
 def get_decoded_html(url, faker=False):
-    response = get_response(url, faker)
-    data = response.data
-    charset = r1(r'charset=([\w-]+)', response.headers['content-type'])
-    if charset:
-        return data.decode(charset, 'ignore')
-    else:
-        return data
+    return get_content(url, headers=fake_headers if faker else {})
 
 
 def get_location(url, headers=None, get_method='HEAD'):
     logging.debug('get_location: %s' % url)
+
+    if not __urllib__:
+        return str(session.request(get_method, url, headers=headers).url)
 
     if headers:
         req = request.Request(url, headers=headers)
@@ -461,6 +448,11 @@ def get_content(url, headers={}, decoded=True):
     """
 
     logging.debug('get_content: %s' % url)
+
+    if not __urllib__:
+        if cookies: session.cookies = cookies  # https://www.python-httpx.org/compatibility/#cookies
+        r = session.get(url, headers=headers)
+        return r.text if decoded else r.content
 
     req = request.Request(url, headers=headers)
     if cookies:
@@ -515,6 +507,16 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
     else:
         logging.debug('post_content: %s\npost_data: %s' % (url, post_data))
 
+    if not __urllib__:
+        if cookies: session.cookies = cookies  # https://www.python-httpx.org/compatibility/#cookies
+        r = session.post(url, headers=headers, data=kwargs.get('post_data_raw') or post_data)  # https://www.python-httpx.org/compatibility/#request-content
+        return r.text if decoded else r.content
+    
+    if kwargs.get('post_data_raw'):
+        post_data_enc = bytes(kwargs['post_data_raw'], 'utf-8')
+    else:
+        post_data_enc = bytes(parse.urlencode(post_data), 'utf-8')
+
     req = request.Request(url, headers=headers)
     if cookies:
         # NOTE: Do not use cookies.add_cookie_header(req)
@@ -528,10 +530,6 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
             cookie_strings.append(cookie.name + '=' + cookie.value)
         cookie_headers = {'Cookie': '; '.join(cookie_strings)}
         req.headers.update(cookie_headers)
-    if kwargs.get('post_data_raw'):
-        post_data_enc = bytes(kwargs['post_data_raw'], 'utf-8')
-    else:
-        post_data_enc = bytes(parse.urlencode(post_data), 'utf-8')
     response = urlopen_with_retry(req, data=post_data_enc)
     data = response.read()
 
@@ -556,14 +554,10 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
 
 
 def url_size(url, faker=False, headers={}):
-    if faker:
-        response = urlopen_with_retry(
-            request.Request(url, headers=fake_headers)
-        )
-    elif headers:
-        response = urlopen_with_retry(request.Request(url, headers=headers))
+    if __urllib__:
+        response = urlopen_with_retry(request.Request(url, headers=fake_headers if faker else headers))
     else:
-        response = urlopen_with_retry(url)
+        response = session.head(url, headers=fake_headers if faker else headers)
 
     size = response.headers['content-length']
     return int(size) if size is not None else float('inf')
@@ -573,13 +567,13 @@ def urls_size(urls, faker=False, headers={}):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
 
-def get_head(url, headers=None, get_method='HEAD'):
+def get_head(url, headers={}, get_method='HEAD'):
     logging.debug('get_head: %s' % url)
 
-    if headers:
-        req = request.Request(url, headers=headers)
-    else:
-        req = request.Request(url)
+    if not __urllib__:
+        return session.request(get_method, url, headers=headers).headers
+
+    req = request.Request(url, headers=headers)
     req.get_method = lambda: get_method
     res = urlopen_with_retry(req)
     return res.headers
@@ -646,26 +640,16 @@ def url_info(url, faker=False, headers={}):
 
     return type, ext, size
 
-
-def url_locations(urls, faker=False, headers={}):
-    locations = []
-    for url in urls:
-        logging.debug('url_locations: %s' % url)
-
-        if faker:
-            response = urlopen_with_retry(
-                request.Request(url, headers=fake_headers)
-            )
-        elif headers:
-            response = urlopen_with_retry(
-                request.Request(url, headers=headers)
-            )
+def iter_content(response):
+    while True:
+        try:
+            buffer = response.read(1024 * 256)
+        except socket.timeout:
+            break
+        if buffer:
+            yield buffer
         else:
-            response = urlopen_with_retry(request.Request(url))
-
-        locations.append(response.url)
-    return locations
-
+            break
 
 def url_save(
     url, filepath, bar, refer=None, is_part=False, faker=False,
@@ -762,66 +746,68 @@ def url_save(
             else:
                 headers = {}
             '''
-            if received:
-                # chunk_start will always be 0 if not chunked
-                tmp_headers['Range'] = 'bytes=' + str(received - chunk_start) + '-'
             if refer:
                 tmp_headers['Referer'] = refer
 
-            if timeout:
-                response = urlopen_with_retry(
-                    request.Request(url, headers=tmp_headers), timeout=timeout
-                )
-            else:
-                response = urlopen_with_retry(
-                    request.Request(url, headers=tmp_headers)
-                )
-            try:
-                range_start = int(
-                    response.headers[
-                        'content-range'
-                    ][6:].split('/')[0].split('-')[0]
-                )
-                end_length = int(
-                    response.headers['content-range'][6:].split('/')[1]
-                )
-                range_length = end_length - range_start
-            except:
-                content_length = response.headers['content-length']
-                range_length = int(content_length) if content_length is not None \
-                    else float('inf')
-
-            if is_chunked:  # always append if chunked
-                open_mode = 'ab'
-            elif file_size != received + range_length:  # is it ever necessary?
-                received = 0
-                if bar:
-                    bar.received = 0
-                open_mode = 'wb'
-
-            with open(temp_filepath, open_mode) as output:
-                while True:
-                    buffer = None
+            while True:
+                if received:
+                    # chunk_start will always be 0 if not chunked
+                    tmp_headers['Range'] = 'bytes=' + str(received - chunk_start) + '-'
+                if __urllib__:
+                    if timeout:
+                        _response = urlopen_with_retry(
+                            request.Request(url, headers=tmp_headers), timeout=timeout
+                        )
+                    else:
+                        _response = urlopen_with_retry(
+                            request.Request(url, headers=tmp_headers)
+                        )
+                elif callable(session.stream):  # HTTPX
+                    _response = session.stream('GET', url, headers=tmp_headers, timeout=timeout)
+                else:  # requests
+                    _response = session.get(url, headers=tmp_headers, timeout=timeout, stream=True)
+                with _response as response:
                     try:
-                        buffer = response.read(1024 * 256)
-                    except socket.timeout:
-                        pass
-                    if not buffer:
+                        range_start = int(
+                            response.headers[
+                                'content-range'
+                            ][6:].split('/')[0].split('-')[0]
+                        )
+                        end_length = int(
+                            response.headers['content-range'][6:].split('/')[1]
+                        )
+                        range_length = end_length - range_start
+                    except:
+                        content_length = response.headers['content-length']
+                        range_length = int(content_length) if content_length is not None \
+                            else float('inf')
+
+                    if is_chunked:  # always append if chunked
+                        open_mode = 'ab'
+                    elif file_size != received + range_length:  # is it ever necessary?
+                        received = 0
+                        if bar:
+                            bar.received = 0
+                        open_mode = 'wb'
+
+                    with open(temp_filepath, open_mode) as output:
+                        if __urllib__:
+                            iter = iter_content(response)
+                        elif hasattr(response, 'iter_content'):  # HTTPX
+                            iter = response.iter_content(1024 * 256)
+                        else:  # requests
+                            iter = response.iter_bytes(1024 * 256)
+                        for buffer in iter:
+                            output.write(buffer)
+                            received += len(buffer)
+                            received_chunk += len(buffer)
+                            if bar:
+                                bar.update_received(len(buffer))
                         if is_chunked and received_chunk == range_length:
                             break
                         elif not is_chunked and received == file_size:  # Download finished
                             break
                         # Unexpected termination. Retry request
-                        tmp_headers['Range'] = 'bytes=' + str(received - chunk_start) + '-'
-                        response = urlopen_with_retry(
-                            request.Request(url, headers=tmp_headers)
-                        )
-                        continue
-                    output.write(buffer)
-                    received += len(buffer)
-                    received_chunk += len(buffer)
-                    if bar:
-                        bar.update_received(len(buffer))
 
     assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (
         received, os.path.getsize(temp_filepath), temp_filepath
@@ -1337,20 +1323,6 @@ def unset_proxy():
     request.install_opener(opener)
 
 
-# DEPRECATED in favor of set_proxy() and unset_proxy()
-def set_http_proxy(proxy):
-    if proxy is None:  # Use system default setting
-        proxy_support = request.ProxyHandler()
-    elif proxy == '':  # Don't use any proxy
-        proxy_support = request.ProxyHandler({})
-    else:  # Use proxy
-        proxy_support = request.ProxyHandler(
-            {'http': '%s' % proxy, 'https': '%s' % proxy}
-        )
-    opener = request.build_opener(proxy_support)
-    request.install_opener(opener)
-
-
 def print_more_compatible(*args, **kwargs):
     import builtins as __builtin__
     """Overload default print function as py (<3.3) does not support 'flush' keyword.
@@ -1738,9 +1710,9 @@ def script_main(download, download_playlist, **kwargs):
     prefix = args.prefix
 
     if args.no_proxy:
-        set_http_proxy('')
-    else:
-        set_http_proxy(args.http_proxy)
+        unset_proxy()
+    elif args.http_proxy is not None:
+        set_proxy(args.http_proxy)
     if args.socks_proxy:
         set_socks_proxy(args.socks_proxy)
 
