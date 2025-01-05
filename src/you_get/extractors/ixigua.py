@@ -28,7 +28,7 @@ def ixigua_download(url, output_dir='.', merge=True, info_only=False, stream_id=
         _cookies.append(c.strip().split(' ')[0])
     headers['cookie'] += ' '.join(_cookies)
 
-    match_txt = match1(html, r"<script id=\"SSR_HYDRATED_DATA\">window._SSR_HYDRATED_DATA=(.*?)<\/script>")
+    match_txt = match1(html, r"<script id=\"SSR_HYDRATED_DATA\" nonce=.*?>window._SSR_HYDRATED_DATA=(.*?)<\/script>")
     if not match_txt:
         log.e("Get video info from url failed, url: {}".format(url))
         return
