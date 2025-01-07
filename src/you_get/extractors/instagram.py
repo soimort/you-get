@@ -19,7 +19,7 @@ def instagram_download(url, output_dir='.', merge=True, info_only=False, **kwarg
     title = "{} [{}]".format(description.replace("\n", " "), vid)
 
     appId = r1(r'"appId":"(\d+)"', cont)
-    media_id = r1(r'"media_id":"(\d+)"', cont)
+    media_id = r1(r'"media_id":"([\d\_]+)"', cont)
     logging.debug('appId: %s' % appId)
     logging.debug('media_id: %s' % media_id)
 
