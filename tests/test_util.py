@@ -10,3 +10,6 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(legitimize("1*2", os="mac"), "1*2")
         self.assertEqual(legitimize("1*2", os="windows"), "1-2")
         self.assertEqual(legitimize("1*2", os="wsl"), "1-2")
+
+        # make sure filename + .ext <= 255 bytes
+        self.assertTrue(len(legitimize("文件名"*200).encode('u8')) <= 250)
