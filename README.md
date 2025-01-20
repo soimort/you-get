@@ -10,7 +10,7 @@
 
 ---
 
-[You-Get](https://you-get.org/) is a tiny command-line utility to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.
+[You-Get](https://you-get.org/) is a tiny command-line utility that is used to download media contents (videos, audios, images) from the Web, in case there is no other handy way to do it.
 
 Here's how you use `you-get` to download a video from [YouTube](https://www.youtube.com/watch?v=jNQXAC9IVRw):
 
@@ -34,7 +34,6 @@ Saving Me at the zoo.en.srt ... Done.
 And here's why you might want to use it:
 
 * You enjoyed something on the Internet, and just want to download them for your own pleasure.
-* You watch your favorite videos online from your computer, but you are prohibited from saving them. You feel that you have no control over your own computer. (And it's not how an open Web is supposed to work.)
 * You want to get rid of any closed-source technology or proprietary JavaScript code, and disallow things like Flash running on your computer.
 * You are an adherent of hacker culture and free software.
 
