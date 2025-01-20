@@ -68,7 +68,7 @@ def netease_cloud_music_download(url, output_dir='.', merge=True, info_only=Fals
     elif "song" in url:
         j = loads(get_content("http://music.163.com/api/song/detail/?id=%s&ids=[%s]&csrf_token=" % (rid, rid), headers={"Referer": "http://music.163.com/"}))
         netease_song_download(j["songs"][0], output_dir=output_dir, info_only=info_only)
-        try: # download lyrics
+        try: # The api of song download were lapsed because of the update of 163, we can't get the mp3 url, need a new api.
             assert kwargs['caption']
             l = loads(get_content("http://music.163.com/api/song/lyric/?id=%s&lv=-1&csrf_token=" % rid, headers={"Referer": "http://music.163.com/"}))
             netease_lyric_download(j["songs"][0], l["lrc"]["lyric"], output_dir=output_dir, info_only=info_only)
