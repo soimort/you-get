@@ -161,7 +161,9 @@ class Bilibili(VideoExtractor):
             html_content = ''  # live always returns 400 (why?)
         #self.title = match1(html_content,
         #                    r'<h1 title="([^"]+)"')
-
+        if(html_content.find("视频去哪了呢？_哔哩哔哩 ")>0):
+            print("哔哩哔哩视频不存在！（Video not found ！）URL: %s" %self.url)
+            return
         # redirect: watchlater
         if re.match(r'https?://(www\.)?bilibili\.com/watchlater/#/(av(\d+)|BV(\S+)/?)', self.url):
             avid = match1(self.url, r'/(av\d+)') or match1(self.url, r'/(BV\w+)')
