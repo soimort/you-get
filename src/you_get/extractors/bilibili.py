@@ -736,6 +736,8 @@ class Bilibili(VideoExtractor):
             sort = 'space_favlist'
         elif re.match(r'https?://(www\.)?bilibili\.com/audio/am(\d+)', self.url):
             sort = 'audio_menu'
+        elif re.match(r'https?://(www\.)?bilibili\.com/cheese/play/ss(\d+)', self.url):  # 课堂
+            sort = 'cheese'
         else:
             log.e('[Error] Unsupported URL pattern.')
             exit(1)
@@ -744,6 +746,9 @@ class Bilibili(VideoExtractor):
         if sort == 'video':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
+            error = initial_state['error']
+            if error:
+                raise Exception
             aid = initial_state['videoData']['aid']
             pn = initial_state['videoData']['videos']
 
@@ -929,9 +934,14 @@ class Bilibili(VideoExtractor):
                 i += 1;
                 log.w('Extracting %s of %s videos ...' % (i, epn))
                 url = 'https://www.bilibili.com/video/av%s' % video['aid']
-                self.__class__().download_playlist_by_url(url, **kwargs)
+                try:
+                    self.__class__().download_playlist_by_url(url, **kwargs)
+                except:
+                    title = video['title']
+                    log.e(f"{title} 下载出错啦！🤔")
+                    log.e(f"{title} 下载出错啦！🤔")
+                    log.e(f"{title} 下载出错啦！🤔")
 
-            sys.exit(0)  # finish
 
 
         elif sort == 'space_video':
@@ -939,8 +949,9 @@ class Bilibili(VideoExtractor):
                 log.e("You have to login cookies for downloading. (use --cookies to load cookies.txt.)")
                 log.e("你需要登录来下载up主的所有视频。（使用 --cookies 加载 cookies.txt）")
                 sys.exit(0)
+
             mid = match1(self.url, r'com/(\d+)/upload')
-            w_webid = self.get_w_webid(html_content)
+            # w_webid = self.get_w_webid(html_content)
             videos_list = []
             for pn in count(1):
                 api_url = self.bilibili_space_video_api(mid, pn=pn)
@@ -954,10 +965,16 @@ class Bilibili(VideoExtractor):
             videos_nums = len(videos_list)
             for i, video in enumerate(videos_list, 1):
                 log.w('Extracting %s of %s videos ...' % (i, videos_nums))
-                url = 'https://www.bilibili.com/video/av%s' % video['aid']
-                self.__class__().download_playlist_by_url(url, **kwargs)
+                aid, jump_url = video['aid'], video['jump_url']
+                url = f'https://www.bilibili.com/video/av{aid}' if not jump_url else jump_url
+                try:
+                    self.__class__().download_playlist_by_url(url, **kwargs)
+                except:
+                    title = video['title']
+                    log.e(f"{title} 下载出错啦！🤔")
+                    log.e(f"{title} 下载出错啦！🤔")
+                    log.e(f"{title} 下载出错啦！🤔")
 
-            sys.exit(0)  # finish
         elif sort == 'audio_menu':
             m = re.match(r'https?://(?:www\.)?bilibili\.com/audio/am(\d+)', self.url)
             sid = m.group(1)
@@ -973,6 +990,12 @@ class Bilibili(VideoExtractor):
                 log.w('Extracting %s of %s songs ...' % (i, epn))
                 url = 'https://www.bilibili.com/audio/au%s' % song['id']
                 self.__class__().download_by_url(url, **kwargs)
+
+        elif sort == "cheese":
+            # TODO
+            print()
+            log.w("you-get 还下载不了这种视频呢...You-Get can't download this kind of videos yet ...😗");
+            print()
 
 
 site = Bilibili()
