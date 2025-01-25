@@ -229,6 +229,8 @@ class Bilibili(VideoExtractor):
         # self.title = match1(html_content,
         #                    r'<h1 title="([^"]+)"')
 
+        self.url = self.url.strip("/")
+
         # redirect: watchlater
         if re.match(r'https?://(www\.)?bilibili\.com/watchlater/#/(av(\d+)|BV(\S+)/?)', self.url):
             avid = match1(self.url, r'/(av\d+)') or match1(self.url, r'/(BV\w+)')
@@ -900,7 +902,6 @@ class Bilibili(VideoExtractor):
                 kwargs['output_dir'] = os.path.join(output_dir, name)
                 self.__class__().download_playlist_by_url(url, **kwargs)
 
-            sys.exit(0)  # finish
             # channel_info = json.loads(api_content)
             # # TBD: channel of more than 100 videos
             #

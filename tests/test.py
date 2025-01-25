@@ -14,8 +14,7 @@ from you_get.extractors import (
     twitter,
     miaopai
 )
-from you_get.common import main
-import sys
+
 
 class YouGetTests(unittest.TestCase):
     def test_imgur(self):
