@@ -14,7 +14,8 @@ from you_get.extractors import (
     twitter,
     miaopai
 )
-
+from you_get.common import main
+import sys
 
 class YouGetTests(unittest.TestCase):
     def test_imgur(self):
@@ -43,8 +44,24 @@ class YouGetTests(unittest.TestCase):
     def test_acfun(self):
         acfun.download('https://www.acfun.cn/v/ac44560432', info_only=True)
 
-    #def test_bilibili(self):
-        #bilibili.download('https://www.bilibili.com/video/BV1sL4y177sC', info_only=True)
+    def test_bilibili(self):
+        urls = [
+            'https://space.bilibili.com/357665034/',#主页
+            'https://space.bilibili.com/357665034/upload/video',#投稿视频
+            'https://space.bilibili.com/357665034/lists',#合集列表
+            'https://space.bilibili.com/357665034/lists/2663548?type=season',#合集
+            'https://space.bilibili.com/22179951/lists/297776?type=series',#视频列表
+            # redirect
+            'https://space.bilibili.com/8047632/video',
+            'https://space.bilibili.com/8047632/channel/series',
+            'https://space.bilibili.com/8047632/channel/collectiondetail?sid=1308605',
+            'https://space.bilibili.com/8047632/channel/seriesdetail?sid=60488',
+        ]
+        for i,url in enumerate(urls):
+            sys.argv = ['', url, '-o', f'E:/you-get-download/{i}', '--cookie', 'E:/cookies.txt', '--']
+            main()
+
+        # bilibili.download('https://space.bilibili.com/8047632/channel/series', info_only=True)
 
     #def test_soundcloud(self):
         ## single song
