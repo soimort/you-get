@@ -26,8 +26,15 @@ class YouGetTests(unittest.TestCase):
             'http://www.magisto.com/album/video/f3x9AAQORAkfDnIFDA',
             info_only=True
         )
+        
+    def test_youtube(self):
 
-    #def test_youtube(self):
+        # this fails
+        youtube.download('https://www.youtube.com/watch?v=PCwtsK_FhUw', info_only=True)
+
+        # this works, the example at README.md. 
+        youtube.download('https://www.youtube.com/watch?v=jNQXAC9IVRw', info_only=True)
+        
         #youtube.download(
         #    'http://www.youtube.com/watch?v=pzKerr0JIPA', info_only=True
         #)
