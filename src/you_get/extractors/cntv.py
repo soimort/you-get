@@ -66,3 +66,5 @@ def cntv_download(url, **kwargs):
 site_info = "CNTV.com"
 download = cntv_download
 download_playlist = playlist_not_supported('cntv')
+
+# Automated edit: [Edited] Add docstring to improve documentation
