@@ -672,6 +672,7 @@ def url_save(
     headers=None, timeout=None, **kwargs
 ):
     tmp_headers = headers.copy() if headers is not None else {}
+    url = url[0] if type(url) is list and len(url) == 1 else url
     # When a referer specified with param refer,
     # the key must be 'Referer' for the hack here
     if refer is not None:
@@ -807,9 +808,9 @@ def url_save(
                     except socket.timeout:
                         pass
                     if not buffer:
-                        if is_chunked and received_chunk == range_length:
+                        if is_chunked and (received_chunk == range_length or range_length == float('inf')):
                             break
-                        elif not is_chunked and received == file_size:  # Download finished
+                        elif not is_chunked and (received == file_size or range_length == float('inf')):  # Download finished
                             break
                         # Unexpected termination. Retry request
                         tmp_headers['Range'] = 'bytes=' + str(received - chunk_start) + '-'
@@ -827,10 +828,11 @@ def url_save(
         received, os.path.getsize(temp_filepath), temp_filepath
     )
 
-    if os.access(filepath, os.W_OK):
-        # on Windows rename could fail if destination filepath exists
-        os.remove(filepath)
-    os.rename(temp_filepath, filepath)
+    if temp_filepath != filepath:
+        if os.access(filepath, os.W_OK):
+            # on Windows rename could fail if destination filepath exists
+            os.remove(filepath)
+        os.rename(temp_filepath, filepath)
 
 
 class SimpleProgressBar:
