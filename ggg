@@ -1,0 +1,17 @@
+
+class User:
+    
+    def __init__(self, login, password):
+        self.login = login
+        self.password = password
+    
+    def register(self):
+        return "Регистрация пользователя"
+    
+    def aunth(self):
+        return f"Авторизация пользователя {self.login}"
+
+name = "ketrin"
+
+User1 = User(input("ВВудите логин: "), input("Введите пароль: "))
+print(User1.aunth())
