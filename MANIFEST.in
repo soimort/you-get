@@ -1,9 +1,0 @@
-include *.rst
-include *.txt
-include Makefile
-include CONTRIBUTING.md
-include README.md
-include you-get
-include you-get.json
-include you-get.plugin.zsh
-recursive-include contrib *
