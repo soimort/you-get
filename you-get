@@ -11,5 +11,5 @@ if sys.version_info[0] == 3:
         you_get.main(repo_path=_filepath)
 else: # Python 2
     from you_get.util import log
-    log.e("[fatal] Python 3.10 is required!")
+    log.e("[fatal] Python 3.12 is required!")
     log.wtf("try to run this script using 'python3 you-get'.")
