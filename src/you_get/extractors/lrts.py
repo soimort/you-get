@@ -41,6 +41,8 @@ def lrts_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     }
     items = []
     for page in range(first_page, last_page):
+        if page not in args.range:
+            continue
         page_url = 'http://www.lrts.me/ajax/book/%s/%s/%s' % (book_no, page, page_size)
         response_content = json.loads(post_content(page_url, headers))
         if response_content['status'] != 'success':
