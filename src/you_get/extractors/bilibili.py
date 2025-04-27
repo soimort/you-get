@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import json
+import re
 
 from ..common import *
 from ..extractor import VideoExtractor
@@ -172,7 +174,7 @@ class Bilibili(VideoExtractor):
         # redirect: bangumi/play/ss -> bangumi/play/ep
         # redirect: bangumi.bilibili.com/anime -> bangumi/play/ep
         elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url) or \
-             re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)/play', self.url):
+                re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)/play', self.url):
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
             ep_id = initial_state['epList'][0]['id']
@@ -339,21 +341,15 @@ class Bilibili(VideoExtractor):
 
         # bangumi
         elif sort == 'bangumi':
-            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
-            initial_state = json.loads(initial_state_text)
-
-            # warn if this bangumi has more than 1 video
-            epn = len(initial_state['epList'])
-            if epn > 1 and not kwargs.get('playlist'):
-                log.w('This bangumi currently has %s videos. (use --playlist to download all videos.)' % epn)
+            eposide = kwargs['eposide_data']
 
             # set video title
-            self.title = initial_state['h1Title']
+            self.title = eposide['long_title']
 
             # construct playinfos
-            ep_id = initial_state['epInfo']['id']
-            avid = initial_state['epInfo']['aid']
-            cid = initial_state['epInfo']['cid']
+            ep_id = eposide['ep_id']
+            avid = eposide['aid']
+            cid = eposide['cid']
             playinfos = []
             api_url = self.bilibili_bangumi_api(avid, cid, ep_id)
             api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
@@ -630,7 +626,7 @@ class Bilibili(VideoExtractor):
         elif match1(html_content, r'<meta property="og:url" content="(https://www.bilibili.com/bangumi/play/[^"]+)"'):
             sort = 'bangumi'
         elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/media/md(\d+)', self.url) or \
-            re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)', self.url):
+                re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)', self.url):
             sort = 'bangumi_md'
         elif re.match(r'https?://(www\.)?bilibili\.com/video/(av(\d+)|bv(\S+)|BV(\S+))', self.url):
             sort = 'video'
@@ -660,16 +656,16 @@ class Bilibili(VideoExtractor):
             if pn == len(initial_state['videoData']['pages']):
                 # non-interative video
                 for pi in range(1, pn + 1):
-                     purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
-                     self.__class__().download_by_url(purl, **kwargs)
+                    purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
+                    self.__class__().download_by_url(purl, **kwargs)
 
             else:
                 # interative video
                 search_node_list = []
                 download_cid_set = set([initial_state['videoData']['cid']])
                 params = {
-                        'id': 'cid:{}'.format(initial_state['videoData']['cid']),
-                        'aid': str(aid)
+                    'id': 'cid:{}'.format(initial_state['videoData']['cid']),
+                    'aid': str(aid)
                 }
                 urlcontent = get_content('https://api.bilibili.com/x/player.so?'+parse.urlencode(params), headers=self.bilibili_headers(referer='https://www.bilibili.com/video/av{}'.format(aid)))
                 graph_version = json.loads(urlcontent[urlcontent.find('<interaction>')+13:urlcontent.find('</interaction>')])['graph_version']
@@ -717,13 +713,17 @@ class Bilibili(VideoExtractor):
                                 self.download(**kwargs)
 
         elif sort == 'bangumi':
-            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
-            initial_state = json.loads(initial_state_text)
-            epn, i = len(initial_state['epList']), 0
-            for ep in initial_state['epList']:
+            epId = re.search(r'"videoId":"ep(.*?)"', html_content).group(1)
+            eposide_content = get_content(url="https://api.bilibili.com/pgc/view/web/ep/list?ep_id=%s" % (epId),
+                                          headers=self.bilibili_headers(referer=self.url))
+            eposide_json = json.loads(eposide_content)["result"]["episodes"]
+            epn, i = len(eposide_json), 0
+            for ep in eposide_json:
                 i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
+                kwargs['eposide_data'] = ep
+                ep['long_title']= ("%02d" % i) + ep['long_title']
                 self.__class__().download_by_url(epurl, **kwargs)
 
         elif sort == 'bangumi_md':
