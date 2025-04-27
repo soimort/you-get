@@ -1,0 +1,56 @@
+Tool usage issue REPORT ~
+
+Can't use you-get latest version to download douyu videosite's videos.
+
+the debug info is following 
+
+(base) F:\youku>you-get -i https://v.douyu.com/show/NbwE7ZoJYJRMn5Zz --debug
+[DEBUG] get_content: https://v.douyu.com/show/NbwE7ZoJYJRMn5Zz
+[DEBUG] get_content: http://vmobile.douyu.com/video/getInfo?vid=NbwE7ZoJYJRMn5Zz
+[DEBUG] HTTP Error with code403
+[DEBUG] HTTP Error with code403
+[DEBUG] HTTP Error with code403
+you-get: version 0.4.1456, a tiny downloader that scrapes the web.
+you-get: Namespace(URL=['https://v.douyu.com/show/NbwE7ZoJYJRMn5Zz'], auto_rename=False, cookies=None, debug=True, extractor_proxy=None, force=False, format=None, help=False, http_proxy=None, info=True, input_file=None, insecure=False, itag=None, json=False, no_caption=False, no_merge=False, no_proxy=False, output_dir='.', output_filename=None, password=None, player=None, playlist=False, skip_existing_file_size_check=False, socks_proxy=None, stream=None, timeout=600, url=False, version=False)
+Traceback (most recent call last):
+  File "e:\anaconda\lib\runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "e:\anaconda\lib\runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "E:\Anaconda\Scripts\you-get.exe\__main__.py", line 7, in <module>
+  File "e:\anaconda\lib\site-packages\you_get\__main__.py", line 92, in main
+    main(**kwargs)
+  File "e:\anaconda\lib\site-packages\you_get\common.py", line 1784, in main
+    script_main(any_download, any_download_playlist, **kwargs)
+  File "e:\anaconda\lib\site-packages\you_get\common.py", line 1666, in script_main
+    download_main(
+  File "e:\anaconda\lib\site-packages\you_get\common.py", line 1328, in download_main
+    download(url, **kwargs)
+  File "e:\anaconda\lib\site-packages\you_get\common.py", line 1775, in any_download
+    m.download(url, **kwargs)
+  File "e:\anaconda\lib\site-packages\you_get\extractors\douyutv.py", line 45, in douyutv_download
+    douyutv_video_download(url, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+  File "e:\anaconda\lib\site-packages\you_get\extractors\douyutv.py", line 33, in douyutv_video_download
+    meta = json.loads(get_content(ep + vid))
+  File "e:\anaconda\lib\site-packages\you_get\common.py", line 440, in get_content
+    response = urlopen_with_retry(req)
+  File "e:\anaconda\lib\site-packages\you_get\common.py", line 418, in urlopen_with_retry
+    raise http_error
+  File "e:\anaconda\lib\site-packages\you_get\common.py", line 409, in urlopen_with_retry
+    return request.urlopen(*args, **kwargs)
+  File "e:\anaconda\lib\urllib\request.py", line 222, in urlopen
+    return opener.open(url, data, timeout)
+  File "e:\anaconda\lib\urllib\request.py", line 531, in open
+    response = meth(req, response)
+  File "e:\anaconda\lib\urllib\request.py", line 640, in http_response
+    response = self.parent.error(
+  File "e:\anaconda\lib\urllib\request.py", line 569, in error
+    return self._call_chain(*args)
+  File "e:\anaconda\lib\urllib\request.py", line 502, in _call_chain
+    result = func(*args)
+  File "e:\anaconda\lib\urllib\request.py", line 649, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 403: Forbidden
+
+
+^^
