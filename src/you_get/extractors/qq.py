@@ -17,7 +17,7 @@ def qq_download_by_vid(vid, title, output_dir='.', merge=True, info_only=False):
     video_json = None
     platforms = [4100201, 11]
     for platform in platforms:
-        info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3.2.19.333&platform={}&defnpayver=1&defn=shd&vid={}'.format(platform, vid)
+        info_api = 'http://vv.video.qq.com/getinfo?otype=json&appver=3.2.19.333&platform={}&defnpayver=1&defn=fhd&vid={}'.format(platform, vid)
         info = get_content(info_api, headers)
         video_json = json.loads(match1(info, r'QZOutputJson=(.*)')[:-1])
         if not video_json.get('msg')=='cannot play outside':
