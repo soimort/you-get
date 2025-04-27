@@ -650,6 +650,16 @@ class Bilibili(VideoExtractor):
             log.e('[Error] Unsupported URL pattern.')
             exit(1)
 
+        args = kwargs.get('args')
+        first = 0
+        if ('first' in args and args.first!= None):
+            first = int(args.first)
+            if first < 0: first = 0
+        if sort not in ['video', 'bangumi','bangumi_md','audio_menu']:
+            args.first = None
+            if first > 0:
+                self.__class__.skip_count = first
+
         # regular video
         if sort == 'video':
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
@@ -659,12 +669,16 @@ class Bilibili(VideoExtractor):
 
             if pn == len(initial_state['videoData']['pages']):
                 # non-interative video
-                for pi in range(1, pn + 1):
+                for pi in range(first+1, pn + 1):
                      purl = 'https://www.bilibili.com/video/av%s?p=%s' % (aid, pi)
                      self.__class__().download_by_url(purl, **kwargs)
 
             else:
                 # interative video
+                if first > 0:
+                    args.first = None
+                    self.__class__.skip_count = first
+
                 search_node_list = []
                 download_cid_set = set([initial_state['videoData']['cid']])
                 params = {
@@ -721,7 +735,9 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             epn, i = len(initial_state['epList']), 0
             for ep in initial_state['epList']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                i += 1
+                if i <= first: continue
+                log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
@@ -731,7 +747,9 @@ class Bilibili(VideoExtractor):
             initial_state = json.loads(initial_state_text)
             epn, i = len(initial_state['mediaInfo']['episodes']), 0
             for ep in initial_state['mediaInfo']['episodes']:
-                i += 1; log.w('Extracting %s of %s videos ...' % (i, epn))
+                i += 1
+                if i <= first: continue
+                log.w('Extracting %s of %s videos ...' % (i, epn))
                 ep_id = ep['ep_id']
                 epurl = 'https://www.bilibili.com/bangumi/play/ep%s/' % ep_id
                 self.__class__().download_by_url(epurl, **kwargs)
@@ -844,7 +862,9 @@ class Bilibili(VideoExtractor):
             menusong_info = json.loads(api_content)
             epn, i = len(menusong_info['data']['data']), 0
             for song in menusong_info['data']['data']:
-                i += 1; log.w('Extracting %s of %s songs ...' % (i, epn))
+                i += 1
+                if i <= first: continue
+                log.w('Extracting %s of %s songs ...' % (i, epn))
                 url = 'https://www.bilibili.com/audio/au%s' % song['id']
                 self.__class__().download_by_url(url, **kwargs)
 
