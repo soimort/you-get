@@ -52,6 +52,14 @@ check the share button on http://www.bilibili.com/video/av5079467/
 """
 bilibili_embed_patterns = [ r'static\.hdslb\.com/miniloader\.swf.*aid=(\d+)' ]
 
+qq_embed_patterns = [ 'v\.qq\.com/iframe/player.html\?vid=([0-9a-zA-Z]+)' ]
+
+"""
+refer to http://help.lecloud.com/Wiki.jsp?page=PC4.0
+"""
+letv_embed_patterns =  [ 'http://yuntv.letv.com/player/vod/bcloud.js',
+                         'http://yuntv.letv.com/bcloud.js' ]
+
 
 '''
 http://open.iqiyi.com/lib/player.html
@@ -83,6 +91,17 @@ def embed_download(url, output_dir = '.', merge = True, info_only = False, **kwa
     for vid in vids:
         found = True
         iqiyi_download_by_vid((vid[1], vid[0]), title=title, output_dir=output_dir, merge=merge, info_only=info_only, **kwargs)
+
+    vids = matchall(content, qq_embed_patterns)
+    for vid in vids:
+        found = True
+        qq_download_by_vid(vid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
+
+    if len(matchall(content,letv_embed_patterns)):
+        found = True
+        uu=match1(content,r'uu[:+="]*([0-9a-zA-Z]+)')
+        vu=match1(content,r'vu[:+="]*([0-9a-zA-Z]+)')
+        letvcloud_download_by_vu(vu, uu, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
 
     urls = matchall(content, netease_embed_patterns)
     for url in urls:
