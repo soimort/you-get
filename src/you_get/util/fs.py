@@ -31,6 +31,7 @@ def legitimize(text, os=detect_os()):
             ord(']'): ')',
             ord('\t'): ' ',
         })
+        text = text[:80] # Trim to 82 Unicode characters long
     else:
         # *nix
         if os == 'mac':
@@ -42,6 +43,6 @@ def legitimize(text, os=detect_os()):
         # Remove leading .
         if text.startswith("."):
             text = text[1:]
-
-    text = text[:80] # Trim to 82 Unicode characters long
+    
+    # Only trim to 82 Unicode characters long at windows systems
     return text
