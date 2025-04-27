@@ -144,9 +144,7 @@ def ffmpeg_concat_ts_to_mkv(files, output='output.mkv'):
     except:
         return False
 
-def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
-    print('Merging video parts... ', end="", flush=True)
-    # Use concat demuxer on FFmpeg >= 1.1
+def ffmpeg_concat_demuxer(files, output='output.mp4'):
     if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
         concat_list = generate_concat_list(files, output)
         params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '0',
@@ -155,6 +153,12 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
         params.extend(['--', output])
         subprocess.check_call(params, stdin=STDIN)
         os.remove(output + '.txt')
+        return True
+
+def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
+    print('Merging video parts... ', end="", flush=True)
+    # Use concat demuxer on FFmpeg >= 1.1
+    if ffmpeg_concat_demuxer(files, output):
         return True
 
     for file in files:
@@ -201,14 +205,7 @@ def ffmpeg_concat_mp3_to_mp3(files, output='output.mp3'):
 def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
     print('Merging video parts... ', end="", flush=True)
     # Use concat demuxer on FFmpeg >= 1.1
-    if FFMPEG == 'ffmpeg' and (FFMPEG_VERSION[0] >= 2 or (FFMPEG_VERSION[0] == 1 and FFMPEG_VERSION[1] >= 1)):
-        concat_list = generate_concat_list(files, output)
-        params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '0',
-                                        '-i', concat_list, '-c', 'copy',
-                                        '-bsf:a', 'aac_adtstoasc']
-        params.extend(['--', output])
-        subprocess.check_call(params, stdin=STDIN)
-        os.remove(output + '.txt')
+    if ffmpeg_concat_demuxer(files, output):
         return True
 
     for file in files:
