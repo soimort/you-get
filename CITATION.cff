@@ -1,0 +1,16 @@
+# This CITATION.cff file was generated with cffinit [https://bit.ly/cffinit]
+
+cff-version: 1.2.0
+title: You-Get
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Soimort
+repository-code: 'https://github.com/soimort/you-get'
+abstract: >-
+  You-Get is a simple and fast command-line utility 
+  for downloading media content from the web.
+license: MIT
+
