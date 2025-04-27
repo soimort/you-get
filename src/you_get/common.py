@@ -447,6 +447,10 @@ def urlopen_with_retry(*args, **kwargs):
             if i + 1 == retry_time:
                 raise http_error
 
+def get_domain(url):
+    domain = parse.urlsplit(url).netloc
+    return re.sub(r'^www\.', '', domain)
+
 
 def get_content(url, headers={}, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
@@ -471,8 +475,11 @@ def get_content(url, headers={}, decoded=True):
         # - https://bugs.python.org/issue2190
         # Here we add cookies to the request headers manually
         cookie_strings = []
+        domain = get_domain(url)
         for cookie in list(cookies):
-            cookie_strings.append(cookie.name + '=' + cookie.value)
+            if domain in cookie.domain:
+                # Note this is to fix the 431 error when the cookie is too large in Unbuntu with FireFox's cookes.sqlite
+                cookie_strings.append(cookie.name + '=' + cookie.value)
         cookie_headers = {'Cookie': '; '.join(cookie_strings)}
         req.headers.update(cookie_headers)
 
