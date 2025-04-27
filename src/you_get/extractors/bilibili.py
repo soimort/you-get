@@ -156,7 +156,7 @@ class Bilibili(VideoExtractor):
         self.dash_streams.clear()
 
         try:
-            html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
+            html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url, cookie='CURRENT_FNVAL=16'))
         except:
             html_content = ''  # live always returns 400 (why?)
         #self.title = match1(html_content,
@@ -622,7 +622,7 @@ class Bilibili(VideoExtractor):
         self.url = url
         kwargs['playlist'] = True
 
-        html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
+        html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url, cookie='CURRENT_FNVAL=16'))
 
         # sort it out
         if re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ep(\d+)', self.url):
