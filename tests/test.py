@@ -69,5 +69,8 @@ class YouGetTests(unittest.TestCase):
     def test_weibo(self):
         miaopai.download('https://video.weibo.com/show?fid=1034:4825403706245135', info_only=True)
 
+    def test_douyin(self):
+        douyin.download('https://v.douyin.com/cBCY1ohIAVk/', info_only=True)
+
 if __name__ == '__main__':
     unittest.main()
