@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import socket
 import unittest
 
 from you_get.extractors import (
@@ -16,6 +17,19 @@ from you_get.extractors import (
 )
 
 
+def _has_network() -> bool:
+    try:
+        socket.create_connection(("1.1.1.1", 80), timeout=2).close()
+        return True
+    except OSError:
+        return False
+
+
+NETWORK_AVAILABLE = _has_network()
+NETWORK_SKIP_REASON = 'network connectivity required for extractor integration tests'
+
+
+@unittest.skipUnless(NETWORK_AVAILABLE, NETWORK_SKIP_REASON)
 class YouGetTests(unittest.TestCase):
     def test_imgur(self):
         imgur.download('http://imgur.com/WVLk5nD', info_only=True)

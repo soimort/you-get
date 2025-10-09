@@ -4,7 +4,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/you-get.svg)](https://pypi.python.org/pypi/you-get/)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/soimort/you-get?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**NOTICE (30 May 2022): Support for Python 3.5, 3.6 and 3.7 will eventually be dropped. ([see details here](https://github.com/soimort/you-get/wiki/TLS-1.3-post-handshake-authentication-(PHA)))**
+**NOTICE:** Python 3.10 or newer is now required. Support for Python 3.9 and earlier has been dropped.
 
 **NOTICE (8 Mar 2019): Read [this](https://github.com/soimort/you-get/blob/develop/CONTRIBUTING.md) if you are looking for the conventional "Issues" tab.**
 
@@ -57,7 +57,7 @@ Are you a Python programmer? Then check out [the source](https://github.com/soim
 
 The following dependencies are recommended:
 
-* **[Python](https://www.python.org/downloads/)**  3.7.4 or above
+* **[Python](https://www.python.org/downloads/)**  3.10 or above
 * **[FFmpeg](https://www.ffmpeg.org/)** 1.0 or above
 * (Optional) [RTMPDump](https://rtmpdump.mplayerhq.hu/)
 

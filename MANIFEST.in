@@ -3,6 +3,7 @@ include *.txt
 include Makefile
 include CONTRIBUTING.md
 include README.md
+include pyproject.toml
 include you-get
 include you-get.json
 include you-get.plugin.zsh

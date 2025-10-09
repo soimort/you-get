@@ -20,7 +20,18 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+
+
+def _configure_stdout() -> None:
+    stdout = sys.stdout
+    try:
+        stdout.reconfigure(encoding='utf-8', errors='replace')
+    except AttributeError:
+        if hasattr(stdout, 'buffer'):
+            sys.stdout = io.TextIOWrapper(stdout.buffer, encoding='utf-8', errors='replace')
+
+
+_configure_stdout()
 
 SITES = {
     '163'              : 'netease',
@@ -179,7 +190,9 @@ def rc4(key, data):
     return bytes(out_list)
 
 
-def general_m3u8_extractor(url, headers={}):
+def general_m3u8_extractor(url, headers=None):
+    if headers is None:
+        headers = {}
     m3u8_list = get_content(url, headers=headers).split('\n')
     urls = []
     for line in m3u8_list:
@@ -196,7 +209,7 @@ def general_m3u8_extractor(url, headers={}):
 def maybe_print(*s):
     try:
         print(*s)
-    except:
+    except Exception:
         pass
 
 

@@ -1,0 +1,70 @@
+[build-system]
+requires = [
+    "setuptools>=69",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "you-get"
+dynamic = ["version"]
+description = "Dumb downloader that scrapes the web"
+readme = "README.rst"
+requires-python = ">=3.10"
+license = { file = "LICENSE.txt" }
+authors = [
+    { name = "Mort Yao", email = "mort.yao@gmail.com" },
+]
+keywords = [
+    "video",
+    "download",
+    "youtube",
+    "youku",
+    "niconico",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Multimedia",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "dukpy>=0.5.0",
+]
+
+[project.optional-dependencies]
+socks = [
+    "PySocks>=1.7.1",
+]
+
+[project.urls]
+Homepage = "https://you-get.org/"
+Repository = "https://github.com/soimort/you-get"
+
+[project.scripts]
+"you-get" = "you_get.__main__:main"
+
+[tool.setuptools]
+include-package-data = true
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "you_get.version.__version__" }

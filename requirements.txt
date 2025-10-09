@@ -1,2 +1,2 @@
 # runtime dependencies
-dukpy
+dukpy>=0.5.0
