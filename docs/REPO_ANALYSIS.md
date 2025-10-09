@@ -16,7 +16,7 @@
 - **Filesystem safety:** Utility helpers such as `util.fs.legitimize()` sanitize filenames for multiple operating systems, trimming and translating reserved characters for cross-platform compatibility.【F:src/you_get/util/fs.py†L1-L40】
 
 ## Tooling & Dependencies
-- **Packaging:** `pyproject.toml` declaratively defines the project metadata, console entry point, dependency set, and optional SOCKS extras while delegating builds to `setuptools.build_meta`.【F:pyproject.toml†L1-L64】
+- **Packaging:** `pyproject.toml` declaratively defines the project metadata, console entry point, dependency set, and optional SOCKS extras while delegating builds to `setuptools.build_meta`; a thin `setup.py` shim mirrors the same information for legacy workflows that still invoke `python setup.py` directly.【F:pyproject.toml†L1-L64】【F:setup.py†L1-L62】
 - **Requirements:** `requirements.txt` mirrors the runtime dependency list for convenience.【F:requirements.txt†L1-L2】
 - **Makefile workflows:** The Makefile offers interactive shell access, unittest discovery, build/install targets, and release guidance (e.g., `python -m build`, `twine upload`).【F:Makefile†L1-L33】
 
