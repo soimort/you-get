@@ -13,6 +13,7 @@ from .ckplayer import *
 from .cntv import *
 from .coub import *
 from .dailymotion import *
+from .darkibox import *
 from .douban import *
 from .douyin import *
 from .douyutv import *
