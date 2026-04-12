@@ -38,6 +38,7 @@ SITES = {
     'cbs'              : 'cbs',
     'coub'             : 'coub',
     'dailymotion'      : 'dailymotion',
+    'darkibox'         : 'darkibox',
     'douban'           : 'douban',
     'douyin'           : 'douyin',
     'douyu'            : 'douyutv',
