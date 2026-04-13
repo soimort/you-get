@@ -290,7 +290,15 @@ class ICousesExactor(object):
         ssl_callback = get_content('http://{}/ssl/ssl.shtml?r={}'.format(media_host, ran)).split(',')
         ssl_ts = int(datetime.datetime.strptime(ssl_callback[1], "%b %d %H:%M:%S %Y").timestamp() + int(ssl_callback[0]))
         sign_this = self.__class__.ENCRYPT_SALT + parse.urlparse(media_url).path + str(ssl_ts)
-        arg_h = base64.b64encode(hashlib.md5(bytes(sign_this, 'utf-8')).digest(), altchars=b'-_')
+        # MD5 is required by the icourses.cn server API protocol for request signing.
+        # This is NOT used for password hashing or any local security decision —
+        # it is solely an interoperability requirement imposed by the remote service.
+        try:
+            digest = hashlib.md5(bytes(sign_this, 'utf-8'), usedforsecurity=False).digest()
+        except TypeError:
+            # Python < 3.9 does not support usedforsecurity keyword
+            digest = hashlib.md5(bytes(sign_this, 'utf-8')).digest()
+        arg_h = base64.b64encode(digest, altchars=b'-_')
         return ssl_ts, arg_h.decode('utf-8').strip('=')
 
     def get_media_host(self, ori_host):

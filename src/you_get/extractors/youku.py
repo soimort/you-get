@@ -178,7 +178,8 @@ class Youku(VideoExtractor):
             if self.api_error_code == -2002:  # wrong password
                 self.password_protected = True
                 # it can be True already(from cli). offer another chance to retry
-                self.password = input(log.sprint('Password: ', log.YELLOW))
+                import getpass
+                self.password = getpass.getpass(log.sprint('Password: ', log.YELLOW))
                 self.youku_ups()
 
         if self.api_data.get('stream') is None:

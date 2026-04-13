@@ -54,6 +54,24 @@ def generate_concat_list(files, output):
                 concat_list.write('file %s\n' % parameterize(relpath))
     return concat_list_path
 
+def _safe_ffmpeg_path(path):
+    """Return the absolute, normalised form of *path* safe for use as an FFmpeg argument.
+
+    Two protections are applied:
+
+    1. Absolute-path conversion — ``os.path.abspath`` ensures the result never
+       starts with ``-``, which would otherwise be interpreted as an FFmpeg flag
+       (argument injection, CWE-88).
+
+    2. Pipe-character rejection — FFmpeg concat: URLs separate entries with
+       ``|``.  A filename that contains ``|`` would silently split the URL and
+       inject an arbitrary extra input path.
+    """
+    abspath = os.path.abspath(path)
+    if '|' in abspath:
+        raise ValueError('Filename contains illegal character "|" for FFmpeg argument: %s' % path)
+    return abspath
+
 def ffmpeg_concat_av(files, output, ext):
     print('Merging video parts... ', end="", flush=True)
     params = [FFMPEG] + LOGLEVEL
@@ -61,7 +79,7 @@ def ffmpeg_concat_av(files, output, ext):
         if os.path.isfile(file): params.extend(['-i', file])
     params.extend(['-c', 'copy'])
     params.extend(['--', output])
-    if subprocess.call(params, stdin=STDIN):
+    if subprocess.call(params, stdin=STDIN, shell=False):
         print('Merging without re-encode failed.\nTry again re-encoding audio... ', end="", flush=True)
         try: os.remove(output)
         except FileNotFoundError: pass
@@ -75,7 +93,7 @@ def ffmpeg_concat_av(files, output, ext):
         elif ext == 'webm':
             params.extend(['-c:a', 'opus'])
         params.extend(['--', output])
-        return subprocess.call(params, stdin=STDIN)
+        return subprocess.call(params, stdin=STDIN, shell=False)
     else:
         return 0
 
@@ -85,7 +103,7 @@ def ffmpeg_convert_ts_to_mkv(files, output='output.mkv'):
             params = [FFMPEG] + LOGLEVEL
             params.extend(['-y', '-i', file])
             params.extend(['--', output])
-            subprocess.call(params, stdin=STDIN)
+            subprocess.call(params, stdin=STDIN, shell=False)
 
     return
 
@@ -96,7 +114,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
         params = [FFMPEG] + LOGLEVEL + ['-y', '-f', 'concat', '-safe', '0',
                                         '-i', concat_list, '-c', 'copy']
         params.extend(['--', output])
-        if subprocess.call(params, stdin=STDIN) == 0:
+        if subprocess.call(params, stdin=STDIN, shell=False) == 0:
             os.remove(output + '.txt')
             return True
         else:
@@ -106,7 +124,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
         if os.path.isfile(file):
             params = [FFMPEG] + LOGLEVEL + ['-y', '-i']
             params.extend([file, file + '.mpg'])
-            subprocess.call(params, stdin=STDIN)
+            subprocess.call(params, stdin=STDIN, shell=False)
 
     inputs = [open(file + '.mpg', 'rb') for file in files]
     with open(output + '.mpg', 'wb') as o:
@@ -118,7 +136,7 @@ def ffmpeg_concat_mp4_to_mpg(files, output='output.mpg'):
     params += ['-vcodec', 'copy', '-acodec', 'copy']
     params.extend(['--', output])
 
-    if subprocess.call(params, stdin=STDIN) == 0:
+    if subprocess.call(params, stdin=STDIN, shell=False) == 0:
         for file in files:
             os.remove(file + '.mpg')
         os.remove(output + '.mpg')
@@ -132,12 +150,12 @@ def ffmpeg_concat_ts_to_mkv(files, output='output.mkv'):
     params.append('concat:')
     for file in files:
         if os.path.isfile(file):
-            params[-1] += file + '|'
+            params[-1] += _safe_concat_url_file(file) + '|'
     params += ['-f', 'matroska', '-c', 'copy']
     params.extend(['--', output])
 
     try:
-        if subprocess.call(params, stdin=STDIN) == 0:
+        if subprocess.call(params, stdin=STDIN, shell=False) == 0:
             return True
         else:
             return False
@@ -153,7 +171,7 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
                                         '-i', concat_list, '-c', 'copy',
                                         '-bsf:a', 'aac_adtstoasc']
         params.extend(['--', output])
-        subprocess.check_call(params, stdin=STDIN)
+        subprocess.check_call(params, stdin=STDIN, shell=False)
         os.remove(output + '.txt')
         return True
 
@@ -164,21 +182,21 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
             params += ['-map', '0', '-c', 'copy', '-f', 'mpegts', '-bsf:v', 'h264_mp4toannexb']
             params.append(file + '.ts')
 
-            subprocess.call(params, stdin=STDIN)
+            subprocess.call(params, stdin=STDIN, shell=False)
 
     params = [FFMPEG] + LOGLEVEL + ['-y', '-i']
     params.append('concat:')
     for file in files:
         f = file + '.ts'
         if os.path.isfile(f):
-            params[-1] += f + '|'
+            params[-1] += _safe_concat_url_file(f) + '|'
     if FFMPEG == 'avconv':
         params += ['-c', 'copy']
     else:
         params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc']
     params.extend(['--', output])
 
-    if subprocess.call(params, stdin=STDIN) == 0:
+    if subprocess.call(params, stdin=STDIN, shell=False) == 0:
         for file in files:
             os.remove(file + '.ts')
         return True
@@ -188,13 +206,14 @@ def ffmpeg_concat_flv_to_mp4(files, output='output.mp4'):
 def ffmpeg_concat_mp3_to_mp3(files, output='output.mp3'):
     print('Merging video parts... ', end="", flush=True)
 
-    files = 'concat:' + '|'.join(files)
+    safe_files = [_safe_concat_url_file(f) for f in files]
+    concat_input = 'concat:' + '|'.join(safe_files)
 
     params = [FFMPEG] + LOGLEVEL + ['-y']
-    params += ['-i', files, '-acodec', 'copy']
+    params += ['-i', concat_input, '-acodec', 'copy']
     params.extend(['--', output])
 
-    subprocess.call(params)
+    subprocess.call(params, shell=False)
 
     return True
 
@@ -207,7 +226,7 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
                                         '-i', concat_list, '-c', 'copy',
                                         '-bsf:a', 'aac_adtstoasc']
         params.extend(['--', output])
-        subprocess.check_call(params, stdin=STDIN)
+        subprocess.check_call(params, stdin=STDIN, shell=False)
         os.remove(output + '.txt')
         return True
 
@@ -218,21 +237,21 @@ def ffmpeg_concat_mp4_to_mp4(files, output='output.mp4'):
             params += ['-c', 'copy', '-f', 'mpegts', '-bsf:v', 'h264_mp4toannexb']
             params.append(file + '.ts')
 
-            subprocess.call(params, stdin=STDIN)
+            subprocess.call(params, stdin=STDIN, shell=False)
 
     params = [FFMPEG] + LOGLEVEL + ['-y', '-i']
     params.append('concat:')
     for file in files:
         f = file + '.ts'
         if os.path.isfile(f):
-            params[-1] += f + '|'
+            params[-1] += _safe_concat_url_file(f) + '|'
     if FFMPEG == 'avconv':
         params += ['-c', 'copy']
     else:
         params += ['-c', 'copy', '-bsf:a', 'aac_adtstoasc']
     params.extend(['--', output])
 
-    subprocess.check_call(params, stdin=STDIN)
+    subprocess.check_call(params, stdin=STDIN, shell=False)
     for file in files:
         os.remove(file + '.ts')
     return True
@@ -295,7 +314,7 @@ def ffmpeg_concat_audio_and_video(files, output, ext):
         params.extend(['-c:a', 'aac'])
         params.extend(['-strict', 'experimental'])
         params.extend(['--', output + "." + ext])
-        return subprocess.call(params, stdin=STDIN)
+        return subprocess.call(params, stdin=STDIN, shell=False)
     else:
         raise EnvironmentError('No ffmpeg found')
 
@@ -307,4 +326,4 @@ def ffprobe_get_media_duration(file):
     params.extend(['-show_entries', 'format=duration'])
     params.extend(['-v', 'quiet'])
     params.extend(['-of', 'csv=p=0'])
-    return subprocess.check_output(params, stdin=STDIN, stderr=subprocess.STDOUT).decode().strip()
+    return subprocess.check_output(params, stdin=STDIN, stderr=subprocess.STDOUT, shell=False).decode().strip()

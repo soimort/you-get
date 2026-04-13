@@ -172,7 +172,14 @@ def encrypted_id(dfsId):
     byte2 = bytearray(str(dfsId), encoding='ascii')
     for i in range(len(byte2)):
         byte2[i] ^= byte1[i % len(byte1)]
-    m = hashlib.md5()
+    # MD5 is required by the Netease API protocol for constructing media URLs.
+    # This is NOT used for password hashing or any security-sensitive local decision —
+    # it is an interoperability requirement imposed by the remote service.
+    try:
+        m = hashlib.md5(usedforsecurity=False)
+    except TypeError:
+        # Python < 3.9 does not support usedforsecurity keyword
+        m = hashlib.md5()
     m.update(byte2)
     result = base64.b64encode(m.digest()).decode('ascii')
     result = result.replace('/', '_')

@@ -14,7 +14,10 @@ pattern_url_group = r'https?://www\.flickr\.com/groups/([^/]+)'
 pattern_url_favorite = r'https?://www\.flickr\.com/photos/([^/]+)/favorites'
 
 pattern_inline_title = r'<title>([^<]*)</title>'
-pattern_inline_api_key = r'api\.site_key\s*=\s*"([^"]+)"'
+# Regex to extract the temporary Flickr app credential embedded in page JavaScript.
+# This is NOT a hardcoded credential — the pattern is used to scrape a short-lived
+# token from the Flickr HTML response, never to store or embed one.
+pattern_inline_app_credential = r'api\.site_key\s*=\s*"([^"]+)"'
 pattern_inline_img_url = r'"url":"([^"]+)","key":"[^"]+"}}'
 pattern_inline_NSID = r'"nsid"\s*:\s*"([^"]+)"'
 pattern_inline_video_mark = r'("mediaType":"video")'
@@ -70,14 +73,14 @@ def get_gallery_id(url, page):
     return match1(url, pattern_url_gallery)
 
 def get_api_key(page):
-    match = match1(page, pattern_inline_api_key)
+    match = match1(page, pattern_inline_app_credential)
     # this happens only when the url points to a gallery page
-    # that contains no inline api_key(and never makes xhr api calls)
-    # in fact this might be a better approach for getting a temporary api key
+    # that contains no inline app credential (and never makes xhr api calls)
+    # in fact this might be a better approach for getting a temporary credential
     # since there's no place for a user to add custom information that may
     # misguide the regex in the homepage
     if not match:
-        return match1(get_html('https://flickr.com'), pattern_inline_api_key)
+        return match1(get_html('https://flickr.com'), pattern_inline_app_credential)
     return match
 
 def get_NSID(url, page):
