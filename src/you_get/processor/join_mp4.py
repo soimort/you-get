@@ -919,7 +919,7 @@ def usage():
     print('Usage: [python3] join_mp4.py --output TARGET.mp4 mp4...')
 
 def main():
-    import sys, getopt
+    import sys, getopt, os
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ho:", ["help", "output="])
     except getopt.GetoptError as err:
@@ -938,7 +938,31 @@ def main():
     if not args:
         usage()
         sys.exit(1)
-    
+
+    # Maximum allowed input file size (2 GB) to prevent DoS from oversized/crafted files
+    MAX_INPUT_SIZE = 2 * 1024 * 1024 * 1024
+
+    for f in args:
+        # Validate each input file exists and is a regular file
+        if not os.path.isfile(f):
+            print('Error: Input file not found or is not a regular file: {}'.format(f), file=sys.stderr)
+            sys.exit(1)
+        # Enforce a maximum file size to guard against crafted oversized metadata
+        file_size = os.path.getsize(f)
+        if file_size > MAX_INPUT_SIZE:
+            print('Error: Input file exceeds maximum allowed size (2 GB): {}'.format(f), file=sys.stderr)
+            sys.exit(1)
+        # Validate MP4 magic bytes (ftyp box or wide/mdat at offset 4) to reject non-MP4 content
+        with open(f, 'rb') as fh:
+            header = fh.read(12)
+        if len(header) < 8:
+            print('Error: Input file is too small to be a valid MP4: {}'.format(f), file=sys.stderr)
+            sys.exit(1)
+        box_type = header[4:8]
+        if box_type not in (b'ftyp', b'moov', b'mdat', b'wide', b'free', b'pnot'):
+            print('Error: Input file does not appear to be a valid MP4: {}'.format(f), file=sys.stderr)
+            sys.exit(1)
+
     concat_mp4(args, output)
 
 if __name__ == '__main__':

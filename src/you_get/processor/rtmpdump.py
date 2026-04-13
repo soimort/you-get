@@ -43,30 +43,27 @@ def download_rtmpdump_stream(url, title, ext,params={},output_dir='.'):
 
 #
 def play_rtmpdump_stream(player, url, params={}):
-    
+
     #construct left side of pipe
-    cmdline = [RTMPDUMP, '-r']
-    cmdline.append(url)
-    
+    rtmp_cmdline = [RTMPDUMP, '-r']
+    rtmp_cmdline.append(url)
+
     #append other params if exist
     for key in params.keys():
-        cmdline.append(key)
-        if params[key]!=None:
-            cmdline.append(params[key])
+        rtmp_cmdline.append(key)
+        if params[key] is not None:
+            rtmp_cmdline.append(params[key])
 
-    cmdline.append('-o')
-    cmdline.append('-')
-
-    #pipe start
-    cmdline.append('|')
-    cmdline.append(player)
-    cmdline.append('-')
+    rtmp_cmdline.append('-o')
+    rtmp_cmdline.append('-')
 
     #logging
-    print("Call rtmpdump:\n"+" ".join(cmdline)+"\n")
+    print("Call rtmpdump:\n" + " ".join(rtmp_cmdline) + "\n")
 
-    #call RTMPDump!
-    subprocess.call(cmdline)
-    
-    # os.system("rtmpdump -r '%s' -y '%s' -o - | %s -" % (url, playpath, player))
+    # Safely pipe rtmpdump output to the player using Popen with no shell involvement.
+    # Both rtmp_cmdline and player are passed as list arguments (shell=False by default),
+    # so no shell interpretation of url or player values occurs.
+    rtmp_proc = subprocess.Popen(rtmp_cmdline, stdout=subprocess.PIPE)
+    subprocess.call([player, '-'], stdin=rtmp_proc.stdout)
+    rtmp_proc.wait()
     return
