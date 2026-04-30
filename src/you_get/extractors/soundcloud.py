@@ -8,6 +8,8 @@ import json
 
 
 def get_sndcd_apikey():
+    # API key is fetched dynamically from SoundCloud's website at runtime
+    # to avoid hardcoding credentials in source code.
     home_page = get_content('https://soundcloud.com')
     js_url = re.findall(r'script crossorigin src="(.+?)"></script>', home_page)[-1]
 
