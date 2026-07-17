@@ -555,17 +555,23 @@ def post_content(url, headers={}, post_data={}, decoded=True, **kwargs):
     return data
 
 
-def url_size(url, faker=False, headers={}):
+def url_size(url, faker=False, headers={}, timeout=None):
     if faker:
-        response = urlopen_with_retry(
-            request.Request(url, headers=fake_headers)
-        )
+        req = request.Request(url, headers=fake_headers)
     elif headers:
-        response = urlopen_with_retry(request.Request(url, headers=headers))
+        req = request.Request(url, headers=headers)
     else:
-        response = urlopen_with_retry(url)
+        req = url
 
-    size = response.headers['content-length']
+    if timeout is None:
+        response = urlopen_with_retry(req)
+    else:
+        response = urlopen_with_retry(req, timeout=timeout)
+
+    try:
+        size = response.headers['content-length']
+    finally:
+        response.close()
     return int(size) if size is not None else float('inf')
 
 

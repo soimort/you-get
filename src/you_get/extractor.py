@@ -224,7 +224,7 @@ class VideoExtractor():
                 ext = self.dash_streams[stream_id]['container']
                 total_size = self.dash_streams[stream_id]['size']
 
-            if ext == 'm3u8' or ext == 'm4a':
+            if ext == 'm3u8':
                 ext = 'mp4'
 
             if not urls:
