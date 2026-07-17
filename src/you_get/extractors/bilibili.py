@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from .. import common
 from ..common import *
 from ..extractor import VideoExtractor
 
@@ -40,6 +41,14 @@ class Bilibili(VideoExtractor):
         {'id': 'mp4', 'quality': 0},
 
         {'id': 'jpg', 'quality': 0},
+
+        # Standalone DASH audio formats, in descending quality order.
+        {'id': 'dash-audio-30280', 'quality': 30280,
+         'container': 'M4A', 'desc': '高音质音频'},
+        {'id': 'dash-audio-30232', 'quality': 30232,
+         'container': 'M4A', 'desc': '中音质音频'},
+        {'id': 'dash-audio-30216', 'quality': 30216,
+         'container': 'M4A', 'desc': '低音质音频'},
     ]
 
     codecids = {7: 'AVC', 12: 'HEVC', 13: 'AV1'}
@@ -61,8 +70,8 @@ class Bilibili(VideoExtractor):
 
     @staticmethod
     def bilibili_headers(referer=None, cookie=None):
-        # a reasonable UA
-        ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
+        # Keep this in sync with the current browser UA used elsewhere in you-get.
+        ua = fake_headers['User-Agent']
         headers = {'Accept': '*/*', 'Accept-Language': 'en-US,en;q=0.5', 'User-Agent': ua}
         if referer is not None:
             headers.update({'Referer': referer})
@@ -73,6 +82,12 @@ class Bilibili(VideoExtractor):
     @staticmethod
     def bilibili_api(avid, cid, qn=0):
         return 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&qn=%s&type=&otype=json&fnver=0&fnval=4048&fourk=1' % (avid, cid, qn)
+
+    @staticmethod
+    def bilibili_view_api(video_id):
+        if video_id.lower().startswith('av'):
+            return 'https://api.bilibili.com/x/web-interface/view?aid=%s' % video_id[2:]
+        return 'https://api.bilibili.com/x/web-interface/view?bvid=%s' % video_id
 
     @staticmethod
     def bilibili_audio_api(sid):
@@ -144,35 +159,106 @@ class Bilibili(VideoExtractor):
         return 'https://api.vc.bilibili.com/link_draw/v1/doc/detail?doc_id=%s' % doc_id
 
     @staticmethod
+    def video_id_from_url(url):
+        match = re.search(r'/video/(av\d+|BV[0-9A-Za-z]+)', url, re.IGNORECASE)
+        return match.group(1) if match else None
+
+    def normalize_video_url(self):
+        match = re.match(
+            r'https?://(?:www\.)?bilibili\.com/watchlater/#/(av\d+|BV[0-9A-Za-z]+)/?',
+            self.url,
+            re.IGNORECASE,
+        )
+        if match:
+            page = int(match1(self.url, r'/p(\d+)') or '1')
+            self.url = 'https://www.bilibili.com/video/%s?p=%s' % (match.group(1), page)
+            return
+
+        if re.match(r'https?://(?:www\.)?bilibili\.com/festival/', self.url):
+            video_id = match1(self.url, r'[?&]bvid=([^&]+)')
+            if video_id:
+                self.url = 'https://www.bilibili.com/video/%s' % video_id
+
+    def get_video_info(self):
+        video_id = self.video_id_from_url(self.url)
+        if video_id is None:
+            log.wtf('[Failed] Unable to find a Bilibili video ID in the URL.')
+
+        api_url = self.bilibili_view_api(video_id)
+        api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
+        api_response = json.loads(api_content)
+        video_info = api_response.get('data')
+        if api_response.get('code') != 0 or not video_info:
+            message = api_response.get('message') or 'unknown API error'
+            log.wtf('[Failed] Unable to fetch Bilibili video metadata: %s' % message)
+        return video_info
+
+    @staticmethod
     def url_size(url, faker=False, headers={},err_value=0):
         try:
-            return url_size(url,faker,headers)
+            return url_size(url, faker, headers, timeout=5)
         except:
             return err_value
+
+    def add_dash_audio_streams(self, dash, audio_size_cache, requested_stream_id=None):
+        known_formats = {stream['id'] for stream in self.stream_types}
+        for audio in dash.get('audio') or []:
+            audio_id = int(audio['id'])
+            format_id = 'dash-audio-%s' % audio_id
+            if format_id not in known_formats:
+                continue
+            if requested_stream_id and format_id != requested_stream_id:
+                continue
+
+            audio_url = audio.get('baseUrl') or audio.get('base_url')
+            if not audio_url:
+                continue
+
+            if audio_id not in audio_size_cache:
+                audio_size_cache[audio_id] = self.url_size(
+                    audio_url,
+                    headers=self.bilibili_headers(referer=self.url),
+                )
+
+            codec = audio.get('codecs', 'unknown codec')
+            bandwidth = audio.get('bandwidth')
+            desc = '音频 %s' % codec
+            if bandwidth:
+                desc += ' %s kbps' % round(bandwidth / 1000)
+            self.streams[format_id] = {
+                'container': 'm4a',
+                'quality': desc,
+                'size': audio_size_cache[audio_id],
+                'src': [audio_url],
+            }
 
     def prepare(self, **kwargs):
         self.stream_qualities = {s['quality']: s for s in self.stream_types}
         self.streams.clear()
         self.dash_streams.clear()
 
-        try:
-            html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
-        except:
-            html_content = ''  # live always returns 400 (why?)
+        self.normalize_video_url()
+        video_info = None
+        if self.video_id_from_url(self.url):
+            video_info = self.get_video_info()
+            redirect_url = video_info.get('redirect_url')
+            if redirect_url and re.search(r'/bangumi/play/', redirect_url):
+                self.url = redirect_url
+                video_info = None
+
+        html_content = ''
+        if video_info is None:
+            try:
+                html_content = get_content(self.url, headers=self.bilibili_headers(referer=self.url))
+            except:
+                html_content = ''  # live always returns 400 (why?)
         #self.title = match1(html_content,
         #                    r'<h1 title="([^"]+)"')
 
-        # redirect: watchlater
-        if re.match(r'https?://(www\.)?bilibili\.com/watchlater/#/(av(\d+)|BV(\S+)/?)', self.url):
-            avid = match1(self.url, r'/(av\d+)') or match1(self.url, r'/(BV\w+)')
-            p = int(match1(self.url, r'/p(\d+)') or '1')
-            self.url = 'https://www.bilibili.com/video/%s?p=%s' % (avid, p)
-            html_content = get_content(self.url, headers=self.bilibili_headers())
-
         # redirect: bangumi/play/ss -> bangumi/play/ep
         # redirect: bangumi.bilibili.com/anime -> bangumi/play/ep
-        elif re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url) or \
-             re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)/play', self.url):
+        if re.match(r'https?://(www\.)?bilibili\.com/bangumi/play/ss(\d+)', self.url) or \
+           re.match(r'https?://bangumi\.bilibili\.com/anime/(\d+)/play', self.url):
             initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
             initial_state = json.loads(initial_state_text)
             ep_id = initial_state['epList'][0]['id']
@@ -182,11 +268,6 @@ class Bilibili(VideoExtractor):
         # redirect: s
         elif re.match(r'https?://(www\.)?bilibili\.com/s/(.+)', self.url):
             self.url = 'https://www.bilibili.com/%s' % match1(self.url, r'/s/(.+)')
-            html_content = get_content(self.url, headers=self.bilibili_headers())
-
-        # redirect: festival
-        elif re.match(r'https?://(www\.)?bilibili\.com/festival/(.+)', self.url):
-            self.url = 'https://www.bilibili.com/video/%s' % match1(self.url, r'bvid=([^&]+)')
             html_content = get_content(self.url, headers=self.bilibili_headers())
 
         # sort it out
@@ -210,52 +291,59 @@ class Bilibili(VideoExtractor):
 
         # regular video
         if sort == 'video':
-            initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
-            initial_state = json.loads(initial_state_text)
+            playinfo, playinfo_ = None, None
+            if video_info is not None:
+                pages = video_info.get('pages') or []
+                if not pages:
+                    log.wtf('[Failed] Bilibili returned no video pages.')
 
-            playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
-            playinfo = json.loads(playinfo_text) if playinfo_text else None
-            playinfo = playinfo if playinfo and playinfo.get('code') == 0 else None
+                pn = video_info.get('videos') or len(pages)
+                p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or '1')
+                if p < 1 or p > len(pages):
+                    log.wtf('[Failed] Bilibili video page %s is out of range.' % p)
 
-            html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
-            playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
-            playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
-            playinfo_ = playinfo_ if playinfo_ and playinfo_.get('code') == 0 else None
-
-            if 'videoData' in initial_state:
-                # (standard video)
-
-                # warn if cookies are not loaded
-                if cookies is None:
-                    log.w('You will need login cookies for 720p formats or above. (use --cookies to load cookies.txt.)')
-
-                # warn if it is a multi-part video
-                pn = initial_state['videoData']['videos']
-                if pn > 1 and not kwargs.get('playlist'):
-                    log.w('This is a multipart video. (use --playlist to download all parts.)')
-
-                # set video title
-                self.title = initial_state['videoData']['title']
-                # refine title for a specific part, if it is a multi-part video
-                p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or
-                        '1')  # use URL to decide p-number, not initial_state['p']
+                self.title = video_info['title']
                 if pn > 1:
-                    part = initial_state['videoData']['pages'][p - 1]['part']
-                    self.title = '%s (P%s. %s)' % (self.title, p, part)
+                    if not kwargs.get('playlist'):
+                        log.w('This is a multipart video. (use --playlist to download all parts.)')
+                    self.title = '%s (P%s. %s)' % (self.title, p, pages[p - 1]['part'])
 
-                # construct playinfos
-                avid = initial_state['aid']
-                cid = initial_state['videoData']['pages'][p - 1]['cid']  # use p-number, not initial_state['videoData']['cid']
+                avid = video_info['aid']
+                cid = pages[p - 1]['cid']
             else:
-                # (festival video)
+                initial_state_text = match1(html_content, r'__INITIAL_STATE__=(.*?);\(function\(\)')  # FIXME
+                if not initial_state_text:
+                    log.wtf('[Failed] Unable to extract Bilibili video metadata.')
+                initial_state = json.loads(initial_state_text)
 
-                # set video title
-                self.title = initial_state['videoInfo']['title']
+                playinfo_text = match1(html_content, r'__playinfo__=(.*?)</script><script>')  # FIXME
+                playinfo = json.loads(playinfo_text) if playinfo_text else None
+                playinfo = playinfo if playinfo and playinfo.get('code') == 0 else None
 
-                # construct playinfos
-                avid = initial_state['videoInfo']['aid']
-                cid = initial_state['videoInfo']['cid']
+                html_content_ = get_content(self.url, headers=self.bilibili_headers(cookie='CURRENT_FNVAL=16'))
+                playinfo_text_ = match1(html_content_, r'__playinfo__=(.*?)</script><script>')  # FIXME
+                playinfo_ = json.loads(playinfo_text_) if playinfo_text_ else None
+                playinfo_ = playinfo_ if playinfo_ and playinfo_.get('code') == 0 else None
 
+                video_data = initial_state.get('videoData') or initial_state.get('videoInfo')
+                pages = video_data.get('pages') or [video_data]
+                pn = video_data.get('videos') or len(pages)
+                p = int(match1(self.url, r'[\?&]p=(\d+)') or match1(self.url, r'/index_(\d+)') or '1')
+                self.title = video_data['title']
+                if pn > 1:
+                    if not kwargs.get('playlist'):
+                        log.w('This is a multipart video. (use --playlist to download all parts.)')
+                    self.title = '%s (P%s. %s)' % (self.title, p, pages[p - 1]['part'])
+                avid = initial_state.get('aid') or video_data['aid']
+                cid = pages[p - 1]['cid']
+
+            if common.cookies is None:
+                log.w('You will need login cookies for 720p formats or above. (use --cookies to load cookies.txt.)')
+
+            requested_stream_id = kwargs.get('stream_id')
+            audio_only_requested = (
+                requested_stream_id and requested_stream_id.startswith('dash-audio-')
+            )
             current_quality, best_quality = None, None
             if playinfo is not None:
                 current_quality = playinfo['data']['quality'] or None  # 0 indicates an error, fallback to None
@@ -267,18 +355,22 @@ class Bilibili(VideoExtractor):
             if playinfo_ is not None:
                 playinfos.append(playinfo_)
             # get alternative formats from API
-            for qn in [120, 112, 80, 64, 32, 16]:
+            message = 'No supported streams were returned.'
+            quality_levels = [120] if audio_only_requested else [120, 112, 80, 64, 32, 16]
+            for qn in quality_levels:
                 # automatic format for durl: qn=0
                 # for dash, qn does not matter
                 if current_quality is None or qn < current_quality:
                     api_url = self.bilibili_api(avid, cid, qn=qn)
                     api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
                     api_playinfo = json.loads(api_content)
-                    if api_playinfo['code'] == 0:  # success
+                    if api_playinfo.get('code') == 0:  # success
                         playinfos.append(api_playinfo)
                     else:
-                        message = api_playinfo['data']['message']
-                if best_quality is None or qn <= best_quality:
+                        api_data = api_playinfo.get('data') or {}
+                        message = api_playinfo.get('message') or api_data.get('message') or message
+                if (not requested_stream_id or not requested_stream_id.startswith('dash-')) and \
+                   (best_quality is None or qn <= best_quality):
                     api_url = self.bilibili_interface_api(cid, qn=qn)
                     api_content = get_content(api_url, headers=self.bilibili_headers(referer=self.url))
                     api_playinfo_data = json.loads(api_content)
@@ -292,39 +384,65 @@ class Bilibili(VideoExtractor):
                 self.streams['flv480'] = {'container': container, 'size': size, 'src': [url]}
                 return
 
+            audio_size_cache = {}
             for playinfo in playinfos:
-                quality = playinfo['data']['quality']
-                format_id = self.stream_qualities[quality]['id']
-                container = self.stream_qualities[quality]['container'].lower()
-                desc = self.stream_qualities[quality]['desc']
+                playinfo_data = playinfo.get('data') or {}
 
-                if 'durl' in playinfo['data']:
-                    src, size = [], 0
-                    for durl in playinfo['data']['durl']:
-                        src.append(durl['url'])
-                        size += durl['size']
-                    self.streams[format_id] = {'container': container, 'quality': desc, 'size': size, 'src': src}
+                if 'durl' in playinfo_data:
+                    quality = playinfo_data['quality']
+                    stream_quality = self.stream_qualities.get(quality)
+                    if stream_quality is not None:
+                        format_id = stream_quality['id']
+                        if not requested_stream_id or format_id == requested_stream_id:
+                            container = stream_quality['container'].lower()
+                            desc = stream_quality['desc']
+                            src, size = [], 0
+                            for durl in playinfo_data['durl']:
+                                src.append(durl['url'])
+                                size += durl['size']
+                            self.streams[format_id] = {
+                                'container': container,
+                                'quality': desc,
+                                'size': size,
+                                'src': src,
+                            }
 
                 # DASH formats
-                if 'dash' in playinfo['data']:
-                    audio_size_cache = {}
-                    for video in playinfo['data']['dash']['video']:
-                        s = self.stream_qualities[video['id']]
-                        format_id = f"dash-{s['id']}-{self.codecids[video['codecid']]}"  # prefix
+                if 'dash' in playinfo_data:
+                    dash = playinfo_data['dash']
+                    if not requested_stream_id or audio_only_requested:
+                        self.add_dash_audio_streams(
+                            dash,
+                            audio_size_cache,
+                            requested_stream_id=requested_stream_id,
+                        )
+                    audio_tracks = dash.get('audio') or []
+                    if audio_only_requested:
+                        continue
+                    for video in dash.get('video') or []:
+                        s = self.stream_qualities.get(video['id'])
+                        if s is None:
+                            continue
+                        codec = self.codecids.get(video.get('codecid'), str(video.get('codecid', 'unknown')))
+                        format_id = f"dash-{s['id']}-{codec}"  # prefix
+                        if requested_stream_id and format_id != requested_stream_id:
+                            continue
                         container = 'mp4'  # enforce MP4 container
                         desc = s['desc'] + ' ' + video['codecs']
                         audio_quality = s['audio_quality']
-                        baseurl = video['baseUrl']
+                        baseurl = video.get('baseUrl') or video.get('base_url')
+                        if not baseurl:
+                            continue
                         size = self.url_size(baseurl, headers=self.bilibili_headers(referer=self.url))
 
                         # find matching audio track
-                        if playinfo['data']['dash']['audio']:
-                            audio_baseurl = playinfo['data']['dash']['audio'][0]['baseUrl']
-                            for audio in playinfo['data']['dash']['audio']:
+                        if audio_tracks:
+                            audio_baseurl = audio_tracks[0].get('baseUrl') or audio_tracks[0].get('base_url')
+                            for audio in audio_tracks:
                                 if int(audio['id']) == audio_quality:
-                                    audio_baseurl = audio['baseUrl']
+                                    audio_baseurl = audio.get('baseUrl') or audio.get('base_url')
                                     break
-                            if not audio_size_cache.get(audio_quality, False):
+                            if audio_quality not in audio_size_cache:
                                 audio_size_cache[audio_quality] = self.url_size(audio_baseurl, headers=self.bilibili_headers(referer=self.url))
                             size += audio_size_cache[audio_quality]
 
