@@ -369,6 +369,9 @@ def getHttps(host, url, headers, debuglevel=0):
 # DEPRECATED in favor of get_content()
 def get_response(url, faker=False):
     logging.debug('get_response: %s' % url)
+    parsed = parse.urlparse(url)
+    if parsed.scheme not in ('http', 'https'):
+        raise ValueError('Unsafe URL scheme: %s' % parsed.scheme)
     ctx = None
     if insecure:
         # ignore ssl errors
