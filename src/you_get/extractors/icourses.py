@@ -305,7 +305,7 @@ def download_urls_icourses(url, title, ext, total_size, output_dir='.', headers=
 
     title = get_filename(title)
 
-    filename = '%s.%s' % (title, ext)
+    filename = os.path.basename('%s.%s' % (title, ext))
     filepath = os.path.join(output_dir, filename)
     if not force and os.path.exists(filepath):
         print('Skipping {}: file already exists\n'.format(filepath))
