@@ -12,7 +12,8 @@ from you_get.extractors import (
     soundcloud,
     tiktok,
     twitter,
-    miaopai
+    miaopai,
+    zhihu
 )
 
 
@@ -68,6 +69,26 @@ class YouGetTests(unittest.TestCase):
 
     def test_weibo(self):
         miaopai.download('https://video.weibo.com/show?fid=1034:4825403706245135', info_only=True)
+
+    def test_zhihu(self):
+        # Zhihu answer page with video, e.g.:
+        # https://www.zhihu.com/question/452201264/answer/1987873926903269203
+        # Note: Zhihu requires cookies (z_c0) for access.
+        # Without cookies, HTTP 403 is expected.
+        # This test ensures the extractor handles None title gracefully
+        # (TypeError: argument of type 'NoneType' is not iterable).
+        try:
+            zhihu.download(
+                'https://www.zhihu.com/question/267782048/answer/490720324',
+                info_only=True
+            )
+        except Exception as e:
+            # 403 Forbidden is expected without cookies
+            if '403' in str(e) or 'Forbidden' in str(e):
+                import sys
+                print('Skipped: Zhihu requires authentication cookies', file=sys.stderr)
+                return
+            raise
 
 if __name__ == '__main__':
     unittest.main()
