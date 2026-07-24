@@ -38,12 +38,12 @@ def zhihu_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
         if not data:
             log.w("Video id No play address:{}".format(video_id))
             continue
-        print_info(site_info, title, data["format"], data["size"])
+        print_info(site_info, title or video_id, data["format"], data["size"])
         if not info_only:
             ext = "_{}.{}".format(index, data["format"])
             if kwargs.get("zhihu_offset"):
                 ext = "_{}".format(kwargs["zhihu_offset"]) + ext
-            download_urls([data["play_url"]], title, ext, data["size"],
+            download_urls([data["play_url"]], title or video_id, ext, data["size"],
                           output_dir=output_dir, merge=merge, **kwargs)
 
 
