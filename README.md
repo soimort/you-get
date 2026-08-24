@@ -366,6 +366,19 @@ Not all videos are publicly available to anyone. If you need to log in your acco
 
 * As of now, we are supporting two formats of browser cookies: Mozilla `cookies.sqlite` and Netscape `cookies.txt`.
 
+### Download X media with Xquik
+
+Set `XQUIK_API_KEY` to opt in to Xquik's metered
+[tweet lookup API](https://docs.xquik.com/api-reference/x/get-tweet). Use this
+fallback when public X embed data omits media. Xquik supplies direct image URLs
+and the highest-bitrate MP4 variant. The public response is checked first, so
+Xquik consumes 1 credit only when it has no downloadable media. Without this
+variable, `you-get` continues to use the public X embed response.
+
+```console
+$ XQUIK_API_KEY=your-key you-get 'https://x.com/user/status/123456789012345'
+```
+
 ### Reuse extracted data
 
 Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the page. Use `--json` to get an abstract of extracted data in the JSON format.
