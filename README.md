@@ -376,8 +376,13 @@ Use `--url`/`-u` to get a list of downloadable resource URLs extracted from the 
 
 ## Supported Sites
 
+Alipay public video shares are supported via `https://ur.lepudding.com/...` links
+and Alipay URLs containing `contentId`. The highest available quality is selected
+automatically, falling back to the original stream when necessary.
+
 | Site | URL | Videos? | Images? | Audios? |
 | :--: | :-- | :-----: | :-----: | :-----: |
+| Alipay (支付宝) | <https://ur.lepudding.com/> |✓| | |
 | **YouTube** | <https://www.youtube.com/>    |✓| | |
 | **X (Twitter)** | <https://x.com/>        |✓|✓| |
 | VK          | <https://vk.com/>              |✓|✓| |
