@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import json
 import re
+import time
+import random
 
 from ..common import *
 from ..extractor import VideoExtractor
@@ -713,7 +715,20 @@ class Bilibili(VideoExtractor):
                                 self.download(**kwargs)
 
         elif sort == 'bangumi':
-            epId = re.search(r'"videoId":"ep(.*?)"', html_content).group(1)
+            # Try to extract epId from videoId field
+            epId_match = re.search(r'"videoId":"ep(.*?)"', html_content)
+            if epId_match:
+                epId = epId_match.group(1)
+            else:
+                # Fallback: extract from meta tags (og:url, canonical, etc.)
+                epId_match = re.search(r'<meta[^>]+/bangumi/play/ep(\d+)', html_content)
+                if not epId_match:
+                    epId_match = re.search(r'<link[^>]+/bangumi/play/ep(\d+)', html_content)
+                if epId_match:
+                    epId = epId_match.group(1)
+                else:
+                    raise Exception('Unable to extract episode ID from the page')
+            
             eposide_content = get_content(url="https://api.bilibili.com/pgc/view/web/ep/list?ep_id=%s" % (epId),
                                           headers=self.bilibili_headers(referer=self.url))
             eposide_json = json.loads(eposide_content)["result"]["episodes"]
