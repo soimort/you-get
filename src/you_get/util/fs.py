@@ -43,5 +43,5 @@ def legitimize(text, os=detect_os()):
         if text.startswith("."):
             text = text[1:]
 
-    text = text[:80] # Trim to 82 Unicode characters long
+    text = text[:160] # Trim to 82 Unicode characters long
     return text
